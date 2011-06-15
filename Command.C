@@ -3,17 +3,12 @@
 #include "Command.H"
 #include <QDebug>
 
-QMap<QString, Command*(*)()> *Command::builders = 0;
+QMap<QString, CBuilder_ *> *Command::builders = 0;
 
-void Command::ensureBuilders() {
+void Command::addBuilder(QString x, class CBuilder_ *b) {
   if (!builders)
-    builders = new QMap<QString, Command*(*)()>();
-}
-
-Command::Command() {
-}
-
-Command::~Command() {
+    builders = new QMap<QString, CBuilder_ *>();
+  (*builders)[x] = b;
 }
 
 bool Command::error(QString const &s) {
@@ -21,18 +16,9 @@ bool Command::error(QString const &s) {
   return false;
 }
 
-void Command::addBuilder(QString kwd, Command*(*foo)()) {
-  ensureBuilders();
-  (*builders)[kwd] = foo;
-}
-
 Command *Command::construct(QString kwd) {
-  if (builders->contains(kwd))
-    return (*(*builders)[kwd])();
+  if (builders && builders->contains(kwd))
+    return (*builders)[kwd]->build();
   else
     return 0;
-}
-
-CommandBuilder::CommandBuilder(QString name, Command *(*builder)()) {
-  Command::addBuilder(name, builder);
 }

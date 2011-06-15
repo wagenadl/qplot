@@ -10,11 +10,11 @@ Statement::Statement() {
 
 void Statement::reset() {
   toks.clear();
-  dataLength.clear();
   dat.clear();
 }
 
-int Statement::read(QTextStream &source) {
+int Statement::read(QTextStream &source, QString label) {
+  lbl = label;
   int nlines = 0;
   reset();
 
@@ -95,7 +95,7 @@ void Statement::process(QString w) {
   }
 }
 
-bool Statement::isNumeric(int idx) {
+bool Statement::isNumeric(int idx) const {
   if (idx<0 || idx>=toks.size())
     return false;
   else if (toks[idx].typ==Token::NUMBER)
@@ -136,7 +136,7 @@ int Statement::length() const {
   return toks.size();
 }
 
-bool Statement::cacheVector(int idx) {
+bool Statement::cacheVector(int idx) const {
   if (dat.contains(idx))
     return true;
   else if (idx<0 || idx>=toks.size())
@@ -149,7 +149,7 @@ bool Statement::cacheVector(int idx) {
     dat[idx] = v;
     return true;
   } else if (toks[idx].typ == Token::DASH) {
-    v.append(nan());
+    v.append(nan(""));
     nextIdx[idx] = idx+1;
     dat[idx] = v;
     return true;
@@ -163,7 +163,7 @@ bool Statement::cacheVector(int idx) {
       } else if (toks[i].typ==Token::NUMBER)
 	v.append(toks[i].num);
       else if (toks[i].typ==Token::DASH)
-	v.append(nan());
+	v.append(nan(""));
       else
 	return false; // this is an error
     }
@@ -180,4 +180,8 @@ QList<double> const &Statement::data(int idx) const {
     return dat[idx];
   else
     return nullData;
+}
+
+QString const &Statement::label() const {
+  return lbl;
 }

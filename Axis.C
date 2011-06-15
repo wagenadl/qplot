@@ -11,15 +11,39 @@ Axis::Axis() {
   dp = QPointF(1,0);
 }
 
-void Axis::setDataRange(double x0_, double x1_) {
+void Axis::setDataRange(double x0_, double x1_, bool isAuto) {
   x0 = x0_;
   if (x1<=x0) {
     x1 = x0 + 1;
     qDebug() << "Warning: bad data range";
   }
   x1 = x1_;
-
+  isauto = isAuto;
+  isempty = false;
   recalc();
+}
+
+void Axis::resetDataRange() {
+  setDataRange(0, 1, true);
+  isempty = true;
+}
+
+void Axis::fixDataRange() {
+  isauto = false;
+}
+
+bool Axis::isAuto() const {
+  return isauto;
+}
+
+void Axis::expandDataRange(double x0_, double x1_, bool isAuto) {
+  if (!isempty) {
+    if (x0<x0_)
+      x0_ = x0;
+    if (x1>x1_)
+      x1_ = x1;
+  }
+  setDataRange(x0_, x1_, isAuto);
 }
 
 void Axis::recalc() {

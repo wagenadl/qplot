@@ -1,2 +1,6 @@
 Makefile
 Makefile.test
+qplot
+foo.png
+bldrtest
+Makefile.bldrtest

@@ -10,39 +10,42 @@
 
 class Command {
 public:
-  Command();
-  virtual ~Command();
   virtual bool parse(Statement const &)=0;
   /*:F parse
    *:D Should check whether the statement is valid.
    */
-  virtual QRectF bounds(Statement const &, Figure &)=0;
-  /*:F bounds
-   *:D Should calculate the bounding box of the graphics this statement
-       would produce.
-       You may assume that parse() has returned OK.
-       The Figure's Painter may be used to get style information.
-  */
-  virtual void render(Statement const &, Figure &)=0;
+  virtual void render(Statement const &s, Figure &f, bool dryrun)=0;
   /*:F render
    *:D Should actually plot the statement to the figure.
-       You may assume that parse() has returned OK.
-       The output should remain within the bounds returned by bounds().
+   *   You may assume that parse() has returned OK, so you shouldn't need
+       to check the statement's validity again.
+   *   You may use all style information in the figure, and update it
+       as you see fit.
+   *   You should update the figure's bbox, unless you are a command that
+       only sets style.
+   *   If dryrun is true, you shouldn't actually draw anything.       
   */
-public:
-  static void addBuilder(QString kwd, Command *(*foo)(void));
 protected:
   bool error(QString const &);
 public:
-  static Command *construct(QString kwd);
+  static Command *construct(QString x);
+  static void addBuilder(QString x, class CBuilder_ *b);
 private:
-  static QMap<QString, Command*(*)()> *builders;
-  static void ensureBuilders();
+  static QMap<QString, class CBuilder_ *> *builders;
 };
 
-class CommandBuilder {
+class CBuilder_ {
 public:
-  CommandBuilder(QString name, Command *(*builder)());
+  virtual Command *build()=0;
 };
 
+template <class X> class CBuilder: public CBuilder_ {
+public:
+  CBuilder(QString x) {
+    Command::addBuilder(x, this);
+  }
+  Command *build() {
+    return new X();
+  }
+};
 #endif

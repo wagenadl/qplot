@@ -12,20 +12,22 @@
 class Statement {
 public:
   Statement();
-  int read(QTextStream &source); // returns number of lines processed
+  int read(QTextStream &source, QString label); // returns number of lines processed
   void reset();
   int length() const;
   Token const &operator[](int idx) const;
   bool isNumeric(int idx) const;
   int nextIndex(int idx) const;
   QList<double> const &data(int idx) const; // only valid if isNumeric says so
+  QString const &label() const;
 private:
   void process(QString);
-  bool cacheVector(int idx); // true if ok
+  bool cacheVector(int idx) const; // true if ok
 private:
+  QString lbl;
   QList<Token> toks;
-  QMap<int, QList<double> > dat;
-  QMap<int, int> nextIdx;
+  mutable QMap<int, QList<double> > dat;
+  mutable QMap<int, int> nextIdx;
 private:
   // while processing:
   bool inString;
