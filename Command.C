@@ -2,6 +2,7 @@
 
 #include "Command.H"
 #include <QDebug>
+#include "Error.H"
 
 QMap<QString, CBuilder_ *> *Command::builders = 0;
 
@@ -12,7 +13,7 @@ void Command::addBuilder(QString x, class CBuilder_ *b) {
 }
 
 bool Command::error(QString const &s) {
-  qDebug() << "Command error: " << s;
+  Error() << "Command error: " << s;
   return false;
 }
 

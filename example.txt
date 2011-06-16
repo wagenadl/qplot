@@ -1,2 +1,8 @@
-plot [ .1 .2 .4 .6 ] [ .2 .9 .8 .5 ]
-
+figsize 200 150
+xlim 0 .9
+pen 2 red miterjoin dashdot
+plot [ .1 .5 .9   .6 ] [ .2 .8 .1 .5 ]
+at .1 .2
+font Times-Roman 12
+text 0 0 foo
+fudge 1

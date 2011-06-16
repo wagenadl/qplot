@@ -1,15 +1,12 @@
-// CmdFigSize.H
+// CmdAlign.H
 
-#ifndef CMDFIGSIZE_H
+#ifndef CMDALIGN_H
 
-#define CMDFIGSIZE_H
+#define CMDALIGN_H
 
 #include "Command.H"
 
-class CmdFigSize: public Command {
-  /* Syntax:
-       figsize width_pt height_pt
-   */
+class CmdAlign: public Command {
 public:
   virtual bool parse(Statement const &); 
   virtual void render(Statement const &, Figure &, bool);

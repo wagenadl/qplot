@@ -2,12 +2,13 @@
 
 #include "Program.H"
 #include <QDebug>
+#include "Error.H"
 
 Program::Program() {
 }
 
 bool Program::error(QString const &s) {
-  qDebug() << s;
+  Error() << s;
   return false;
 }
 
@@ -16,11 +17,21 @@ bool Program::error(QString const &s, int l) {
 }
 
 bool Program::read(QTextStream &ts, QString label) {
+  stmt.clear();
+  foreach (Command *c, cmds)
+    if (c)
+      delete c;
+  cmds.clear();
+  
   int line = 1; // count lines in a file from 1
   while (!ts.atEnd()) {
     stmt.append(Statement());
     QString ll = label + " line " + QString::number(line);
-    line += stmt.last().read(ts, ll);
+    int dn = stmt.last().read(ts, ll);
+    if (dn)
+      line += dn;
+    else
+      return error("Read error");
   }
 
   bool ok = true;
@@ -35,8 +46,6 @@ bool Program::read(QTextStream &ts, QString label) {
       else if (!cmds[l]->parse(stmt[l]))
 	ok = error("Syntax error", l);
     } else {
-      qDebug() << stmt[l].length();
-      qDebug() << stmt[l][0].typ << stmt[l][0].num << stmt[l][0].str;
       ok = error("Commands should start with a keyword", l);
     }
   }

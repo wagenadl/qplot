@@ -6,7 +6,7 @@
 static CBuilder<CmdFigSize> cbFigSize("figsize");
 
 bool CmdFigSize::usage() {
-  return error("Usage:\n  figsize width_pt height_pt\n");
+  return error("Usage: figsize width_pt height_pt");
 }
 
 bool CmdFigSize::parse(Statement const &s) {
@@ -17,12 +17,8 @@ bool CmdFigSize::parse(Statement const &s) {
 }
 
 
-QRectF CmdFigSize::bounds(Statement const &s, Figure &f) {
+void CmdFigSize::render(Statement const &s, Figure &f, bool) {
   double w = s[1].num;
   double h = s[2].num;
   f.setSize(QSizeF(w,h));
-  return QRectF();
-}
-
-void CmdFigSize::render(Statement const &, Figure &) {
 }

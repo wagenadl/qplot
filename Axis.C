@@ -2,6 +2,7 @@
 
 #include "Axis.H"
 #include <QDebug>
+#include "Error.H"
 
 Axis::Axis() {
   x0=0;
@@ -15,7 +16,7 @@ void Axis::setDataRange(double x0_, double x1_) {
   x0 = x0_;
   if (x1<=x0) {
     x1 = x0 + 1;
-    qDebug() << "Warning: bad data range";
+    Error() << "Warning: bad data range";
   }
   x1 = x1_;
   recalc();

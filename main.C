@@ -4,45 +4,132 @@
 #include <QWidget>
 #include <QDebug>
 #include <QImage>
+#include <QFile>
+#include <QPrinter>
+#include <QSvgGenerator>
+//#include <QTemporaryFile>
+//#include <QProcess>
 #include <stdio.h>
 #include "Program.H"
 #include "Figure.H"
 #include "Command.H"
 #include "QPWidget.H"
+#include "Watcher.H"
+#include "Error.H"
 
 int error(QString const &s) {
-  qDebug() << s;
+  Error() << s;
   return 1;
 }
 
+int usage(int ex=1) {
+  Error() << "Usage: qplot   input.txt";
+  Error() << "       qplot   input.txt output.pdf|svg|png";
+  return ex;
+}
+
+void prerender(Program &prog, Figure &fig) {
+  QImage img(1,1,QImage::Format_ARGB32);
+  fig.setSize(QSizeF(800, 600));
+  fig.painter().begin(&img);
+  QRectF dataExtent = prog.dataRange();
+  fig.xAxis().setDataRange(dataExtent.left(), dataExtent.right());
+  fig.yAxis().setDataRange(dataExtent.top(), dataExtent.bottom());
+  prog.render(fig, true); // render to determine paper bbox & fudge
+  fig.painter().end();
+}
+
+int read(Program &prog, QString ifn) {
+  QFile f(ifn);
+  if (f.open(QIODevice::ReadOnly)) {
+    QTextStream ts(&f);
+    if (prog.read(ts, ifn))
+      return 0;
+    Error() << "Interpretation failed";
+  } else {
+    Error() << "Cannot open file";
+  }
+  return 1;
+}  
+
+int interactive(QString ifn, QApplication *app) {
+  Program prog;
+  read(prog, ifn);
+  Figure fig;
+  prerender(prog, fig);
+
+  Watcher wtch(ifn, &prog, &fig);
+  QPWidget win;
+  QObject::connect(&wtch, SIGNAL(ping()), &win, SLOT(update()));
+  win.setContents(&fig, &prog);
+  win.show();
+  return app->exec();
+}
+
+int noninteractive(QString ifn, QString ofn) {
+  Program prog;
+  if (ifn.isEmpty()) {
+    QTextStream ts(stdin);
+    if (!prog.read(ts, "<stdin>")) {
+      Error() << "Interpretation error";
+      return 1;
+    }
+  } else {
+    read(prog, ifn);
+  }
+  Figure fig;
+  prerender(prog, fig);
+
+  int idx = ofn.lastIndexOf(".");
+  if (idx<0)
+    return error("Output file must have an extension");
+  QString extn = ofn.mid(idx+1);
+  if (extn == "svg") {
+    QSvgGenerator img;
+    img.setFileName(ofn);
+    img.setResolution(72);
+    img.setViewBox(QRectF(QPointF(0,0),fig.extent().size()));
+    fig.painter().begin(&img);    
+    fig.painter().translate(-fig.extent().left(), -fig.extent().top());
+    prog.render(fig);
+    fig.painter().end();
+  } else if (extn == "pdf") {
+    QPrinter img(QPrinter::HighResolution);
+    img.setPageMargins(0, 0, 0, 0, QPrinter::Point);
+    img.setPaperSize(fig.extent().size(), QPrinter::Point);
+    img.setResolution(72*20);
+    img.setOutputFileName(ofn);
+    fig.painter().begin(&img);
+    fig.painter().scale(20, 20);
+    fig.painter().translate(-fig.extent().left(), -fig.extent().top());
+    prog.render(fig);
+    fig.painter().end();
+  } else {
+    QImage img(int(fig.extent().width()),
+	       int(fig.extent().height()),
+	       QImage::Format_ARGB32);
+    img.fill(0xffffffff);
+    fig.painter().begin(&img);
+    fig.painter().translate(-fig.extent().left(), -fig.extent().top());
+    prog.render(fig);
+    fig.painter().end();
+    img.save(ofn);
+  }
+  return 0;
+}  
+
 int main(int argc, char **argv) {
   QApplication app(argc, argv);
-  QImage img(800, 600, QImage::Format_RGB32);
-  img.fill(-1);
 
-  QTextStream ts(stdin);
-  Program prog;
-  if (!prog.read(ts, "<stdin>"))
-    return 1;
-
-  Figure f;
-  f.setSize(QSizeF(800, 600));
-  f.painter().begin(&img);
-  QRectF dataExtent = prog.dataRange();
-  qDebug()<<dataExtent;
-  f.xAxis().setDataRange(dataExtent.left(), dataExtent.right());
-  f.yAxis().setDataRange(dataExtent.top(), dataExtent.bottom());
-  qDebug()<<f.extent();
-  qDebug()<<f.fullBBox();
-  qDebug()<<f.xAxis().min() << f.xAxis().max() << f.xAxis().minp()<<f.xAxis().maxp();
-  qDebug()<<f.yAxis().min() << f.yAxis().max() << f.yAxis().minp()<<f.yAxis().maxp();
-  prog.render(f, true); // render to determine paper bbox & fudge
-  prog.render(f);
-  f.painter().end();
-  img.save("foo.png");
-
-  QPWidget w;
-  w.setContents(&f,&prog);
-  w.show();
-  app.exec();
+  if (argc==2) {
+    QString ifn = argv[1];
+    if (ifn=="-h" || ifn=="--help")
+      return usage(0);
+    else
+      return interactive(argv[1], &app);
+  } else if (argc==3) {
+    return noninteractive(argv[1], argv[2]);
+  } else {
+    return usage();
+  } 
 }

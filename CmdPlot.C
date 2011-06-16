@@ -5,7 +5,7 @@
 static CBuilder<CmdPlot> cbPlot("plot");
 
 bool CmdPlot::usage() {
-  return error("Usage:\n  plot xdata ydata\n");
+  return error("Usage: plot xdata ydata");
 }
 
 bool CmdPlot::parse(Statement const &s) {

@@ -11,6 +11,13 @@
 
 class Figure {
 public:
+  enum HAlign {
+    LEFT, CENTER, RIGHT,
+  };
+  enum VAlign {
+    TOP, MIDDLE, BOTTOM, BASE,
+  };
+public:
   Figure();
   void setSize(QSizeF wh_pt);
   void setExtent(QRectF xywh_pt);
@@ -34,6 +41,10 @@ public:
   QRectF const &lastBBox() const;
   QRectF const &cumulBBox() const;
   QRectF const &fullBBox() const;
+  void setVAlign(VAlign a);
+  void setHAlign(HAlign a);
+  VAlign vAlign() const;
+  HAlign hAlign() const;
   QPainter &painter();
 private:
   QRectF figextent;
@@ -42,6 +53,8 @@ private:
   QPainter p;
   QPointF anch;
   double anchang;
+  VAlign valign;
+  HAlign halign;
 private:
   void replaceAxes();
 };

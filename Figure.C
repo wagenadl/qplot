@@ -5,8 +5,27 @@
 
 Figure::Figure() {
   figextent = QRectF(QPointF(0,0), QSizeF(72*6, 72*4));
+  halign = CENTER;
+  valign = BASE;
   replaceAxes();
 }
+
+void Figure::setHAlign(Figure::HAlign a) {
+  halign = a;
+}
+
+void Figure::setVAlign(Figure::VAlign a) {
+  valign = a;
+}
+
+Figure::HAlign Figure::hAlign() const {
+  return halign;
+}
+
+Figure::VAlign Figure::vAlign() const {
+  return valign;
+}
+
 
 void Figure::setExtent(QRectF xywh_pt) {
   if (figextent==xywh_pt)

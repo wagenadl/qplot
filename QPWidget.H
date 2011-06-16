@@ -4,28 +4,24 @@
 
 #define QPWIDGET_H
 
-#include <QWidget>
+#include "ScrollWidget.H"
 #include "Figure.H"
 #include "Program.H"
 
-class QPWidget: public QWidget {
+class QPWidget: public ScrollWidget {
   Q_OBJECT;
 public:
   QPWidget(QWidget *parent=0);
   ~QPWidget();
   void setContents(Figure *f, Program *p);
-  void autoSize();
-  void setPan(QPointF tl);
-  void setZoom(double factor);
-  void scaleToFit();
+  void setMargin(double pix, bool gray);
   virtual void paintEvent(QPaintEvent *);
 private:
-  bool scaletofit;
-  double scalefactor;
-  QPointF panorigin;
-
   Figure *fig;
   Program *prog;
+  double marg;
+  bool gray;
+  QRectF worldextent;
 };
 
 #endif

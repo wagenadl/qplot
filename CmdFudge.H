@@ -4,6 +4,8 @@
 
 #define CMDFUDGE_H
 
+#include "Command.H"
+
 class CmdFudge: public Command {
   /*:C CmdFudge
    *:D "fudge" reduces the placement of axes to attempt to fit inside a figure.

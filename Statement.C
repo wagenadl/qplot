@@ -15,23 +15,25 @@ void Statement::reset() {
 
 int Statement::read(QTextStream &source, QString label) {
   lbl = label;
-  int nlines = 0;
   reset();
 
   inString = false;
   lev = 0;
 
   QString line = source.readLine();
-  nlines ++;
+  if (line.isNull())
+    return 0;
+  int nlines = 1;
+  
   QStringList words = line.split(QRegExp("\\s+"));
   foreach (QString w, words) 
     process(w);
 
   while (lev>0) {
     QString line = source.readLine();
-    nlines ++;
     if (line.isNull())
       break;
+    nlines ++;
     QStringList words = line.split(QRegExp("\\s+"));
     foreach (QString w, words) 
       process(w);
