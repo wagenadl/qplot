@@ -14,7 +14,7 @@ HEADERS += Axis.H \
            Command.H \
            Figure.H \
            Program.H \
-           QPFigure.H \
+           QPWidget.H \
            Statement.H \
            Token.H
 SOURCES += Axis.C \
@@ -23,5 +23,6 @@ SOURCES += Axis.C \
            Figure.C \
            main.C \
            Program.C \
+           QPWidget.C \
            Statement.C \
            Token.C

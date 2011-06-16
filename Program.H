@@ -20,6 +20,7 @@ public:
   ~Program();
   int length() const;
   Statement const &operator[](int) const;
+  QRectF dataRange();
   void render(Figure &f, bool dryrun=false);
 private:
   bool error(QString const &); // returns false

@@ -8,46 +8,22 @@ Axis::Axis() {
   x1=1;
   p0 = QPointF(0,0);
   p1 = QPointF(1,0);
-  dp = QPointF(1,0);
+  recalc();
 }
 
-void Axis::setDataRange(double x0_, double x1_, bool isAuto) {
+void Axis::setDataRange(double x0_, double x1_) {
   x0 = x0_;
   if (x1<=x0) {
     x1 = x0 + 1;
     qDebug() << "Warning: bad data range";
   }
   x1 = x1_;
-  isauto = isAuto;
-  isempty = false;
   recalc();
-}
-
-void Axis::resetDataRange() {
-  setDataRange(0, 1, true);
-  isempty = true;
-}
-
-void Axis::fixDataRange() {
-  isauto = false;
-}
-
-bool Axis::isAuto() const {
-  return isauto;
-}
-
-void Axis::expandDataRange(double x0_, double x1_, bool isAuto) {
-  if (!isempty) {
-    if (x0<x0_)
-      x0_ = x0;
-    if (x1>x1_)
-      x1_ = x1;
-  }
-  setDataRange(x0_, x1_, isAuto);
 }
 
 void Axis::recalc() {
   dp = QPointF((p1.x()-p0.x())/(x1-x0), (p1.y()-p0.y())/(x1-x0));
+  porig = p0 - dp*x0;
 }
 
 void Axis::setPlacement(QPointF p0_, QPointF p1_) {
@@ -73,5 +49,5 @@ QPointF Axis::maxp() const {
 }
 
 QPointF Axis::map(double x) const {
-  return p0 + x*dp;
+  return porig + x*dp;
 }

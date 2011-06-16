@@ -22,3 +22,7 @@ Command *Command::construct(QString kwd) {
   else
     return 0;
 }
+
+QRectF Command::dataRange(Statement const &) {
+  return QRectF();
+}

@@ -61,7 +61,16 @@ Statement const &Program::operator[](int idx) const {
   else
     return nullStatement;
 }
+
+QRectF Program::dataRange() {
+  QRectF r;
+  for (int l=0; l<stmt.size(); l++)
+    if (cmds[l])
+      r |= cmds[l]->dataRange(stmt[l]);
+  return r;
+}
   
+
 void Program::render(Figure &f, bool dryrun) {
   f.clearBBox(true);
   for (int l=0; l<stmt.size(); l++)

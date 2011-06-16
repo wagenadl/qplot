@@ -4,3 +4,4 @@ qplot
 foo.png
 bldrtest
 Makefile.bldrtest
+moc*

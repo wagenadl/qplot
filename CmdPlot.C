@@ -18,15 +18,13 @@ bool CmdPlot::parse(Statement const &s) {
     return usage();
 }
 
-
-void CmdPlot::render(Statement const &s, Figure &f, bool dryrun) {
+QRectF CmdPlot::dataRange(Statement const &s) {
   QList<double> const &xdata = s.data(1);
   QList<double> const &ydata = s.data(s.nextIndex(1));
-  if (xdata.isEmpty()) {
-    f.setBBox(QRectF());
-    return;
-  }
-  
+
+  if (xdata.isEmpty())
+    return QRectF();
+
   double minx = xdata[0];
   double maxx = xdata[0];
   double miny = ydata[0];
@@ -42,15 +40,22 @@ void CmdPlot::render(Statement const &s, Figure &f, bool dryrun) {
       miny=ydata[k];
     else if (ydata[k]>maxy)
       maxy=ydata[k];
+  return QRectF(QPointF(minx,miny), QPointF(maxx,maxy));
+}
 
-  if (f.xaxis().isAuto)
-    f.xaxis().expandDataRange(minx, maxx, true);
-  if (f.yaxis().isAuto)
-    f.yaxis().expandDataRange(miny, maxy, true);
-  
-  QPointF tl = f.map(minx,miny);
-  QPointF br = f.map(maxx,maxy);
-  QRectF bbox = QRectF(tl,br).normalized();
+void CmdPlot::render(Statement const &s, Figure &f, bool dryrun) {
+  QList<double> const &xdata = s.data(1);
+  QList<double> const &ydata = s.data(s.nextIndex(1));
+  if (xdata.isEmpty()) {
+    f.setBBox(QRectF());
+    return;
+  }
+
+  QRectF extent = dataRange(s);
+
+  QPointF p1 = f.map(extent.left(),extent.top());
+  QPointF p2 = f.map(extent.right(),extent.bottom());
+  QRectF bbox = QRectF(p1,p2).normalized();
   double w = f.painter().pen().widthF();
   if (w>0)
     bbox.adjust(-w/2, -w/2, w/2, w/2);

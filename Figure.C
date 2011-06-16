@@ -4,22 +4,31 @@
 #include <math.h>
 
 Figure::Figure() {
-  figsize = QSizeF(72*6, 72*4);
-  xax.setPlacement(QPointF(0,0), QPointF(figsize.width(),0));
-  yax.setPlacement(QPointF(0,figsize.height()), QPointF(0,0));
+  figextent = QRectF(QPointF(0,0), QSizeF(72*6, 72*4));
+  replaceAxes();
+}
+
+void Figure::setExtent(QRectF xywh_pt) {
+  if (figextent==xywh_pt)
+    return;
+
+  figextent = xywh_pt;
+  replaceAxes();
 }
 
 void Figure::setSize(QSizeF wh_pt) {
-  if (figsize == wh_pt)
+  if (figextent.size() == wh_pt)
     return;
   
-  figsize = wh_pt;
-  xax.setPlacement(QPointF(0,0), QPointF(figsize.width(),0));
-  yax.setPlacement(QPointF(0,figsize.height()), QPointF(0,0));
+  figextent.setSize(wh_pt);
+  replaceAxes();
 }
 
-QSizeF const &Figure::size() const {
-  return figsize;
+void Figure::replaceAxes() {
+  xax.setPlacement(QPointF(figextent.left(),0),
+		   QPointF(figextent.right(),0));
+  yax.setPlacement(QPointF(0,figextent.bottom()),
+		   QPointF(0,figextent.top()));
 }
 
 Axis &Figure::xAxis() {
@@ -83,12 +92,6 @@ QPainter &Figure::painter() {
   return p;
 }
 
-void Figure::setAutoRange(bool au) {
-  if (au) {
-    xax.resetDataRange();
-    yax.resetDataRange();    
-  } else {
-    xax.fixDataRange();
-    yax.fixDataRange();    
-  }
+QRectF const &Figure::extent() const {
+  return figextent;
 }

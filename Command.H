@@ -25,6 +25,13 @@ public:
        only sets style.
    *   If dryrun is true, you shouldn't actually draw anything.       
   */
+  virtual QRectF dataRange(Statement const &s);
+  /*:F dataRange
+   *:D Commands that actually plot data should implement this and return
+       the extent of the data (in axes coordinates). Commands that only
+       set style or that annotate based on paper coordinates need not
+       implement this.
+  */
 protected:
   bool error(QString const &);
 public:
