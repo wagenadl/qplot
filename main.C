@@ -36,6 +36,7 @@ void prerender(Program &prog, Figure &fig) {
   fig.xAxis().setDataRange(dataExtent.left(), dataExtent.right());
   fig.yAxis().setDataRange(dataExtent.top(), dataExtent.bottom());
   prog.render(fig, true); // render to determine paper bbox & fudge
+  prog.render(fig, true); // render to determine paper bbox & fudge
   fig.painter().end();
 }
 
@@ -52,7 +53,7 @@ int read(Program &prog, QString ifn) {
   return 1;
 }  
 
-int interactive(QString ifn, QApplication *app) {
+int interactive(QString ifn, QApplication *app, bool gray=false) {
   Program prog;
   read(prog, ifn);
   Figure fig;
@@ -62,6 +63,7 @@ int interactive(QString ifn, QApplication *app) {
   QPWidget win;
   QObject::connect(&wtch, SIGNAL(ping()), &win, SLOT(update()));
   win.setContents(&fig, &prog);
+  win.setMargin(20,gray);
   win.show();
   return app->exec();
 }
@@ -121,15 +123,18 @@ int noninteractive(QString ifn, QString ofn) {
 int main(int argc, char **argv) {
   QApplication app(argc, argv);
 
+  if (argc<2 || argc>3)
+    return usage();
   if (argc==2) {
     QString ifn = argv[1];
     if (ifn=="-h" || ifn=="--help")
       return usage(0);
     else
-      return interactive(argv[1], &app);
-  } else if (argc==3) {
-    return noninteractive(argv[1], argv[2]);
-  } else {
-    return usage();
+      return interactive(ifn, &app);
+  } else /* argc==3 */ {
+    if (QString(argv[1])=="-gray")
+      return interactive(argv[2], &app, true);
+    else
+      return noninteractive(argv[1], argv[2]);
   } 
 }

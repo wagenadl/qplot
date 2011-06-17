@@ -16,17 +16,15 @@ public:
 signals:
   void ping();
 private slots:
-  void pong();
+  void pong(); // file changed
+  void tick(); // timer event
 private:
   bool reread();
-protected:
-  void timerEvent(QTimerEvent *);
 private:
   QString fn;
   Program *prog;
   Figure *fig;
   class QFileSystemWatcher *fsw;
-  int tid;
 };
 
 #endif

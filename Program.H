@@ -28,6 +28,7 @@ private:
 private:
   QList<Statement> stmt;
   QList<Command *> cmds;
+  bool isOK;
 };
 
 #endif

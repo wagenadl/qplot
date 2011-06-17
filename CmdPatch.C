@@ -1,14 +1,14 @@
-// CmdPlot.C
+// CmdPatch.C
 
-#include "CmdPlot.H"
+#include "CmdPatch.H"
 
-static CBuilder<CmdPlot> cbPlot("plot");
+static CBuilder<CmdPatch> cbPatch("patch");
 
-bool CmdPlot::usage() {
-  return error("Usage: plot xdata ydata");
+bool CmdPatch::usage() {
+  return error("Usage: patch xdata ydata");
 }
 
-bool CmdPlot::parse(Statement const &s) {
+bool CmdPatch::parse(Statement const &s) {
   int id1 = s.nextIndex(1);
   int id2 = s.nextIndex(id1);
   if (id2==s.length() && s.isNumeric(1) && s.isNumeric(id1) &&
@@ -18,7 +18,7 @@ bool CmdPlot::parse(Statement const &s) {
     return usage();
 }
 
-QRectF CmdPlot::dataRange(Statement const &s) {
+QRectF CmdPatch::dataRange(Statement const &s) {
   QList<double> const &xdata = s.data(1);
   QList<double> const &ydata = s.data(s.nextIndex(1));
 
@@ -43,7 +43,7 @@ QRectF CmdPlot::dataRange(Statement const &s) {
   return QRectF(QPointF(minx,miny), QPointF(maxx,maxy));
 }
 
-void CmdPlot::render(Statement const &s, Figure &f, bool dryrun) {
+void CmdPatch::render(Statement const &s, Figure &f, bool dryrun) {
   QList<double> const &xdata = s.data(1);
   QList<double> const &ydata = s.data(s.nextIndex(1));
   if (xdata.isEmpty()) {
@@ -70,9 +70,8 @@ void CmdPlot::render(Statement const &s, Figure &f, bool dryrun) {
   QPolygonF p(xdata.size());
   for (int k=0; k<xdata.size(); k++)
     p[k] = f.map(xdata[k],ydata[k]);
-  f.painter().drawPolyline(p);
+  f.painter().drawPolygon(p);
 
-  // now add a zero-thick line if the pen is solid
   QPen pen(f.painter().pen());
   if (pen.isSolid()) {
     f.painter().save();

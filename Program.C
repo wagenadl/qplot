@@ -5,6 +5,7 @@
 #include "Error.H"
 
 Program::Program() {
+  isOK = false;
 }
 
 bool Program::error(QString const &s) {
@@ -17,6 +18,7 @@ bool Program::error(QString const &s, int l) {
 }
 
 bool Program::read(QTextStream &ts, QString label) {
+  isOK = false;
   stmt.clear();
   foreach (Command *c, cmds)
     if (c)
@@ -49,6 +51,7 @@ bool Program::read(QTextStream &ts, QString label) {
       ok = error("Commands should start with a keyword", l);
     }
   }
+  isOK = ok;
   return ok;  
 }
 
@@ -81,6 +84,8 @@ QRectF Program::dataRange() {
   
 
 void Program::render(Figure &f, bool dryrun) {
+  if (!isOK)
+    return; // won't render if not ok
   f.clearBBox(true);
   for (int l=0; l<stmt.size(); l++)
     if (cmds[l])

@@ -2,6 +2,8 @@
 
 #include "CmdText.H"
 #include <QFontMetricsF>
+#include "Rotate.H"
+#include <QDebug>
 
 static CBuilder<CmdText> cbText("text");
 
@@ -17,14 +19,20 @@ bool CmdText::parse(Statement const &s) {
     return usage();
 }
 
-
 void CmdText::render(Statement const &s, Figure &f, bool dummy) {
   double dx = s[1].num;
   double dy = s[2].num;
   QString txt = s[3].str;
 
   QFontMetricsF fm(f.painter().font());
-  QRectF r(fm.boundingRect(txt));
+  QString ref = f.refText();
+  QRectF r(fm.tightBoundingRect(txt));
+  if (!ref.isEmpty()) {
+    QRectF rr(fm.tightBoundingRect(ref));
+    r.setTop(rr.top());
+    r.setBottom(rr.bottom());
+  }
+  
   switch (f.hAlign()) {
   case Figure::LEFT:
     dx -= r.left();
@@ -52,7 +60,9 @@ void CmdText::render(Statement const &s, Figure &f, bool dummy) {
 
   // work on bbox:
   r.translate(dx, dy);
-  // we should rotate this too
+  qDebug() << "text: " << r;
+  r = ::rotate(r, f.anchorAngle());
+  qDebug() << " -> " << r;
   r.translate(f.anchor());
   f.setBBox(r);
   

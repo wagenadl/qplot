@@ -4,6 +4,7 @@
 #include <QFileSystemWatcher>
 #include <QFile>
 #include <QDebug>
+#include <QTimer>
 #include "Error.H"
 
 extern void prerender(Program &prog, Figure &fig); // defined in main.C
@@ -20,16 +21,13 @@ Watcher::~Watcher() {
   delete fsw;
 }
 
-void Watcher::timerEvent(QTimerEvent *) {
-  if (tid)
-    killTimer(tid);
-  tid=0;
+void Watcher::tick() {
   reread();
 }
 
 void Watcher::pong() {
-  if (!reread()) xxxxxxxxxxxx
-    tid = startTimer(500);
+  if (!reread())
+    QTimer::singleShot(1000, this, SLOT(tick()));
 }
 
 bool Watcher::reread() {
@@ -38,7 +36,7 @@ bool Watcher::reread() {
     QTextStream ts(&f);
     if (prog->read(ts, fn)) {
       ::prerender(*prog, *fig);
-      Error() << "Reread file";
+      Error() << "Reread file: OK";
       emit ping();
       return true;
     } else {

@@ -87,11 +87,15 @@ QRectF const &Figure::fullBBox() const {
   return fullbbox;
 }
 
-void Figure::setAnchor(double x, double y, double dx, double dy) {
+double Figure::angle(double dx, double dy) const {
   QPointF frm = map(0, 0);
   QPointF to = map(dx, dy);
   QPointF d = to-frm;
-  setAnchor(map(x,y), atan2(d.y(), d.x()));
+  return atan2(d.y(), d.x());
+}
+
+void Figure::setAnchor(double x, double y, double dx, double dy) {
+  setAnchor(map(x,y), angle(dx,dy));
 }
 
 void Figure::setAnchor(QPointF const &x, double a) {
@@ -113,4 +117,12 @@ QPainter &Figure::painter() {
 
 QRectF const &Figure::extent() const {
   return figextent;
+}
+
+void Figure::setRefText(QString s) {
+  reftxt = s;
+}
+
+QString Figure::refText() const {
+  return reftxt;
 }

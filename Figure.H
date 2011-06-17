@@ -36,6 +36,7 @@ public:
   void setBBox(QRectF const &); // sets lastbbox, updates fullbbox and cumulbbox
   void setAnchor(QPointF const &, double phi=0); // in paper coords
   void setAnchor(double x, double y, double dx=1, double dy=0); // in data coords
+  double angle(double dx, double dy) const; // paper angle from data displacement
   QPointF const &anchor() const;
   double const &anchorAngle() const;
   QRectF const &lastBBox() const;
@@ -45,6 +46,8 @@ public:
   void setHAlign(HAlign a);
   VAlign vAlign() const;
   HAlign hAlign() const;
+  void setRefText(QString str);
+  QString refText() const;
   QPainter &painter();
 private:
   QRectF figextent;
@@ -55,6 +58,7 @@ private:
   double anchang;
   VAlign valign;
   HAlign halign;
+  QString reftxt;
 private:
   void replaceAxes();
 };

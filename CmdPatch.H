@@ -1,14 +1,17 @@
-// CmdAt.H
+// CmdPatch.H
 
-#ifndef CMDAT_H
+#ifndef CMDPATCH_H
 
-#define CMDAT_H
+#define CMDPATCH_H
 
 #include "Command.H"
 
-class CmdAt: public Command {
+class CmdPatch: public Command {
+  /* Syntax:
+       patch xdata ydata
+   */
 public:
-  virtual bool parse(Statement const &); 
+  virtual bool parse(Statement const &);
   virtual QRectF dataRange(Statement const &);
   virtual void render(Statement const &, Figure &, bool);
 private:

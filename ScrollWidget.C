@@ -4,6 +4,8 @@
 #include <QMouseEvent>
 #include <QKeyEvent>
 #include <QDebug>
+#include <QCursor>
+
 
 ScrollWidget::ScrollWidget(QWidget *parent): QWidget(parent) {
   extent_world = QRectF(QPointF(0,0), QPointF(1000,1000));
@@ -32,9 +34,14 @@ void ScrollWidget::setTopLeft(QPointF tl) {
 }
 
 void ScrollWidget::setScale(double factor) {
+  QPointF mousepos = mapFromGlobal(QCursor::pos());
+  QPointF mousexy_old = tl_world + (mousepos-tlDest())/scale();
   scalefactor = factor;
   scaletofit = false;
   sureScale();
+  QPointF mousexy_new = tl_world + (mousepos-tlDest())/scale();
+  tl_world += mousexy_old - mousexy_new;
+  surePan();
 }
 
 void ScrollWidget::autoSize() {

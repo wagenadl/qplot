@@ -13,9 +13,12 @@ INCLUDEPATH += .
 HEADERS += Axis.H \
            CmdAlign.H \
            CmdAt.H \
+           CmdBrush.H \
            CmdFigSize.H \
            CmdFont.H \
            CmdFudge.H \
+           CmdLine.H \
+           CmdPatch.H \
            CmdPen.H \
            CmdPlot.H \
            CmdText.H \
@@ -26,6 +29,7 @@ HEADERS += Axis.H \
            Figure.H \
            Program.H \
            QPWidget.H \
+           Rotate.H \
            ScrollWidget.H \
            Statement.H \
            Token.H \
@@ -34,9 +38,12 @@ HEADERS += Axis.H \
 SOURCES += Axis.C \
            CmdAlign.C \
            CmdAt.C \
+           CmdBrush.C \
            CmdFigSize.C \
            CmdFont.C \
            CmdFudge.C \
+           CmdLine.C \
+           CmdPatch.C \
            CmdPen.C \
            CmdPlot.C \
            CmdText.C \
@@ -48,6 +55,7 @@ SOURCES += Axis.C \
            main.C \
            Program.C \
            QPWidget.C \
+           Rotate.C \
            ScrollWidget.C \
            Statement.C \
            Token.C \
