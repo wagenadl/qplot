@@ -46,9 +46,9 @@ void CmdLine::render(Statement const &s, Figure &f, bool dryrun) {
 
   f.painter().drawPolyline(p);
 
-  // now add a zero-thick line
-  QPen pen(f.painter().pen());
-  if (pen.isSolid()) {
+  if (f.hairline()) {
+    // now add a zero-thick line
+    QPen pen(f.painter().pen());
     f.painter().save();
     pen.setWidth(0);
     f.painter().setPen(pen);

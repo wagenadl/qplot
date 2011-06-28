@@ -7,7 +7,18 @@ Figure::Figure() {
   figextent = QRectF(QPointF(0,0), QSizeF(72*6, 72*4));
   halign = CENTER;
   valign = BASE;
+  currentPen = "A";
+  currentBrush = "A";
+  hairline_ = false;
   replaceAxes();
+}
+
+void Figure::setHairline(bool h) {
+  hairline_ = h;
+}
+
+bool Figure::hairline() const {
+  return hairline;
 }
 
 void Figure::setHAlign(Figure::HAlign a) {
@@ -125,4 +136,14 @@ void Figure::setRefText(QString s) {
 
 QString Figure::refText() const {
   return reftxt;
+}
+
+void Figure::choosePen(QString s) {
+  pens[currentPen] = p.pen();
+  p.setPen(pens[currentPen=s]);
+}
+
+void Figure::chooseBrush(QString s) {
+  brushes[currentBrush] = p.brush();
+  p.setBrush(brushes[currentBrush=s]);
 }

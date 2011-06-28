@@ -8,6 +8,9 @@
 
 #include <QRectF>
 #include <QPainter>
+#include <QMap>
+#include <QPen>
+#include <QBrush>
 
 class Figure {
 public:
@@ -49,6 +52,12 @@ public:
   void setRefText(QString str);
   QString refText() const;
   QPainter &painter();
+  void choosePen(QString);
+  void chooseBrush(QString);
+  bool hairline() const;
+  void setHairline(bool h);
+  void chooseSubplot(QString);
+  void chooseMainplot();
 private:
   QRectF figextent;
   Axis xax, yax;
@@ -59,6 +68,16 @@ private:
   VAlign valign;
   HAlign halign;
   QString reftxt;
+  QMap<QString, QPen> pens; 
+  QMap<QString, QBrush> brushes; 
+  QMap<QString, Subplot> subplots;
+  /* Note that the *current* pen/brush/subplot is not saved in the maps.
+     Instead, the current pen and brush are kept in the painter, and the
+     current subplot is kept in the xax, yax, and figextent properties. */
+  QString currentPen;
+  QString currentBrush;
+  QString currentSubplot;
+  bool hairline_;
 private:
   void replaceAxes();
 };
