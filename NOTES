@@ -1,0 +1,4 @@
+subplots is half implemented. Should be called "panel".
+For panel/pen/brush, ID should only be accepted as first argument.
+The current pen/brush/subplot should be actively rmoved from the map.
+BBoxes should be handled properly at subplot change.

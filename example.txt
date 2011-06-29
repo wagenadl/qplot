@@ -3,9 +3,11 @@ pen C 2 red miterjoin dashdot
 plot [ .1 .5 .9   .6 ] [ .2 .4 .1 .5 ]
 at .1 .2 .1 1
 font Times-Roman 12
-text 0 -45 "foo bar"
+align left
+text 0 -45 "'foo' and"' also "bar"'
+align center
 
-pen A 0.1 black squarecap solid
+pen A 0 black squarecap solid
 plot [ 0 1 ] [ 0 0 ]
 at 0 0
 line [ 0 0 ] [ 5 0 ]
@@ -15,7 +17,7 @@ at 1 0
 line [0 0 ] [5 0]
 text 0 10 "1"
 at 0.5 bottom
-text 0 3 "Horizontal axis"
+text 0 3 "Verité λ = 2⁶. “Quoth’d.”"
 
 plot [ 0 0 ] [ 0 1]
 at 0 0 0 -1
@@ -25,7 +27,7 @@ at 0 1 0 -1
 line [ 0 0 ] [ 5 0]
 text 0 10 "1"
 at left 0.5 0 -1
-text 0 10 "Verti"
+text 0 10 "Vertical 7–3—g"
 
 brush blue .5
 pen B none

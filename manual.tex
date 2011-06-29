@@ -1,0 +1,106 @@
+\documentclass[11pt]{article}
+\usepackage{newcent}
+\usepackage[english]{babel}
+\usepackage[letterpaper]{geometry}
+
+\def\cmd#1#2{\noindent {\bf #1} #2\par}
+\def\expl#1{\begin{itemize}\item[]#1\end{itemize}}
+\def\cref#1{{\bf #1}}
+\def\bar{{$|$}}
+\def\nyi{{\par\bf\itshape Not yet implemented.}}
+
+\begin{document}
+\section{Commands}
+\cmd{align}{left\bar{}right\bar{}center\bar{}top\bar{}bottom\bar{}middle\bar{}base}
+\expl{Sets horizontal and/or vertical alignment for subsequent text.}
+
+\cmd{area}{[ \emph{dx$_1$ dx$_2$ \ldots} ] [ \emph{dy$_1$ dy$_2$ \ldots}
+]}
+\expl{Draws a polygon, filled using the current brush. 
+  \emph{dx$_i$} and \emph{dy$_i$} are specified in
+  points and are relative to the position set by \cref{at}. Note that
+  the ``['' and ``]'' are literal brackets that separate the x- and 
+  y-coordinates. See also \cref{patch}.}
+
+\cmd{at}{\emph{x} \emph{y} [\emph{$\xi$} \emph{$\eta$}]} 
+\expl{Places subsequent text and lines at graph position (\emph{x},
+  \emph{y}). If (\emph{$\xi$}, \emph{$\eta$}) are given, this specifies a
+  rotation such that the baseline of the text is in the direction of
+  the vector (\emph{$\xi$}, \emph{$\eta$}). This vector is
+  specified in data coordinates.}
+
+\cmd{brush}{[\emph{ID}] \emph{color}\bar{}none\bar{}\emph{opacity} \ldots}
+\expl{Selects a brush by \emph{ID}, defines its color (or sets it to
+  ``none''), and/or its \emph{opacity} (as a number between 0 and 1).}
+
+\cmd{figsize}{\emph{w} \emph{h}}
+\expl{Sets the size of the figure to (\emph{w} x \emph{h})
+  points. This should appear before any other commands.}
+
+\cmd{font}{\emph{family} [bold] [italic] \emph{size}}
+\expl{Selects a new font with a given family, point size, weight
+  and/or slant.}
+
+\cmd{fudge}{[\emph{margin}]}
+\expl{Shrinks the axes as necessary so that all graphics and text fits
+  within the bounding box of the figure as defined by \cref{figsize}.}
+
+\cmd{hairline}{1\bar0}
+\expl{Enables or disables automatic drawing of zero-width hairlines
+ over other lines.\nyi}
+
+\cmd{line}{[ \emph{dx$_1$ dx$_2$ \ldots} ] [ \emph{dy$_1$ dy$_2$ \ldots} ]}
+\expl{Draws a polyline. \emph{dx$_i$} and \emph{dy$_i$} are specified in
+  points and are relative to the position set by \cref{at}. See also
+  \cref{plot}.}
+
+\cmd{panel}{\emph{ID} [\emph{x$_0$} \emph{y$_0$} \emph{w} \emph{h}] \bar{} --}
+\expl{Defines a new panel with given ID to have its top left corner on
+  paper position (\emph{x$_0$}, \emph{y$_0$}), in points, and size
+  (\emph{w} x \emph{h}), in points. Or, reenters a previously defined
+  panel. Or drops out to the top level. While drawing inside a panel,
+  \cref{figsize} changes the size of the panel, and \cref{fudge}
+  affects the panel rather than the figure as a whole. Also
+  \cref{xaxis} and \cref{yaxis} affector the axes in the
+  panel. Choices of pen, brush, font, etc., are not local to panels.
+  \nyi}
+
+\cmd{patch}{[ \emph{x$_1$ x$_2$ \ldots} ] [ \emph{y$_1$ y$_2$ \ldots} ]}
+\expl{Draws a polygon, filled using the current brush. \emph{x$_i$}
+  and \emph{y$_i$} are specified in data coordinates. See also \cref{area}.}
+
+\cmd{pen}{[\emph{ID}]
+  \emph{color}\bar{}\emph{width}\bar{}miterjoin\bar{}beveljoin\bar{}roundjoin\bar{}flatcap\bar{}squarecap\bar{}roundcap\bar{}solid\bar\linebreak\mbox{}\kern25pt{}dash\bar{}dot\bar{}dashdot\bar{}dashdotdot\bar{}none
+\ldots}
+\expl{Selects a pen by \emph{ID}, defines its color, its width (in
+  points), its join style, its cap style, and/or its dash pattern.}
+
+\cmd{plot}{[ \emph{x$_1$ x$_2$ \ldots} ] [ \emph{y$_1$ y$_2$ \ldots}
+]}
+\expl{Draws a polyline. \emph{x$_i$}
+  and \emph{y$_i$} are specified in data coordinates. See also
+  \cref{line}.}
+
+\cmd{reftext}{\emph{string}\bar{}--}
+\expl{Sets or unsets a fixed text that will be used to calculate the
+  ascent and descent of text for the ``bottom'' and ``top'' alignment
+  modes.}
+
+\cmd{text}{\emph{dx} \emph{dy} ''\emph{string}''}
+\expl{Places the given text \emph{string} at the position (\emph{dx},
+  \emph{dy}), specified in points relative to the anchor set by
+  \cref{at}.\\
+  In future versions, underscores and hats to make
+  subscripts and superscripts. I would also like to support /italics/
+  and *bold*, but I am not yet sure of syntax. Unicode already
+  works. The string must be enclosed in single or double quotes.}
+
+\cmd{xlim}{\emph{x$_0$} \emph{x$_1$}}
+\expl{Fixes the limits of the x-axis. QPlot does not support automatic
+limits, so this is always required.}
+
+\cmd{ylim}{\emph{y$_0$} \emph{y$_1$}}
+\expl{Fixes the limits of the y-axis.}
+
+\end{document}
+

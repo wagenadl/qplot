@@ -6,14 +6,14 @@
 static CBuilder<CmdBrush> cbBrush("brush");
 
 bool CmdBrush::usage() {
-  return error("Usage: brush color|none|opacity ...");
+  return error("Usage: brush [ID] color|none|opacity ...");
 }
 
 bool CmdBrush::parse(Statement const &s) {
   if (s.length()<2)
     return usage();
   for (int k=1; k<s.length(); k++) {
-    if (s[k].typ==Token::CAPITAL) {
+    if (s[k].typ==Token::CAPITAL && k==1) {
       continue; // OK, this is brush choice
     } else if (s[k].typ==Token::NUMBER) {
       continue; // OK, this is opacity
@@ -36,7 +36,7 @@ void CmdBrush::render(Statement const &s, Figure &f, bool) {
   double alpha = c.alphaF();
   bool newColor = false;
   for (int k=1; k<s.length(); k++) {
-    if (s[k].typ==Token::CAPITAL) {
+    if (s[k].typ==Token::CAPITAL && k==1) {
       f.painter().setBrush(b);
       f.chooseBrush(s[k].str);
       b = f.painter().brush();

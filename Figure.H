@@ -5,6 +5,7 @@
 #define FIGURE_H
 
 #include "Axis.H"
+#include "Panel.H"
 
 #include <QRectF>
 #include <QPainter>
@@ -56,8 +57,8 @@ public:
   void chooseBrush(QString);
   bool hairline() const;
   void setHairline(bool h);
-  void chooseSubplot(QString);
-  void chooseMainplot();
+  void choosePanel(QString);
+  void leavePanel();
 private:
   QRectF figextent;
   Axis xax, yax;
@@ -70,13 +71,13 @@ private:
   QString reftxt;
   QMap<QString, QPen> pens; 
   QMap<QString, QBrush> brushes; 
-  QMap<QString, Subplot> subplots;
-  /* Note that the *current* pen/brush/subplot is not saved in the maps.
+  QMap<QString, Panel> panels;
+  /* Note that the *current* pen/brush/panel is not saved in the maps.
      Instead, the current pen and brush are kept in the painter, and the
-     current subplot is kept in the xax, yax, and figextent properties. */
+     current panel is kept in the xax, yax, and figextent properties. */
   QString currentPen;
   QString currentBrush;
-  QString currentSubplot;
+  QString currentPanel;
   bool hairline_;
 private:
   void replaceAxes();

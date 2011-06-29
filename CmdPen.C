@@ -6,7 +6,7 @@
 static CBuilder<CmdPen> cbPen("pen");
 
 bool CmdPen::usage() {
-  return error("Usage: pen ID|color|width|miterjoin|beveljoin|roundjoin|flatcap|squarecap|roundcap|solid|dash|dot|dashdot|dashdotdot|none ...");
+  return error("Usage: pen [ID] color|width|miterjoin|beveljoin|roundjoin|flatcap|squarecap|roundcap|solid|dash|dot|dashdot|dashdotdot|none ...");
 }
 
 static int strokestyle(QString s) {
@@ -52,7 +52,7 @@ bool CmdPen::parse(Statement const &s) {
   if (s.length()<2)
     return usage();
   for (int k=1; k<s.length(); k++) {
-    if (s[k].typ==Token::CAPITAL) {
+    if (s[k].typ==Token::CAPITAL && k==1) {
       continue; // OK, this is pen choice
     } else if (s[k].typ==Token::NUMBER) {
       continue; // OK, this is width
@@ -76,7 +76,7 @@ bool CmdPen::parse(Statement const &s) {
 void CmdPen::render(Statement const &s, Figure &f, bool) {
   QPen p(f.painter().pen());
   for (int k=1; k<s.length(); k++) {
-    if (s[k].typ==Token::CAPITAL) {
+    if (s[k].typ==Token::CAPITAL && k==1) {
       f.painter().setPen(p);
       f.choosePen(s[k].str);
       p = f.painter().pen();
