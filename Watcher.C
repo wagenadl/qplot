@@ -33,8 +33,8 @@ void Watcher::pong() {
 bool Watcher::reread() {
   QFile f(fn);
   if (f.open(QFile::ReadOnly)) {
-    QTextStream ts(&f);
-    if (prog->read(ts, fn)) {
+    //QTextStream ts(&f);
+    if (prog->read(f, fn)) {
       ::prerender(*prog, *fig);
       Error() << "Reread file: OK";
       emit ping();

@@ -15,7 +15,7 @@ at 1 0
 line [0 0 ] [5 0]
 text 0 10 "1"
 at 0.5 bottom
-text 0 3 "Horizontal axis"
+text 0 3 "Hori—zonétal axis"
 
 plot [ 0 0 ] [ 0 1]
 at 0 0 0 -1

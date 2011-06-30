@@ -13,14 +13,15 @@ void Statement::reset() {
   dat.clear();
 }
 
-int Statement::read(QTextStream &source, QString label) {
+int Statement::read(QFile &source, QString label) {
   lbl = label;
   reset();
 
   inString = false;
   lev = 0;
+  dataRefs.clear();
 
-  QString line = source.readLine();
+  QString line(QString::fromUtf8(source.readLine()));
   if (line.isNull())
     return 0;
   int nlines = 1;
@@ -30,7 +31,7 @@ int Statement::read(QTextStream &source, QString label) {
     process(w);
 
   while (lev>0) {
-    QString line = source.readLine();
+    QString line(QString::fromUtf8(source.readLine()));
     if (line.isNull())
       break;
     nlines ++;
@@ -38,7 +39,24 @@ int Statement::read(QTextStream &source, QString label) {
     foreach (QString w, words) 
       process(w);
   }
-  
+
+  QPair<int, int> x;
+  foreach (x, dataRefs) {
+    int idx = x.first;
+    int N = x.second;
+    nextIdx[idx] = idx+1;
+    QList<double> data;
+    data.reserve(N);
+    double v;
+    for (int n=0; n<N; n++) {
+      source.read((char*)&v, sizeof(double));
+      data.push_back(v);
+    }
+    dat[idx] = data;
+  }
+  dataRefs.clear();
+  strDelim.clear();
+  str.clear();
   return nlines;
 }
 
@@ -82,6 +100,12 @@ void Statement::process(QString w) {
       process(w.left(w.size()-1));
       toks.append(Token(Token::CLOSEPAREN));
       lev--;
+    } else if (w.startsWith("*")) {
+      Token t(Token::DATAREF);
+      int n = w.mid(1).toInt();
+      t.num = n;
+      dataRefs.push_back(QPair<int, int>(toks.size(), n));
+      toks.append(t);
     } else if (w.size()==1 && w>="A" && w<="Z") {
       toks.append(Token(Token::CAPITAL, w));
     } else if (w.isEmpty()) {
