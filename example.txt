@@ -17,7 +17,7 @@ at 1 0
 line [0 0 ] [5 0]
 text 0 10 "1"
 at 0.5 bottom
-text 0 3 "Verité λ = 2⁶. “Quoth’d.”"
+text 0 3 "Verité λ = 2⁶. 2^6 x he *bold* he /italic/ he “Quoth’d.”"
 
 plot [ 0 0 ] [ 0 1]
 at 0 0 0 -1
@@ -35,5 +35,7 @@ patch [ .4 .6 .5 ] [ .3 .3 .7]
 
 pen C .4
 plot [ .1 .5 .9   .6 ] [ .6 .5 .3 .1 ]
+
+image .5 .5 .3 .2 3 [ 1 0 0  1 .2 .2  1 .4 .4   0 1 0  .2 1 .2  .4 1 .4   0 0 1 .2 .2 1  .4 .4 1 ]
 
 fudge 1

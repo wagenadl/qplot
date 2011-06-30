@@ -67,6 +67,7 @@ int interactive(QString ifn, QApplication *app, bool gray=false) {
   win.setContents(&fig, &prog);
   win.setMargin(pt2iu(20), gray);
   win.show();
+  win.autoSize();
   return app->exec();
 }
 
@@ -91,11 +92,11 @@ int noninteractive(QString ifn, QString ofn) {
   if (extn == "svg") {
     QSvgGenerator img;
     img.setFileName(ofn);
-    img.setResolution(90);
+    img.setResolution(90); // anything else seems to be poorly supported
     img.setViewBox(QRectF(QPointF(0,0),
 			  QSizeF(90./72*iu2pt(fig.extent().width()),
 				 90./72*iu2pt(fig.extent().height()))));
-    fig.painter().begin(&img);    
+    fig.painter().begin(&img);
     fig.painter().scale(90./72*iu2pt(), 90./72*iu2pt());
     fig.painter().translate(-iu2pt(fig.extent().left()),
 			    -iu2pt(fig.extent().top()));
@@ -105,7 +106,7 @@ int noninteractive(QString ifn, QString ofn) {
     return error("Writing to eps is not supported");
   } else if (extn == "pdf") {
     QPrinter img(QPrinter::ScreenResolution);
-    img.setResolution(72); //pt2iu(72));
+    img.setResolution(72);
     img.setPageMargins(0, 0, 0, 0, QPrinter::Point);
     img.setPaperSize(QSizeF(iu2pt(fig.extent().width()),
 			    iu2pt(fig.extent().height())),

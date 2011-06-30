@@ -45,11 +45,9 @@ void ScrollWidget::setScale(double factor) {
 }
 
 void ScrollWidget::autoSize() {
-  if (scaletofit)
-    return;
   tl_world = extent_world.topLeft();
   QSizeF s = extent_world.size();
-  s *= scalefactor;
+  s *= scale();
   resize(s.toSize());
   update();
 }

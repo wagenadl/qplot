@@ -4,31 +4,47 @@
 
 #define TEXT_H
 
+#include <QString>
+#include <QFont>
+#include <QRectF>
+#include <QVector>
+
 class Text {
 public:
   Text();
+  ~Text();
+  void addInterpreted(QString txt);
   void clear();
+  void setFont(QString family, double size);
   void setFont(QFont const &);
   Text &operator<<(QString const &);
+  void add(QString const &); // same as operator<<
   void setSuper();
   void setSub();
-  void setSlant();
-  void setBold();
+  void toggleSlant();
+  void toggleBold();
   void restore();
+  QRectF bbox() const;
+  void render(QPainter &, QPointF const &);
 private:
-  QVector<QPointF> startpos;
-  QVector<QFont> font;
-  QVector<QString> text;
-  QRectF bbox;
-  double nextx;
   struct Span {
+    QPointF startpos;
+    QFont font;
+    QString text;
+  };
+  QVector<Span> spans;
+  double nextx;
+  QRectF bb;
+  struct State {
+    QString fontfamily;
     double baseline;
-    double ptsize;
+    double fontsize;
     bool slant;
     bool bold;
   };
-  Span current;
-  QVector<Span> stack;
+  QVector<State> stack;
+private:
+  QFont makeFont(State const &s);
 };
 
 #endif

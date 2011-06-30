@@ -45,7 +45,7 @@ int Statement::read(QTextStream &source, QString label) {
 void Statement::process(QString w) {
   if (inString) {
     int idx = w.indexOf(strDelim);
-    if (idx>0) {
+    if (idx>=0) {
       str += w.left(idx);
       w = w.mid(idx+1);
       if (w.startsWith('"') || w.startsWith("'")) {

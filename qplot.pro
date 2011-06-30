@@ -18,6 +18,7 @@ HEADERS += Axis.H \
            CmdFigSize.H \
            CmdFont.H \
            CmdFudge.H \
+           CmdImage.H \
            CmdLine.H \
            CmdPanel.H \
            CmdPatch.H \
@@ -35,6 +36,7 @@ HEADERS += Axis.H \
            Rotate.H \
            ScrollWidget.H \
            Statement.H \
+           Text.H \
            Token.H \
            Watcher.H
 
@@ -46,6 +48,7 @@ SOURCES += Axis.C \
            CmdFigSize.C \
            CmdFont.C \
            CmdFudge.C \
+           CmdImage.C \
            CmdLine.C \
            CmdPanel.C \
            CmdPatch.C \
@@ -64,6 +67,7 @@ SOURCES += Axis.C \
            Rotate.C \
            ScrollWidget.C \
            Statement.C \
+           Text.C \
            Token.C \
            Watcher.C
 

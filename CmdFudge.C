@@ -5,7 +5,7 @@
 
 static CBuilder<CmdFudge> cbFudge("fudge");
 
-#define FUDGE_DEFAULT 1.0
+#define FUDGE_DEFAULT 0.2
 
 bool CmdFudge::usage() {
   return error("Usage: fudge [margin_pt]\n");
@@ -21,7 +21,7 @@ bool CmdFudge::parse(Statement const &s) {
 }
 
 void CmdFudge::render(Statement const &s, Figure &f, bool) {
-  double mrg = FUDGE_DEFAULT;
+  double mrg = pt2iu(FUDGE_DEFAULT);
   if (s.length()==2)
     mrg = pt2iu(s[1].num);
   QRectF actual = f.fullBBox();
