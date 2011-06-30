@@ -81,7 +81,7 @@ void CmdPen::render(Statement const &s, Figure &f, bool) {
       f.choosePen(s[k].str);
       p = f.painter().pen();
     } else if (s[k].typ==Token::NUMBER) {
-      p.setWidthF(s[k].num);
+      p.setWidthF(pt2iu(s[k].num));
     } else if (s[k].typ==Token::BAREWORD) {
       QString w = s[k].str;
       if (joinstyle(w)>=0)

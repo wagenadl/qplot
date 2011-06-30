@@ -29,7 +29,7 @@ void CmdLine::render(Statement const &s, Figure &f, bool dryrun) {
   double a = f.anchorAngle();
   QPointF xy0 = f.anchor();
   for (int k=0; k<xdata.size(); k++) {
-    QPointF xy(xdata[k], ydata[k]);
+    QPointF xy(pt2iu(xdata[k]), pt2iu(ydata[k]));
     if (a)
       xy = ::rotate(xy, a);
     xy += xy0;

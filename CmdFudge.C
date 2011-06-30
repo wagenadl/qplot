@@ -23,7 +23,7 @@ bool CmdFudge::parse(Statement const &s) {
 void CmdFudge::render(Statement const &s, Figure &f, bool) {
   double mrg = FUDGE_DEFAULT;
   if (s.length()==2)
-    mrg = s[1].num;
+    mrg = pt2iu(s[1].num);
   QRectF actual = f.fullBBox();
   QRectF desired = f.extent();
 

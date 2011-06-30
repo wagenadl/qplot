@@ -20,8 +20,8 @@ bool CmdText::parse(Statement const &s) {
 }
 
 void CmdText::render(Statement const &s, Figure &f, bool dummy) {
-  double dx = s[1].num;
-  double dy = s[2].num;
+  double dx = pt2iu(s[1].num);
+  double dy = pt2iu(s[2].num);
   QString txt = s[3].str;
 
   QFontMetricsF fm(f.painter().font());
@@ -32,6 +32,7 @@ void CmdText::render(Statement const &s, Figure &f, bool dummy) {
     r.setTop(rr.top());
     r.setBottom(rr.bottom());
   }
+  qDebug() << "Text bbox: " << r;
   
   switch (f.hAlign()) {
   case Figure::LEFT:
@@ -60,9 +61,7 @@ void CmdText::render(Statement const &s, Figure &f, bool dummy) {
 
   // work on bbox:
   r.translate(dx, dy);
-  qDebug() << "text: " << r;
   r = ::rotate(r, f.anchorAngle());
-  qDebug() << " -> " << r;
   r.translate(f.anchor());
   f.setBBox(r);
   

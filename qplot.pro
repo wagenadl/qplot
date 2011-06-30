@@ -28,6 +28,7 @@ HEADERS += Axis.H \
            CmdYLim.H \
            Command.H \
            Error.H \
+           Factor.H \
            Figure.H \
            Program.H \
            QPWidget.H \
@@ -55,6 +56,7 @@ SOURCES += Axis.C \
            CmdYLim.C \
            Command.C \
            Error.C \
+           Factor.C \
            Figure.C \
            main.C \
            Program.C \

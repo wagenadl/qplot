@@ -31,6 +31,7 @@ void CmdPanel::render(Statement const &s, Figure &f, bool) {
   } else {
     f.choosePanel(s[1].str);
     if (s.length()==6) 
-      f.setExtent(QRectF(s[2].num, s[3].num, s[4].num, s[5].num));
+      f.setExtent(QRectF(pt2iu(s[2].num), pt2iu(s[3].num),
+			 pt2iu(s[4].num), pt2iu(s[5].num)));
   }
 }

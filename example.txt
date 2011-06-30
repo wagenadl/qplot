@@ -2,7 +2,7 @@ figsize 400 300
 pen C 2 red miterjoin dashdot
 plot [ .1 .5 .9   .6 ] [ .2 .4 .1 .5 ]
 at .1 .2 .1 1
-font Times-Roman 12
+font Times-Roman 12.5
 align left
 text 0 -45 "'foo' and"' also "bar"'
 align center

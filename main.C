@@ -16,6 +16,7 @@
 #include "QPWidget.H"
 #include "Watcher.H"
 #include "Error.H"
+#include "Factor.H"
 
 int error(QString const &s) {
   Error() << s;
@@ -30,8 +31,9 @@ int usage(int ex=1) {
 
 void prerender(Program &prog, Figure &fig) {
   QImage img(1,1,QImage::Format_ARGB32);
-  fig.setSize(QSizeF(800, 600));
+  fig.setSize(QSizeF(800, 600)); // this may be overridden later
   fig.painter().begin(&img);
+  fig.painter().scale(iu2pt(), iu2pt());
   QRectF dataExtent = prog.dataRange();
   fig.xAxis().setDataRange(dataExtent.left(), dataExtent.right());
   fig.yAxis().setDataRange(dataExtent.top(), dataExtent.bottom());
@@ -63,7 +65,7 @@ int interactive(QString ifn, QApplication *app, bool gray=false) {
   QPWidget win;
   QObject::connect(&wtch, SIGNAL(ping()), &win, SLOT(update()));
   win.setContents(&fig, &prog);
-  win.setMargin(20,gray);
+  win.setMargin(pt2iu(20), gray);
   win.show();
   return app->exec();
 }
@@ -89,33 +91,47 @@ int noninteractive(QString ifn, QString ofn) {
   if (extn == "svg") {
     QSvgGenerator img;
     img.setFileName(ofn);
-    img.setResolution(72);
-    img.setViewBox(QRectF(QPointF(0,0),fig.extent().size()));
+    img.setResolution(90);
+    img.setViewBox(QRectF(QPointF(0,0),
+			  QSizeF(90./72*iu2pt(fig.extent().width()),
+				 90./72*iu2pt(fig.extent().height()))));
     fig.painter().begin(&img);    
-    fig.painter().translate(-fig.extent().left(), -fig.extent().top());
+    fig.painter().scale(90./72*iu2pt(), 90./72*iu2pt());
+    fig.painter().translate(-iu2pt(fig.extent().left()),
+			    -iu2pt(fig.extent().top()));
     prog.render(fig);
     fig.painter().end();
+  } else if (extn == "eps") {
+    return error("Writing to eps is not supported");
   } else if (extn == "pdf") {
-    QPrinter img(QPrinter::HighResolution);
+    QPrinter img(QPrinter::ScreenResolution);
+    img.setResolution(72); //pt2iu(72));
     img.setPageMargins(0, 0, 0, 0, QPrinter::Point);
-    img.setPaperSize(fig.extent().size(), QPrinter::Point);
-    img.setResolution(72*20);
+    img.setPaperSize(QSizeF(iu2pt(fig.extent().width()),
+			    iu2pt(fig.extent().height())),
+		     QPrinter::Point);
     img.setOutputFileName(ofn);
     fig.painter().begin(&img);
-    fig.painter().scale(20, 20);
-    fig.painter().translate(-fig.extent().left(), -fig.extent().top());
+    fig.painter().scale(iu2pt(), iu2pt());
+    fig.painter().translate(-iu2pt(fig.extent().left()),
+			    -iu2pt(fig.extent().top()));
     prog.render(fig);
     fig.painter().end();
-  } else {
+  } else if (extn=="png" || extn=="jpg" || extn=="tif" || extn=="tiff") {
     QImage img(int(fig.extent().width()),
 	       int(fig.extent().height()),
 	       QImage::Format_ARGB32);
     img.fill(0xffffffff);
     fig.painter().begin(&img);
-    fig.painter().translate(-fig.extent().left(), -fig.extent().top());
+    fig.painter().scale(iu2pt(), iu2pt());
+    fig.painter().translate(-iu2pt(fig.extent().left()),
+			    -iu2pt(fig.extent().top()));
     prog.render(fig);
     fig.painter().end();
-    img.save(ofn);
+    if (!img.save(ofn))
+      return error("Failed to save.");
+  } else {
+    return error("Unknown extension.");
   }
   return 0;
 }  

@@ -96,8 +96,9 @@
   works. The string must be enclosed in single or double quotes.}
 
 \cmd{xlim}{\emph{x$_0$} \emph{x$_1$}}
-\expl{Fixes the limits of the x-axis. QPlot does not support automatic
-limits, so this is always required.}
+\expl{Fixes the limits of the x-axis. QPlot only supports automatic
+axis limits if there are no panels at all. (That is, if there are panels,
+then automatic axis limits will misbehave, even in the main graph.)}
 
 \cmd{ylim}{\emph{y$_0$} \emph{y$_1$}}
 \expl{Fixes the limits of the y-axis.}

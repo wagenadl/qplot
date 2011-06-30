@@ -5,12 +5,12 @@
 #include <QKeyEvent>
 #include <QDebug>
 #include <QCursor>
-
+#include "Factor.H"
 
 ScrollWidget::ScrollWidget(QWidget *parent): QWidget(parent) {
   extent_world = QRectF(QPointF(0,0), QPointF(1000,1000));
   tl_world = QPointF(0,0);
-  scalefactor = 1;
+  scalefactor = iu2pt(1);
   scaletofit = true;
 }
 
@@ -96,7 +96,7 @@ void ScrollWidget::keyPressEvent(QKeyEvent *e) {
       setScale(scale()/1.2);
     break;
   case Qt::Key_1:
-    setScale(1);
+    setScale(iu2pt(1));
     break;
   case Qt::Key_0:
     scaleToFit();
