@@ -21,6 +21,11 @@ public:
   int length() const;
   Statement const &operator[](int) const;
   QRectF dataRange();
+  /*:F dataRange
+   *:D Returns the full (x0-x1 x y0-y1) range of data in this program.
+   *:N This ignores "panels", and will therefore work as expected only if
+       there are none.
+   */
   void render(Figure &f, bool dryrun=false);
 private:
   bool error(QString const &); // returns false

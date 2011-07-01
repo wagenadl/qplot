@@ -6,6 +6,7 @@
 
 #include "Statement.H"
 #include "Figure.H"
+#include "Factor.H"
 #include <QMap>
 
 class Command {

@@ -87,7 +87,9 @@ void Program::render(Figure &f, bool dryrun) {
   if (!isOK)
     return; // won't render if not ok
   f.clearBBox(true);
+  f.leavePanel();
   for (int l=0; l<stmt.size(); l++)
     if (cmds[l])
       cmds[l]->render(stmt[l], f, dryrun);
+  f.leavePanel();
 }

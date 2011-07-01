@@ -5,9 +5,13 @@
 #define FIGURE_H
 
 #include "Axis.H"
+#include "Panel.H"
 
 #include <QRectF>
 #include <QPainter>
+#include <QMap>
+#include <QPen>
+#include <QBrush>
 
 class Figure {
 public:
@@ -49,6 +53,12 @@ public:
   void setRefText(QString str);
   QString refText() const;
   QPainter &painter();
+  void choosePen(QString);
+  void chooseBrush(QString);
+  bool hairline() const;
+  void setHairline(bool h);
+  void choosePanel(QString);
+  void leavePanel();
 private:
   QRectF figextent;
   Axis xax, yax;
@@ -59,6 +69,16 @@ private:
   VAlign valign;
   HAlign halign;
   QString reftxt;
+  QMap<QString, QPen> pens; 
+  QMap<QString, QBrush> brushes; 
+  QMap<QString, Panel> panels;
+  /* Note that the *current* pen/brush/panel is not saved in the maps.
+     Instead, the current pen and brush are kept in the painter, and the
+     current panel is kept in the xax, yax, and figextent properties. */
+  QString currentPen;
+  QString currentBrush;
+  QString currentPanel;
+  bool hairline_;
 private:
   void replaceAxes();
 };

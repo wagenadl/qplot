@@ -1,15 +1,15 @@
-// CmdLine.C
+// CmdArea.C
 
-#include "CmdLine.H"
+#include "CmdArea.H"
 #include "Rotate.H"
 
-static CBuilder<CmdLine> cbLine("line");
+static CBuilder<CmdArea> cbArea("area");
 
-bool CmdLine::usage() {
-  return error("Usage: line xdata ydata");
+bool CmdArea::usage() {
+  return error("Usage: area xdata ydata");
 }
 
-bool CmdLine::parse(Statement const &s) {
+bool CmdArea::parse(Statement const &s) {
   int id1 = s.nextIndex(1);
   int id2 = s.nextIndex(id1);
   if (id2==s.length() && s.isNumeric(1) && s.isNumeric(id1) &&
@@ -19,7 +19,7 @@ bool CmdLine::parse(Statement const &s) {
     return usage();
 }
 
-void CmdLine::render(Statement const &s, Figure &f, bool dryrun) {
+void CmdArea::render(Statement const &s, Figure &f, bool dryrun) {
   QList<double> const &xdata = s.data(1);
   QList<double> const &ydata = s.data(s.nextIndex(1));
   if (xdata.isEmpty()) 
@@ -44,15 +44,5 @@ void CmdLine::render(Statement const &s, Figure &f, bool dryrun) {
   if (dryrun)
     return;
 
-  f.painter().drawPolyline(p);
-
-  if (f.hairline()) {
-    // now add a zero-thick line
-    QPen pen(f.painter().pen());
-    f.painter().save();
-    pen.setWidth(0);
-    f.painter().setPen(pen);
-    f.painter().drawPolyline(p);
-    f.painter().restore();
-  }
+  f.painter().drawPolygon(p);
 }

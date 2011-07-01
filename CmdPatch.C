@@ -70,14 +70,6 @@ void CmdPatch::render(Statement const &s, Figure &f, bool dryrun) {
   QPolygonF p(xdata.size());
   for (int k=0; k<xdata.size(); k++)
     p[k] = f.map(xdata[k],ydata[k]);
-  f.painter().drawPolygon(p);
 
-  QPen pen(f.painter().pen());
-  if (pen.isSolid()) {
-    f.painter().save();
-    pen.setWidth(0);
-    f.painter().setPen(pen);
-    f.painter().drawPolyline(p);
-    f.painter().restore();
-  }
+  f.painter().drawPolygon(p);
 }

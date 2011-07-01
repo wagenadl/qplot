@@ -31,7 +31,8 @@ bool CmdFont::parse(Statement const &s) {
 
 void CmdFont::render(Statement const &s, Figure &f, bool) {
   QFont font(s[1].str);
-  font.setPointSizeF(s[s.length()-1].num);
+  //  font.setPointSizeF(pt2iu(s[s.length()-1].num));
+  font.setPixelSize(pt2iu(s[s.length()-1].num));
   for (int k=2; k<s.length()-1; k++) {
     if (s[k].str=="bold")
       font.setWeight(QFont::Bold);

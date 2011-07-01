@@ -18,7 +18,7 @@ bool CmdFigSize::parse(Statement const &s) {
 
 
 void CmdFigSize::render(Statement const &s, Figure &f, bool) {
-  double w = s[1].num;
-  double h = s[2].num;
+  double w = pt2iu(s[1].num);
+  double h = pt2iu(s[2].num);
   f.setSize(QSizeF(w,h));
 }

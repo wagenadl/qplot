@@ -72,9 +72,9 @@ void CmdPlot::render(Statement const &s, Figure &f, bool dryrun) {
     p[k] = f.map(xdata[k],ydata[k]);
   f.painter().drawPolyline(p);
 
-  // now add a zero-thick line if the pen is solid
-  QPen pen(f.painter().pen());
-  if (pen.isSolid()) {
+  // now add a zero-thick line if requested
+  if (f.hairline()) {
+    QPen pen(f.painter().pen());
     f.painter().save();
     pen.setWidth(0);
     f.painter().setPen(pen);

@@ -4,6 +4,7 @@
 #include <QFontMetricsF>
 #include "Rotate.H"
 #include <QDebug>
+#include "Text.H"
 
 static CBuilder<CmdText> cbText("text");
 
@@ -20,18 +21,36 @@ bool CmdText::parse(Statement const &s) {
 }
 
 void CmdText::render(Statement const &s, Figure &f, bool dummy) {
-  double dx = s[1].num;
-  double dy = s[2].num;
+  double dx = pt2iu(s[1].num);
+  double dy = pt2iu(s[2].num);
   QString txt = s[3].str;
 
-  QFontMetricsF fm(f.painter().font());
+  Text t;
+  t.setFont(f.painter().font());
+  t.addInterpreted(txt);
+
+  QRectF r = t.bbox();
+
   QString ref = f.refText();
-  QRectF r(fm.tightBoundingRect(txt));
   if (!ref.isEmpty()) {
-    QRectF rr(fm.tightBoundingRect(ref));
+    Text tref;
+    tref.setFont(f.painter().font());
+    tref.addInterpreted(ref);
+    QRectF rr = tref.bbox();
     r.setTop(rr.top());
     r.setBottom(rr.bottom());
   }
+  
+  //QFontMetricsF fm(f.painter().font());
+  //QString ref = f.refText();
+  //QRectF r(fm.tightBoundingRect(txt));
+  //if (!ref.isEmpty()) {
+  //  QRectF rr(fm.tightBoundingRect(ref));
+  //  r.setTop(rr.top());
+  //  r.setBottom(rr.bottom());
+  //}
+  
+  qDebug() << "Text bbox: " << r;
   
   switch (f.hAlign()) {
   case Figure::LEFT:
@@ -60,9 +79,7 @@ void CmdText::render(Statement const &s, Figure &f, bool dummy) {
 
   // work on bbox:
   r.translate(dx, dy);
-  qDebug() << "text: " << r;
   r = ::rotate(r, f.anchorAngle());
-  qDebug() << " -> " << r;
   r.translate(f.anchor());
   f.setBBox(r);
   
@@ -72,6 +89,7 @@ void CmdText::render(Statement const &s, Figure &f, bool dummy) {
   f.painter().save();
   f.painter().translate(f.anchor());
   f.painter().rotate(f.anchorAngle() * 180 / 3.14159265);
-  f.painter().drawText(QPointF(dx,dy), txt);
+  //  f.painter().drawText(QPointF(dx,dy), txt);
+  t.render(f.painter(), QPointF(dx, dy));
   f.painter().restore();
 }
