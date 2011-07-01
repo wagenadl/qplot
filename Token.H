@@ -18,6 +18,7 @@ struct Token {
     CLOSEPAREN,
     STRING,
     DASH,
+    DATAREF,
   };
   Type typ;
   double num;

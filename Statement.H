@@ -5,14 +5,16 @@
 #define STATEMENT_H
 
 #include "Token.H"
-#include <QTextStream>
+#include <QFile>
 #include <QMap>
 #include <QList>
+#include <QPair>
+#include <QVector>
 
 class Statement {
 public:
   Statement();
-  int read(QTextStream &source, QString label); // returns number of lines processed
+  int read(QFile &source, QString label); // returns number of lines processed
   void reset();
   int length() const;
   Token const &operator[](int idx) const;
@@ -34,6 +36,7 @@ private:
   QString strDelim;
   QString str;
   int lev;
+  QVector< QPair<int, int> > dataRefs;
 };
 
 #endif

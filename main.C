@@ -45,8 +45,8 @@ void prerender(Program &prog, Figure &fig) {
 int read(Program &prog, QString ifn) {
   QFile f(ifn);
   if (f.open(QIODevice::ReadOnly)) {
-    QTextStream ts(&f);
-    if (prog.read(ts, ifn))
+    //QTextStream ts(&f);
+    if (prog.read(f, ifn))
       return 0;
     Error() << "Interpretation failed";
   } else {
@@ -74,8 +74,9 @@ int interactive(QString ifn, QApplication *app, bool gray=false) {
 int noninteractive(QString ifn, QString ofn) {
   Program prog;
   if (ifn.isEmpty()) {
-    QTextStream ts(stdin);
-    if (!prog.read(ts, "<stdin>")) {
+    //QTextStream ts(stdin);
+    QFile f; f.open(stdin,QFile::ReadOnly);
+    if (!prog.read(f, "<stdin>")) {
       Error() << "Interpretation error";
       return 1;
     }

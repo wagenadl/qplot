@@ -4,14 +4,14 @@
 
 #define PROGRAM_H
 
-#include <QTextStream>
+#include <QFile>
 #include "Statement.H"
 #include "Command.H"
 
 class Program {
 public:
   Program();
-  bool read(QTextStream &ts, QString label);
+  bool read(QFile &ts, QString label);
   /*:F read
    *:D Reads and parses a program.
    *   Returns true if OK, false if error.

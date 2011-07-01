@@ -17,7 +17,7 @@ bool Program::error(QString const &s, int l) {
   return error(s + " at " + stmt[l].label());
 }
 
-bool Program::read(QTextStream &ts, QString label) {
+bool Program::read(QFile &ts, QString label) {
   isOK = false;
   stmt.clear();
   foreach (Command *c, cmds)
