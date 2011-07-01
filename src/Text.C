@@ -14,6 +14,7 @@ Text::~Text() {
 }
 
 void Text::addInterpreted(QString txt) {
+  txt.replace("~", " ");
   QString bld;
   QRegExp word("\\w+");
   int idx=0;
@@ -44,23 +45,23 @@ void Text::addInterpreted(QString txt) {
 	bld+="/";
       }
     } else if (x=="_") {
-      int id1 = txt.indexOf(QRegExp("\\W"),idx+1);
+      int id1 = txt.indexOf(QRegExp("\\s"),idx+1);
       if (id1<0)
 	id1 = txt.size();
       add(bld);
       bld="";
       setSub();
-      add(txt.mid(idx+1,id1-idx-1));
+      addInterpreted(txt.mid(idx+1,id1-idx-1));
       restore();
       idx=id1;
     } else if (x=="^") {
-      int id1 = txt.indexOf(QRegExp("\\W"),idx+1);
+      int id1 = txt.indexOf(QRegExp("\\s"),idx+1);
       if (id1<0)
 	id1 = txt.size();
       add(bld);
       bld="";
       setSuper();
-      add(txt.mid(idx+1,id1-idx-1));
+      addInterpreted(txt.mid(idx+1,id1-idx-1));
       restore();
       idx=id1;
     } else {
@@ -120,13 +121,14 @@ void Text::restore() {
 }
 
 #define SCRIPTSIZE 0.75
+#define SCRIPTSHIFT 0.75
 
 void Text::setSuper() {
   State s = stack.last();
   QRectF rbase = QFontMetricsF(makeFont(s)).tightBoundingRect("x");
   s.fontsize *= SCRIPTSIZE;
   QRectF rscript = QFontMetricsF(makeFont(s)).tightBoundingRect("0");
-  s.baseline += rbase.top() - .5*rscript.top();
+  s.baseline += rbase.top() - (1-SCRIPTSHIFT)*rscript.top();
   stack.push_back(s);
 }
 
@@ -134,7 +136,7 @@ void Text::setSub() {
   State s = stack.last();
   s.fontsize *= SCRIPTSIZE;
   QRectF rscript = QFontMetricsF(makeFont(s)).tightBoundingRect("0");
-  s.baseline -= .5*rscript.top();
+  s.baseline -= SCRIPTSHIFT*rscript.top();
   stack.push_back(s);
 }
 

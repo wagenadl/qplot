@@ -1,0 +1,21 @@
+#!/bin/zsh
+
+IFN=$1
+[[ $1 == "-gray" ]] && IFN=$2
+
+DIR=`dirname $IFN`
+LEAF=`basename $IFN`
+
+PIDFILE=$DIR/.qp-$LEAF.pid
+if [[ -f $PIDFILE ]]; then
+  RUNNING=1
+  PID=`cat $PIDFILE`
+  grep -q $LEAF /proc/$PID/cmdline 2>/dev/null || RUNNING=0
+else
+  RUNNING=0
+fi
+
+if [[ $RUNNING == "0" ]]; then
+  qplot ${=*} &
+  disown
+fi

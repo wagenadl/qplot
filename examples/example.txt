@@ -17,7 +17,7 @@ at 1 0
 line [0 0 ] [5 0]
 text 0 10 "1"
 at 0.5 bottom
-text 0 3 "Verité λ = 2⁶. 2^6 x he *bold* he /italic/ he “Quoth’d.”"
+text 0 3 "Verité λ = 2⁶. 2^6 x he *bold* e^–/x/+1 ~– 1 /itálic/ he “Quoth’d.”"
 
 plot [ 0 0 ] [ 0 1]
 at 0 0 0 -1

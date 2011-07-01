@@ -5,7 +5,9 @@
 QT += svg
 CONFIG += debug
 TEMPLATE = app
-TARGET = 
+MOC_DIR = .moc
+OBJECTS_DIR = .obj
+TARGET = ../qplot
 DEPENDPATH += .
 INCLUDEPATH += .
 

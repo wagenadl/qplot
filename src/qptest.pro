@@ -4,6 +4,8 @@
 
 TEMPLATE = app
 INCLUDEPATH += .
+MOC_DIR = .moc
+OBJECTS_DIR = .obj
 
 # Input
 HEADERS += Axis.H Command.H Figure.H Token.H Statement.H

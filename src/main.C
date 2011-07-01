@@ -7,9 +7,12 @@
 #include <QFile>
 #include <QPrinter>
 #include <QSvgGenerator>
-//#include <QTemporaryFile>
-//#include <QProcess>
+#include <QFileInfo>
+
+#include <sys/types.h>
+#include <unistd.h>
 #include <stdio.h>
+
 #include "Program.H"
 #include "Figure.H"
 #include "Command.H"
@@ -68,7 +71,18 @@ int interactive(QString ifn, QApplication *app, bool gray=false) {
   win.setMargin(pt2iu(20), gray);
   win.show();
   win.autoSize();
-  return app->exec();
+  QFileInfo fi(ifn);
+  QString path = fi.path();
+  QString leaf = fi.fileName();
+  QFile pidfile(path + "/.qp-" + leaf + ".pid");
+  pidfile.open(QIODevice::WriteOnly);
+  char pid[100];
+  snprintf(pid, 100, "%i\n", getpid());
+  pidfile.write(pid, strlen(pid));
+  pidfile.close();
+  int r = app->exec();
+  pidfile.remove();
+  return r;
 }
 
 int noninteractive(QString ifn, QString ofn) {
@@ -150,7 +164,7 @@ int main(int argc, char **argv) {
     else
       return interactive(ifn, &app);
   } else /* argc==3 */ {
-    if (QString(argv[1])=="-gray")
+    if (QString(argv[1])=="-gray") 
       return interactive(argv[2], &app, true);
     else
       return noninteractive(argv[1], argv[2]);
