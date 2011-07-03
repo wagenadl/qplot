@@ -3,7 +3,7 @@
 #include "Statement.H"
 #include <math.h>
 #include <QStringList>
-
+#include "Error.H"
 
 Statement::Statement() {
 }
@@ -40,19 +40,35 @@ int Statement::read(QFile &source, QString label) {
       process(w);
   }
 
-  QPair<int, int> x;
+  QPair<int, QString> x;
   foreach (x, dataRefs) {
     int idx = x.first;
-    int N = x.second;
+    QString desc = x.second;
     nextIdx[idx] = idx+1;
-    QVector<double> data;
-    data.reserve(N);
-    double v;
-    for (int n=0; n<N; n++) {
-      source.read((char*)&v, sizeof(double));
-      data.push_back(v);
+    bool ok;
+    if (desc.startsWith("uc")) {
+      // unsigned characters
+      int N = desc.mid(2).toInt(&ok);
+      if (ok) {
+	QVector<unsigned char> uc(N);
+	source.read((char*)uc.data(), N);
+	QVector<double> data(N);
+	for (int n=0; n<N; n++)
+	  data[n] = uc[n]/255.0;
+	dat[idx] = data;
+      } else {
+	Error() << "Unacceptable data reference";
+      }
+    } else {
+      int N = desc.toInt(&ok);
+      if (ok) {
+	QVector<double> data(N);
+	source.read((char*)data.data(), N*sizeof(double));
+	dat[idx] = data;
+      } else {
+	Error() << "Unacceptable data reference";
+      }
     }
-    dat[idx] = data;
   }
   dataRefs.clear();
   strDelim.clear();
@@ -104,9 +120,8 @@ void Statement::process(QString w) {
       lev--;
     } else if (w.startsWith("*")) {
       Token t(Token::DATAREF);
-      int n = w.mid(1).toInt();
-      t.num = n;
-      dataRefs.push_back(QPair<int, int>(toks.size(), n));
+      t.str = w.mid(1);
+      dataRefs.push_back(QPair<int, QString>(toks.size(), w.mid(1)));
       toks.append(t);
     } else if (w.size()==1 && w>="A" && w<="Z") {
       toks.append(Token(Token::CAPITAL, w));

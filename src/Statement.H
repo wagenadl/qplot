@@ -36,7 +36,7 @@ private:
   QString strDelim;
   QString str;
   int lev;
-  QVector< QPair<int, int> > dataRefs;
+  QVector< QPair<int, QString> > dataRefs;
 };
 
 #endif

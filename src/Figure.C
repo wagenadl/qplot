@@ -5,6 +5,7 @@
 
 Figure::Figure() {
   figextent = QRectF(QPointF(0,0), QSizeF(72*6, 72*4));
+  currentPanel = "-";
   replaceAxes();
   reset();
 }
@@ -20,6 +21,11 @@ void Figure::reset() {
   hairline_ = false;
   mrkr = Marker();
   clearBBox(true);
+  if (pntr.isActive()) {
+    QFont font("Helvetica");
+    font.setPixelSize(pt2iu(10));
+    pntr.setFont(font);
+  }
 }  
 
 void Figure::setHairline(bool h) {
@@ -59,7 +65,7 @@ void Figure::setSize(QSizeF wh_pt) {
   if (figextent.size() == wh_pt)
     return;
   
-  figextent.setSize(wh_pt);
+  figextent = QRectF(QPointF(0,0), wh_pt);
   replaceAxes();
 }
 
@@ -194,4 +200,8 @@ void Figure::choosePanel(QString s) {
 
 Panel &Figure::panelRef(QString p) {
   return panels[p];
+}
+
+QString Figure::currentPanelName() const {
+  return currentPanel;
 }

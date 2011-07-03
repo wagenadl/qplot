@@ -37,10 +37,10 @@ bool CmdAlign::parse(Statement const &s) {
   if (s.length()<2)
     return usage();
   for (int k=1; k<s.length(); k++) {
-    if (s[1].typ==Token::BAREWORD) {
-      if (valignment(s[1].str)>=0)
+    if (s[k].typ==Token::BAREWORD) {
+      if (valignment(s[k].str)>=0)
 	continue;
-      else if (halignment(s[1].str)>=0)
+      else if (halignment(s[k].str)>=0)
 	continue;
     }
     return usage();
@@ -51,9 +51,9 @@ bool CmdAlign::parse(Statement const &s) {
 
 void CmdAlign::render(Statement const &s, Figure &f, bool) {
   for (int k=1; k<s.length(); k++) {
-    if (halignment(s[1].str)>=0)
-      f.setHAlign(Figure::HAlign(halignment(s[1].str)));
-    else if (valignment(s[1].str)>=0)
-      f.setVAlign(Figure::VAlign(valignment(s[1].str)));
+    if (halignment(s[k].str)>=0)
+      f.setHAlign(Figure::HAlign(halignment(s[k].str)));
+    else if (valignment(s[k].str)>=0)
+      f.setVAlign(Figure::VAlign(valignment(s[k].str)));
   }
 }

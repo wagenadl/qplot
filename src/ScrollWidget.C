@@ -103,7 +103,8 @@ void ScrollWidget::keyPressEvent(QKeyEvent *e) {
     autoSize();
     break;
   case Qt::Key_Q:
-    close();
+    if (e->modifiers() & Qt::ControlModifier)
+      close();
     break;
   default:
     QWidget::keyPressEvent(e);

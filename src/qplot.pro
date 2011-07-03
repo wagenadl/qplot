@@ -17,6 +17,7 @@ HEADERS += Axis.H \
            CmdArea.H \
            CmdAt.H \
            CmdBrush.H \
+           CmdCumul.H \
            CmdFigSize.H \
            CmdFont.H \
            CmdFudge.H \
@@ -28,6 +29,7 @@ HEADERS += Axis.H \
            CmdPatch.H \
            CmdPen.H \
            CmdPlot.H \
+           CmdRefText.H \
            CmdText.H \
            CmdXLim.H \
            CmdYLim.H \
@@ -50,6 +52,7 @@ SOURCES += Axis.C \
            CmdArea.C \
            CmdAt.C \
            CmdBrush.C \
+           CmdCumul.C \
            CmdFigSize.C \
            CmdFont.C \
            CmdFudge.C \
@@ -61,6 +64,7 @@ SOURCES += Axis.C \
            CmdPatch.C \
            CmdPen.C \
            CmdPlot.C \
+           CmdRefText.C \
            CmdText.C \
            CmdXLim.C \
            CmdYLim.C \

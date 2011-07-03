@@ -44,7 +44,7 @@ bool Program::read(QFile &ts, QString label) {
     } else if (stmt[l][0].typ == Token::BAREWORD) {
       cmds.append(Command::construct(stmt[l][0].str));
       if (!cmds[l]) 
-	ok = error("Unknown keyword", l);
+	ok = error("Unknown keyword: " + stmt[l][0].str, l);
       else if (!cmds[l]->parse(stmt[l]))
 	ok = error("Syntax error", l);
     } else {
@@ -99,9 +99,6 @@ void Program::render(Figure &f, bool dryrun) {
   if (!isOK)
     return; // won't render if not ok
   f.reset();
-  QFont font("Helvetica");
-  font.setPixelSize(pt2iu(10));
-  f.painter().setFont(font);
   for (int l=0; l<stmt.size(); l++)
     if (cmds[l])
       cmds[l]->render(stmt[l], f, dryrun);

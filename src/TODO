@@ -16,11 +16,5 @@ where commands are:
 Retraction is along the line segment; two numbers may be given for internal
 points.
 
-- Allow image to use 8-bit data: **nnn could be ref to 8-bit, or I could
-  implement *d, *uc, etc.
-
-- Display mouse coordinates?
-
-- Better error console
 
 

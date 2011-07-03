@@ -13,18 +13,18 @@ class Watcher: public QObject {
 public:
   Watcher(QString fn, Program *prog, Figure *fig);
   virtual ~Watcher();
+  bool reread(bool errorbox);
 signals:
   void ping();
 private slots:
   void pong(); // file changed
   void tick(); // timer event
 private:
-  bool reread();
-private:
   QString fn;
   Program *prog;
   Figure *fig;
   class QFileSystemWatcher *fsw;
+  class QMessageBox *qmb;
 };
 
 #endif

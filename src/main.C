@@ -34,37 +34,28 @@ int usage(int ex=1) {
 
 void prerender(Program &prog, Figure &fig) {
   QImage img(1,1,QImage::Format_ARGB32);
-  fig.setSize(QSizeF(800, 600)); // this may be overridden later
+  fig.setSize(QSizeF(1, 1)); // this may be overridden later
   fig.painter().begin(&img);
-  fig.painter().scale(iu2pt(), iu2pt());
+  //fig.painter().scale(iu2pt(), iu2pt());
   fig.reset();
   foreach (QString p, prog.panels()) {
     QRectF dataExtent = prog.dataRange(p);
-    qDebug() << p << dataExtent;
+    //qDebug() << "1" << p << dataExtent;
     if (p=="-") {
+      //qDebug() << "xax";
       fig.xAxis().setDataRange(dataExtent.left(), dataExtent.right());
+      //qDebug() << "yax";
       fig.yAxis().setDataRange(dataExtent.top(), dataExtent.bottom());
     } else {
       fig.panelRef(p).xaxis.setDataRange(dataExtent.left(), dataExtent.right());
       fig.panelRef(p).yaxis.setDataRange(dataExtent.top(), dataExtent.bottom());
     }
   }
-  foreach (QString p, prog.panels()) {
-    qDebug() << "1" << p << fig.panelRef(p).xaxis.min() << fig.panelRef(p).xaxis.max();
-    qDebug() << p << fig.panelRef(p).xaxis.minp() << fig.panelRef(p).xaxis.maxp();
-  }
   prog.render(fig, true); // render to determine paper bbox & fudge
-  foreach (QString p, prog.panels()) {
-    qDebug() << "2" << p << fig.panelRef(p).xaxis.min() << fig.panelRef(p).xaxis.max();
-    qDebug() << p << fig.panelRef(p).xaxis.minp() << fig.panelRef(p).xaxis.maxp();
-  }
+  //qDebug() << "2" << prog.dataRange() << fig.xAxis().min() << fig.xAxis().max();
   prog.render(fig, true); // render to determine paper bbox & fudge
+  //qDebug() << "3" << prog.dataRange() << fig.xAxis().minp() << fig.xAxis().maxp();
   fig.painter().end();
-  foreach (QString p, prog.panels()) {
-    qDebug() << "3" << p << fig.panelRef(p).xaxis.min() << fig.panelRef(p).xaxis.max();
-    qDebug() << p << fig.panelRef(p).xaxis.minp() << fig.panelRef(p).xaxis.maxp();
-  }
-    
 }
 
 int read(Program &prog, QString ifn) {
@@ -96,6 +87,7 @@ int interactive(QString ifn, QApplication *app, bool gray=false) {
   win.setMargin(pt2iu(20), gray);
   win.show();
   win.autoSize();
+  wtch.reread(true);
   QFileInfo fi(ifn);
   QString path = fi.path();
   QString leaf = fi.fileName();

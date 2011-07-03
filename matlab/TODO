@@ -1,17 +1,4 @@
 - qlut - specify look up table
 - new qimage variant (new command?) to use LUTs
-- qxaxis
-
-e.g.: qxaxis(y0, [x0 x1], '1 min')
-      qxaxis(y0, [x0:dx:x1])
-      qxaxis(y0, [x0 x1], [xa:dx:xb], 'Time (s)')
-      qxaxis(y0, [x0 x1], [xa xb xc], {'A', 'B', 'C'}, 'Time (s)')
-
-- qmticks: add minor ticks to current axis
-- qticklen: prespecifies tick length (could be zero); -ve is left/up
-- qlabeldist: where do tick labels go; -ve is left/up; specified from end
-  of ticks. Two numbers: separate distance for axis title.
-
-- qarrow
 
 - documentation!

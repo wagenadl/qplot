@@ -2,14 +2,16 @@ function qfudge(varargin)
 
 fd = qp_ensure(1);
 
-if nargin>1
-  error('Usage: qfudge [pt]');
+if nargin>2
+  error('Usage: qfudge [margin] [ratio]');
 end
 
 str = 'fudge';
 for k=1:nargin
   a = varargin{k};
-  if ischar(a) & ~isnan(str2double(a))
+  if strcmp(a, '-') & k<nargin
+    str = sprintf('%s -', str);
+  elseif ischar(a) & ~isnan(str2double(a))
     str = sprintf('%s %s', str, a);
   elseif isnscalar(a) & isreal(a)
     str = sprintf('%s %g', str, a);

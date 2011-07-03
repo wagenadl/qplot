@@ -63,6 +63,7 @@ public:
   void leavePanel();
   void reset();
   Panel &panelRef(QString);
+  QString currentPanelName() const;
 private:
   QRectF figextent;
   Axis xax, yax;

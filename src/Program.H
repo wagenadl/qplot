@@ -21,7 +21,7 @@ public:
   int length() const;
   Statement const &operator[](int) const;
   QSet<QString> panels();
-  QRectF dataRange(QString panel="");
+  QRectF dataRange(QString panel="-");
   /*:F dataRange
    *:D Returns the full (x0-x1 x y0-y1) range of data in this program.
    *:N This ignores "panels", and will therefore work as expected only if

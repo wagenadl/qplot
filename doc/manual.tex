@@ -22,16 +22,27 @@
   the ``['' and ``]'' are literal brackets that separate the x- and 
   y-coordinates. See also \cref{patch}.}
 
-\cmd{at}{\emph{x} \emph{y} [\emph{$\xi$} \emph{$\eta$}]} 
-\expl{Places subsequent text and lines at graph position (\emph{x},
-  \emph{y}). If (\emph{$\xi$}, \emph{$\eta$}) are given, this specifies a
-  rotation such that the baseline of the text is in the direction of
-  the vector (\emph{$\xi$}, \emph{$\eta$}). This vector is
-  specified in data coordinates.}
+\cmd{at}{\emph{x} \emph{y} [\emph{$\xi$} \emph{$\eta$}] |
+  [\emph{$\phi$}} 
+\expl{Places subsequent text and lines at graph
+    position (\emph{x}, \emph{y}). If (\emph{$\xi$}, \emph{$\eta$})
+    are given, this specifies a rotation such that the baseline of the
+    text is in the direction of the vector (\emph{$\xi$},
+    \emph{$\eta$}). This vector is specified in data
+    coordinates. Alternatively, a rotation may be specified as a
+    direct (clockwise) angle $\phi$. Besides a numeric value, \emph{x}
+    may be one of left, right, center to place relative to the
+    bounding box of the last drawn object, or one of cleft, cright,
+    ccenter to place relative to the cumulative bounding box. (See
+    \cref{cumul}.) Likewise, \emph{y} may be one of top, bottom,
+    middle, ctop, cbottom, cmiddle.}
 
 \cmd{brush}{[\emph{ID}] \emph{color}\bar{}none\bar{}\emph{opacity} \ldots}
 \expl{Selects a brush by \emph{ID}, defines its color (or sets it to
   ``none''), and/or its \emph{opacity} (as a number between 0 and 1).}
+
+\cmd{cumul}{}
+\expl{Restarts accumulation of bounding boxes for \cref{at}\n}
 
 \cmd{figsize}{\emph{w} \emph{h}}
 \expl{Sets the size of the figure to (\emph{w} x \emph{h})
@@ -97,18 +108,45 @@
 \expl{Places the given text \emph{string} at the position (\emph{dx},
   \emph{dy}), specified in points relative to the anchor set by
   \cref{at}.\\
-  In future versions, underscores and hats to make
-  subscripts and superscripts. I would also like to support /italics/
-  and *bold*, but I am not yet sure of syntax. Unicode already
-  works. The string must be enclosed in single or double quotes.}
+  Underscores and hats  make
+  subscripts and superscripts (up to the next space). Slashes and
+  asterisks make enclosed words appear in /italics/
+  and *bold*. Unicode is supported. The string must be enclosed in single or double quotes.}
 
 \cmd{xlim}{\emph{x$_0$} \emph{x$_1$}}
-\expl{Fixes the limits of the x-axis. QPlot only supports automatic
-axis limits if there are no panels at all. (That is, if there are panels,
-then automatic axis limits will misbehave, even in the main graph.)}
+\expl{Fixes the limits of the x-axis. If no xlim is given, tight
+  automatic axis limits apply.}
 
 \cmd{ylim}{\emph{y$_0$} \emph{y$_1$}}
 \expl{Fixes the limits of the y-axis.}
+
+\section{Specifying data}
+
+For specifying very long vectors or image data, the text-based ``[ a b c ... ]''
+syntax may be cumbersome. Instead, you can write ``*\emph{n}'' and
+place direct binary doubles after the command. Or you can write
+``*uc\emph{n}'' and place direct binary uint8s after the command. The
+matlab functions \cref{qplot} and \cref{qimage} give examples.
+
+\section{User interface}
+
+QPlot can be run on the command line, like this:
+
+qplot \emph{source} \emph{output}
+
+\noindent where \emph{source} is a file with commands and
+\emph{output} can specify either pdf, svg, png, or tiff output.
+
+QPlot can also be run interactively, like this:
+
+qplot \emph{source}
+
+\noindent In that case, graphics are rendered in a window. Keys ``+''
+and ``-'' zoom in and out, ``0'' scales to fit, ``1'' scales to
+100\%. ``E'' resizes the window to fit the whole scene. ``G'' toggles
+between white and gray borders. ``Ctrl-Q'' quits. The graphics are
+automatically rerendered if the \emph{source}
+file changes on disk.
 
 \end{document}
 

@@ -5,13 +5,13 @@
 #include "Rotate.H"
 #include <QDebug>
 
-static CBuilder<CmdReftext> cbReftext("reftext");
+static CBuilder<CmdRefText> cbRefText("reftext");
 
-bool CmdReftext::usage() {
-  return error("Usage: reftext string");
+bool CmdRefText::usage() {
+  return error("Usage: reftext [string]");
 }
 
-bool CmdReftext::parse(Statement const &s) {
+bool CmdRefText::parse(Statement const &s) {
   if (s.length()==2 && s[1].typ==Token::STRING)
     return true;
   else if (s.length()==1)
@@ -20,7 +20,7 @@ bool CmdReftext::parse(Statement const &s) {
     return usage();
 }
 
-void CmdReftext::render(Statement const &s, Figure &f, bool dummy) {
+void CmdRefText::render(Statement const &s, Figure &f, bool) {
   if (s.length()==1)
     f.setRefText("");
   else

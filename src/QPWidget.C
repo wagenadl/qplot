@@ -106,3 +106,23 @@ void QPWidget::keyPressEvent(QKeyEvent *e) {
     ScrollWidget::keyPressEvent(e);
   }
 }
+
+void QPWidget::mousePressEvent(QMouseEvent *e) {
+  ScrollWidget::mousePressEvent(e);
+  if (fig) {
+    QPointF xy = e->pos();
+    QPointF world = (xy-tlDest()) / scale() + topLeft();
+    QString pnl = fig->currentPanelName();
+    double x = fig->xAxis().rev(world);
+    double y = fig->yAxis().rev(world);
+    ScrollWidget::setWindowTitle(winttl +
+				 QString(" (%1,%2)").
+				 arg(x, 0, 'g', 5).
+				 arg(y, 0, 'g', 5));
+  }
+}
+
+void QPWidget::setWindowTitle(QString t) {
+  winttl = t;
+  ScrollWidget::setWindowTitle(t);
+}

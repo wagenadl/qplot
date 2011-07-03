@@ -12,10 +12,12 @@ class QPWidget: public ScrollWidget {
   Q_OBJECT;
 public:
   QPWidget(QWidget *parent=0);
-  ~QPWidget();
+  virtual ~QPWidget();
   void setContents(Figure *f, Program *p);
   void setMargin(double pix, bool gray);
+  virtual void setWindowTitle(QString s);
 protected:
+  virtual void mousePressEvent(QMouseEvent *);
   virtual void keyPressEvent(QKeyEvent *);
   virtual void paintEvent(QPaintEvent *);
 private:
@@ -24,6 +26,7 @@ private:
   double marg;
   bool gray;
   QRectF worldextent;
+  QString winttl;
 };
 
 #endif

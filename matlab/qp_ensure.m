@@ -2,13 +2,16 @@ function fd = qp_ensure(x)
 
 global qp_data
 
-if ~isfield(qp_data, 'curfn')
+if isempty(qp_data)
   qp_data.curfn = '';
-end
-if ~isfield(qp_data, 'fn')
+  
   qp_data.fn = {};
   qp_data.istemp = [];
   qp_data.fd = [];
+
+  qp_data.ax.ticklen = 3;
+  qp_data.ax.textdist = [3 3];
+  qp_data.ax.last = '';
 end
 
 if nargin>0

@@ -3,6 +3,7 @@
 #include "Axis.H"
 #include <QDebug>
 #include "Error.H"
+#include <math.h>
 
 Axis::Axis() {
   x0=0;
@@ -13,10 +14,10 @@ Axis::Axis() {
 }
 
 void Axis::setDataRange(double x0_, double x1_) {
-  if (x1<=x0) {
+  if (x1_ <= x0_) {
     x0 = 0;
     x1 = 1;
-    //Error() << "Warning: bad data range";
+    qDebug() << "Warning: bad data range: " << x0_ << x1_;
   } else {
     x0 = x0_;
     x1 = x1_;
@@ -53,4 +54,13 @@ QPointF Axis::maxp() const {
 
 QPointF Axis::map(double x) const {
   return porig + x*dp;
+}
+
+double Axis::rev(QPointF p) const {
+  QPointF dp = p-p0;
+  QPointF dpa = p1-p0;
+  double phi = atan2(dpa.y(), dpa.x());
+  double dx = (dp.x()*cos(phi) + dp.y()*sin(phi)) /
+    sqrt(dpa.x()*dpa.x() + dpa.y()*dpa.y());;
+  return dx*(x1-x0) + x0;
 }
