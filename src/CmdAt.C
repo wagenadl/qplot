@@ -7,7 +7,7 @@
 static CBuilder<CmdAt> cbAt("at");
 
 bool CmdAt::usage() {
-  return error("Usage: at x y [dx dy]");
+  return error("Usage: at x y [dx dy]|phi");
 }
 
 static int horiAlign(QString s) {
@@ -35,7 +35,7 @@ static int vertAlign(QString s) {
   
 
 bool CmdAt::parse(Statement const &s) {
-  if (!(s.length()==3 || s.length()==5))
+  if (s.length()<3)
     return usage();
   if (!(s[1].typ==Token::NUMBER ||
 	(s[1].typ==Token::BAREWORD && horiAlign(s[1].str)>=0)))
@@ -47,9 +47,11 @@ bool CmdAt::parse(Statement const &s) {
     return true;
   if (s[3].typ!=Token::NUMBER)
     return usage();
+  if (s.length()==4)
+    return true;
   if (s[4].typ!=Token::NUMBER)
     return usage();
-  return true;
+  return s.length()==5;
 }
 
 static double slightlyless(double x) {
@@ -100,6 +102,8 @@ void CmdAt::render(Statement const &s, Figure &f, bool) {
   
   if (s.length()==5) 
     f.setAnchor(anchor, f.angle(s[3].num,s[4].num));
+  else if (s.length()==4)
+    f.setAnchor(anchor, s[3].num);
   else 
     f.setAnchor(anchor);
 }

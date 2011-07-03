@@ -5,14 +5,22 @@
 
 Figure::Figure() {
   figextent = QRectF(QPointF(0,0), QSizeF(72*6, 72*4));
+  replaceAxes();
+  reset();
+}
+
+void Figure::reset() {
   halign = CENTER;
   valign = BASE;
   currentPen = "A";
   currentBrush = "A";
-  currentPanel = "-"; // i.e., main 
+  currentPanel = "-"; // i.e., main
+  pens.clear();
+  brushes.clear();
   hairline_ = false;
-  replaceAxes();
-}
+  mrkr = Marker();
+  clearBBox(true);
+}  
 
 void Figure::setHairline(bool h) {
   hairline_ = h;
@@ -124,7 +132,11 @@ double const &Figure::anchorAngle() const {
 }
 
 QPainter &Figure::painter() {
-  return p;
+  return pntr;
+}
+
+Marker &Figure::marker() {
+  return mrkr;
 }
 
 QRectF const &Figure::extent() const {
@@ -140,13 +152,13 @@ QString Figure::refText() const {
 }
 
 void Figure::choosePen(QString s) {
-  pens[currentPen] = p.pen();
-  p.setPen(pens[currentPen=s]);
+  pens[currentPen] = pntr.pen();
+  pntr.setPen(pens[currentPen=s]);
 }
 
 void Figure::chooseBrush(QString s) {
-  brushes[currentBrush] = p.brush();
-  p.setBrush(brushes[currentBrush=s]);
+  brushes[currentBrush] = pntr.brush();
+  pntr.setBrush(brushes[currentBrush=s]);
 }
 
 void Figure::leavePanel() {
@@ -178,4 +190,8 @@ void Figure::choosePanel(QString s) {
     cumulbbox |= store.fullbbox;
     lastbbox |= store.fullbbox;
   }
+}
+
+Panel &Figure::panelRef(QString p) {
+  return panels[p];
 }

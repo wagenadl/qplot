@@ -20,7 +20,7 @@ public:
   Token const &operator[](int idx) const;
   bool isNumeric(int idx) const;
   int nextIndex(int idx) const;
-  QList<double> const &data(int idx) const; // only valid if isNumeric says so
+  QVector<double> const &data(int idx) const; // only valid if isNumeric says so
   QString const &label() const;
 private:
   void process(QString);
@@ -28,7 +28,7 @@ private:
 private:
   QString lbl;
   QList<Token> toks;
-  mutable QMap<int, QList<double> > dat;
+  mutable QMap<int, QVector<double> > dat;
   mutable QMap<int, int> nextIdx;
 private:
   // while processing:

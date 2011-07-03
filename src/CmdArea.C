@@ -20,8 +20,8 @@ bool CmdArea::parse(Statement const &s) {
 }
 
 void CmdArea::render(Statement const &s, Figure &f, bool dryrun) {
-  QList<double> const &xdata = s.data(1);
-  QList<double> const &ydata = s.data(s.nextIndex(1));
+  QVector<double> const &xdata = s.data(1);
+  QVector<double> const &ydata = s.data(s.nextIndex(1));
   if (xdata.isEmpty()) 
     return;
 

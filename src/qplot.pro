@@ -22,6 +22,8 @@ HEADERS += Axis.H \
            CmdFudge.H \
            CmdImage.H \
            CmdLine.H \
+           CmdMark.H \
+           CmdMarker.H \
            CmdPanel.H \
            CmdPatch.H \
            CmdPen.H \
@@ -33,6 +35,7 @@ HEADERS += Axis.H \
            Error.H \
            Factor.H \
            Figure.H \
+           Marker.H \
            Program.H \
            QPWidget.H \
            Rotate.H \
@@ -52,6 +55,8 @@ SOURCES += Axis.C \
            CmdFudge.C \
            CmdImage.C \
            CmdLine.C \
+           CmdMark.C \
+           CmdMarker.C \
            CmdPanel.C \
            CmdPatch.C \
            CmdPen.C \

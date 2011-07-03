@@ -25,7 +25,8 @@ bool CmdBrush::parse(Statement const &s) {
 	continue;
       else
 	return usage();
-    }
+    } else
+      return usage();
   }
   return true;
 }

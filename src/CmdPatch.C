@@ -19,8 +19,8 @@ bool CmdPatch::parse(Statement const &s) {
 }
 
 QRectF CmdPatch::dataRange(Statement const &s) {
-  QList<double> const &xdata = s.data(1);
-  QList<double> const &ydata = s.data(s.nextIndex(1));
+  QVector<double> const &xdata = s.data(1);
+  QVector<double> const &ydata = s.data(s.nextIndex(1));
 
   if (xdata.isEmpty())
     return QRectF();
@@ -44,8 +44,8 @@ QRectF CmdPatch::dataRange(Statement const &s) {
 }
 
 void CmdPatch::render(Statement const &s, Figure &f, bool dryrun) {
-  QList<double> const &xdata = s.data(1);
-  QList<double> const &ydata = s.data(s.nextIndex(1));
+  QVector<double> const &xdata = s.data(1);
+  QVector<double> const &ydata = s.data(s.nextIndex(1));
   if (xdata.isEmpty()) {
     f.setBBox(QRectF());
     return;

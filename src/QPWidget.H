@@ -15,6 +15,8 @@ public:
   ~QPWidget();
   void setContents(Figure *f, Program *p);
   void setMargin(double pix, bool gray);
+protected:
+  virtual void keyPressEvent(QKeyEvent *);
   virtual void paintEvent(QPaintEvent *);
 private:
   Figure *fig;

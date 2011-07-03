@@ -41,17 +41,6 @@ void CmdText::render(Statement const &s, Figure &f, bool dummy) {
     r.setBottom(rr.bottom());
   }
   
-  //QFontMetricsF fm(f.painter().font());
-  //QString ref = f.refText();
-  //QRectF r(fm.tightBoundingRect(txt));
-  //if (!ref.isEmpty()) {
-  //  QRectF rr(fm.tightBoundingRect(ref));
-  //  r.setTop(rr.top());
-  //  r.setBottom(rr.bottom());
-  //}
-  
-  qDebug() << "Text bbox: " << r;
-  
   switch (f.hAlign()) {
   case Figure::LEFT:
     dx -= r.left();

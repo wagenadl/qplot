@@ -6,6 +6,7 @@
 
 #include "Axis.H"
 #include "Panel.H"
+#include "Marker.H"
 
 #include <QRectF>
 #include <QPainter>
@@ -53,22 +54,26 @@ public:
   void setRefText(QString str);
   QString refText() const;
   QPainter &painter();
+  Marker &marker();
   void choosePen(QString);
   void chooseBrush(QString);
   bool hairline() const;
   void setHairline(bool h);
   void choosePanel(QString);
   void leavePanel();
+  void reset();
+  Panel &panelRef(QString);
 private:
   QRectF figextent;
   Axis xax, yax;
   QRectF fullbbox, cumulbbox, lastbbox;
-  QPainter p;
+  QPainter pntr;
   QPointF anch;
   double anchang;
   VAlign valign;
   HAlign halign;
   QString reftxt;
+  Marker mrkr;
   QMap<QString, QPen> pens; 
   QMap<QString, QBrush> brushes; 
   QMap<QString, Panel> panels;

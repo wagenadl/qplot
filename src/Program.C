@@ -74,20 +74,34 @@ Statement const &Program::operator[](int idx) const {
     return nullStatement;
 }
 
-QRectF Program::dataRange() {
+QSet<QString> Program::panels() {
+  QSet<QString> pp;
+  pp.insert("-");
+  for (int l=0; l<stmt.size(); l++) 
+    if (stmt[l].length()>=2 && stmt[l][0].str=="panel")
+      pp.insert(stmt[l][1].str);
+  return pp;
+}
+
+QRectF Program::dataRange(QString p) {
   QRectF r;
-  for (int l=0; l<stmt.size(); l++)
-    if (cmds[l])
+  bool in = p=="-";
+  for (int l=0; l<stmt.size(); l++) {
+    if (stmt[l].length()>=2 && stmt[l][0].str=="panel")
+      in = stmt[l][1].str==p;
+    if (in && cmds[l])
       r |= cmds[l]->dataRange(stmt[l]);
+  }
   return r;
 }
-  
 
 void Program::render(Figure &f, bool dryrun) {
   if (!isOK)
     return; // won't render if not ok
-  f.clearBBox(true);
-  f.leavePanel();
+  f.reset();
+  QFont font("Helvetica");
+  font.setPixelSize(pt2iu(10));
+  f.painter().setFont(font);
   for (int l=0; l<stmt.size(); l++)
     if (cmds[l])
       cmds[l]->render(stmt[l], f, dryrun);

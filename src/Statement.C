@@ -45,7 +45,7 @@ int Statement::read(QFile &source, QString label) {
     int idx = x.first;
     int N = x.second;
     nextIdx[idx] = idx+1;
-    QList<double> data;
+    QVector<double> data;
     data.reserve(N);
     double v;
     for (int n=0; n<N; n++) {
@@ -80,7 +80,9 @@ void Statement::process(QString w) {
       str += w + " ";
     }
   } else {
-    if (w.startsWith("[")) {
+    if (w=="-") {
+      toks.append(Token(Token::DASH, "-"));
+    } else if (w.startsWith("[")) {
       toks.append(Token(Token::OPENBRACKET));
       lev++;
       process(w.mid(1));
@@ -168,7 +170,7 @@ bool Statement::cacheVector(int idx) const {
   else if (idx<0 || idx>=toks.size())
     return false;
   
-  QList<double> v;
+  QVector<double> v;
   if (toks[idx].typ == Token::NUMBER) {
     v.append(toks[idx].num);
     nextIdx[idx] = idx+1;
@@ -199,9 +201,9 @@ bool Statement::cacheVector(int idx) const {
   }
 }
 
-static QList<double> nullData;
+static QVector<double> nullData;
 
-QList<double> const &Statement::data(int idx) const {
+QVector<double> const &Statement::data(int idx) const {
   if (cacheVector(idx))
     return dat[idx];
   else

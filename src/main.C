@@ -37,12 +37,34 @@ void prerender(Program &prog, Figure &fig) {
   fig.setSize(QSizeF(800, 600)); // this may be overridden later
   fig.painter().begin(&img);
   fig.painter().scale(iu2pt(), iu2pt());
-  QRectF dataExtent = prog.dataRange();
-  fig.xAxis().setDataRange(dataExtent.left(), dataExtent.right());
-  fig.yAxis().setDataRange(dataExtent.top(), dataExtent.bottom());
+  fig.reset();
+  foreach (QString p, prog.panels()) {
+    QRectF dataExtent = prog.dataRange(p);
+    qDebug() << p << dataExtent;
+    if (p=="-") {
+      fig.xAxis().setDataRange(dataExtent.left(), dataExtent.right());
+      fig.yAxis().setDataRange(dataExtent.top(), dataExtent.bottom());
+    } else {
+      fig.panelRef(p).xaxis.setDataRange(dataExtent.left(), dataExtent.right());
+      fig.panelRef(p).yaxis.setDataRange(dataExtent.top(), dataExtent.bottom());
+    }
+  }
+  foreach (QString p, prog.panels()) {
+    qDebug() << "1" << p << fig.panelRef(p).xaxis.min() << fig.panelRef(p).xaxis.max();
+    qDebug() << p << fig.panelRef(p).xaxis.minp() << fig.panelRef(p).xaxis.maxp();
+  }
   prog.render(fig, true); // render to determine paper bbox & fudge
+  foreach (QString p, prog.panels()) {
+    qDebug() << "2" << p << fig.panelRef(p).xaxis.min() << fig.panelRef(p).xaxis.max();
+    qDebug() << p << fig.panelRef(p).xaxis.minp() << fig.panelRef(p).xaxis.maxp();
+  }
   prog.render(fig, true); // render to determine paper bbox & fudge
   fig.painter().end();
+  foreach (QString p, prog.panels()) {
+    qDebug() << "3" << p << fig.panelRef(p).xaxis.min() << fig.panelRef(p).xaxis.max();
+    qDebug() << p << fig.panelRef(p).xaxis.minp() << fig.panelRef(p).xaxis.maxp();
+  }
+    
 }
 
 int read(Program &prog, QString ifn) {
@@ -66,6 +88,9 @@ int interactive(QString ifn, QApplication *app, bool gray=false) {
 
   Watcher wtch(ifn, &prog, &fig);
   QPWidget win;
+  int idx = ifn.lastIndexOf('/');
+  win.setWindowTitle("qplot: " + ((idx>=0) ? ifn.mid(idx+1) : ifn));
+  QObject::connect(&wtch, SIGNAL(ping()), &win, SLOT(raise()));
   QObject::connect(&wtch, SIGNAL(ping()), &win, SLOT(update()));
   win.setContents(&fig, &prog);
   win.setMargin(pt2iu(20), gray);

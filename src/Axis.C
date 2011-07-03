@@ -13,12 +13,14 @@ Axis::Axis() {
 }
 
 void Axis::setDataRange(double x0_, double x1_) {
-  x0 = x0_;
   if (x1<=x0) {
-    x1 = x0 + 1;
-    Error() << "Warning: bad data range";
+    x0 = 0;
+    x1 = 1;
+    //Error() << "Warning: bad data range";
+  } else {
+    x0 = x0_;
+    x1 = x1_;
   }
-  x1 = x1_;
   recalc();
 }
 

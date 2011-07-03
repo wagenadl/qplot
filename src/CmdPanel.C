@@ -25,13 +25,18 @@ bool CmdPanel::parse(Statement const &s) {
 }
 
 
-void CmdPanel::render(Statement const &s, Figure &f, bool) {
-  if (s[1].typ==Token::DASH) {
-    f.leavePanel();
-  } else {
+void CmdPanel::render(Statement const &s, Figure &f, bool dryrun) {
+  f.leavePanel();
+  if (s[1].typ==Token::CAPITAL) {
+    QRectF area;
+    if (s.length()==6) {
+      area = QRectF(pt2iu(s[2].num), pt2iu(s[3].num),
+		  pt2iu(s[4].num), pt2iu(s[5].num));
+      if (!dryrun)
+	f.painter().drawRect(area);
+    }
     f.choosePanel(s[1].str);
-    if (s.length()==6) 
-      f.setExtent(QRectF(pt2iu(s[2].num), pt2iu(s[3].num),
-			 pt2iu(s[4].num), pt2iu(s[5].num)));
+    if (s.length()==6)
+      f.setExtent(area);
   }
 }

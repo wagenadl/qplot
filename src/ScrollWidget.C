@@ -105,6 +105,8 @@ void ScrollWidget::keyPressEvent(QKeyEvent *e) {
   case Qt::Key_Q:
     close();
     break;
+  default:
+    QWidget::keyPressEvent(e);
   }
   
 }

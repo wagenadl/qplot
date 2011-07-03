@@ -2,6 +2,7 @@
 
 #include "QPWidget.H"
 #include <QDebug>
+#include <QKeyEvent>
 
 #define MARGPIX 10
 
@@ -93,4 +94,15 @@ void QPWidget::paintEvent(QPaintEvent *) {
 
   prog->render(*fig);
   p.end();
+}
+
+void QPWidget::keyPressEvent(QKeyEvent *e) {
+  switch (e->key()) {
+  case Qt::Key_G:
+    gray = !gray;
+    update();
+    break;
+  default:
+    ScrollWidget::keyPressEvent(e);
+  }
 }

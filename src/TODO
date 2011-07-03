@@ -1,0 +1,26 @@
+- gline: command for supergeneral line drawing:
+   gline ( pt1spec ) ( pt2spec ) ...
+
+where ptnspec is:
+   command1 args1 ...
+
+where commands are:
+   absdata x y
+   abspaper x y
+   reldata dx dy
+   relpaper dx dy
+   rotdata xi eta
+   rotpaper phi
+   retract l [l2]
+
+Retraction is along the line segment; two numbers may be given for internal
+points.
+
+- Allow image to use 8-bit data: **nnn could be ref to 8-bit, or I could
+  implement *d, *uc, etc.
+
+- Display mouse coordinates?
+
+- Better error console
+
+

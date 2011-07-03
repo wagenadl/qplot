@@ -30,7 +30,7 @@ QRectF CmdImage::dataRange(Statement const &s) {
 
 void CmdImage::render(Statement const &s, Figure &f, bool dryrun) {
   int X = s[5].num;
-  QList<double> const &cdata = s.data(6);
+  QVector<double> const &cdata = s.data(6);
   int C = 3;
   int Y = cdata.size()/C/X;
 
@@ -45,22 +45,24 @@ void CmdImage::render(Statement const &s, Figure &f, bool dryrun) {
 
   QImage img(X, Y, QImage::Format_ARGB32);
   uchar *dst = img.bits();
-  QList<double>::const_iterator src = cdata.begin();
+  QVector<double>::const_iterator src = cdata.begin();
   for (int y=0; y<Y; y++) {
     for (int x=0; x<X; x++) {
+      double const *s1 = src+2;
       for (int c=0; c<3; c++) {
-	double v = *src;
+	double v = *s1;
 	if (v<0)
 	  *dst=0;
 	else if (v>1)
 	  *dst=255;
 	else
-	  *dst = int(*src * 255.999);
+	  *dst = int(v * 255.999);
 	dst++;
-	src++;
+	s1--;
       }
       *dst = 255;
       dst++;
+      src+=3;
     }
   }
   
