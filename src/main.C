@@ -28,7 +28,7 @@ int error(QString const &s) {
 
 int usage(int ex=1) {
   Error() << "Usage: qplot   input.txt";
-  Error() << "       qplot   input.txt output.pdf|svg|png";
+  Error() << "       qplot   input.txt output.pdf|svg|png|.ps";
   return ex;
 }
 
@@ -148,6 +148,22 @@ int noninteractive(QString ifn, QString ofn) {
     fig.painter().scale(iu2pt(), iu2pt());
     fig.painter().translate(-iu2pt(fig.extent().left()),
 			    -iu2pt(fig.extent().top()));
+    prog.render(fig);
+    fig.painter().end();
+  } else if (extn=="ps") {
+    QSizeF p = papersize();
+    QPrinter img(QPrinter::ScreenResolution);
+    img.setResolution(72);
+    QSizeF imsize(QSizeF(iu2pt(fig.extent().width()),
+			 iu2pt(fig.extent().height()))),
+    img.setOutputFileName(ofn);
+    fig.painter().begin(&img);
+    fig.painter().translate((p.width()-imsize.width())/2,
+			    (p.height()-imsize.height())/2);
+    /* Draw some crop marks? */
+    fig.painter().scale(iu2pt(), iu2pt());
+    fig.painter().translate(-fig.extent().left(),
+			    -fig.extent().top());
     prog.render(fig);
     fig.painter().end();
   } else if (extn=="png" || extn=="jpg" || extn=="tif" || extn=="tiff") {

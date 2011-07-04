@@ -12,6 +12,7 @@ if isempty(qp_data)
   qp_data.ax.ticklen = 3;
   qp_data.ax.textdist = [3 3];
   qp_data.ax.last = '';
+  qp_data.lut = gray;
 end
 
 if nargin>0

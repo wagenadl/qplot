@@ -63,6 +63,9 @@ elseif size(lbls) ~= size(xpts)
   qaxis_usage;
 end
 
+% -- Plotting starts here
+
+qgroup;
 qplot(xlim, [y0 y0]);
 
 global qp_data;
@@ -91,6 +94,7 @@ else
 end
 qalign(valign, 'center');
 
+qgroup;
 for k=1:length(xpts)
   qat(xpts(k), y0);
   qline([0 0], [0 ticklen]);
@@ -98,6 +102,7 @@ for k=1:length(xpts)
     qtext(0, lbldist, lbls{k});
   end
 end
+qendgroup;
 
 if ~isempty(ttl) 
   if ttldist>=0
@@ -111,6 +116,7 @@ end
 qp_data.ax.last='x';
 qp_data.ax.lastcoord=y0;
 qp_data.ax.lastlim=xlim;
+qendgroup
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function qxa_usage() 

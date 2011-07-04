@@ -18,9 +18,9 @@ for k=1:nargin
     str = sprintf('%s %s', str, a);
   elseif isnscalar(a) & isreal(a)
     str = sprintf('%s %g', str, a);
-  elseif k==1 & ~isempty(strmatch(a, strtoks('left right center cleft cright ccenter'), 'exact'))
+  elseif k==1 & ~isempty(strmatch(a, strtoks('left right center'), 'exact'))
     str = sprintf('%s %s', str, a);
-  elseif k==2 & ~isempty(strmatch(a, strtoks('top bottom middle ctop cbottom cmiddle'), 'exact'))
+  elseif k==2 & ~isempty(strmatch(a, strtoks('top bottom middle'), 'exact'))
     str = sprintf('%s %s', str, a);
   else    
     error('Cannot interpret arguments');

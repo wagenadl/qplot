@@ -64,6 +64,8 @@ public:
   void reset();
   Panel &panelRef(QString);
   QString currentPanelName() const;
+  void startGroup();
+  void endGroup();
 private:
   QRectF figextent;
   Axis xax, yax;
@@ -85,6 +87,7 @@ private:
   QString currentBrush;
   QString currentPanel;
   bool hairline_;
+  QList<QRectF> groupstack;
 private:
   void replaceAxes();
 };

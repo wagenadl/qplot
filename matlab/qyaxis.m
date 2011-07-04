@@ -67,6 +67,7 @@ end
 
 %-- Plotting starts here
 
+qgroup;
 qplot([y0 y0], xlim);
 
 global qp_data;
@@ -87,7 +88,7 @@ else
 end
 qalign(valign, 'middle');
 
-qcumul;
+qgroup;
 for k=1:length(xpts)
   qat(y0, xpts(k));
   qline([0 -ticklen], [0 0]);
@@ -95,13 +96,14 @@ for k=1:length(xpts)
     qtext(-lbldist, 0, lbls{k});
   end
 end
+qendgroup;
 
 if ~isempty(ttl) 
   if ttldist>=0
-    qat('cleft', mean(xlim), pi/2);
+    qat('left', mean(xlim), pi/2);
     qalign('center', 'top');
   else
-    qat('cright', mean(xlim), -pi/2);
+    qat('right', mean(xlim), -pi/2);
     qalign('center', 'bottom');
   end
   qtext(0, ttldist, ttl);
@@ -110,6 +112,7 @@ end
 qp_data.ax.last='y';
 qp_data.ax.lastcoord=y0;
 qp_data.ax.lastlim=xlim;
+qendgroup;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function qxa_usage() 

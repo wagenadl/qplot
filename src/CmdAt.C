@@ -18,12 +18,6 @@ static int horiAlign(QString s) {
     return 1;
   else if (s=="right")
     return 2;
-  else if (s=="cleft")
-    return 10;
-  else if (s=="ccenter")
-    return 11;
-  else if (s=="cright")
-    return 12;
   else
     return -1;
 }
@@ -35,12 +29,6 @@ static int vertAlign(QString s) {
     return 1;
   else if (s=="bottom")
     return 2;
-  else if (s=="ctop")
-    return 10;
-  else if (s=="cmiddle")
-    return 11;
-  else if (s=="cbottom")
-    return 12;
   else
     return -1;
 }
@@ -106,24 +94,14 @@ void CmdAt::render(Statement const &s, Figure &f, bool) {
   if (s[1].typ==Token::BAREWORD) {
     // that means x is as yet undefined. no matter:
     int a = horiAlign(s[1].str);
-    if (a>=10) {
-      anchor.setX(f.cumulBBox().left()
-		  + (a-10)*f.cumulBBox().width()/2);
-    } else {
-      anchor.setX(f.lastBBox().left()
-		  + a*f.lastBBox().width()/2);
-    }
+    anchor.setX(f.lastBBox().left()
+		+ a*f.lastBBox().width()/2);
   }
   if (s[2].typ==Token::BAREWORD) {
     // that means y is as yet undefined. no matter:
     int a = vertAlign(s[2].str);
-    if (a>=10) {
-      anchor.setY(f.cumulBBox().top()
-		  + (a-10)*f.cumulBBox().height()/2);
-    } else {
-      anchor.setY(f.lastBBox().top()
-		  + a*f.lastBBox().height()/2);
-    }
+    anchor.setY(f.lastBBox().top()
+		+ a*f.lastBBox().height()/2);
   }
   
   if (s.length()==5) 

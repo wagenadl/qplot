@@ -17,10 +17,11 @@ HEADERS += Axis.H \
            CmdArea.H \
            CmdAt.H \
            CmdBrush.H \
-           CmdCumul.H \
+           CmdEndGroup.H \
            CmdFigSize.H \
            CmdFont.H \
            CmdFudge.H \
+           CmdGroup.H \
            CmdImage.H \
            CmdLine.H \
            CmdMark.H \
@@ -52,10 +53,11 @@ SOURCES += Axis.C \
            CmdArea.C \
            CmdAt.C \
            CmdBrush.C \
-           CmdCumul.C \
            CmdFigSize.C \
+           CmdEndGroup.C \
            CmdFont.C \
            CmdFudge.C \
+           CmdGroup.C \
            CmdImage.C \
            CmdLine.C \
            CmdMark.C \

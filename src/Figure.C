@@ -1,6 +1,7 @@
 // Figure.C
 
 #include "Figure.H"
+#include "Error.H"
 #include <math.h>
 
 Figure::Figure() {
@@ -21,6 +22,7 @@ void Figure::reset() {
   hairline_ = false;
   mrkr = Marker();
   clearBBox(true);
+  groupstack.clear();
   if (pntr.isActive()) {
     QFont font("Helvetica");
     font.setPixelSize(pt2iu(10));
@@ -204,4 +206,19 @@ Panel &Figure::panelRef(QString p) {
 
 QString Figure::currentPanelName() const {
   return currentPanel;
+}
+
+void Figure::startGroup() {
+  groupstack.push_back(cumulbbox);
+  cumulbbox = QRectF();
+}
+
+void Figure::endGroup() {
+  if (groupstack.isEmpty()) {
+    Error() << "Warning: pop from empty group stack";
+  } else {
+    lastbbox = cumulbbox;
+    cumulbbox = groupstack.takeLast();
+    cumulbbox |= lastbbox;
+  }
 }
