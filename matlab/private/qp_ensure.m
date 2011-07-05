@@ -12,7 +12,7 @@ if isempty(qp_data)
   qp_data.ax.ticklen = 3;
   qp_data.ax.textdist = [3 3];
   qp_data.ax.last = '';
-  qp_data.lut = gray;
+  qp_data.lut = repmat([0:.01:1]',[1 3]);
 end
 
 if nargin>0

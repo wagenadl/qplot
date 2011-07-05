@@ -53,6 +53,12 @@ else
   qp_data.istmp(idx) = istmp;
 end
 
+qp_data.ax.ticklen = 3;
+qp_data.ax.textdist = [3 3];
+qp_data.ax.last = '';
+qp_data.lut = repmat([0:.01:1]',[1 3]);
+
+
 unix(sprintf('qpclient %s', fn));
 
 if nargout<1

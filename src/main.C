@@ -32,6 +32,11 @@ int usage(int ex=1) {
   return ex;
 }
 
+QSizeF papersize() {
+  // right now, just return letter size:
+  return QSizeF(8.5*72, 11*72);
+}
+
 void prerender(Program &prog, Figure &fig) {
   QImage img(1,1,QImage::Format_ARGB32);
   fig.setSize(QSizeF(1, 1)); // this may be overridden later
@@ -102,6 +107,94 @@ int interactive(QString ifn, QApplication *app, bool gray=false) {
   return r;
 }
 
+void renderSVG(Program &prog, Figure &fig, QString ofn) {
+  QSvgGenerator img;
+  img.setFileName(ofn);
+  img.setResolution(90); // anything else seems to be poorly supported
+  img.setViewBox(QRectF(QPointF(0,0),
+			QSizeF(90./72*iu2pt(fig.extent().width()),
+			       90./72*iu2pt(fig.extent().height()))));
+  fig.painter().begin(&img);
+  fig.painter().scale(90./72*iu2pt(), 90./72*iu2pt());
+  fig.painter().translate(-iu2pt(fig.extent().left()),
+			  -iu2pt(fig.extent().top()));
+  prog.render(fig);
+  fig.painter().end();
+}
+
+void renderPDF(Program &prog, Figure &fig, QString ofn) {
+  QPrinter img(QPrinter::ScreenResolution);
+  img.setResolution(72);
+  img.setPageMargins(0, 0, 0, 0, QPrinter::Point);
+  img.setPaperSize(QSizeF(iu2pt(fig.extent().width()),
+			  iu2pt(fig.extent().height())),
+		   QPrinter::Point);
+  img.setOutputFileName(ofn);
+  fig.painter().begin(&img);
+  fig.painter().scale(iu2pt(), iu2pt());
+  fig.painter().translate(-iu2pt(fig.extent().left()),
+			  -iu2pt(fig.extent().top()));
+  prog.render(fig);
+  fig.painter().end();
+}
+
+void renderPS(Program &prog, Figure &fig, QString ofn) {
+  QSizeF p = papersize();
+  QPrinter img(QPrinter::ScreenResolution);
+  img.setResolution(72);
+  img.setPaperSize(p, QPrinter::Point);
+  img.setPageMargins(0, 0, 0, 0, QPrinter::Point);
+  QSizeF imsize(QSizeF(iu2pt(fig.extent().width()),
+		       iu2pt(fig.extent().height())));
+  img.setOutputFileName(ofn);
+  fig.painter().begin(&img);
+  fig.painter().translate((p.width()-imsize.width())/2,
+			  (p.height()-imsize.height())/2);
+
+  /* Draw some crop marks */
+  fig.painter().save();
+  { QPen p; p.setWidth(.5); fig.painter().setPen(p); }
+  const int MINX = 5;
+  const int MAXX = 20;
+  // tl
+  fig.painter().drawLine(-MAXX,0,-MINX,0);
+  fig.painter().drawLine(0,-MAXX,0,-MINX);
+  // bl
+  fig.painter().drawLine(-MAXX,imsize.height(),-MINX,imsize.height());
+  fig.painter().drawLine(0,imsize.height()+MINX,0,imsize.height()+MAXX);
+  // tr
+  fig.painter().drawLine(imsize.width()+MINX,0,imsize.width()+MAXX,0);
+  fig.painter().drawLine(imsize.width(),-MINX,imsize.width(),-MAXX);
+  // tr
+  fig.painter().drawLine(imsize.width()+MINX,imsize.height(),
+			 imsize.width()+MAXX,imsize.height());
+  fig.painter().drawLine(imsize.width(),imsize.height()+MINX,
+			 imsize.width(),imsize.height()+MAXX);
+  fig.painter().setFont(QFont("Helvetica", 10));
+  fig.painter().drawText(10, imsize.height()+18, ofn);
+  fig.painter().restore();
+  /* Done with crop marks */
+  fig.painter().scale(iu2pt(), iu2pt());
+  fig.painter().translate(-fig.extent().left(),
+			  -fig.extent().top());
+  prog.render(fig);
+  fig.painter().end();
+}
+
+bool renderImage(Program &prog, Figure &fig, QString ofn) {
+  QImage img(int(fig.extent().width()),
+	     int(fig.extent().height()),
+	     QImage::Format_ARGB32);
+  img.fill(0xffffffff);
+  fig.painter().begin(&img);
+  fig.painter().scale(iu2pt(), iu2pt());
+  fig.painter().translate(-iu2pt(fig.extent().left()),
+			  -iu2pt(fig.extent().top()));
+  prog.render(fig);
+  fig.painter().end();
+  return img.save(ofn);
+}
+
 int noninteractive(QString ifn, QString ofn) {
   Program prog;
   if (ifn.isEmpty()) {
@@ -122,62 +215,15 @@ int noninteractive(QString ifn, QString ofn) {
     return error("Output file must have an extension");
   QString extn = ofn.mid(idx+1);
   if (extn == "svg") {
-    QSvgGenerator img;
-    img.setFileName(ofn);
-    img.setResolution(90); // anything else seems to be poorly supported
-    img.setViewBox(QRectF(QPointF(0,0),
-			  QSizeF(90./72*iu2pt(fig.extent().width()),
-				 90./72*iu2pt(fig.extent().height()))));
-    fig.painter().begin(&img);
-    fig.painter().scale(90./72*iu2pt(), 90./72*iu2pt());
-    fig.painter().translate(-iu2pt(fig.extent().left()),
-			    -iu2pt(fig.extent().top()));
-    prog.render(fig);
-    fig.painter().end();
+    renderSVG(prog, fig, ofn);
   } else if (extn == "eps") {
     return error("Writing to eps is not supported");
   } else if (extn == "pdf") {
-    QPrinter img(QPrinter::ScreenResolution);
-    img.setResolution(72);
-    img.setPageMargins(0, 0, 0, 0, QPrinter::Point);
-    img.setPaperSize(QSizeF(iu2pt(fig.extent().width()),
-			    iu2pt(fig.extent().height())),
-		     QPrinter::Point);
-    img.setOutputFileName(ofn);
-    fig.painter().begin(&img);
-    fig.painter().scale(iu2pt(), iu2pt());
-    fig.painter().translate(-iu2pt(fig.extent().left()),
-			    -iu2pt(fig.extent().top()));
-    prog.render(fig);
-    fig.painter().end();
+    renderPDF(prog, fig, ofn);
   } else if (extn=="ps") {
-    QSizeF p = papersize();
-    QPrinter img(QPrinter::ScreenResolution);
-    img.setResolution(72);
-    QSizeF imsize(QSizeF(iu2pt(fig.extent().width()),
-			 iu2pt(fig.extent().height()))),
-    img.setOutputFileName(ofn);
-    fig.painter().begin(&img);
-    fig.painter().translate((p.width()-imsize.width())/2,
-			    (p.height()-imsize.height())/2);
-    /* Draw some crop marks? */
-    fig.painter().scale(iu2pt(), iu2pt());
-    fig.painter().translate(-fig.extent().left(),
-			    -fig.extent().top());
-    prog.render(fig);
-    fig.painter().end();
+    renderPS(prog, fig, ofn);
   } else if (extn=="png" || extn=="jpg" || extn=="tif" || extn=="tiff") {
-    QImage img(int(fig.extent().width()),
-	       int(fig.extent().height()),
-	       QImage::Format_ARGB32);
-    img.fill(0xffffffff);
-    fig.painter().begin(&img);
-    fig.painter().scale(iu2pt(), iu2pt());
-    fig.painter().translate(-iu2pt(fig.extent().left()),
-			    -iu2pt(fig.extent().top()));
-    prog.render(fig);
-    fig.painter().end();
-    if (!img.save(ofn))
+    if (!renderImage(prog, fig, ofn))
       return error("Failed to save.");
   } else {
     return error("Unknown extension.");

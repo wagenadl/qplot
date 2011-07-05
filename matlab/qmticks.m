@@ -18,7 +18,7 @@ if strcmp(qp_data.ax.last, 'x')
   end
 elseif strcmp(qp_data.ax.last, 'y')
   for k=1:X
-    qat(qp_data.lastcoord, xx(k));
+    qat(qp_data.ax.lastcoord, xx(k));
     qline([0 -qp_data.ax.ticklen], [0 0]);
   end
 end

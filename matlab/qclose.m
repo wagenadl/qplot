@@ -7,7 +7,11 @@ if nargin==0
 elseif strcmp(fn, 'all')
   fns = qp_data.fn;
   for k=1:length(fns)
-    qclose(fns{k});
+    try
+      qclose(fns{k});
+    catch
+      fprintf(1,'Note: %s\n', lasterr);
+    end
   end
   return
 end
@@ -24,7 +28,7 @@ if isempty(idx)
 end
 
 if qp_data.fd(idx)>=0
-  fclose(qp_data.fd(idx));
+  fd = qp_data.fd(idx);
   qp_data.fd(idx)=-1;
   unix(sprintf('qpclose %s', fn));
   if qp_data.istemp(idx)
@@ -36,6 +40,8 @@ if qp_data.fd(idx)>=0
   qp_data.fn = qp_data.fn(keep);
   qp_data.fd = qp_data.fd(keep);
   qp_data.istemp = qp_data.istemp(keep);
+
+  fclose(fd);
 end
 
 if strcmp(fn, qp_data.curfn)
