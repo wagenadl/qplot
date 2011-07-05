@@ -11,6 +11,9 @@
 
 \begin{document}
 \section{Commands}
+Optional arguments are given in parentheses. Vertical bars indicate
+alternatives.\bigskip
+
 \cmd{align}{left\bar{}right\bar{}center\bar{}top\bar{}bottom\bar{}middle\bar{}base}
 \expl{Sets horizontal and/or vertical alignment for subsequent text.}
 
@@ -22,8 +25,10 @@
   the ``['' and ``]'' are literal brackets that separate the x- and 
   y-coordinates. See also \cref{patch}.}
 
-\cmd{at}{\emph{x} \emph{y} [\emph{$\xi$} \emph{$\eta$}] |
-  [\emph{$\phi$}} 
+\cmd{at}{\emph{x} \emph{y}}
+\cmd{at}{\emph{x} \emph{y} \emph{$\xi$} \emph{$\eta$}}
+\cmd{at}{\emph{x} \emph{y} \emph{$\phi$}}
+\cmd{at}{--}
 \expl{Places subsequent text and lines at graph
     position (\emph{x}, \emph{y}). If (\emph{$\xi$}, \emph{$\eta$})
     are given, this specifies a rotation such that the baseline of the
@@ -32,29 +37,34 @@
     coordinates. Alternatively, a rotation may be specified as a
     direct (clockwise) angle $\phi$. Besides a numeric value, \emph{x}
     may be one of left, right, center to place relative to the
-    bounding box of the last drawn object, or one of cleft, cright,
-    ccenter to place relative to the cumulative bounding box. (See
-    \cref{cumul}.) Likewise, \emph{y} may be one of top, bottom,
-    middle, ctop, cbottom, cmiddle.}
+    bounding box of the last drawn object (or group, see
+    \cref{group}).
+    Likewise, \emph{y} may be one of top, bottom, or middle. ``at --''
+    places subsequent text and lines relative to the top left of the figure.}
 
-\cmd{brush}{[\emph{ID}] \emph{color}\bar{}none\bar{}\emph{opacity} \ldots}
+\cmd{brush}{(\emph{ID}) \emph{color}\bar{}none\bar{}\emph{opacity} \ldots}
 \expl{Selects a brush by \emph{ID}, defines its color (or sets it to
   ``none''), and/or its \emph{opacity} (as a number between 0 and 1).}
-
-\cmd{cumul}{}
-\expl{Restarts accumulation of bounding boxes for \cref{at}\n}
 
 \cmd{figsize}{\emph{w} \emph{h}}
 \expl{Sets the size of the figure to (\emph{w} x \emph{h})
   points. This should appear before any other commands.}
 
-\cmd{font}{\emph{family} [bold] [italic] \emph{size}}
+\cmd{font}{\emph{family} (bold) (italic) \emph{size}}
 \expl{Selects a new font with a given family, point size, weight
   and/or slant.}
 
-\cmd{fudge}{[\emph{margin}]}
+\cmd{fudge}{(\emph{margin})}
+\cmd{fudge}{\emph{margin} \emph{ratio}}
+\cmd{fudge}{-- \emph{ratio}}
 \expl{Shrinks the axes as necessary so that all graphics and text fits
-  within the bounding box of the figure as defined by \cref{figsize}.}
+  within the bounding box of the figure as defined by
+  \cref{figsize}. Margin is specified in points. Optional \emph{ratio}
+specifies the desired aspect ratio of y:x data units.}
+
+\cmd{group}{}
+\cmd{endgroup}{}
+\expl{Groups statements to accumulate bounding boxes for \cref{at}.}
 
 \cmd{hairline}{1\bar0}
 \expl{Enables or disables automatic drawing of zero-width hairlines
@@ -87,7 +97,7 @@
 \expl{Draws a polygon, filled using the current brush. \emph{x$_i$}
   and \emph{y$_i$} are specified in data coordinates. See also \cref{area}.}
 
-\cmd{pen}{[\emph{ID}]
+\cmd{pen}{(\emph{ID})
   \emph{color}\bar{}\emph{width}\bar{}miterjoin\bar{}beveljoin\bar{}roundjoin\bar{}flatcap\bar{}squarecap\bar{}roundcap\bar{}solid\bar\linebreak\mbox{}\kern25pt{}dash\bar{}dot\bar{}dashdot\bar{}dashdotdot\bar{}none
 \ldots}
 \expl{Selects a pen by \emph{ID}, defines its color, its width (in
@@ -131,17 +141,19 @@ matlab functions \cref{qplot} and \cref{qimage} give examples.
 \section{User interface}
 
 QPlot can be run on the command line, like this:
-
+\begin{quotation}
 qplot \emph{source} \emph{output}
-
-\noindent where \emph{source} is a file with commands and
-\emph{output} can specify either pdf, svg, png, or tiff output.
+\end{quotation}
+ where \emph{source} is a file with commands and
+\emph{output} can specify either pdf, svg, png, or tiff output. Output
+can also be a postscript (.ps) file, in which case a single full page
+is produced with the graph in the middle and crop marks around it.
 
 QPlot can also be run interactively, like this:
-
+\begin{quotation}
 qplot \emph{source}
-
-\noindent In that case, graphics are rendered in a window. Keys ``+''
+\end{quotation}
+ In that case, graphics are rendered in a window. Keys ``+''
 and ``-'' zoom in and out, ``0'' scales to fit, ``1'' scales to
 100\%. ``E'' resizes the window to fit the whole scene. ``G'' toggles
 between white and gray borders. ``Ctrl-Q'' quits. The graphics are

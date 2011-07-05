@@ -68,10 +68,11 @@ end
 qgroup;
 qplot(xlim, [y0 y0]);
 
+idx = qp_idx;
 global qp_data;
-ticklen = qp_data.ax.ticklen;
-lbldist = qp_data.ax.textdist(1);
-ttldist = qp_data.ax.textdist(2);
+ticklen = qp_data.ticklen{idx};
+lbldist = qp_data.textdist{idx}(1);
+ttldist = qp_data.textdist{idx}(2);
 
 if ~isempty(lbls)
   reftxt='';
@@ -113,9 +114,9 @@ if ~isempty(ttl)
   qtext(0, ttldist, ttl);
 end
 
-qp_data.ax.last='x';
-qp_data.ax.lastcoord=y0;
-qp_data.ax.lastlim=xlim;
+qp_data.lastax{idx}='x';
+qp_data.lastcoord{idx}=y0;
+qp_data.lastlim{idx}=xlim;
 qendgroup
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

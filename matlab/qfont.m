@@ -1,5 +1,5 @@
 function qfont(varargin)
-fd = qp_ensure(1);
+fd = qp_fd(1);
 
 if nargin<2 | nargin>4
   qfont_usage;

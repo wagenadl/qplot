@@ -40,7 +40,10 @@ if fd<0
   error('Cannot create figure');
 end
 
-fprintf(fd, 'figsize %g %g\n', w*72, h*72);
+w=w*72;
+h=h*72;
+
+fprintf(fd, 'figsize %g %g\n', w, h);
 
 qp_data.curfn = fn;
 
@@ -48,16 +51,21 @@ if isempty(idx)
   qp_data.fn{end+1} = fn;
   qp_data.fd(end+1) = fd;
   qp_data.istemp(end+1) = istmp;
+  qp_data.extent{end+1} = [0 0 w h];
+
+  qp_data.ticklen{end+1} = 3;
+  qp_data.textdist{end+1} = [3 3];
+  qp_data.lastax{end+1} = '';
+  qp_data.lut{end+1} = repmat([0:.01:1]',[1 3]);
 else
   qp_data.fd(idx) = fd;
-  qp_data.istmp(idx) = istmp;
+  qp_data.istemp(idx) = istmp;
+  qp_data.extent{idx} = [0 0 w h];
+  qp_data.ticklen{idx} = 3;
+  qp_data.textdist{idx} = [3 3];
+  qp_data.lastax{idx} = '';
+  qp_data.lut{idx} = repmat([0:.01:1]',[1 3]);
 end
-
-qp_data.ax.ticklen = 3;
-qp_data.ax.textdist = [3 3];
-qp_data.ax.last = '';
-qp_data.lut = repmat([0:.01:1]',[1 3]);
-
 
 unix(sprintf('qpclient %s', fn));
 

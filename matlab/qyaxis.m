@@ -70,10 +70,11 @@ end
 qgroup;
 qplot([y0 y0], xlim);
 
+idx = qp_idx;
 global qp_data;
-ticklen = qp_data.ax.ticklen;
-lbldist = qp_data.ax.textdist(1);
-ttldist = qp_data.ax.textdist(2);
+ticklen = qp_data.ticklen{idx};
+lbldist = qp_data.textdist{idx}(1);
+ttldist = qp_data.textdist{idx}(2);
 
 if lbldist>=0
   valign = 'right';

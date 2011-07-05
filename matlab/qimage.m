@@ -8,7 +8,7 @@ function qimage(xywh, data)
 %    It is permissable for W or H to be negative; in that case, the
 %    image will be plotted upside down.
 
-fd = qp_ensure(1);
+fd = qp_fd(1);
 
 if nargin==1
   data = xywh;

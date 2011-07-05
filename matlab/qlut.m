@@ -1,4 +1,5 @@
 function qlut(lut) 
 % QLUT - Set lookup table for future QIMSC.
-qp_ensure;
-qp_data.lut = lut;
+idx = qp_idx;
+global qp_data;
+qp_data.lut{idx} = lut;

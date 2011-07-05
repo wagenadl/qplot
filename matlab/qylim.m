@@ -1,6 +1,6 @@
 function qylim(varargin)
 
-fd = qp_ensure(1);
+fd = qp_fd(1);
 
 if nargin<2 | nargin>2
   error('Usage: qylim x0 x1');

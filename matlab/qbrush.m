@@ -1,5 +1,5 @@
 function qbrush(varargin)
-fd = qp_ensure(1);
+fd = qp_fd(1);
 
 for n=1:nargin
   a = varargin{n};

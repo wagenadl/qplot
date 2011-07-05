@@ -1,5 +1,5 @@
 function qline(xx, yy)
-fd = qp_ensure(1);
+fd = qp_fd(1);
 
 if ~isnvector(xx) | ~isreal(xx)
   error('xx must be a real vector')

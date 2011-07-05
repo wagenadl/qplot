@@ -1,5 +1,5 @@
 function qalign(varargin)
-fd = qp_ensure(1);
+fd = qp_fd(1);
 
 if nargin<1
   error('Usage: qalign left|right|center|top|bottom|middle|base ...');

@@ -22,8 +22,8 @@ if nargin<3
   c1 = max(data(:));
 end
 
-qp_ensure;
-[N C] = size(qp_data.lut);
+idx = qp_idx(1);
+[N C] = size(qp_data.lut{idx});
 data = floor(1+(N-.0001)*(data-c0)/(c1-c0)); % normalize to color range
 
 qimage(xywh, reshape(qp_data.lut(reshape(data,[Y*X 1]),:), [Y X C]));

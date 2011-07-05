@@ -1,6 +1,5 @@
 function qmarker(varargin)
-global qp_data
-fd = qp_ensure(1);
+fd = qp_fd(1);
 
 for n=1:nargin
   a = varargin{n};

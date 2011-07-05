@@ -1,6 +1,6 @@
 function qfudge(varargin)
 
-fd = qp_ensure(1);
+fd = qp_fd(1);
 
 if nargin>2
   error('Usage: qfudge [margin] [ratio]');

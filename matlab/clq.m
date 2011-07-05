@@ -1,6 +1,6 @@
 function clq 
 global qp_data
-fd = qp_ensure(1);
+fd = qp_fd(1);
 fn = qp_data.curfn;
 fclose(fd);
 fd = fopen(fn, 'r');

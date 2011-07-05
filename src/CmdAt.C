@@ -7,7 +7,7 @@
 static CBuilder<CmdAt> cbAt("at");
 
 bool CmdAt::usage() {
-  return error("Usage: at x y [dx dy]|phi");
+  return error("Usage: at x y [dx dy]|phi | -");
 }
 
 static int horiAlign(QString s) {
@@ -35,6 +35,8 @@ static int vertAlign(QString s) {
   
 
 bool CmdAt::parse(Statement const &s) {
+  if (s.length()==2 && s[1].typ==Token::DASH)
+    return true;
   if (s.length()<3)
     return usage();
   if (!(s[1].typ==Token::NUMBER ||
@@ -88,6 +90,11 @@ QRectF CmdAt::dataRange(Statement const &s) {
 }
   
 void CmdAt::render(Statement const &s, Figure &f, bool) {
+  if (s[1].typ==Token::DASH) {
+    f.setAnchor(QPointF(0,0));
+    return;
+  }
+  
   double x = s[1].typ==Token::NUMBER ? s[1].num : f.xAxis().min(); 
   double y = s[2].typ==Token::NUMBER ? s[2].num : f.yAxis().min(); 
   QPointF anchor = f.map(x,y);
