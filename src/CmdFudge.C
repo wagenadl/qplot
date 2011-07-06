@@ -3,6 +3,7 @@
 #include "CmdFudge.H"
 #include <QDebug>
 #include <math.h>
+#include "Error.H"
 
 static CBuilder<CmdFudge> cbFudge("fudge");
 
@@ -46,6 +47,9 @@ void CmdFudge::render(Statement const &s, Figure &f, bool) {
   //qDebug() << "fudge" << dleft << dright << dtop << dbottom << mrg;
   //qDebug() << "  " << x0 << x1 << y0 << y1;
 
+  double olddx = x1.x()-x0.x();
+  double olddy = y1.y()-y0.y();
+  
   if (dleft<mrg)
     x0 += QPointF(2*mrg-dleft, 0);
   if (dright<mrg)
@@ -54,6 +58,14 @@ void CmdFudge::render(Statement const &s, Figure &f, bool) {
     y1 += QPointF(0, 2*mrg-dtop);
   if (dbottom<mrg)
     y0 -= QPointF(0, 2*mrg-dbottom);
+
+  double newdx = x1.x()-x0.x();
+  double newdy = y1.y()-y0.y();
+
+  if (newdx < .5*olddx || newdy < .5*olddy) {
+    Error() << "Fudge failed";
+    return;
+  }
 
   if (hasRatio) {
     double dpx = fabs(x1.x() - x0.x());

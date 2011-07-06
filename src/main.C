@@ -76,7 +76,7 @@ int read(Program &prog, QString ifn) {
   return 1;
 }  
 
-int interactive(QString ifn, QApplication *app, bool gray=false) {
+int interactive(QString ifn, QApplication *app) {
   Program prog;
   read(prog, ifn);
   Figure fig;
@@ -89,7 +89,7 @@ int interactive(QString ifn, QApplication *app, bool gray=false) {
   QObject::connect(&wtch, SIGNAL(ping()), &win, SLOT(raise()));
   QObject::connect(&wtch, SIGNAL(ping()), &win, SLOT(update()));
   win.setContents(&fig, &prog);
-  win.setMargin(pt2iu(20), gray);
+  win.setMargin(pt2iu(20));
   win.show();
   win.autoSize();
   wtch.reread(true);
@@ -243,9 +243,6 @@ int main(int argc, char **argv) {
     else
       return interactive(ifn, &app);
   } else /* argc==3 */ {
-    if (QString(argv[1])=="-gray") 
-      return interactive(argv[2], &app, true);
-    else
-      return noninteractive(argv[1], argv[2]);
+    return noninteractive(argv[1], argv[2]);
   } 
 }

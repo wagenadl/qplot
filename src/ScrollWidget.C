@@ -70,6 +70,9 @@ void ScrollWidget::mousePressEvent(QMouseEvent *e) {
 }
 
 void ScrollWidget::mouseMoveEvent(QMouseEvent *e) {
+  if (e->buttons()==0)
+    return;
+  
   QPointF pos_now = e->pos();
   tl_world = tl_press - (pos_now - pos_press)/scale();
   surePan();

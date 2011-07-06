@@ -3,22 +3,26 @@
 #include "QPWidget.H"
 #include <QDebug>
 #include <QKeyEvent>
-
-#define MARGPIX 10
+#include <QLabel>
+#include <math.h>
+#define MARGPIX 15
 
 QPWidget::QPWidget(QWidget *parent): ScrollWidget(parent) {
   fig=0;
   prog=0;
   marg = 20;
-  gray = false;
+  margindecor = NONE;
+  coord = new QLabel(this);
+  coord->hide();
+  coord->resize(100,18);
+  coord->move(5, height()-coord->height()-3);
 }
 
 QPWidget::~QPWidget() {
 }
 
-void QPWidget::setMargin(double m, bool g) {
+void QPWidget::setMargin(double m) {
   marg = m;
-  gray = g;
   setExtent(worldextent.adjusted(-marg, -marg, marg, marg));
 }
 
@@ -46,7 +50,7 @@ void QPWidget::paintEvent(QPaintEvent *) {
   QPainter &p(fig->painter());
   p.begin(this); // resets state of pen
 
-  if (!gray) {
+  if (margindecor!=GRAY) {
     p.save();
     p.setBrush(QColor("white"));
     p.setPen(Qt::NoPen);
@@ -63,12 +67,12 @@ void QPWidget::paintEvent(QPaintEvent *) {
 
   p.save();
   QRectF world = fig->extent();
-  if (gray) {
+  if (margindecor==GRAY) {
     // draw background
     p.setBrush(QColor("white"));
     p.setPen(Qt::NoPen);
     p.drawRect(world);
-  } else {
+  } else if (margindecor==CROP) {
     // draw crop marks
     p.setPen(QColor("black"));
     double yy[] = { world.top(), world.bottom() };
@@ -99,30 +103,86 @@ void QPWidget::paintEvent(QPaintEvent *) {
 void QPWidget::keyPressEvent(QKeyEvent *e) {
   switch (e->key()) {
   case Qt::Key_G:
-    gray = !gray;
+    switch (margindecor) {
+    case NONE:
+      margindecor = CROP;
+      break;
+    case CROP:
+      margindecor = GRAY;
+      break;
+    case GRAY:
+      margindecor = NONE;
+      break;
+    }
     update();
+    break;
+  case Qt::Key_C:
+    setMouseTracking(!hasMouseTracking());
+    qDebug() << hasMouseTracking();
+    if (hasMouseTracking())
+      coord->show();
+    else
+      coord->hide();
     break;
   default:
     ScrollWidget::keyPressEvent(e);
   }
 }
 
-void QPWidget::mousePressEvent(QMouseEvent *e) {
-  ScrollWidget::mousePressEvent(e);
-  if (fig) {
-    QPointF xy = e->pos();
-    QPointF world = (xy-tlDest()) / scale() + topLeft();
-    QString pnl = fig->currentPanelName();
-    double x = fig->xAxis().rev(world);
-    double y = fig->yAxis().rev(world);
-    ScrollWidget::setWindowTitle(winttl +
-				 QString(" (%1,%2)").
-				 arg(x, 0, 'g', 5).
-				 arg(y, 0, 'g', 5));
-  }
-}
-
 void QPWidget::setWindowTitle(QString t) {
   winttl = t;
   ScrollWidget::setWindowTitle(t);
+}
+
+void QPWidget::resizeEvent(QResizeEvent *e) {
+  ScrollWidget::resizeEvent(e);
+  coord->move(5, height()-coord->height()-3);
+}
+
+static QString coordtext(double x, double x0, double x1) {
+  double dx = 2e-3*(x1-x0);
+  // represents X so that a difference of DX is clear.
+  if (x==0)
+    return 0;
+  if (dx<=0)
+    return QString::fromUtf8("–");
+  int k = floor(log(dx)/log(10));
+  if (k<=0)
+    return QString("%1").arg(x, 0, 'f', -k);
+  int l = floor(log(abs(x))/log(10));
+  // I will show l-k digits, and e(l-k).
+  // I could also show just l digits.
+  if (l-k + 2 > l)
+    return QString("%1").arg(x, 0, 'f', -k);
+  k = l-k+1;
+  if (k<1)
+    k=1;
+  return QString("%1").arg(x, 0, 'e', k);
+}
+
+
+void QPWidget::mouseMoveEvent(QMouseEvent *e) {
+  ScrollWidget::mouseMoveEvent(e);
+  if (e->buttons())
+    return;
+  if (!fig)
+    return;
+
+  QPointF xy = e->pos();
+  QPointF world = (xy-tlDest()) / scale() + topLeft();
+  QString pnl = fig->currentPanelName();
+  QString x = coordtext(fig->xAxis().rev(world),
+			fig->xAxis().min(), fig->xAxis().max());
+  QString y = coordtext(fig->yAxis().rev(world),
+			fig->yAxis().min(), fig->yAxis().max());
+  QRectF we = extent();
+  if (world.x()<we.left()+marg || world.x()>we.right()-marg)
+    x = QString::fromUtf8("–");
+  if (world.y()<we.top()+marg || world.y()>we.bottom()-marg)
+    y = QString::fromUtf8("–");
+
+  QString c = QString("(%1, %2)").arg(x).arg(y);
+  if (pnl != "")
+    c = "[" + pnl + "] " + c;
+  coord->setText(c);
 }

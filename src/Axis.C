@@ -17,7 +17,6 @@ void Axis::setDataRange(double x0_, double x1_) {
   if (x1_ <= x0_) {
     x0 = 0;
     x1 = 1;
-    qDebug() << "Warning: bad data range: " << x0_ << x1_;
   } else {
     x0 = x0_;
     x1 = x1_;

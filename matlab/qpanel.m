@@ -29,14 +29,19 @@ id = varargin{1};
 if ~ischar(id) | length(id)~=1 | ~(id=='-' | (id>='A' & id<='Z'))
   error('Usage: qpanel ID [x y w h] | -');
 end
-
+if id=='-' & length(varargin)>1
+  error('Usage: qpanel ID [x y w h] | -');
+end
 
 str = sprintf('panel %s', id);
+xywh = [];
 for k=2:length(varargin)
   a = varargin{k};
   if ischar(a) & ~isnan(str2double(a))
+    xywh(end+1) = str2double(a);
     str = sprintf('%s %s', str, a);
   elseif isnscalar(a) & isreal(a)
+    xywh(end+1) = a;
     str = sprintf('%s %g', str, a);
   else
     error('Cannot interpret arguments');
@@ -51,3 +56,8 @@ oldidx = strmatch(id, qp_data.info(idx).panels, 'exact');
 if isempty(oldidx)
   qp_data.info(idx).panels{end+1} = id;
 end
+if ~isempty(xywh)
+  n = 1 + id-'A';
+  qp_data.info(idx).panelextent{n} = xywh;
+end
+qp_data.info(idx).panel = id;
