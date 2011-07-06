@@ -13,5 +13,5 @@ end
 
 idx = qp_idx;
 global qp_data;
-qp_data.textdist{idx} = [lbl ttl];
+qp_data.info(idx).textdist = [lbl ttl];
 

@@ -4,21 +4,21 @@ function qmticks(xx)
 idx = qp_idx(1);
 global qp_data
 
-if isempty(qp_data.lastax{idx})
+if isempty(qp_data.info(idx).lastax)
   error('No previous axis');
 end
 
-xx = xx(xx>=qp_data.lastlim{idx}(1) & xx<=qp_data.lastlim{idx}(2));
+xx = xx(xx>=qp_data.info(idx).lastlim(1) & xx<=qp_data.info(idx).lastlim(2));
 X = length(xx);
 
-if strcmp(qp_data.lastax{idx}, 'x')
+if strcmp(qp_data.info(idx).lastax, 'x')
   for k=1:X
-    qat(xx(k), qp_data.lastcoord{idx});
-    qline([0 0], [0 qp_data.ticklen{idx}]);
+    qat(xx(k), qp_data.info(idx).lastcoord);
+    qline([0 0], [0 qp_data.info(idx).ticklen]);
   end
-elseif strcmp(qp_data.lastax{idx}, 'y')
+elseif strcmp(qp_data.info(idx).lastax, 'y')
   for k=1:X
-    qat(qp_data.lastcoord{idx}, xx(k));
-    qline([0 -qp_data.ticklen{idx}], [0 0]);
+    qat(qp_data.info(idx).lastcoord, xx(k));
+    qline([0 -qp_data.info(idx).ticklen], [0 0]);
   end
 end

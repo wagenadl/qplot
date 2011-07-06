@@ -1,27 +1,9 @@
-function fd = qp_fd(autofig)
+function fd = qp_fd(varargin)
 
-qp_ensure;
+idx = qp_idx(varargin{:});
 global qp_data
 
-if nargin==0
-  autofig=0;
-end
-
-if isempty(qp_data.curfn)
-  if autofig>0
-    qfigure;
-  else
-    error('No open window');
-  end
-end
-
-idx = strmatch(qp_data.curfn, qp_data.fn, 'exact');
-if isempty(idx)
-  error('No open window');
-end
-
-fd = qp_data.fd(idx);
+fd = qp_data.info(idx).fd;
 if fd<0
   error('No open window');
 end
-

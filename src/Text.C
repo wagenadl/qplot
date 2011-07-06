@@ -5,6 +5,7 @@
 #include "Factor.H"
 #include <QFontMetricsF>
 #include <QPainter>
+#include <QDebug>
 
 Text::Text() {
   clear();

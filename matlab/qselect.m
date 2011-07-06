@@ -2,7 +2,7 @@ function qselect(fn)
 global qp_data;
 qp_ensure;
 
-idx = strmatch(fn, qp_data.fn, 'exact');
+idx = strmatch(fn, qp_data.fns, 'exact');
 if isempty(idx)
   error('No such figure');
 end

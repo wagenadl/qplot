@@ -18,6 +18,11 @@ Watcher::Watcher(QString fn, Program *prog, Figure *fig):
   fsw->addPath(fn);
   connect(fsw, SIGNAL(fileChanged(QString const &)),
 	  this, SLOT(pong()));
+  timer = new QTimer(this);
+  timer->setSingleShot(true);
+  timer->setInterval(100);
+  connect(timer, SIGNAL(timeout()),
+	  this, SLOT(tick()));
 }
 
 Watcher::~Watcher() {
@@ -25,12 +30,23 @@ Watcher::~Watcher() {
 }
 
 void Watcher::tick() {
-  reread(true);
+  if (timer->interval()<500) {
+    bool ok = reread(false);
+    if (ok)
+      return;
+    timer->setInterval(1000);
+    timer->start();
+  } else {
+    bool ok = reread(true);
+    if (ok)
+      timer->setInterval(100);
+  }
 }
 
 void Watcher::pong() {
-  if (!reread(false))
-    QTimer::singleShot(1000, this, SLOT(tick()));
+  //  if (!reread(false))
+  //    QTimer::singleShot(1000, this, SLOT(tick()));
+  timer->start();
 }
 
 bool Watcher::reread(bool errorbox) {
@@ -55,6 +71,8 @@ bool Watcher::reread(bool errorbox) {
     } else {
       if (errorbox) {
 	qmb->setWindowTitle("qplot " + fn);
+	if (errors.size()>1000)
+	  errors = errors.left(1000) + " ...";
 	qmb->setText(errors);
 	qmb->show();
       }

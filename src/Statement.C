@@ -22,7 +22,7 @@ int Statement::read(QFile &source, QString label) {
   dataRefs.clear();
 
   QString line(QString::fromUtf8(source.readLine()));
-  if (line.isNull())
+  if (line.isNull() || !line.endsWith('\n'))
     return 0;
   int nlines = 1;
   
@@ -32,7 +32,7 @@ int Statement::read(QFile &source, QString label) {
 
   while (lev>0) {
     QString line(QString::fromUtf8(source.readLine()));
-    if (line.isNull())
+    if (line.isNull() || !line.endsWith('\n'))
       break;
     nlines ++;
     QStringList words = line.split(QRegExp("\\s+"));
@@ -51,7 +51,11 @@ int Statement::read(QFile &source, QString label) {
       int N = desc.mid(2).toInt(&ok);
       if (ok) {
 	QVector<unsigned char> uc(N);
-	source.read((char*)uc.data(), N);
+	int Nread = source.read((char*)uc.data(), N);
+	if (Nread<N) {
+	  Error() << "End-of-file while reading data";
+	  return 0;
+	}
 	QVector<double> data(N);
 	for (int n=0; n<N; n++)
 	  data[n] = uc[n]/255.0;
@@ -63,7 +67,11 @@ int Statement::read(QFile &source, QString label) {
       int N = desc.toInt(&ok);
       if (ok) {
 	QVector<double> data(N);
-	source.read((char*)data.data(), N*sizeof(double));
+	int Nread = source.read((char*)data.data(), N*sizeof(double));
+	if (Nread<N*int(sizeof(double))) {
+	  Error() << "End-of-file while reading data";
+	  return 0;
+	}
 	dat[idx] = data;
       } else {
 	Error() << "Unacceptable data reference";

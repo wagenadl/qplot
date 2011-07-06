@@ -9,10 +9,14 @@ qplot(xx, sin(xx))
 
 qpen k 0
 qxaxis(-1.1, pi*[-3:3], strtoks('-3π -2π -π 0 π 2π 3π'), 'Angle (rad)');
-qyaxis(-3.1*pi, [-1:1], 'Cosine and sine');
+qyaxis(-3.1*pi, [-1:1]);
+
 qticklen 2.5
 qmticks([-.5 .5])
 qticklen 1.5
 qmticks([-1:.1:1])
+
+qtitle 'Cosine and sine'
+qylim -1 1.2
 
 qfudge

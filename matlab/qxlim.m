@@ -19,3 +19,4 @@ for k=1:nargin
 end
 
 fprintf(fd, '%s\n', str);
+

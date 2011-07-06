@@ -25,6 +25,7 @@ private:
   Figure *fig;
   class QFileSystemWatcher *fsw;
   class QMessageBox *qmb;
+  class QTimer *timer;
 };
 
 #endif

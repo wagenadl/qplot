@@ -1,24 +1,38 @@
 function qpanel(varargin)
+% QPANEL - Define a new subpanel or reenter a previous one
+%    QPANEL(id, x, y, w, h) or QPANEL(id, xywh) defines a new panel.
+%    QPANEL(id) revisits a previously defined panel. ID must be a single
+%    capital or a dash ('-') to revert to the top level.
 
 fd = qp_fd(1);
 
-ok=1;
-if nargin<1
-  ok=0;
-elseif nargin>5
-  ok=0;
-elseif nargin>1 & nargin<5
-  ok=0;
+ok=0;
+if nargin==1
+  ok=1;
+elseif nargin==5
+  ok=1;
+elseif nargin==2
+  if length(varargin{2})==4
+    xywh = varargin{2};
+    varargin{2} = xywh(1);
+    varargin{3} = xywh(2);
+    varargin{4} = xywh(3);
+    varargin{5} = xywh(4);
+    ok=1;
+  end
 end
+
 if ~ok
   error('Usage: qpanel ID [x y w h] | -');
 end
-if ~ischar(varargin{1}) | length(varargin{1})>1
+id = varargin{1};
+if ~ischar(id) | length(id)~=1 | ~(id=='-' | (id>='A' & id<='Z'))
   error('Usage: qpanel ID [x y w h] | -');
 end
 
-str = sprintf('panel %s', varargin{1});
-for k=2:nargin
+
+str = sprintf('panel %s', id);
+for k=2:length(varargin)
   a = varargin{k};
   if ischar(a) & ~isnan(str2double(a))
     str = sprintf('%s %s', str, a);
@@ -30,3 +44,10 @@ for k=2:nargin
 end
 
 fprintf(fd, '%s\n', str);
+
+idx = qp_idx;
+global qp_data;
+oldidx = strmatch(id, qp_data.info(idx).panels, 'exact');
+if isempty(oldidx)
+  qp_data.info(idx).panels{end+1} = id;
+end
