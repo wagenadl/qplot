@@ -14,7 +14,7 @@ QPWidget::QPWidget(QWidget *parent): ScrollWidget(parent) {
   margindecor = NONE;
   coord = new QLabel(this);
   coord->hide();
-  coord->resize(100,18);
+  coord->resize(200,18);
   coord->move(5, height()-coord->height()-3);
 }
 

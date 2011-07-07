@@ -16,5 +16,3 @@ where commands are:
 Retraction is along the line segment; two numbers may be given for internal
 points.
 
-- Fudge doesn't work well with panels, or when change is extreme? Text that
-is not pegged to data could also cause problems.

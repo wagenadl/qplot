@@ -1,0 +1,31 @@
+figsize 400 300
+plot [ 1 0 0 ] [ 0 0 1 ]
+at 1 0
+align center top
+text 0 5 "x"
+at 0 0
+align right top
+text -5 5 "0"
+at 0 1
+align right middle
+text -5 0 "y"
+
+marker cross 20
+mark [ .5 ] [ .5 ]
+fudge
+
+pen red
+panel A 80 20 300 200
+plot [ 1 0 .1 ] [ .1 0 1 ]
+at 1 .1
+align center top
+text 0 5 "x"
+at 0 0
+align right top
+text -5 5 "0"
+at .1 1
+align right middle
+text -5 0 "y"
+fudge 1
+marker cross 20
+mark [ .5 ] [ .5 ]

@@ -44,9 +44,6 @@ void CmdFudge::render(Statement const &s, Figure &f, bool) {
   QPointF y0 = f.yAxis().minp();
   QPointF y1 = f.yAxis().maxp();
 
-  //qDebug() << "fudge" << dleft << dright << dtop << dbottom << mrg;
-  //qDebug() << "  " << x0 << x1 << y0 << y1;
-
   double olddx = x1.x()-x0.x();
   double olddy = y1.y()-y0.y();
   
@@ -62,7 +59,7 @@ void CmdFudge::render(Statement const &s, Figure &f, bool) {
   double newdx = x1.x()-x0.x();
   double newdy = y1.y()-y0.y();
 
-  if (newdx < .5*olddx || newdy < .5*olddy) {
+  if (newdx/olddx < .5 || newdy/olddy < .5) {
     Error() << "Fudge failed";
     return;
   }
@@ -73,7 +70,6 @@ void CmdFudge::render(Statement const &s, Figure &f, bool) {
     double xrat = fabs(dpx / (f.xAxis().max() - f.xAxis().min()));
     double yrat = fabs(dpy / (f.yAxis().max() - f.yAxis().min()));
     double myrat = yrat/xrat;
-    qDebug() << dpx << dpy << xrat << yrat << myrat << ratio;
     if (myrat>ratio) {
       // I am too tall
       y1 += QPointF(0, .5*dpy*(1-ratio/myrat));

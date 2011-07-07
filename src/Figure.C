@@ -3,6 +3,7 @@
 #include "Figure.H"
 #include "Error.H"
 #include <math.h>
+#include <QDebug>
 
 Figure::Figure() {
   figextent = QRectF(QPointF(0,0), QSizeF(72*6, 72*4));
@@ -22,6 +23,11 @@ void Figure::reset() {
   hairline_ = false;
   mrkr = Marker();
   clearBBox(true);
+  foreach (QString p, panels.keys()) {
+    panels[p].fullbbox=QRectF();
+    panels[p].cumulbbox=QRectF();
+    panels[p].lastbbox=QRectF();
+  }
   groupstack.clear();
   if (pntr.isActive()) {
     QFont font("Helvetica");
@@ -56,7 +62,7 @@ Figure::VAlign Figure::vAlign() const {
 
 
 void Figure::setExtent(QRectF xywh_pt) {
-  if (figextent==xywh_pt)
+ if (figextent==xywh_pt)
     return;
 
   figextent = xywh_pt;
@@ -191,12 +197,12 @@ void Figure::choosePanel(QString s) {
   figextent = src.desiredExtent;
   fullbbox = src.fullbbox;
   cumulbbox = src.cumulbbox;
-  lastbbox = src.cumulbbox;
+  lastbbox = src.lastbbox;
   if (s=="-") {
     // dropping to toplevel, include last panel's bbox in our calc.
     fullbbox |= store.fullbbox;
     cumulbbox |= store.fullbbox;
-    lastbbox |= store.fullbbox;
+    lastbbox = store.fullbbox;
   }
 }
 
