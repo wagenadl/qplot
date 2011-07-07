@@ -37,6 +37,7 @@ switch nargin
       xywh = [xx(1)-dx/2 yy(1)-dy/2 X*dx Y*dy];
       c0 = min(data(:));
       c1 = max(data(:));
+      data = flipud(data);
     end
   case 4
     xywh = varargin{1};
@@ -53,6 +54,7 @@ switch nargin
     dx = (xx(end)-xx(1))/(X-1);
     dy = (yy(end)-yy(1))/(Y-1);
     xywh = [xx(1)-dx/2 yy(1)-dy/2 X*dx Y*dy];
+    data = flipud(data);
   otherwise
     error('qimsc takes 1 to 5 arguments');
 end

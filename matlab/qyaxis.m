@@ -68,6 +68,7 @@ end
 %-- Plotting starts here
 
 qgroup;
+qreftext('');
 qplot([y0 y0], xlim);
 
 idx = qp_idx;
@@ -101,13 +102,13 @@ qendgroup;
 
 if ~isempty(ttl) 
   if ttldist>=0
-    qat('left', mean(xlim), pi/2);
-    qalign('center', 'top');
-  else
-    qat('right', mean(xlim), -pi/2);
+    qat('left', mean(xlim), -pi/2);
     qalign('center', 'bottom');
+  else
+    qat('right', mean(xlim), pi/2);
+    qalign('center', 'top');
   end
-  qtext(0, ttldist, ttl);
+  qtext(0, -ttldist, ttl);
 end
 
 idx = qp_idx;

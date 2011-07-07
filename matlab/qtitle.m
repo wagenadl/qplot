@@ -10,5 +10,7 @@ if pid=='-'
   xywh = qp_data.info(idx).extent;
 else
   xywh = qp_data.info(idx).panelextent{1+pid-'A'};
+end
+
 qalign top center
 qtext(xywh(1) + xywh(3)/2, xywh(2) + 5, ttl);

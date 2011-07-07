@@ -28,6 +28,7 @@ switch nargin
     dx = (xx(end)-xx(1))/(X-1);
     dy = (yy(end)-yy(1))/(Y-1);
     xywh = [xx(1)-dx/2 yy(1)-dy/2 Y*dx Y*dy];
+    data = flipud(data);
   otherwise
     error('qimage takes 1 to 3 arguments');
 end
@@ -66,6 +67,3 @@ if ~isa(data, 'uint8')
   data = uint8(floor(255*data+.5));
 end
 fwrite(fd, data, 'uint8');
-
-xywh
-size(data)

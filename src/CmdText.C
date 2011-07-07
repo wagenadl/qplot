@@ -29,7 +29,8 @@ void CmdText::render(Statement const &s, Figure &f, bool dummy) {
   t.setFont(f.painter().font());
   t.addInterpreted(txt);
 
-  QRectF r = t.bbox();
+  QRectF r0 = t.bbox();
+  QRectF r = r0;
 
   QString ref = f.refText();
   if (!ref.isEmpty()) {
@@ -66,9 +67,8 @@ void CmdText::render(Statement const &s, Figure &f, bool dummy) {
     break;
   }
 
-  // work on bbox:
-  r.translate(dx, dy);
-  r = ::rotate(r, f.anchorAngle());
+  // work on bbox: (actual, not ref)
+  r = ::rotate(r0.translated(dx, dy), f.anchorAngle());
   r.translate(f.anchor());
   f.setBBox(r);
   
@@ -78,7 +78,6 @@ void CmdText::render(Statement const &s, Figure &f, bool dummy) {
   f.painter().save();
   f.painter().translate(f.anchor());
   f.painter().rotate(f.anchorAngle() * 180 / 3.14159265);
-  //  f.painter().drawText(QPointF(dx,dy), txt);
   t.render(f.painter(), QPointF(dx, dy));
   f.painter().restore();
 }

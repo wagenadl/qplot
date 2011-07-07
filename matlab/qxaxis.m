@@ -104,6 +104,7 @@ for k=1:length(xpts)
   end
 end
 qendgroup;
+qreftext('');
 
 if ~isempty(ttl) 
   if ttldist>=0

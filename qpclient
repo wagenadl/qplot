@@ -1,7 +1,6 @@
 #!/bin/zsh
 
 IFN=$1
-[[ $1 == "-gray" ]] && IFN=$2
 
 DIR=`dirname $IFN`
 LEAF=`basename $IFN`
