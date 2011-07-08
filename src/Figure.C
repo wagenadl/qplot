@@ -96,6 +96,10 @@ QPointF Figure::map(double x, double y) const {
   return xax.map(x) + yax.map(y);
 }
 
+QPointF Figure::maprel(double dx, double dy) const {
+  return xax.maprel(dx) + yax.maprel(dy);
+}
+
 void Figure::clearBBox(bool full) {
   lastbbox = QRectF();
   cumulbbox = QRectF();

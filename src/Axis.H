@@ -20,6 +20,7 @@ public:
   QPointF minp() const; // paper coord (pt)
   QPointF maxp() const; // paper coord (pt)
   QPointF map(double x) const;
+  QPointF maprel(double dx) const;
   double rev(QPointF p) const;
 private:
   void recalc();

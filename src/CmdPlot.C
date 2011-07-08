@@ -1,11 +1,15 @@
 // CmdPlot.C
 
 #include "CmdPlot.H"
+#include "Rotate.H"
 
 static CBuilder<CmdPlot> cbPlot("plot");
+static CBuilder<CmdPlot> cbPatch("patch");
+static CBuilder<CmdPlot> cbLine("line");
+static CBuilder<CmdPlot> cbArea("area");
 
 bool CmdPlot::usage() {
-  return error("Usage: plot xdata ydata");
+  return error("Usage: plot|patch|line|area xdata ydata");
 }
 
 bool CmdPlot::parse(Statement const &s) {
@@ -19,6 +23,9 @@ bool CmdPlot::parse(Statement const &s) {
 }
 
 QRectF CmdPlot::dataRange(Statement const &s) {
+  if (s[0].str=="line" || s[0].str=="area")
+    return QRectF();
+  
   QVector<double> const &xdata = s.data(1);
   QVector<double> const &ydata = s.data(s.nextIndex(1));
 
@@ -51,11 +58,24 @@ void CmdPlot::render(Statement const &s, Figure &f, bool dryrun) {
     return;
   }
 
-  QRectF extent = dataRange(s);
+  QPolygonF p(xdata.size());
 
-  QPointF p1 = f.map(extent.left(),extent.top());
-  QPointF p2 = f.map(extent.right(),extent.bottom());
-  QRectF bbox = QRectF(p1,p2).normalized();
+  if (s[0].str=="plot" || s[0].str=="patch") {
+    for (int k=0; k<xdata.size(); k++)
+      p[k] = f.map(xdata[k],ydata[k]);
+  } else {
+    double a = f.anchorAngle();
+    QPointF xy0 = f.anchor();
+    for (int k=0; k<xdata.size(); k++) {
+      QPointF xy(pt2iu(xdata[k]), pt2iu(ydata[k]));
+      if (a)
+	xy = ::rotate(xy, a);
+      xy += xy0;
+      p[k] = xy;
+    }
+  }
+
+  QRectF bbox = p.boundingRect();
   double w = f.painter().pen().widthF();
   if (w>0)
     bbox.adjust(-w/2, -w/2, w/2, w/2);
@@ -67,13 +87,13 @@ void CmdPlot::render(Statement const &s, Figure &f, bool dryrun) {
   if (dryrun)
     return;
 
-  QPolygonF p(xdata.size());
-  for (int k=0; k<xdata.size(); k++)
-    p[k] = f.map(xdata[k],ydata[k]);
-  f.painter().drawPolyline(p);
+  if (s[0].str=="patch" || s[0].str=="area")
+    f.painter().drawPolygon(p);
+  else
+    f.painter().drawPolyline(p);
 
   // now add a zero-thick line if requested
-  if (f.hairline()) {
+  if (f.hairline() && (s[0].str=="plot" || s[0].str=="line")) {
     QPen pen(f.painter().pen());
     f.painter().save();
     pen.setWidth(0);

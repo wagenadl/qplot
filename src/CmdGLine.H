@@ -1,15 +1,15 @@
-// CmdArea.H
+// CmdGLine.H
 
-#ifndef CMDAREA_H
+#ifndef CMDGLINE_H
 
-#define CMDAREA_H
+#define CMDGLINE_H
 
 #include "Command.H"
 
-class CmdArea: public Command {
+class CmdGLine: public Command {
   /* Syntax:
-       area xdata ydata
-     This is like "patch", but specified in paper space
+       gline xdata ydata
+     This is like "plot", but specified in paper space
    */
 public:
   virtual bool parse(Statement const &);

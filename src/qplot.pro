@@ -14,20 +14,18 @@ INCLUDEPATH += .
 # Input
 HEADERS += Axis.H \
            CmdAlign.H \
-           CmdArea.H \
            CmdAt.H \
            CmdBrush.H \
            CmdEndGroup.H \
            CmdFigSize.H \
            CmdFont.H \
            CmdFudge.H \
+           CmdGLine.H \
            CmdGroup.H \
            CmdImage.H \
-           CmdLine.H \
            CmdMark.H \
            CmdMarker.H \
            CmdPanel.H \
-           CmdPatch.H \
            CmdPen.H \
            CmdPlot.H \
            CmdRefText.H \
@@ -50,20 +48,18 @@ HEADERS += Axis.H \
 
 SOURCES += Axis.C \
            CmdAlign.C \
-           CmdArea.C \
            CmdAt.C \
            CmdBrush.C \
            CmdFigSize.C \
            CmdEndGroup.C \
            CmdFont.C \
            CmdFudge.C \
+           CmdGLine.C \
            CmdGroup.C \
            CmdImage.C \
-           CmdLine.C \
            CmdMark.C \
            CmdMarker.C \
            CmdPanel.C \
-           CmdPatch.C \
            CmdPen.C \
            CmdPlot.C \
            CmdRefText.C \

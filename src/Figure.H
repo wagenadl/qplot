@@ -37,6 +37,7 @@ public:
        data range has a paper coordinate greater than the maximum of its
        data range. */
   QPointF map(double x, double y) const; // data to paper
+  QPointF maprel(double dx, double dy) const; // data to paper
   void clearBBox(bool full=false);
   void setBBox(QRectF const &); // sets lastbbox, updates fullbbox and cumulbbox
   void setAnchor(QPointF const &, double phi=0); // in paper coords

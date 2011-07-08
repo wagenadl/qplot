@@ -55,6 +55,10 @@ QPointF Axis::map(double x) const {
   return porig + x*dp;
 }
 
+QPointF Axis::maprel(double x) const {
+  return x*dp;
+}
+
 double Axis::rev(QPointF p) const {
   QPointF dp = p-p0;
   QPointF dpa = p1-p0;
