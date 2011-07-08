@@ -138,7 +138,7 @@ void renderPDF(Program &prog, Figure &fig, QString ofn) {
   fig.painter().end();
 }
 
-void renderPS(Program &prog, Figure &fig, QString ofn) {
+void renderPS(Program &prog, Figure &fig, QString ofn, QString ttl="") {
   QSizeF p = papersize();
   QPrinter img(QPrinter::ScreenResolution);
   img.setResolution(72);
@@ -171,7 +171,7 @@ void renderPS(Program &prog, Figure &fig, QString ofn) {
   fig.painter().drawLine(imsize.width(),imsize.height()+MINX,
 			 imsize.width(),imsize.height()+MAXX);
   fig.painter().setFont(QFont("Helvetica", 10));
-  fig.painter().drawText(10, imsize.height()+18, ofn);
+  fig.painter().drawText(10, imsize.height()+18, ttl);
   fig.painter().restore();
   /* Done with crop marks */
   fig.painter().scale(iu2pt(), iu2pt());
@@ -221,7 +221,7 @@ int noninteractive(QString ifn, QString ofn) {
   } else if (extn == "pdf") {
     renderPDF(prog, fig, ofn);
   } else if (extn=="ps") {
-    renderPS(prog, fig, ofn);
+    renderPS(prog, fig, ofn, ifn);
   } else if (extn=="png" || extn=="jpg" || extn=="tif" || extn=="tiff") {
     if (!renderImage(prog, fig, ofn))
       return error("Failed to save.");
