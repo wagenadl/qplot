@@ -26,7 +26,7 @@ if ~ok
   error('Usage: qpanel ID [x y w h] | -');
 end
 id = varargin{1};
-if ~ischar(id) | length(id)~=1 | ~(id=='-' | (id>='A' & id<='Z'))
+if ~ischar(id) 
   error('Usage: qpanel ID [x y w h] | -');
 end
 if id=='-' & length(varargin)>1
@@ -55,9 +55,10 @@ global qp_data;
 oldidx = strmatch(id, qp_data.info(idx).panels, 'exact');
 if isempty(oldidx)
   qp_data.info(idx).panels{end+1} = id;
+  oldidx = length(qp_data.info(idx).panels);
 end
 if ~isempty(xywh)
   n = 1 + id-'A';
-  qp_data.info(idx).panelextent{n} = xywh;
+  qp_data.info(idx).panelextent{oldidx} = xywh;
 end
 qp_data.info(idx).panel = id;

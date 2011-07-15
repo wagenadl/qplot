@@ -67,6 +67,7 @@ public:
   QString currentPanelName() const;
   void startGroup();
   void endGroup();
+  QString panelAt(QPointF const &xy);
 private:
   QRectF figextent;
   Axis xax, yax;

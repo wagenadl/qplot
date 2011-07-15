@@ -9,7 +9,11 @@ pid = qp_data.info(idx).panel;
 if pid=='-'
   xywh = qp_data.info(idx).extent;
 else
-  xywh = qp_data.info(idx).panelextent{1+pid-'A'};
+  oldidx = strmatch(pid, qp_data.info(idx).panels, 'exact');
+  if isempty(oldidx)
+    error('Confused about panels');
+  end
+  xywh = qp_data.info(idx).panelextent{oldidx};
 end
 
 qalign top center

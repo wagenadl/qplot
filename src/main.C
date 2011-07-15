@@ -8,6 +8,8 @@
 #include <QPrinter>
 #include <QSvgGenerator>
 #include <QFileInfo>
+#include <QTemporaryFile>
+#include <QDateTime>
 
 #include <sys/types.h>
 #include <unistd.h>
@@ -21,14 +23,23 @@
 #include "Error.H"
 #include "Factor.H"
 
+double BITMAPRES = 300;
+
+extern void setFACTOR(double); // in Factor.C
+
 int error(QString const &s) {
   Error() << s;
   return 1;
 }
 
 int usage(int ex=1) {
-  Error() << "Usage: qplot   input.txt";
-  Error() << "       qplot   input.txt output.pdf|svg|png|.ps";
+  Error() << "Usage: qplot input.txt";
+  Error() << "       qplot input.txt output.pdf|svg|ps";
+  Error() << "       qplot [-rDPI] input.txt output.png|tif|jpg";
+  Error() << "";
+  Error() << "For noninteractive use, input.txt may be '-' for stdin, and";
+  Error() << "output.EXT may be '-.EXT' for stdout.";
+
   return ex;
 }
 
@@ -77,6 +88,9 @@ int read(Program &prog, QString ifn) {
 }  
 
 int interactive(QString ifn, QApplication *app) {
+  if (ifn=="-")
+    Error() << "Input may not be stdin for interactive use";
+  
   Program prog;
   read(prog, ifn);
   Figure fig;
@@ -116,8 +130,8 @@ void renderSVG(Program &prog, Figure &fig, QString ofn) {
 			       90./72*iu2pt(fig.extent().height()))));
   fig.painter().begin(&img);
   fig.painter().scale(90./72*iu2pt(), 90./72*iu2pt());
-  fig.painter().translate(-iu2pt(fig.extent().left()),
-			  -iu2pt(fig.extent().top()));
+  fig.painter().translate(fig.extent().left(),
+			  fig.extent().top());
   prog.render(fig);
   fig.painter().end();
 }
@@ -130,10 +144,11 @@ void renderPDF(Program &prog, Figure &fig, QString ofn) {
 			  iu2pt(fig.extent().height())),
 		   QPrinter::Point);
   img.setOutputFileName(ofn);
+  img.setOutputFormat(QPrinter::PdfFormat);
   fig.painter().begin(&img);
   fig.painter().scale(iu2pt(), iu2pt());
-  fig.painter().translate(-iu2pt(fig.extent().left()),
-			  -iu2pt(fig.extent().top()));
+  fig.painter().translate(-fig.extent().left(),
+			  -fig.extent().top());
   prog.render(fig);
   fig.painter().end();
 }
@@ -147,6 +162,7 @@ void renderPS(Program &prog, Figure &fig, QString ofn, QString ttl="") {
   QSizeF imsize(QSizeF(iu2pt(fig.extent().width()),
 		       iu2pt(fig.extent().height())));
   img.setOutputFileName(ofn);
+  img.setOutputFormat(QPrinter::PostScriptFormat);
   fig.painter().begin(&img);
   fig.painter().translate((p.width()-imsize.width())/2,
 			  (p.height()-imsize.height())/2);
@@ -170,6 +186,7 @@ void renderPS(Program &prog, Figure &fig, QString ofn, QString ttl="") {
 			 imsize.width()+MAXX,imsize.height());
   fig.painter().drawLine(imsize.width(),imsize.height()+MINX,
 			 imsize.width(),imsize.height()+MAXX);
+  // render title
   fig.painter().setFont(QFont("Helvetica", 10));
   fig.painter().drawText(10, imsize.height()+18, ttl);
   fig.painter().restore();
@@ -187,18 +204,29 @@ bool renderImage(Program &prog, Figure &fig, QString ofn) {
 	     QImage::Format_ARGB32);
   img.fill(0xffffffff);
   fig.painter().begin(&img);
-  fig.painter().scale(iu2pt(), iu2pt());
-  fig.painter().translate(-iu2pt(fig.extent().left()),
-			  -iu2pt(fig.extent().top()));
+  //  fig.painter().scale(iu2pt(), iu2pt());
+  fig.painter().translate(-fig.extent().left(),
+			  -fig.extent().top());
   prog.render(fig);
   fig.painter().end();
   return img.save(ofn);
 }
 
 int noninteractive(QString ifn, QString ofn) {
+  if (ofn=="-")
+    ofn = "-.ps";
+  
+  int idx = ofn.lastIndexOf(".");
+  if (idx<0)
+    return error("Output file must have an extension");
+  QString extn = ofn.mid(idx+1);
+
+  bool extnIsBitmap = extn=="png" || extn=="jpg" || extn=="tif" || extn=="tiff";
+  if (extnIsBitmap)
+    setFACTOR(BITMAPRES/72);
+
   Program prog;
-  if (ifn.isEmpty()) {
-    //QTextStream ts(stdin);
+  if (ifn.isEmpty() || ifn=="-") {
     QFile f; f.open(stdin,QFile::ReadOnly);
     if (!prog.read(f, "<stdin>")) {
       Error() << "Interpretation error";
@@ -207,13 +235,21 @@ int noninteractive(QString ifn, QString ofn) {
   } else {
     read(prog, ifn);
   }
+
+  QTemporaryFile tmpf;
+  bool usetmpf = false;
+  if (ofn == "-."+extn) {
+    // write to stdout
+    if (!tmpf.open())
+      return error("Cannot write to temporary file");
+    tmpf.close();
+    ofn = tmpf.fileName();
+    usetmpf = true;
+  }
+
   Figure fig;
   prerender(prog, fig);
 
-  int idx = ofn.lastIndexOf(".");
-  if (idx<0)
-    return error("Output file must have an extension");
-  QString extn = ofn.mid(idx+1);
   if (extn == "svg") {
     renderSVG(prog, fig, ofn);
   } else if (extn == "eps") {
@@ -221,12 +257,31 @@ int noninteractive(QString ifn, QString ofn) {
   } else if (extn == "pdf") {
     renderPDF(prog, fig, ofn);
   } else if (extn=="ps") {
-    renderPS(prog, fig, ofn, ifn);
-  } else if (extn=="png" || extn=="jpg" || extn=="tif" || extn=="tiff") {
+    renderPS(prog, fig, ofn, ifn + QString::fromUtf8(" — ")
+	     + QDateTime::currentDateTime()
+	     .toString(QString::fromUtf8("MM/dd/’yy hh:mm")));
+  } else if (extnIsBitmap) {
     if (!renderImage(prog, fig, ofn))
       return error("Failed to save.");
   } else {
     return error("Unknown extension.");
+  }
+
+  if (usetmpf) {
+    if (!tmpf.open())
+      error("Cannot re-read temporary file");
+    QFile f;
+    if (!f.open(stdout,QFile::WriteOnly))
+      error("Cannot write to stdout");
+    while (1) {
+      QByteArray ba = tmpf.read(1024*1024);
+      if (ba.isEmpty())
+	break;
+      if (f.write(ba)!=ba.size())
+	error("Failure to write to stdout");
+    }
+    if (!tmpf.atEnd())
+      error("Error reading from temporary file");
   }
   return 0;
 }  
@@ -234,15 +289,39 @@ int noninteractive(QString ifn, QString ofn) {
 int main(int argc, char **argv) {
   QApplication app(argc, argv);
 
-  if (argc<2 || argc>3)
+  int argi=1;
+  if (argc<2)
     return usage();
-  if (argc==2) {
-    QString ifn = argv[1];
-    if (ifn=="-h" || ifn=="--help")
+  while (argi<argc) {
+    QString arg = argv[argi];
+    if (arg=="-h" || arg=="--help") {
       return usage(0);
-    else
-      return interactive(ifn, &app);
-  } else /* argc==3 */ {
-    return noninteractive(argv[1], argv[2]);
-  } 
+    } else if (arg=="-r") {
+      argi++;
+      if (argi>=argc)
+	return usage();
+      arg = argv[argi];
+      bool ok;
+      BITMAPRES = arg.toDouble(&ok);
+      if (!ok)
+	return usage();
+      argi++;
+    } else if (arg.startsWith("-r")) {
+      bool ok;
+      BITMAPRES = arg.mid(2).toDouble(&ok);
+      if (!ok)
+	return usage();
+      argi++;
+    } else {
+      break;
+    }
+  }
+  
+  if (argc-argi == 1) 
+    return interactive(argv[argi], &app);
+  else if (argc-argi == 2) 
+    return noninteractive(argv[argi], argv[argi+1]);
+  else 
+    return usage();
+  
 }

@@ -232,3 +232,16 @@ void Figure::endGroup() {
     cumulbbox |= lastbbox;
   }
 }
+
+QString Figure::panelAt(QPointF const &xy) {
+  if (currentPanel!="-") 
+    if (figextent.contains(xy))
+      return currentPanel;
+  foreach (QString p, panels.keys())
+    if (p!=currentPanel)
+      if (panels[p].desiredExtent.contains(xy))
+	return p;
+  return "-";
+}
+
+  

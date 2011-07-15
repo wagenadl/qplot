@@ -1,9 +1,13 @@
-function qskyline(xx, yy)
+function qskyline(xx, yy, y0)
 % QSKYLINE - Skyline plot (bar plot)
 %    QSKYLINE(xx, yy) draws a bar plot of yy vs xx with bars touching.
+%    QSKYLINE(xx, yy, y0) specifies the baseline of the plot; default is 0.
 
 xx=xx(:)';
 yy=yy(:)';
+if nargin<3
+  y0=0;
+end
 
 if length(xx)==1
   xxx = [-.5; .5] + xx;
@@ -16,4 +20,4 @@ else
   yyy = [yy; yy];
   yyy = yyy(:);
 end
-qpatch([xxx(1); xxx; xxx(end)],[0; yyy; 0]);
+qpatch([xxx(1); xxx; xxx(end)],[y0; yyy; y0]);

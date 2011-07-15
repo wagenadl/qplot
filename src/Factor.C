@@ -2,7 +2,7 @@
 
 #include "Factor.H"
 
-#define FACTOR 30.0
+static double FACTOR = 30.0;
 
 double pt2iu(double x) {
   return FACTOR * x;
@@ -10,4 +10,8 @@ double pt2iu(double x) {
 
 double iu2pt(double x) {
   return x / FACTOR;
+}
+
+void setFACTOR(double x) {
+  FACTOR = x;
 }

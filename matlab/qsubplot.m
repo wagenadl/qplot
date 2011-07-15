@@ -33,17 +33,15 @@ y = extent(2) + extent(4)*y;
 w = extent(3)*w;
 h = extent(4)*h;
 
-id = 'A';
+subno = 1;
 while 1
+  id = qp_id(subno);
   oldidx = strmatch(id, qp_data.info(idx).panels, 'exact');
   if isempty(oldidx)
     break;
   else
-    id = char(id+1);
+    subno = subno + 1;
   end
-end
-if id>'Z'
-  error('Max number of subplots (26) exceeded');
 end
 
 qpen none

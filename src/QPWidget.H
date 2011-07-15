@@ -16,11 +16,20 @@ public:
   void setContents(Figure *f, Program *p);
   void setMargin(double pix);
   virtual void setWindowTitle(QString s);
+  void setRuler(bool);
+  bool hasRuler() const;
 protected:
   virtual void keyPressEvent(QKeyEvent *);
   virtual void paintEvent(QPaintEvent *);
   virtual void resizeEvent(QResizeEvent *);
   virtual void mouseMoveEvent(QMouseEvent *);
+  virtual void mousePressEvent(QMouseEvent *);
+private:
+  void reportTrack(QPointF xy);
+  void renderMargin(QPainter &);
+  void renderRuler(QPainter &);
+  Axis *findXAxis();
+  Axis *findYAxis();
 private:
   Figure *fig;
   Program *prog;
@@ -32,7 +41,9 @@ private:
   } margindecor;
   QRectF worldextent;
   QString winttl;
+  QString trackpanel;
   class QLabel *coord;
+  bool ruler;
 };
 
 #endif
