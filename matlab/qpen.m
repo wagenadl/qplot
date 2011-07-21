@@ -37,7 +37,7 @@ for n=1:nargin
   elseif isnvector(a) & isreal(a) & length(a)==3
     % This is a color
     varargin{n} =  sprintf('#%02x%02x%02x', ...
-	floor(255.999*a), floor(255.999*a), floor(255.999*a));
+	floor(255.999*a));
   else
     error([ 'Cannot interpret ' disp(a) ' as an argument for qpen' ]);
   end
