@@ -1,4 +1,8 @@
 function qplot(xx, yy)
+% QPLOT - Draw a line series in data space
+%    QPLOT(xx, yy) plots the data YY vs XX. XX and YY are given in data
+%    coordinates. See also QLINE.
+
 fd = qp_fd(1);
 
 if ~isnvector(xx) | ~isreal(xx)

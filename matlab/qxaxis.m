@@ -8,7 +8,7 @@ function qxaxis(y0, xlim, varargin)
 %    suppressed if LBLS is empty.
 %    QXAXIS(..., ttl) adds a title to the axis.
 % 
-%    QXASIS obeys settings from QTICKLEN and QLABELDIST
+%    QXAXIS obeys settings from QTICKLEN and QTEXTDIST.
 
 
 if nargin<2

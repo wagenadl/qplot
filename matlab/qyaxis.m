@@ -8,8 +8,7 @@ function qyaxis(y0, xlim, varargin)
 %    suppressed if LBLS is empty.
 %    QYAXIS(..., ttl) adds a title to the axis.
 % 
-%    QXASIS obeys settings from QTICKLEN and QLABELDIST
-
+%    QYAXIS obeys settings from QTICKLEN and QTEXTDIST.
 
 % Note that we use variable names from qxaxis, which may be confusing.
 
@@ -71,11 +70,8 @@ qgroup;
 qreftext('');
 qplot([y0 y0], xlim);
 
-idx = qp_idx;
-global qp_data;
-ticklen = qp_data.info(idx).ticklen;
-lbldist = qp_data.info(idx).textdist(1);
-ttldist = qp_data.info(idx).textdist(2);
+ticklen = qticklen;
+[lbldist, ttldist] = qtextdist;
 
 if lbldist>=0
   valign = 'right';
@@ -101,17 +97,30 @@ end
 qendgroup;
 
 if ~isempty(ttl) 
-  if ttldist>=0
-    qat('left', mean(xlim), -pi/2);
-    qalign('center', 'bottom');
+  if lbldist>=0
+    whr = 'left';
   else
-    qat('right', mean(xlim), pi/2);
-    qalign('center', 'top');
+    whr = 'right';
   end
-  qtext(0, -ttldist, ttl);
+  if ttldist>=0
+    ang=-pi/2;
+  else
+    ang=pi/2;
+  end
+  if sign(lbldist)==sign(ttldist)
+    algn='bottom';
+    sgn=-1;
+  else
+    algn='top';
+    sgn=1;
+  end
+  qat(whr, mean(xlim), ang);
+  qalign('center', algn);
+  qtext(0, sgn*abs(ttldist), ttl);
 end
 
 idx = qp_idx;
+global qp_data;
 qp_data.info(idx).lastax='y';
 qp_data.info(idx).lastcoord=y0;
 qp_data.info(idx).lastlim=xlim;

@@ -16,6 +16,6 @@ end
 
 input('Press Enter to print to lpr, or Ctrl-C to cancel...');
 unix(sprintf('lpr %s', ofn));
-fprintf(1,'Postscript file sent to printer\n');
+fprintf(1,'\nPostscript file sent to printer.\n');
 
 delete(ofn);
