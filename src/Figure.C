@@ -6,8 +6,13 @@
 #include <QDebug>
 
 Figure::Figure() {
+  hardReset();
+}
+
+void Figure::hardReset() {
   figextent = QRectF(QPointF(0,0), QSizeF(72*6, 72*4));
   currentPanel = "-";
+  panels.clear();
   replaceAxes();
   reset();
 }
@@ -22,6 +27,8 @@ void Figure::reset() {
   brushes.clear();
   hairline_ = false;
   mrkr = Marker();
+  anch = QPointF(0,0);
+  anchang = 0;
   clearBBox(true);
   foreach (QString p, panels.keys()) {
     panels[p].fullbbox=QRectF();
@@ -186,6 +193,11 @@ void Figure::leavePanel() {
 void Figure::choosePanel(QString s) {
   if (s==currentPanel)
     return;
+
+  if (!groupstack.isEmpty()) {
+    Error() << "Warning: panel change while group stack not empty";
+    groupstack.clear();
+  }
   
   Panel &store(panels[currentPanel]);
   store.xaxis = xax;

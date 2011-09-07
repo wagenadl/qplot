@@ -3,6 +3,7 @@
 #include "Watcher.H"
 #include <QFileSystemWatcher>
 #include <QFile>
+#include <QFileInfo>
 #include <QDebug>
 #include <QTimer>
 #include <QMessageBox>
@@ -13,11 +14,12 @@ extern void prerender(Program &prog, Figure &fig); // defined in main.C
 
 Watcher::Watcher(QString fn, Program *prog, Figure *fig):
   fn(fn), prog(prog), fig(fig) {
+  working = false;
   qmb = new QMessageBox(0);
   fsw = new QFileSystemWatcher();
   fsw->addPath(fn);
   connect(fsw, SIGNAL(fileChanged(QString const &)),
-	  this, SLOT(pong()));
+	  this, SLOT(fileChanged()));
   timer = new QTimer(this);
   timer->setSingleShot(true);
   timer->setInterval(100);
@@ -30,23 +32,36 @@ Watcher::~Watcher() {
 }
 
 void Watcher::tick() {
-  if (timer->interval()<500) {
-    bool ok = reread(false);
-    if (ok)
-      return;
-    timer->setInterval(1000);
+  QDateTime newMod = QFileInfo(fn).lastModified();
+  if (newMod>lastMod) {
+    lastMod = newMod;
     timer->start();
+    return;
+  }
+
+  // So the file hasn't changed in the last interval
+  bool report = timer->interval()>150;
+
+  if (reread(report)) {
+      // success!
+      working = false;
   } else {
-    bool ok = reread(true);
-    if (ok)
-      timer->setInterval(100);
+    // wait a little longer
+    int ival = 2*timer->interval();
+    if (ival>1000)
+      ival=1000;
+    timer->setInterval(ival);
+    timer->start();
   }
 }
 
-void Watcher::pong() {
-  //  if (!reread(false))
-  //    QTimer::singleShot(1000, this, SLOT(tick()));
-  timer->start();
+void Watcher::fileChanged() {
+  if (!working) {
+    working = true;
+    lastMod = QFileInfo(fn).lastModified();
+    timer->setInterval(100);
+    timer->start();
+  }
 }
 
 bool Watcher::reread(bool errorbox) {
@@ -60,6 +75,7 @@ bool Watcher::reread(bool errorbox) {
     bool ok = prog->read(f, fn);
     Error::setDestination(0);
     if (ok) {
+      fig->hardReset();
       //qDebug() << "read ok: lines=" << prog->length();
       //if (prog->length()>0)
       //	qDebug() << "last line: " << (*prog)[prog->length()-1][0].str;

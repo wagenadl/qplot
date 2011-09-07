@@ -1,4 +1,6 @@
 function qylim(varargin)
+% QYLIM - Set y-axis limits
+%   QYLIM(y0, y1) sets y-axis limits in the current panel.
 
 fd = qp_fd(1);
 

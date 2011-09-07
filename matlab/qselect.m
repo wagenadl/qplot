@@ -1,4 +1,7 @@
 function qselect(fn)
+% QSELECT - Select a QPLOT figure by name
+%    QSELECT(fn) makes the names QPLOT figure current
+
 global qp_data;
 qp_ensure;
 
@@ -30,6 +33,6 @@ if isempty(idx)
   end
 end
 
-qp_data.curfn = qp_data.fns{f};
+qp_data.curfn = qp_data.fns{idx};
 
 unix(sprintf('touch %s', qp_data.curfn)); % Bring to front

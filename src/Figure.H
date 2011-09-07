@@ -62,7 +62,8 @@ public:
   void setHairline(bool h);
   void choosePanel(QString);
   void leavePanel();
-  void reset();
+  void reset(); // this is a soft reset. semantics need to be documented
+  void hardReset(); // this is like restarting the program
   Panel &panelRef(QString);
   QString currentPanelName() const;
   void startGroup();

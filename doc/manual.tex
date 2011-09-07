@@ -101,7 +101,9 @@ specifies the desired aspect ratio of y:x data units.}
   \emph{color}\bar{}\emph{width}\bar{}miterjoin\bar{}beveljoin\bar{}roundjoin\bar{}flatcap\bar{}squarecap\bar{}roundcap\bar{}solid\bar\linebreak\mbox{}\kern25pt{}dash\bar{}dot\bar{}dashdot\bar{}dashdotdot\bar{}none
 \ldots}
 \expl{Selects a pen by \emph{ID}, defines its color, its width (in
-  points), its join style, its cap style, and/or its dash pattern.}
+  points), its join style, its cap style, and/or its dash
+  pattern. Setting the color or width while the dash pattern is
+  ``none'' automatically switches to ``solid.''}
 
 \cmd{plot}{[ \emph{x$_1$ x$_2$ \ldots} ] [ \emph{y$_1$ y$_2$ \ldots}
 ]}

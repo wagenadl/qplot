@@ -83,6 +83,8 @@ void CmdPen::render(Statement const &s, Figure &f, bool) {
       p = f.painter().pen();
     } else if (s[k].typ==Token::NUMBER) {
       p.setWidthF(pt2iu(s[k].num));
+      if (p.style()==Qt::NoPen)
+	p.setStyle(Qt::SolidLine);
     } else if (s[k].typ==Token::BAREWORD) {
       QString w = s[k].str;
       if (joinstyle(w)>=0)
@@ -91,9 +93,11 @@ void CmdPen::render(Statement const &s, Figure &f, bool) {
 	p.setCapStyle(Qt::PenCapStyle(capstyle(w)));
       else if (strokestyle(w)>=0)
 	p.setStyle(Qt::PenStyle(strokestyle(w)));
-      else if (QColor(w).isValid())
+      else if (QColor(w).isValid()) {
 	p.setColor(w);
-      else
+	if (p.style()==Qt::NoPen)
+	  p.setStyle(Qt::SolidLine);
+      } else
 	qDebug() << "pen render surprise";
     }
   }

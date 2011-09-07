@@ -1,4 +1,11 @@
 function fn = qfigure(fn, w, h)
+% QFIGURE - Open a QPLOT figure
+%    QFIGURE(fn, w, h) opens a new QPLOT figure with given filename and size
+%    in inches. If H is omitted, H defaults to 3/4 W. If W is also omitted,
+%    W defaults to 5 inches.
+%    fn = QFIGURE(w, h) opens a new QPLOT figure of given size (in inches) with
+%    a temporary filename.
+
 global qp_data
 qp_ensure;
 

@@ -7,6 +7,7 @@
 #include "Program.H"
 #include "Figure.H"
 #include <QWidget>
+#include <QDateTime>
 
 class Watcher: public QObject {
   Q_OBJECT;
@@ -17,7 +18,7 @@ public:
 signals:
   void ping();
 private slots:
-  void pong(); // file changed
+  void fileChanged(); // file changed
   void tick(); // timer event
 private:
   QString fn;
@@ -26,6 +27,8 @@ private:
   class QFileSystemWatcher *fsw;
   class QMessageBox *qmb;
   class QTimer *timer;
+  bool working;
+  QDateTime lastMod;
 };
 
 #endif

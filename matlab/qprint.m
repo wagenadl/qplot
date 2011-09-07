@@ -1,4 +1,5 @@
 function qprint
+% QPRINT - Print current QPLOT figure to the default printer
 qp_ensure;
 global qp_data;
 ifn = qp_data.curfn;

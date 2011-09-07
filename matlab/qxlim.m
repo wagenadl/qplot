@@ -1,4 +1,6 @@
 function qxlim(varargin)
+% QXLIM - Set x-axis limits
+%   QXLIM(x0, x1) sets x-axis limits in the current panel.
 
 fd = qp_fd(1);
 

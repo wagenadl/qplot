@@ -3,7 +3,7 @@ function qerrorbar(xx, yy, dy, varargin)
 %    QERRORBAR(xx, yy, dy) plots error bars at (XX,YY+-DY).
 %    Normally, XX, YY, and DY have the same shape. However, it is permissible
 %    for DY to be shaped Nx2, in which case lower and upper error bounds
-%    are different.
+%    are different. (DY should always be positive).
 %    QERRORBAR(xx, yy, dy, w) adorns the error bars with horizontal lines of
 %    given width (W in points).
 %    QERRORBAR(..., 'up') only plots upward; QERRORBAR(..., 'down') only plots
@@ -24,7 +24,7 @@ xx = xx(:);
 yy = yy(:);
 N = length(xx);
 if prod(size(dy))==2*N
-  dy_dn = dy(:,1);
+  dy_dn = -dy(:,1);
   dy_up = dy(:,2);
 else
   dy_up = dy(:);

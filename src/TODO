@@ -1,18 +1,34 @@
-- gline: command for supergeneral line drawing:
-   gline ( pt1spec ) ( pt2spec ) ...
+- Test gline:
+  GLINE: command for supergeneral line drawing:
+     gline ( pt1spec ) ( pt2spec ) ...
+  
+  where ptnspec is:
+     command1 args1 ...
+  
+  where commands are:
+     absdata x y
+     abspaper x y
+     reldata dx dy
+     relpaper dx dy
+     rotdata xi eta
+     rotpaper phi
+     retract l [l2]
+  
+  Retraction is along the line segment; two numbers may be given for internal
+  points.
+  
+- Group/EndGroup should save more state, including pen, brush,
+  alignment and font. Even anchor? Or should grouping and save/restore be
+  separate concepts? Right now, grouping is just about bboxes, but that is
+  not obvious to the user. I find it confusing that complex matlab commands
+  like qxaxis mess with alignment.
 
-where ptnspec is:
-   command1 args1 ...
+- Interaction between panels and groups should be spelled out. Right now,
+  it is not good to switch panels while inside a group. ChoosePanel reports
+  this, and simply clears the stack.
 
-where commands are:
-   absdata x y
-   abspaper x y
-   reldata dx dy
-   relpaper dx dy
-   rotdata xi eta
-   rotpaper phi
-   retract l [l2]
+- Make the "matlab" functions work with octave.
 
-Retraction is along the line segment; two numbers may be given for internal
-points.
+- Create an attractive collection of examples.
 
+- Publish the thing.
