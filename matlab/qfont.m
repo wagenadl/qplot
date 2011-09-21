@@ -1,4 +1,7 @@
 function qfont(varargin)
+% QFONT - Select font 
+%    QFONT family [bold] [italic] size  selects a new font for QPLOT.
+
 fd = qp_fd(1);
 
 if nargin<2 | nargin>4

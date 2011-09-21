@@ -1,4 +1,7 @@
 function qmark(xx, yy)
+% QMARK - Draw on the current graph with the current marker
+%   QMARK(xx, yy) draws marks at the given location in data space. See also
+%   QMARKER.
 fd = qp_fd(1);
 
 if ~isnvector(xx) | ~isreal(xx)

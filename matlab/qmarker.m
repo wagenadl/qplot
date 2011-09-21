@@ -1,4 +1,7 @@
 function qmarker(varargin)
+% QMARKER - Select a new marker for QPLOT
+%    QMARKER open|solid|brush  +|x|-|||o|s|d|<|>|^|v|p|h  selects a marker.
+
 fd = qp_fd(1);
 
 for n=1:nargin

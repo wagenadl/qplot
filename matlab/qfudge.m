@@ -1,4 +1,8 @@
 function qfudge(varargin)
+% QFUDGE - Add margin to QPLOT panel
+%    QFUDGE adds 1 point of margin to the current QPLOT panel.
+%    QFUDGE(margin) adds the given margin (in points).
+%    QFUDGE(margin, ratio) forces a given aspect ratio on the data units.
 
 fd = qp_fd(1);
 

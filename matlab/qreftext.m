@@ -1,4 +1,7 @@
 function qreftext(varargin)
+% QREFTEXT - Set reference text
+%    QREFTEXT(text) sets the reference text used for vertical alignment
+%    of subsequent QTEXT commands.
 fd = qp_fd(1);
 
 if nargin<1

@@ -1,4 +1,8 @@
 function qtext(x, y, varargin)
+% QTEXT - Render text 
+%   QTEXT(text) renders text at the current anchor point.
+%   QTEXT(dx, dy, text) renders text displaced by the given number of points.
+
 fd = qp_fd(1);
 
 if nargin==1

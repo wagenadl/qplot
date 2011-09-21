@@ -1,4 +1,10 @@
 function qbrush(varargin)
+% QBRUSH - Set brush for QPLOT
+%    QBRUSH id | color | 'none' | opacity  chooses or changes a brush for
+%    QPLOT. ID must be a single capital letter. COLOR may be a named color
+%    (i.e., one of krgbcmyw), or a 3-digit or a 6-digit string. 
+%    OPACITY must be a number between 0 and 1.
+
 fd = qp_fd(1);
 
 for n=1:nargin

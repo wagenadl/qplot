@@ -1,4 +1,13 @@
 function qpen(varargin)
+% QPEN - Selects a new pen for QPLOT
+%    QPEN id | join | cap | pattern | color | width | 'none'  selects a new pen.
+%    ID must be a single capital letter
+%    JOIN must be one of: miterjoin beveljoin roundjoin
+%    CAP must be one of: flatcap squarecap roundcap
+%    PATTERN must be one of: solid dash dot dashdot dashdotdot
+%    COLOR may be a single character matlab color, or a 3- or 6-digit RGB
+%    specification. 
+%    WIDTH is linewidth in points, or 0 for hairline.
 fd = qp_fd(1);
 
 for n=1:nargin

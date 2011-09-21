@@ -8,6 +8,7 @@
 \def\cref#1{{\bf #1}}
 \def\bar{{$|$}}
 \def\nyi{{\par\bf\itshape Not yet implemented.}}
+\def\matlab#1#2{{\bf #1}: #2\par}
 
 \begin{document}
 \section{Commands}
@@ -68,7 +69,7 @@ specifies the desired aspect ratio of y:x data units.}
 
 \cmd{hairline}{1\bar0}
 \expl{Enables or disables automatic drawing of zero-width hairlines
- over other lines.\nyi}
+ over other lines.}
 
 \cmd{image}{\emph{x y w h K} [ \emph{cdata} ]}
 \expl{Renders an RGB image at given data location. \emph{cdata} is
@@ -90,8 +91,7 @@ specifies the desired aspect ratio of y:x data units.}
   \cref{figsize} changes the size of the panel, and \cref{fudge}
   affects the panel rather than the figure as a whole. Also
   \cref{xaxis} and \cref{yaxis} affector the axes in the
-  panel. Choices of pen, brush, font, etc., are not local to panels.
-  \nyi}
+  panel. Choices of pen, brush, font, etc., are not local to panels.}
 
 \cmd{patch}{[ \emph{x$_1$ x$_2$ \ldots} ] [ \emph{y$_1$ y$_2$ \ldots} ]}
 \expl{Draws a polygon, filled using the current brush. \emph{x$_i$}
@@ -158,9 +158,55 @@ qplot \emph{source}
  In that case, graphics are rendered in a window. Keys ``+''
 and ``-'' zoom in and out, ``0'' scales to fit, ``1'' scales to
 100\%. ``E'' resizes the window to fit the whole scene. ``G'' toggles
-between white and gray borders. ``Ctrl-Q'' quits. The graphics are
+between white and gray borders. ``C'' enables or disables reporting
+coordinates below the mouse pointer. ``Ctrl-Q'' quits. The graphics are
 automatically rerendered if the \emph{source}
 file changes on disk.
 
-\end{document}
+A convenient set of Matlab/Octave functions are provided to interact
+with QPlot as well:\medskip
 
+\matlab{clq}{Clear current QPLOT figure}
+\matlab{qalign}{Set alignment for following text}
+\matlab{qarea}{Draw a polygon in paper space}
+\matlab{qarrow}{Draw an arrowhead}
+\matlab{qat}{Specify location for future text}
+\matlab{qbrush}{Set brush for QPLOT}
+\matlab{qclose}{Close a QPLOT window}
+\matlab{qcolorbar}{Adds a colorbar to the figure}
+\matlab{qendgroup}{Ends a group for bbox collection}
+\matlab{qerrorbar}{Draw error bars}
+\matlab{qerrorpatch}{Draw error patch}
+\matlab{qfigure}{Open a QPLOT figure}
+\matlab{qfont}{Select font }
+\matlab{qfudge}{Add margin to QPLOT panel}
+\matlab{qgroup}{Starts a group for bbox collection}
+\matlab{qimage}{Plot an image}
+\matlab{qimsc}{Plot 2D data as an image using lookup table}
+\matlab{qline}{Draw a line series in paper space}
+\matlab{qlut}{Set lookup table for future QIMSC.}
+\matlab{qmarker}{Select a new marker for QPLOT}
+\matlab{qmark}{Draw on the current graph with the current marker}
+\matlab{qmticks}{Add more ticks to an existing axis}
+\matlab{qpanel}{Define a new subpanel or reenter a previous one}
+\matlab{qpatch}{Draw a polygonal patch in data space}
+\matlab{qpen}{Selects a new pen for QPLOT}
+\matlab{qplot}{Draw a line series in data space}
+\matlab{qprint}{Print current QPLOT figure to the default printer}
+\matlab{qreftext}{Set reference text}
+\matlab{qsave}{Saves a qplot figure}
+\matlab{qselect}{Select a QPLOT figure by name}
+\matlab{qskyline}{Skyline plot (bar plot)}
+\matlab{qsubplot}{Define a new subpanel in relative units}
+\matlab{qtextdist}{Specifies distance to text labels for QXAXIS and QYAXIS}
+\matlab{qtext}{Render text }
+\matlab{qticklen}{Specifies length of ticks for QXAXIS and QYAXIS}
+\matlab{qtitle}{Render a title on the current QPLOT}
+\matlab{qxaxis}{Plot x-xaxis}
+\matlab{qxlim}{Set x-axis limits}
+\matlab{qyaxis}{Plot y-yaxis}
+\matlab{qylim}{Set y-axis limits}\medskip
+
+More documentation on any of these can be obtained using ``help''
+within Matlab or Octave.
+\end{document}
