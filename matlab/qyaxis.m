@@ -1,5 +1,5 @@
 function qyaxis(y0, xlim, varargin)
-% QYAXIS - Plot y-yaxis
+% QYAXIS - Plot y-axis
 %    QYAXIS(x0, [y0 y1], yy) plots an y-axis with ticks at YY. (YY may be
 %    empty.)
 %    QYAXIS(x0, yy) calculates Y0 and Y1 from YY.

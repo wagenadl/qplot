@@ -37,12 +37,14 @@ alternatives.\bigskip
     \emph{$\eta$}). This vector is specified in data
     coordinates. Alternatively, a rotation may be specified as a
     direct (clockwise) angle $\phi$. Besides a numeric value, \emph{x}
-    may be one of left, right, center to place relative to the
+    may be one of {``left''}, {``right''}, or {``center''} to place 
+    relative to the
     bounding box of the last drawn object (or group, see
     \cref{group}), or a dash (`--') to revert to absolute placement in
     the horizontal direction.  
-    Likewise, \emph{y} may be one of top, bottom, middle, or dash. ``at --''
-    reverts to absolute placement (relative to top left of the figure)
+    Likewise, \emph{y} may be one of {``top''}, {``bottom''}, {``middle''}, or a dash. ``at --''
+    reverts to absolute placement (relative to top left of the
+    figure (not the current panel!))
     in both horizontal and vertical directions.}
 
 \cmd{brush}{(\emph{ID}) \emph{color}\bar{}none\bar{}\emph{opacity} \ldots}
@@ -67,7 +69,7 @@ specifies the desired aspect ratio of y:x data units.}
 
 \cmd{garea}{( \emph{ptspec} ) \ldots}
 \cmd{gline}{( \emph{ptspec} ) \ldots}
-\expl{Completely general polygon and line series drawing. 
+\expl{Ultraflexible polygon and line series drawing. 
   Each vertex is specified by a \emph{ptspec}, i.e., a sequence of one or
   more subcommands:\medskip\\
 \mbox{}\kern10pt\begin{tabular}{lp{3.8in}}
@@ -91,7 +93,7 @@ they designate optional parameters. For instance:\medskip\\
 \medskip\\
      draws a line from 5 pt to the right of the point (0,1) in the graph to
      5 pt above the point (1,0) on the graph.\\
-(Note: The rather cumbersome syntax of \cref{gline} make \cref{line}
+(Note: The rather cumbersome syntax of \cref{gline} makes \cref{line}
      and \cref{plot} more attractive for general usage. The same
      applies to \cref{garea} versus \cref{area} and \cref{patch}.)
 }
@@ -100,7 +102,8 @@ they designate optional parameters. For instance:\medskip\\
 \cmd{group}{}
 \cmd{endgroup}{}
 \expl{Groups statements to accumulate bounding boxes for
-  \cref{at}. \cref{endgroup} also restores pen, brush, alignment, and
+  \cref{at}. \cref{endgroup} also restores pen, brush, alignment,
+  font, and
   reference text to their states before the corresponding
   \cref{group}. Note that named pens and brushes changed inside a
   group are not restored. All groups must be closed before changing
@@ -156,7 +159,7 @@ they designate optional parameters. For instance:\medskip\\
   ascent and descent of text for the ``bottom'' and ``top'' alignment
   modes.}
 
-\cmd{text}{\emph{dx} \emph{dy} ''\emph{string}''}
+\cmd{text}{\emph{dx} \emph{dy} \emph{string}}
 \expl{Places the given text \emph{string} at the position (\emph{dx},
   \emph{dy}), specified in points relative to the anchor set by
   \cref{at}.\\
@@ -189,7 +192,9 @@ qplot \emph{source} \emph{output}
  where \emph{source} is a file with commands and
 \emph{output} can specify either pdf, svg, png, or tiff output. Output
 can also be a postscript (.ps) file, in which case a single full page
-is produced with the graph in the middle and crop marks around it.
+is produced with the graph in the middle and crop marks around
+it. Output to eps is not directly supported, but ``pdftoeps -eps -level3'' can
+be used as a postprocessor.
 
 QPlot can also be run interactively, like this:
 \begin{quotation}
@@ -242,11 +247,11 @@ with QPlot as well:\medskip
 \matlab{qtext}{Render text }
 \matlab{qticklen}{Specifies length of ticks for QXAXIS and QYAXIS}
 \matlab{qtitle}{Render a title on the current QPLOT}
-\matlab{qxaxis}{Plot x-xaxis}
+\matlab{qxaxis}{Plot x-axis}
 \matlab{qxlim}{Set x-axis limits}
-\matlab{qyaxis}{Plot y-yaxis}
+\matlab{qyaxis}{Plot y-axis}
 \matlab{qylim}{Set y-axis limits}\medskip
 
-More documentation on any of these can be obtained using ``help''
+ Documentation on any of these can be obtained using ``help''
 within Matlab or Octave.
 \end{document}
