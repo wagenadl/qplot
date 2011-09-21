@@ -4,7 +4,7 @@
 \usepackage[letterpaper]{geometry}
 
 \def\cmd#1#2{\noindent {\bf #1} #2\par}
-\def\expl#1{\begin{itemize}\item[]#1\end{itemize}}
+\def\expl#1{\kern-8pt\begin{itemize}\item[]#1\end{itemize}}
 \def\cref#1{{\bf #1}}
 \def\bar{{$|$}}
 \def\nyi{{\par\bf\itshape Not yet implemented.}}
@@ -39,9 +39,11 @@ alternatives.\bigskip
     direct (clockwise) angle $\phi$. Besides a numeric value, \emph{x}
     may be one of left, right, center to place relative to the
     bounding box of the last drawn object (or group, see
-    \cref{group}).
-    Likewise, \emph{y} may be one of top, bottom, or middle. ``at --''
-    places subsequent text and lines relative to the top left of the figure.}
+    \cref{group}), or a dash (`--') to revert to absolute placement in
+    the horizontal direction.  
+    Likewise, \emph{y} may be one of top, bottom, middle, or dash. ``at --''
+    reverts to absolute placement (relative to top left of the figure)
+    in both horizontal and vertical directions.}
 
 \cmd{brush}{(\emph{ID}) \emph{color}\bar{}none\bar{}\emph{opacity} \ldots}
 \expl{Selects a brush by \emph{ID}, defines its color (or sets it to
@@ -63,13 +65,50 @@ alternatives.\bigskip
   \cref{figsize}. Margin is specified in points. Optional \emph{ratio}
 specifies the desired aspect ratio of y:x data units.}
 
+\cmd{garea}{( \emph{ptspec} ) \ldots}
+\cmd{gline}{( \emph{ptspec} ) \ldots}
+\expl{Completely general polygon and line series drawing. 
+  Each vertex is specified by a \emph{ptspec}, i.e., a sequence of one or
+  more subcommands:\medskip\\
+\mbox{}\kern10pt\begin{tabular}{lp{3.8in}}
+{\bf absdata} \emph{x} \emph{y} & Absolute data coordinates \\
+{\bf reldata} \emph{dx} \emph{dy} & Relative data coordinates \\
+{\bf abspaper} \emph{x} \emph{y} & Absolute paper coordinates (in pt)\\
+{\bf relpaper} \emph{dx} \emph{dy} & Relative data coordinates (in
+               pt)\\
+{\bf rotdata} $\xi$ $\eta$ & Rotate by atan2($\eta$, $\xi$) 
+              in data space \\
+{\bf rotpaper} $\phi$ & Rotate by $\phi$ radians \\
+{\bf retract} \emph{L} & Retract preceding and following segments by
+              \emph{L} pt \\
+{\bf retract} \emph{L$_1$} \emph{L$_2$} & Retract preceding and following
+              segments by \emph{L$_1$} and \emph{L$_2$} pt respectively \\
+\end{tabular}\medskip\\
+Note that the parentheses are literal, unlike in the rest of this manual, where
+they designate optional parameters. For instance:\medskip\\
+\mbox{}\kern15pt
+       gline ( absdata 0 1 relpaper 5 0 ) ~ ( absdata 0 1 relpaper 0 5 )
+\medskip\\
+     draws a line from 5 pt to the right of the point (0,1) in the graph to
+     5 pt above the point (1,0) on the graph.\\
+(Note: The rather cumbersome syntax of \cref{gline} make \cref{line}
+     and \cref{plot} more attractive for general usage. The same
+     applies to \cref{garea} versus \cref{area} and \cref{patch}.)
+}
+
+
 \cmd{group}{}
 \cmd{endgroup}{}
-\expl{Groups statements to accumulate bounding boxes for \cref{at}.}
+\expl{Groups statements to accumulate bounding boxes for
+  \cref{at}. \cref{endgroup} also restores pen, brush, alignment, and
+  reference text to their states before the corresponding
+  \cref{group}. Note that named pens and brushes changed inside a
+  group are not restored. All groups must be closed before changing
+  panels, else the group stack is cleared automatically. }
 
 \cmd{hairline}{1\bar0}
 \expl{Enables or disables automatic drawing of zero-width hairlines
- over other lines.}
+ over other lines. Default: disabled.}
 
 \cmd{image}{\emph{x y w h K} [ \emph{cdata} ]}
 \expl{Renders an RGB image at given data location. \emph{cdata} is
@@ -83,7 +122,8 @@ specifies the desired aspect ratio of y:x data units.}
   points and are relative to the position set by \cref{at}. See also
   \cref{plot}.}
 
-\cmd{panel}{\emph{ID} [\emph{x$_0$} \emph{y$_0$} \emph{w} \emph{h}] \bar{} --}
+\cmd{panel}{\emph{ID}\bar--}
+\cmd{panel}{\emph{ID x$_0$ y$_0$ w h}}
 \expl{Defines a new panel with given ID to have its top left corner on
   paper position (\emph{x$_0$}, \emph{y$_0$}), in points, and size
   (\emph{w} x \emph{h}), in points. Or, reenters a previously defined

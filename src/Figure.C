@@ -18,8 +18,8 @@ void Figure::hardReset() {
 }
 
 void Figure::reset() {
-  halign = CENTER;
-  valign = BASE;
+  halign = Align::CENTER;
+  valign = Align::BASE;
   currentPen = "A";
   currentBrush = "A";
   currentPanel = "-"; // i.e., main
@@ -51,19 +51,19 @@ bool Figure::hairline() const {
   return hairline_;
 }
 
-void Figure::setHAlign(Figure::HAlign a) {
+void Figure::setHAlign(Align::HAlign a) {
   halign = a;
 }
 
-void Figure::setVAlign(Figure::VAlign a) {
+void Figure::setVAlign(Align::VAlign a) {
   valign = a;
 }
 
-Figure::HAlign Figure::hAlign() const {
+Align::HAlign Figure::hAlign() const {
   return halign;
 }
 
-Figure::VAlign Figure::vAlign() const {
+Align::VAlign Figure::vAlign() const {
   return valign;
 }
 
@@ -231,18 +231,46 @@ QString Figure::currentPanelName() const {
 }
 
 void Figure::startGroup() {
-  groupstack.push_back(cumulbbox);
+  GroupData g;
+  g.bbox = cumulbbox;
+
+  g.pen = pntr.pen();
+  g.brush = pntr.brush();
+  g.penName = currentPen;
+  g.brushName = currentBrush;
+  g.valign = valign;
+  g.halign = halign;
+  g.reftext = reftxt;
+  g.hairline = hairline_;
+  g.font = pntr.font();
+
+  groupstack.push_back(g);
   cumulbbox = QRectF();
 }
 
 void Figure::endGroup() {
   if (groupstack.isEmpty()) {
     Error() << "Warning: pop from empty group stack";
-  } else {
-    lastbbox = cumulbbox;
-    cumulbbox = groupstack.takeLast();
-    cumulbbox |= lastbbox;
+    return;
   }
+
+  lastbbox = cumulbbox;
+    
+  GroupData g(groupstack.takeLast());
+  if (currentPen!=g.penName)
+    choosePen(g.penName);
+  pntr.setPen(g.pen);
+  if (currentBrush!=g.brushName)
+    chooseBrush(g.brushName);
+  pntr.setBrush(g.brush);
+  halign = g.halign;
+  valign = g.valign;
+  reftxt = g.reftext;
+  pntr.setFont(g.font);
+  hairline_ = g.hairline;
+  
+  cumulbbox = g.bbox;
+  cumulbbox |= lastbbox;
 }
 
 QString Figure::panelAt(QPointF const &xy) {

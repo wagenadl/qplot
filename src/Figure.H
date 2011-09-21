@@ -7,6 +7,8 @@
 #include "Axis.H"
 #include "Panel.H"
 #include "Marker.H"
+#include "Align.H"
+#include "GroupData.H"
 
 #include <QRectF>
 #include <QPainter>
@@ -15,13 +17,6 @@
 #include <QBrush>
 
 class Figure {
-public:
-  enum HAlign {
-    LEFT, CENTER, RIGHT,
-  };
-  enum VAlign {
-    TOP, MIDDLE, BOTTOM, BASE,
-  };
 public:
   Figure();
   void setSize(QSizeF wh_pt);
@@ -48,10 +43,10 @@ public:
   QRectF const &lastBBox() const;
   QRectF const &cumulBBox() const;
   QRectF const &fullBBox() const;
-  void setVAlign(VAlign a);
-  void setHAlign(HAlign a);
-  VAlign vAlign() const;
-  HAlign hAlign() const;
+  void setVAlign(Align::VAlign a);
+  void setHAlign(Align::HAlign a);
+  Align::VAlign vAlign() const;
+  Align::HAlign hAlign() const;
   void setRefText(QString str);
   QString refText() const;
   QPainter &painter();
@@ -76,8 +71,8 @@ private:
   QPainter pntr;
   QPointF anch;
   double anchang;
-  VAlign valign;
-  HAlign halign;
+  Align::VAlign valign;
+  Align::HAlign halign;
   QString reftxt;
   Marker mrkr;
   QMap<QString, QPen> pens; 
@@ -90,7 +85,7 @@ private:
   QString currentBrush;
   QString currentPanel;
   bool hairline_;
-  QList<QRectF> groupstack;
+  QList<GroupData> groupstack;
 private:
   void replaceAxes();
 };

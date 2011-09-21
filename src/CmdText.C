@@ -43,27 +43,27 @@ void CmdText::render(Statement const &s, Figure &f, bool dummy) {
   }
   
   switch (f.hAlign()) {
-  case Figure::LEFT:
+  case Align::LEFT:
     dx -= r.left();
     break;
-  case Figure::RIGHT:
+  case Align::RIGHT:
     dx -= r.right();
     break;
-  case Figure::CENTER:
+  case Align::CENTER:
     dx -= r.left()/2 + r.right()/2;
     break;
   }
   switch (f.vAlign()) {
-  case Figure::TOP:
+  case Align::TOP:
     dy -= r.top();
     break;
-  case Figure::BOTTOM:
+  case Align::BOTTOM:
     dy -= r.bottom();
     break;
-  case Figure::MIDDLE:
+  case Align::MIDDLE:
     dy -= r.top()/2 + r.bottom()/2;
     break;
-  case Figure::BASE:
+  case Align::BASE:
     break;
   }
 

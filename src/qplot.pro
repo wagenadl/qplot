@@ -12,7 +12,8 @@ DEPENDPATH += .
 INCLUDEPATH += .
 
 # Input
-HEADERS += Axis.H \
+HEADERS += Align.H \
+           Axis.H \
            CmdAlign.H \
            CmdAt.H \
            CmdBrush.H \
@@ -36,6 +37,7 @@ HEADERS += Axis.H \
            Error.H \
            Factor.H \
            Figure.H \
+           GroupData.H \
            Marker.H \
            Program.H \
            QPWidget.H \

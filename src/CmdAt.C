@@ -39,10 +39,10 @@ bool CmdAt::parse(Statement const &s) {
     return true;
   if (s.length()<3)
     return usage();
-  if (!(s[1].typ==Token::NUMBER ||
+  if (!(s[1].typ==Token::NUMBER || s[1].typ==Token::DASH ||
 	(s[1].typ==Token::BAREWORD && horiAlign(s[1].str)>=0)))
     return usage();
-  if (!(s[2].typ==Token::NUMBER ||
+  if (!(s[2].typ==Token::NUMBER || s[2].typ==Token::DASH ||
 	(s[2].typ==Token::BAREWORD && vertAlign(s[2].str)>=0)))
     return usage();
   if (s.length()==3)
@@ -90,7 +90,7 @@ QRectF CmdAt::dataRange(Statement const &s) {
 }
   
 void CmdAt::render(Statement const &s, Figure &f, bool) {
-  if (s[1].typ==Token::DASH) {
+  if (s.length()<=2) {
     f.setAnchor(QPointF(0,0));
     return;
   }
@@ -103,12 +103,16 @@ void CmdAt::render(Statement const &s, Figure &f, bool) {
     int a = horiAlign(s[1].str);
     anchor.setX(f.lastBBox().left()
 		+ a*f.lastBBox().width()/2);
+  } else if (s[1].typ==Token::DASH) {
+    anchor.setX(0);
   }
   if (s[2].typ==Token::BAREWORD) {
     // that means y is as yet undefined. no matter:
     int a = vertAlign(s[2].str);
     anchor.setY(f.lastBBox().top()
 		+ a*f.lastBBox().height()/2);
+  } else if (s[2].typ==Token::DASH) {
+    anchor.setY(0);
   }
   
   if (s.length()==5) 

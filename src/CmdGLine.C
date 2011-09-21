@@ -151,10 +151,10 @@ void CmdGLine::render(Statement const &s, Figure &f, bool dryrun) {
       case KW_retract:
         rL = s[k+1].num;
         if (s[k+2].typ==Token::NUMBER) {
-  	rR = s[k+1].num;
+	  rR = s[k+1].num;
         } else {
-  	rR = rL;
-  	--k; // only one number
+	  rR = rL;
+	  --k; // only one number
         }
 	break;
       case KW_ERROR: // cannot happen

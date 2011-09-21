@@ -1,7 +1,7 @@
 // CmdAlign.C
 
 #include "CmdAlign.H"
-
+#include "Align.H"
 
 static CBuilder<CmdAlign> cbAlign("align");
 
@@ -11,24 +11,24 @@ bool CmdAlign::usage() {
 
 static int halignment(QString s) {
   if (s=="left")
-    return Figure::LEFT;
+    return Align::LEFT;
   else if (s=="right")
-    return Figure::RIGHT;
+    return Align::RIGHT;
   else if (s=="center")
-    return Figure::CENTER;
+    return Align::CENTER;
   else
     return -1;
 }
 
 static int valignment(QString s) {
   if (s=="top")
-    return Figure::TOP;
+    return Align::TOP;
   else if (s=="bottom")
-    return Figure::BOTTOM;
+    return Align::BOTTOM;
   else if (s=="middle")
-    return Figure::MIDDLE;
+    return Align::MIDDLE;
   else if (s=="base")
-    return Figure::BASE;
+    return Align::BASE;
   else
     return -1;
 }
@@ -52,8 +52,8 @@ bool CmdAlign::parse(Statement const &s) {
 void CmdAlign::render(Statement const &s, Figure &f, bool) {
   for (int k=1; k<s.length(); k++) {
     if (halignment(s[k].str)>=0)
-      f.setHAlign(Figure::HAlign(halignment(s[k].str)));
+      f.setHAlign(Align::HAlign(halignment(s[k].str)));
     else if (valignment(s[k].str)>=0)
-      f.setVAlign(Figure::VAlign(valignment(s[k].str)));
+      f.setVAlign(Align::VAlign(valignment(s[k].str)));
   }
 }
