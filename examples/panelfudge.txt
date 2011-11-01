@@ -12,10 +12,11 @@ text -5 0 "y"
 
 marker cross 20
 mark [ .5 ] [ .5 ]
-fudge
+fudge 
 
 pen red
 panel A 80 20 300 200
+pen blue
 plot [ 1 0 .1 ] [ .1 0 1 ]
 at 1 .1
 align center top
