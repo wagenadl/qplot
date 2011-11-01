@@ -1,6 +1,6 @@
-function qgline(varargin)
-% QGLINE - Generalized line drawing
-%   QGLINE(ptspec1, ptspec2, ...).
+function qgarea(varargin)
+% QGAREA - Generalized line drawing
+%   QGAREA(ptspec1, ptspec2, ...).
 %   A PTSPEC is a cell array containing a sequence of commands from the 
 %   following list:
 %      ABSDATA x y    - Absolute data coordinates 
@@ -14,17 +14,9 @@ function qgline(varargin)
 %      RETRACT l      - Retract preceding and following segments by L pt.
 %      RETRACT l1 l   - Retract preceding and following segments by L1 and 
 %                     - L2 pt respectively.
-%   For instance,
 %
-%       qgline({'absdata', 0, 1, 'relpaper', 5, 0}, ...
-%              {'absdata', 0, 1, 'relpaper', 0, 5})
-%
-%   draws a line from 5 pt to the right of the point (0,1) in the graph to
-%   5 pt above the point (1,0) on the graph.
-%
-%   Note: The rather cumbersome syntax of QGLINE makes QLINE and QPLOT more
-%   attractive for general usage. The same applies to QGAREA versus QAREA 
-%   and QPATCH.
+%   Note: The rather cumbersome syntax of QGAREA makes QAREA and QPATCH more
+%   attractive for general usage. See also QGLINE.
 
 fd = qp_fd(1);
 
@@ -33,7 +25,7 @@ if length(args)==1 & iscell(args)
   args = args{:};
 end
 
-cmd = 'gline';
+cmd = 'garea';
 for k=1:length(args)
   cmd = [ cmd ' (' ];
   for q=1:length(args{k})
