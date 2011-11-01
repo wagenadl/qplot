@@ -53,14 +53,14 @@ if w>0
     % Draw top ticks
     for n=1:N
       qat(xx(n), yy(n)+dy_up(n));
-      line([-1 1]*w/2,[0 0]);
+      qline([-1 1]*w/2,[0 0]);
     end
   end
   if ~strcmp(dir, 'up')
     % Draw down ticks
     for n=1:N
       qat(xx(n), yy(n)+dy_dn(n));
-      line([-1 1]*w/2,[0 0]);
+      qline([-1 1]*w/2,[0 0]);
     end
   end
 end
