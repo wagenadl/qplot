@@ -1,9 +1,14 @@
-function qsave(ofn)
+function qsave(ofn, reso)
 % QSAVE - Saves a qplot figure
 %    QSAVE(ofn) saves the current qplot figure to the named file.
 %    QSAVE(ext), where EXT is just a filename extension (without the dot),
 %    uses the name of the current figure.
-%    QSAVE without arguments saves to pdf
+%    QSAVE(ofn, reso) specifies bitmap resolution for png/jpeg output.
+%    QSAVE without arguments saves to pdf.
+
+if nargin<2
+  reso = [];
+end
 
 qp_ensure;
 global qp_data;
@@ -22,7 +27,13 @@ if isempty(find(ofn=='.'))
   ofn = [ifn(1:idx(end)) ofn];
 end
 
-s = unix(sprintf('qplotml %s %s', ifn, ofn));
+if isempty(reso)
+  cmd = sprintf('qplotml %s %s', ifn, ofn);
+else
+  cmd = sprintf('qplotml -r%i %s %s', floor(reso), ifn, ofn);
+end
+
+s = unix(cmd);
 if s
   error('qplot failed');
 end

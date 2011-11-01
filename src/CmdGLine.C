@@ -3,12 +3,16 @@
 #include "CmdGLine.H"
 #include "Rotate.H"
 #include <math.h>
+#include <QDebug>
 
 static CBuilder<CmdGLine> cbGLine("gline");
 static CBuilder<CmdGLine> cbGArea("garea");
 
-bool CmdGLine::usage() {
-  return error("Usage: gline|garea ptspec ...");
+bool CmdGLine::usage(QString x) {
+  if (x.isEmpty())
+    return error("Usage: gline|garea ptspec ...");
+  else
+    return error("gline|garea: " + x);
 }
 
 enum GLineKW {
@@ -40,60 +44,70 @@ static GLineKW glineKW(QString s) {
   else
     return KW_ERROR;
 }
+
+static QString got(Statement const &s, int k) {
+  return " rather than '" + s[k].str + "' after " + QString::number(k);
+}
   
 bool CmdGLine::parse(Statement const &s) {
-  int k=0;
+  int k=1;
   while (k<s.length()) {
     if (s[k].typ!=Token::OPENPAREN)
-      usage();
+      return usage("expected '('" + got(s,k));
     k++;
+    //qDebug() << "gline got OPENPAREN";
     if (k>=s.length())
       usage();
     while (s[k].typ!=Token::CLOSEPAREN) {
       if (s[k].typ!=Token::BAREWORD)
-        usage();
+        return usage("expected ')' or keyword" + got(s,k));
+      //qDebug() << "gline got " << s[k].str;
       GLineKW kw = glineKW(s[k].str);
       if (kw==KW_ERROR)
-        usage();
+        return usage("unknown keyword: '" + s[k].str + "'");
       k++;
       if (k>=s.length())
-        usage();
+        usage("missing 1st argument to '" + s[k].str + "'");
       switch (kw) { // checking first number
       case KW_absdata: case KW_abspaper:
         if (s[k].typ!=Token::NUMBER && s[k].typ!=Token::BAREWORD)
-  	usage();
+	  return usage("expected number or word after '" + s[k-1].str + "'");
         break;
       default:
         if (s[k].typ!=Token::NUMBER)
-  	usage();
+	  return usage("expected number");
         break;
       }
+      //qDebug() << "gline got arg1: " << s[k].str;
       k++;
       if (k>=s.length())
-        usage();
+        return usage("missing 2nd argument to '" + s[k].str + "'");
       switch (kw) { // checking second number
       case KW_absdata: case KW_abspaper:
         if (s[k].typ!=Token::NUMBER && s[k].typ!=Token::BAREWORD)
-  	usage();
+	  return usage("expected number or word after '" + s[k-2].str + "'");
         break;
       case KW_retract:
         if (s[k].typ==Token::CLOSEPAREN)
 	  --k; // no second number
         else if (s[k].typ!=Token::NUMBER)
-  	usage();
+	  return usage("expected ')' or number after 'retract'");
         break;
       case KW_rotpaper:
 	--k; // no second number
 	break;
       default:
         if (s[k].typ!=Token::NUMBER)
-  	usage();
+	  return usage("expected number after '" + s[k-2].str + "'");
         break;
       }
+      //qDebug() << "gline got arg2: " << s[k].str;
       k++;
       if (k>=s.length())
-        usage();
+        return usage("unexpected end of line");
     }
+    //qDebug() << "gline got CLOSEPAREN";
+    k++;
   }
 
   return true;
@@ -104,7 +118,7 @@ void CmdGLine::render(Statement const &s, Figure &f, bool dryrun) {
   QVector<double> retractL;
   QVector<double> retractR;
 
-  int k=0;
+  int k=1;
   while (k<s.length()) {
     // build a new point
     QPointF p(0,0);
@@ -127,9 +141,9 @@ void CmdGLine::render(Statement const &s, Figure &f, bool dryrun) {
         break;
       case KW_abspaper:
         if (s[k+1].typ==Token::NUMBER)
-  	p.setX(s[k+1].num);
+	  p.setX(pt2iu(s[k+1].num));
         if (s[k+2].typ==Token::NUMBER)
-  	p.setY(s[k+2].num);
+	  p.setY(pt2iu(s[k+2].num));
         break;
       case KW_reldata:
         p1 = f.maprel(s[k+1].num, s[k+2].num);
@@ -137,8 +151,8 @@ void CmdGLine::render(Statement const &s, Figure &f, bool dryrun) {
         p.setY(p.y()+p1.y());
         break;
       case KW_relpaper:
-        p.setX(p.x()+s[k+1].num*cos(phi) - s[k+2].num*sin(phi));
-        p.setY(p.y()+s[k+1].num*sin(phi) + s[k+2].num*cos(phi));
+        p.setX(p.x()+pt2iu(s[k+1].num)*cos(phi) - pt2iu(s[k+2].num)*sin(phi));
+        p.setY(p.y()+pt2iu(s[k+1].num)*sin(phi) + pt2iu(s[k+2].num)*cos(phi));
         break;
       case KW_rotdata:
         p1 = f.maprel(s[k+1].num, s[k+2].num);
@@ -149,9 +163,9 @@ void CmdGLine::render(Statement const &s, Figure &f, bool dryrun) {
         --k; // only one number
         break;
       case KW_retract:
-        rL = s[k+1].num;
+        rL = pt2iu(s[k+1].num);
         if (s[k+2].typ==Token::NUMBER) {
-	  rR = s[k+1].num;
+	  rR = pt2iu(s[k+2].num);
         } else {
 	  rR = rL;
 	  --k; // only one number
