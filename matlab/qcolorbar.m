@@ -7,6 +7,14 @@ function qcolorbar(xywh, lut, varargin)
 %    explicitly specifies the ends if ticks at the ends are not desired.
 %    QCOLORBAR(..., labels) specifies the text of the labels.
 %    QCOLORBAR(..., caption) adds a caption.
+%    If LUT is given as [], QLUT is used to query the figure.
+
+if nargin<2
+  lut=[];
+end
+if isempty(lut)
+  lut = qlut;
+end
 
 if isempty(varargin)
   key=0;

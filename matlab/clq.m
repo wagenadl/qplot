@@ -16,4 +16,7 @@ qp_data.info(idx).ticklen = 3;
 qp_data.info(idx).textdist = [3 3];
 qp_data.info(idx).lastax = '';
 qp_data.info(idx).lut = repmat([0:.01:1]',[1 3]);
+qp_data.info(idx).lut_nan = [1 1 1];
 qp_data.info(idx).panels = {'-'};
+qp_data.info(idx).panelextent = { };
+qp_data.info(idx).panel = '-';

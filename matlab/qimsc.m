@@ -62,9 +62,15 @@ end
 idx = qp_idx(1);
 global qp_data;
 lut = qp_data.info(idx).lut;
+nanc = qp_data.info(idx).lut_nan;
 [N C] = size(lut);
 data = floor(1+(N-.0001)*(data-c0)/(c1-c0)); % normalize to color range
 data(data<1)=1;
 data(data>N)=N;
 
-qimage(xywh, reshape(lut(reshape(data,[Y*X 1]),:), [Y X C]));
+isn = find(isnan(data));
+data(isn)=1;
+imd = lut(reshape(data,[Y*X 1]),:);
+imd(isn,:) = repmat(nanc(:)',length(isn),1);
+
+qimage(xywh, reshape(imd, [Y X C]));

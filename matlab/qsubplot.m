@@ -48,3 +48,7 @@ qpen none
 qbrush none
 qpanel(id, x, y, w, h);
 qpen solid
+
+if nargout==0
+  clear id
+end

@@ -26,9 +26,9 @@ for k=1:nargin
     str = sprintf('%s %s', str, a);
   elseif isnscalar(a) & isreal(a) & ~isnan(a)
     str = sprintf('%s %g', str, a);
-  elseif k==1 & ~isempty(strmatch(a, strtoks('left right center'), 'exact'))
+  elseif k==1 & ischar(a) & ~isempty(strmatch(a, strtoks('left right center'), 'exact'))
     str = sprintf('%s %s', str, a);
-  elseif k==2 & ~isempty(strmatch(a, strtoks('top bottom middle'), 'exact'))
+  elseif k==2 & ischar(a) & ~isempty(strmatch(a, strtoks('top bottom middle'), 'exact'))
     str = sprintf('%s %s', str, a);
   elseif k<=2 & ((ischar(a) & strcmp(a, '-')) | (isnscalar(a) & isnan(a)))
     str = sprintf('%s -', str);
