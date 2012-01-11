@@ -40,6 +40,8 @@ for k=1:length(args)
     x = args{k}{q};
     if ischar(x)
       cmd = [ cmd ' ' x ];
+    elseif isnan(x)
+      cmd = [ cmd ' -' ];
     else
       cmd = [ cmd ' ' sprintf('%g', x) ];
     end

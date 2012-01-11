@@ -8,7 +8,8 @@ function qcolorbar(xywh, lut, varargin)
 %    QCOLORBAR(..., ticklabels) specifies the text of the labels.
 %    QCOLORBAR(..., caption) adds a caption.
 %    If LUT is given as [], QLUT is used to query the figure.
-
+%
+%    This command is deprecated. Use QCBAR and QCAXIS instead.
 if nargin<2
   lut=[];
 end

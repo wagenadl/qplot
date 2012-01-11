@@ -63,6 +63,8 @@ idx = qp_idx(1);
 global qp_data;
 lut = qp_data.info(idx).lut;
 nanc = qp_data.info(idx).lut_nan;
+qp_data.info(idx).clim = [c0 c1];
+
 [N C] = size(lut);
 data = floor(1+(N-.0001)*(data-c0)/(c1-c0)); % normalize to color range
 data(data<1)=1;

@@ -70,8 +70,8 @@ bool CmdGLine::parse(Statement const &s) {
         usage("missing 1st argument to '" + s[k].str + "'");
       switch (kw) { // checking first number
       case KW_absdata: case KW_abspaper:
-        if (s[k].typ!=Token::NUMBER && s[k].typ!=Token::BAREWORD)
-	  return usage("expected number or word after '" + s[k-1].str + "'");
+        if (s[k].typ!=Token::NUMBER && s[k].typ!=Token::DASH)
+	  return usage("expected number or dash after '" + s[k-1].str + "'");
         break;
       default:
         if (s[k].typ!=Token::NUMBER)
@@ -84,8 +84,8 @@ bool CmdGLine::parse(Statement const &s) {
         return usage("missing 2nd argument to '" + s[k].str + "'");
       switch (kw) { // checking second number
       case KW_absdata: case KW_abspaper:
-        if (s[k].typ!=Token::NUMBER && s[k].typ!=Token::BAREWORD)
-	  return usage("expected number or word after '" + s[k-2].str + "'");
+        if (s[k].typ!=Token::NUMBER && s[k].typ!=Token::DASH)
+	  return usage("expected number or dash after '" + s[k-2].str + "'");
         break;
       case KW_retract:
         if (s[k].typ==Token::CLOSEPAREN)
@@ -133,11 +133,11 @@ void CmdGLine::render(Statement const &s, Figure &f, bool dryrun) {
       switch (kw) {
       case KW_absdata:
         p1 = f.map(s[k+1].typ==Token::NUMBER ? s[k+1].num : f.xAxis().min(),
-  		 s[k+2].typ==Token::NUMBER ? s[k+2].num : f.yAxis().min());
+		   s[k+2].typ==Token::NUMBER ? s[k+2].num : f.yAxis().min());
         if (s[k+1].typ==Token::NUMBER)
-  	p.setX(p1.x());
+	  p.setX(p1.x());
         if (s[k+2].typ==Token::NUMBER)
-  	p.setY(p1.y());
+	  p.setY(p1.y());
         break;
       case KW_abspaper:
         if (s[k+1].typ==Token::NUMBER)

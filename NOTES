@@ -15,14 +15,18 @@ ideal. Or at least, I find it confusing.
 
 The thing needs to be published somehow!
 
-qcolorbar should *only* have xywh arg, and perhaps h/v arg. It should
-assume the LUT and CLIM from the most recent QIMSC.  A new qcaxis
-command should add labels to the qcolorbar. The CLIM still applies, so
-locations are specified in terms of that range. qcaxis takes a first
-argument, normally zero, that specifies the distance from the
-qcolorbar. That makes directly analogous to the QXAXIS and QYAXIS.
+The new QCBAR and QCAXIS need to be documented along with the new axis
+modifiers.
 
-A new (C level) command "share" should link either or both the x and y
+A new (C level) command "gimage" should allow drawing images in more
+general coordinates: mixing data and paper coordinates is useful for
+colorbars.
+
+A new (C level) command "sharelim" should link either or both the x and y
 ranges of selected subplots:
 
-  share [x|y] ID1 ID2 ...
+  sharelim [x|y] ID1 ID2 ...
+
+The matlab functions QPLOT and friends should automatically split up
+the data into multiple chunks at NaNs. Or perhaps this is best
+implemented at C level.
