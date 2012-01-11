@@ -15,3 +15,14 @@ ideal. Or at least, I find it confusing.
 
 The thing needs to be published somehow!
 
+qcolorbar should *only* have xywh arg, and perhaps h/v arg. It should
+assume the LUT and CLIM from the most recent QIMSC.  A new qcaxis
+command should add labels to the qcolorbar. The CLIM still applies, so
+locations are specified in terms of that range. qcaxis takes a first
+argument, normally zero, that specifies the distance from the
+qcolorbar. That makes directly analogous to the QXAXIS and QYAXIS.
+
+A new (C level) command "share" should link either or both the x and y
+ranges of selected subplots:
+
+  share [x|y] ID1 ID2 ...

@@ -32,6 +32,7 @@ for n=1:nargin
 end
 
 fprintf(fd, '%s\n', str);
+qp_flush(fd);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function str = qp_mapmarker(str)
@@ -66,5 +67,4 @@ switch str
     str = [];
 end
 
-qp_flush(fd);
 

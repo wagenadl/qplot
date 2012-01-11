@@ -59,8 +59,8 @@ end
 
 if isempty(lbls)
   ;
-elseif size(lbls) ~= size(xpts)
-  qaxis_usage;
+elseif length(lbls) ~= length(xpts)
+  qxa_usage;
 end
 
 % -- Plotting starts here
