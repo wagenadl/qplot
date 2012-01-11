@@ -21,7 +21,7 @@ function qgarea(varargin)
 fd = qp_fd(1);
 
 args = varargin;
-if length(args)==1 & iscell(args)
+if length(args)==1 && iscell(args)
   args = args{:};
 end
 
@@ -40,3 +40,6 @@ for k=1:length(args)
 end
 
 fprintf(fd, '%s\n', cmd);
+
+qp_flush(fd);
+

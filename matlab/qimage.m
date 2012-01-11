@@ -33,10 +33,10 @@ switch nargin
     error('qimage takes 1 to 3 arguments');
 end
 
-if ~isnvector(xywh) | ~isreal(xywh)
+if ~isnvector(xywh) || ~isreal(xywh)
   error('xywh must be a real vector of length 4');
 end
-if ~isnumeric(data) | ~isreal(data)
+if ~isnumeric(data) || ~isreal(data)
   error('data must be a real numeric array');
 end 
 
@@ -67,3 +67,6 @@ if ~isa(data, 'uint8')
   data = uint8(floor(255*data+.5));
 end
 fwrite(fd, data, 'uint8');
+
+qp_flush(fd);
+

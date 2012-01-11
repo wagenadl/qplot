@@ -1,4 +1,17 @@
-subplots is half implemented. Should be called "panel".
-For panel/pen/brush, ID should only be accepted as first argument.
-The current pen/brush/subplot should be actively rmoved from the map.
-BBoxes should be handled properly at subplot change.
+The current pen/brush/subplot should be actively removed from the map.
+I don't remember why this needs to happen. Presumably, the affected
+functions are Figure::choosenPen/Brush/Panel.
+
+BBoxes should be handled properly at subplot change.  I don't remember
+what the problem is, or whether I fixed it yet. I suspect I probably
+did.
+
+More examples are in order.
+
+The Matlab code should be checked for Octave compatibility.
+
+The specification of label positions in qcolorbar.m is less than
+ideal. Or at least, I find it confusing.
+
+The thing needs to be published somehow!
+

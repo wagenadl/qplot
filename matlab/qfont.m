@@ -4,7 +4,7 @@ function qfont(varargin)
 
 fd = qp_fd(1);
 
-if nargin<2 | nargin>4
+if nargin<2 || nargin>4
   qfont_usage;
 end
 if isnscalar(varargin{end})
@@ -31,3 +31,5 @@ fprintf(fd, '%s\n', str);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function qfont_usage()
   error('Usage: qfont family [bold] [italic] size');
+qp_flush(fd);
+

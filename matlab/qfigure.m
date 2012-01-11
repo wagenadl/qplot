@@ -76,3 +76,6 @@ unix(sprintf('qpclient %s', fn));
 if nargout<1
   clear fn
 end
+
+qp_flush(fd);
+

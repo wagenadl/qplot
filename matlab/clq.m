@@ -20,3 +20,6 @@ qp_data.info(idx).lut_nan = [1 1 1];
 qp_data.info(idx).panels = {'-'};
 qp_data.info(idx).panelextent = { };
 qp_data.info(idx).panel = '-';
+
+qp_flush(fd);
+

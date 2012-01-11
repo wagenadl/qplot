@@ -10,7 +10,7 @@ fd = qp_fd(1);
 for n=1:nargin
   a = varargin{n};
   if ischar(a)
-    if length(a)==1 & a>='A' & a<='Z' & n==1
+    if length(a)==1 && a>='A' && a<='Z' && n==1
       ; % This is ID, so good
     elseif strmatch(a, strtoks('none'), 'exact')
       ; % This is a known keyword, so good
@@ -19,13 +19,13 @@ for n=1:nargin
       varargin{n} = qp_mapcolor(a);
     elseif ~isnan(str2double(a)) 
       % This is a number
-      if length(a)==3  & all(a>='0') & all(a<='9')
+      if length(a)==3  && all(a>='0') && all(a<='9')
 	% This is a three-digit color
 	varargin{n} = sprintf('#%02x%02x%02x', ...
 	    floor(255.999*atoi(a(1))/9), ...
 	    floor(255.999*atoi(a(2))/9), ...
 	    floor(255.999*atoi(a(3))/9));
-      elseif length(a)==6 & all(a>='0') & all(a<='9')
+      elseif length(a)==6 && all(a>='0') && all(a<='9')
 	% This is a six-digit color
 	varargin{n} =  sprintf('#%02x%02x%02x', ...
 	    floor(255.999*atoi(a(1:2))/99), ...
@@ -37,10 +37,10 @@ for n=1:nargin
     else
       error([ 'Cannot interpret ' a ' as an argument for qbrush' ]);
     end
-  elseif isnscalar(a) & isreal(a)
+  elseif isnscalar(a) && isreal(a)
     ; % This is opacity
     varargin{n} = sprintf('%g', a);
-  elseif isnvector(a) & isreal(a) & length(a)==3
+  elseif isnvector(a) && isreal(a) && length(a)==3
     % This is a color
     varargin{n} =  sprintf('#%02x%02x%02x', ...
 	floor(255.999*a));
@@ -55,3 +55,6 @@ for n=1:nargin
 end
 
 fprintf(fd, '%s\n', str);
+
+qp_flush(fd);
+

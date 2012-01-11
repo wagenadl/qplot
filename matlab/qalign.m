@@ -19,3 +19,6 @@ end
 
 fprintf(fd, '%s\n', txt);
 
+
+qp_flush(fd);
+

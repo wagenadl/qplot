@@ -24,10 +24,10 @@ end
 if length(xlim)~=2
   xpts = xlim;
   xlim = [xlim(1) xlim(end)];
-elseif ~isempty(varargin) & isnvector(varargin{1})
+elseif ~isempty(varargin) && isnvector(varargin{1})
   xpts = varargin{1};
   varargin = varargin(2:end);
-elseif ~isempty(varargin) & isnumeric(varargin{1}) & isempty(varargin{1})
+elseif ~isempty(varargin) && isnumeric(varargin{1}) && isempty(varargin{1})
   xpts = [];
   varargin = varargin(2:end);
 else

@@ -13,10 +13,10 @@ else
   if nargin<3
     error('Usage: qtext x y text');
   end
-  if isnscalar(x) & isreal(x)
+  if isnscalar(x) && isreal(x)
     x = sprintf('%g', x);
   end
-  if isnscalar(y) & isreal(y)
+  if isnscalar(y) && isreal(y)
     y = sprintf('%g', y);
   end
   
@@ -26,8 +26,11 @@ else
   end
 end
 
-if isnan(str2double(x)) | isnan(str2double(y))
+if isnan(str2double(x)) || isnan(str2double(y))
   error('Usage: qtext x y text');
 end
 
 fprintf(fd,'text %s %s "%s"\n',x, y, txt);
+
+qp_flush(fd);
+

@@ -15,22 +15,22 @@ if nargin==0
   return;
 end
 
-if nargin<2 | nargin>4
+if nargin<2 || nargin>4
   error('Usage: qat x y [dx dy]|phi');
 end
 
 str = 'at';
 for k=1:nargin
   a = varargin{k};
-  if ischar(a) & ~isnan(str2double(a))
+  if ischar(a) && ~isnan(str2double(a))
     str = sprintf('%s %s', str, a);
-  elseif isnscalar(a) & isreal(a) & ~isnan(a)
+  elseif isnscalar(a) && isreal(a) && ~isnan(a)
     str = sprintf('%s %g', str, a);
-  elseif k==1 & ischar(a) & ~isempty(strmatch(a, strtoks('left right center'), 'exact'))
+  elseif k==1 && ischar(a) && ~isempty(strmatch(a, strtoks('left right center'), 'exact'))
     str = sprintf('%s %s', str, a);
-  elseif k==2 & ischar(a) & ~isempty(strmatch(a, strtoks('top bottom middle'), 'exact'))
+  elseif k==2 && ischar(a) && ~isempty(strmatch(a, strtoks('top bottom middle'), 'exact'))
     str = sprintf('%s %s', str, a);
-  elseif k<=2 & ((ischar(a) & strcmp(a, '-')) | (isnscalar(a) & isnan(a)))
+  elseif k<=2 && ((ischar(a) && strcmp(a, '-')) || (isnscalar(a) && isnan(a)))
     str = sprintf('%s -', str);
   else
     error('Cannot interpret arguments');
@@ -38,3 +38,5 @@ for k=1:nargin
 end
 
 fprintf(fd, '%s\n', str);
+qp_flush(fd);
+

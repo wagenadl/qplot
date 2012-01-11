@@ -14,3 +14,6 @@ else
   fprintf(fd,'reftext "%s"\n', txt);
 end
 
+
+qp_flush(fd);
+

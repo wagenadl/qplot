@@ -17,16 +17,16 @@ else
   qat(x, y, ang);
 end
 
-if nargin<4 | isempty(l)
+if nargin<4 || isempty(l)
   l = 8;
 end
-if nargin<5 | isempty(w)
+if nargin<5 || isempty(w)
   w = .6*l;
 end
-if nargin<6 | isempty(dist)
+if nargin<6 || isempty(dist)
   dist=0;
 end
-if nargin<7 | isempty(dimple)
+if nargin<7 || isempty(dimple)
   dimple=0;
 end
 

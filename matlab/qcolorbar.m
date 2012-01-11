@@ -1,11 +1,11 @@
 function qcolorbar(xywh, lut, varargin)
 % QCOLORBAR - Adds a colorbar to the figure
 %    QCOLORBAR(xywh, lut) represents the LUT at location XYWH.
-%    QCOLORBAR(xywh, lut, lblloc) adds labels. The first and last labels
+%    QCOLORBAR(xywh, lut, tickvals) adds ticks. The first and last labels
 %    go at the ends of the colorbar.
-%    QCOLORBAR(xywh, lut, clim, lblloc), where CLIM is a two-element vector
-%    explicitly specifies the ends if ticks at the ends are not desired.
-%    QCOLORBAR(..., labels) specifies the text of the labels.
+%    QCOLORBAR(xywh, lut, endvals, tickvals), where ENDVALS is a two-element
+%    vector explicitly specifies the values at the ends of the colorbar.
+%    QCOLORBAR(..., ticklabels) specifies the text of the labels.
 %    QCOLORBAR(..., caption) adds a caption.
 %    If LUT is given as [], QLUT is used to query the figure.
 
@@ -27,14 +27,14 @@ else
   lbltxt = lblloc;
   caption = '';
   if ~isempty(varargin)
-    if length(lblloc)==2 & isnvector(varargin{1})
+    if length(lblloc)==2 && isnvector(varargin{1})
       lblloc = varargin{1};
       lbltxt = lblloc;
       varargin = varargin(2:end);
       if length(lblloc)==2
         % This could be a mistake: Should we interpret as (lblloc, clbl) rather 
         % than (clim, lblloc)?
-        if isempty(varargin) | ischar(varargin{1})
+        if isempty(varargin) || ischar(varargin{1})
 	  lblloc = clim;
         end	
       end
@@ -42,7 +42,7 @@ else
   end
   
   if ~isempty(varargin)
-    if iscell(varargin{1}) | isnvector(varargin{1})
+    if iscell(varargin{1}) || isnvector(varargin{1})
       lbltxt = varargin{1};
       varargin = varargin(2:end);
     end

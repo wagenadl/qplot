@@ -18,7 +18,7 @@ for n=1:nargin
     else
       error([ 'Cannot interpret ' a ' as an argument for qmarker' ]);
     end
-  elseif isnscalar(a) & isreal(a)
+  elseif isnscalar(a) && isreal(a)
     ; % This is size
     varargin{n} = sprintf('%g', a);
   else
@@ -65,3 +65,6 @@ switch str
   otherwise
     str = [];
 end
+
+qp_flush(fd);
+
