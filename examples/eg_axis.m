@@ -1,4 +1,4 @@
-qfigure('qaxis_eg.qpt', 5, 3.5);
+qfigure('eg_axis.qpt', 5, 3.5);
 
 xx = [-pi:.001:pi]*3;
 

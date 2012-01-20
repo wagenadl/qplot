@@ -55,10 +55,12 @@ dpts = qca_ctodat(cpts, cb);
 plim = qca_ctopap(clim, cb);
 ppts = qca_ctopap(cpts, cb);
 
+plim(isnan(plim))=0;
+ppts(isnan(ppts))=0;
+
 switch cb.orient
   case 'y'
-    lblrot = qylabelrot;
-    flp = 1;
+    lblrot = qytitlerot;
     dcoord = cb.xywh_d(1);
     pcoord = cb.xywh_p(1);
     if side>0
@@ -67,7 +69,6 @@ switch cb.orient
     end
   case 'x'
     lblrot = 0;
-    flp = -1;
     dcoord = cb.xywh_d(2);
     pcoord = cb.xywh_p(2);
     if side>0
@@ -75,15 +76,15 @@ switch cb.orient
       pcoord = pcoord+cb.xywh_p(4);
     end
 end
-ticklen = ticklen*side*flp;
-lbldist = lbldist*side*flp;
-ttldist = ttldist*side*flp;
-axshift = axshift*side*flp;
+ticklen = ticklen*side;
+lbldist = lbldist*side;
+ttldist = ttldist*side;
+axshift = axshift*side;
 
 qp_axis('orient', cb.orient, ...
     'lim_d', dlim, 'lim_p', plim, ...
     'tick_d', dpts, 'tick_p', ppts, ...
-    'coord_d', dcoord, 'coord_p', pcoord, ...
+    'coord_d', dcoord, 'coord_p', pcoord+axshift, ...
     'tick_lbl', lbls, 'ttl', ttl, ...
     'ticklen', ticklen, 'lbldist', lbldist, 'ttldist', ttldist, ...
     'ttlrot', lblrot);
@@ -95,11 +96,11 @@ crel = (cc-cb.clim(1))/(cb.clim(2)-cb.clim(1));
 
 switch cb.orient
   case 'y'
-    rng = cb.xywh_d(3);
-    d0 = cb.xywh_d(1);
-  case 'x'
     rng = cb.xywh_d(4);
     d0 = cb.xywh_d(2);
+  case 'x'
+    rng = cb.xywh_d(3);
+    d0 = cb.xywh_d(1);
 end
 if cb.rev
   d0 = d0+rng;

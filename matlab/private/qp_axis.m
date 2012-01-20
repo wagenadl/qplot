@@ -19,7 +19,6 @@ function qp_axis(varargin)
 
 kv = getopt('orient=''x'' lim_d=[] lim_p=[] tick_d=[] tick_p=[] tick_lbl={} ttl='''' ticklen=3 lbldist=3 ttldist=3 coord_d=nan coord_p=0 ttlrot=0',  varargin);
 
-
 idx = qp_idx;
 global qp_data;
 qp_data.info(idx).lastax=kv;
@@ -74,7 +73,8 @@ elseif ~isempty(kv.tick_d) && ~isnan(kv.tick_d(1))
 else
   ttldx = nan;
 end
-ttldy = mean(limdy);
+ttldy = kv.coord_d;
+
 if ~isempty(kv.lim_p)
   ttlpx = mean(limpx);
 elseif ~isempty(kv.tick_p)
@@ -103,11 +103,13 @@ if isvert
   [ticklx, tickly] = identity(tickly, ticklx);
   [lbllx, lblly]   = identity(lblly, lbllx);
 end
-for k=1:length(tickdx)
-  qgline({ 'absdata',  tickdx(k), tickdy(k), ...
-	   'relpaper', tickpx(k), tickpy(k) }, ...
-	 { 'absdata',  tickdx(k), tickdy(k), ...
-	   'relpaper', tickpx(k)+ticklx, tickpy(k)+tickly });
+if kv.ticklen~=0
+  for k=1:length(tickdx)
+    qgline({ 'absdata',  tickdx(k), tickdy(k), ...
+	     'relpaper', tickpx(k), tickpy(k) }, ...
+	   { 'absdata',  tickdx(k), tickdy(k), ...
+	     'relpaper', tickpx(k)+ticklx, tickpy(k)+tickly });
+  end
 end
 
 % Draw labels if desired
@@ -141,6 +143,7 @@ if ~isempty(kv.ttl)
     [ttllx, ttlly] = identity(ttlly, ttllx);
     [ttldx, ttldy] = identity(ttldy, ttldx);
   end
+
   
   if isempty(kv.tick_lbl) || sign(kv.ttldist)~=sign(kv.lbldist)
     % Ignore labels when placing title: not on same side
@@ -150,6 +153,11 @@ if ~isempty(kv.ttl)
     end
     qat(ttldx, ttldy, -pi/2*sign(kv.ttlrot));
   else
+    if ishori
+      ttlpy=0;
+    else
+      ttlpx=0;
+    end
     [xa, ya] = qpa_align(ishori, -kv.ttldist);
     if ishori
       qat(ttldx, ya, -pi/2*sign(kv.ttlrot));
@@ -164,7 +172,7 @@ if ~isempty(kv.ttl)
   end
   qalign(xa, ya);
   if kv.ttlrot
-    qtext(sign(kv.ttlrot)*(ttlpy+ttlly), ...
+    qtext(-sign(kv.ttlrot)*(ttlpy+ttlly), ...
 	sign(kv.ttlrot)*(ttlpx+ttllx), kv.ttl);
   else
     qtext(ttlpx+ttllx, ttlpy+ttlly, kv.ttl);

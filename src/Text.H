@@ -18,7 +18,7 @@ public:
   void setFont(QString family, double size);
   void setFont(QFont const &);
   Text &operator<<(QString const &);
-  void add(QString const &); // same as operator<<
+  void add(QString); // same as operator<<
   void setSuper();
   void setSub();
   void toggleSlant();

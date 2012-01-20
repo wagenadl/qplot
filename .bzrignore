@@ -9,7 +9,7 @@ manual.aux
 manual.log
 manual.dvi
 a.out
-examples/qaxis_eg.qpt
+examples/eg_*.qpt
 doc/manual.pdf
 *.pid
 *.mex*

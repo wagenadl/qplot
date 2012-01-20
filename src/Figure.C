@@ -40,6 +40,7 @@ void Figure::reset() {
     QFont font("Helvetica");
     font.setPixelSize(pt2iu(10));
     pntr.setFont(font);
+    pntr.setPen("black");
   }
 }  
 

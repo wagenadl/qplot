@@ -15,7 +15,6 @@ Text::~Text() {
 }
 
 void Text::addInterpreted(QString txt) {
-  txt.replace("~", " ");
   QString bld;
   QRegExp word("\\w+");
   int idx=0;
@@ -155,7 +154,9 @@ Text &Text::operator<<(QString const &txt) {
   return *this;
 }
 
-void Text::add(QString const &txt) {
+void Text::add(QString txt) {
+  txt.replace("~", " ");
+  txt.replace(QRegExp("  +")," ");
   if (txt.isEmpty())
     return;
   State s(stack.last());
@@ -177,6 +178,7 @@ QRectF Text::bbox() const {
 void Text::render(QPainter &p, QPointF const &xy0) {
   foreach (Span const &s, spans) {
     p.setFont(s.font);
-    p.drawText(xy0+s.startpos, s.text);
+    QString txt = s.text;
+    p.drawText(xy0+s.startpos, txt);
   }
 }

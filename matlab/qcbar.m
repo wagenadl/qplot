@@ -1,5 +1,5 @@
 function qcbar(w, l, varargin)
-% QCBAR - Add a color bar to a figure
+% QCBAR - Add a vertical color bar to a figure
 %   QCBAR(w, h) adds a vertical color bar of given width and height (in points)
 %   at the position specified by QAT. H may be positive or negative. In either
 %   case, the color scale runs from bottom to top.
@@ -55,9 +55,9 @@ qgimage(xywh_d, xywh_p, reshape(lut,[C 1 3]));
 
 idx = qp_idx;
 global qp_data
-qp_data(idx).info.cbar.xywh_d = xywh_d;
-qp_data(idx).info.cbar.xywh_p = xywh_p;
-qp_data(idx).info.cbar.orient = 'y';
-qp_data(idx).info.cbar.rev = ~isup;
-qp_data(idx).info.cbar.clim = qp_data(idx).info.clim;
+qp_data.info(idx).cbar.xywh_d = xywh_d;
+qp_data.info(idx).cbar.xywh_p = xywh_p;
+qp_data.info(idx).cbar.orient = 'y';
+qp_data.info(idx).cbar.rev = ~isup;
+qp_data.info(idx).cbar.clim = qp_data.info(idx).clim;
 

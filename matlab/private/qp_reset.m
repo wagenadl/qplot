@@ -4,7 +4,7 @@ global qp_data
 
 qp_data.info(idx).ticklen = 3;
 qp_data.info(idx).axshift = 0;
-qp_data.info(idx).ylabelrot = pi/2;
+qp_data.info(idx).ytitlerot = pi/2;
 qp_data.info(idx).textdist = [3 3];
 qp_data.info(idx).lastax = '';
 qp_data.info(idx).lut = repmat([0:.01:1]',[1 3]);

@@ -1,4 +1,4 @@
-qfigure('qtext_eg.qpt', 5, 3.5);
+qfigure('eg_text.qpt', 5, 3.5);
 
 qpen 955
 qplot([-1 1],[0 0]);
@@ -34,4 +34,4 @@ qat 0.1 -.2
 qtext 0 0 sin(/x/) = (e^/ix/ ~– e^–/ix/ ) / 2
 qtext 0 15 l’Hôpital
 qtext 0 30 *F* = /m/ *a*
-qtext 0 45 a^x~+~y b^3
+qtext 0 45 a^x~+~y ~ b^3

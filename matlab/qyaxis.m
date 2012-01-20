@@ -19,7 +19,7 @@ err = 'Usage: qyaxis X0 [ylim] ypts [lbls] [title]';
 ticklen = qticklen;
 axshift = qaxshift;
 [lbldist, ttldist] = qtextdist;
-lblrot = qylabelrot;
+lblrot = qytitlerot;
 
 qp_axis('orient', 'y', 'lim_d', xlim, 'tick_d', xpts, 'tick_lbl', lbls, ...
     'ttl', ttl, ...

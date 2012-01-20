@@ -1,4 +1,4 @@
-qfigure('qmark_eg.qpt', 5, 3.5);
+qfigure('eg_mark.qpt', 5, 3.5);
 
 qpen k
 qbrush r
