@@ -129,7 +129,7 @@ void CmdGLine::render(Statement const &s, Figure &f, bool dryrun) {
 
     while (s[k].typ!=Token::CLOSEPAREN) {
       GLineKW kw = glineKW(s[k].str); // we already know keyword is valid
-      QPointF p1;
+      QPointF p1(0, 0); // start at abspaper (0,0)
       switch (kw) {
       case KW_absdata:
         p1 = f.map(s[k+1].typ==Token::NUMBER ? s[k+1].num : f.xAxis().min(),

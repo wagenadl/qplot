@@ -20,12 +20,15 @@ if nargin<2 || nargin>4
 end
 
 str = 'at';
+atcoord = zeros(length(nargin),1) + nan;;
 for k=1:nargin
   a = varargin{k};
   if ischar(a) && ~isnan(str2double(a))
     str = sprintf('%s %s', str, a);
+    atcoord(k) = str2double(a);
   elseif isnscalar(a) && isreal(a) && ~isnan(a)
     str = sprintf('%s %g', str, a);
+    atcoord(k) = a;
   elseif k==1 && ischar(a) && ~isempty(strmatch(a, strtoks('left right center'), 'exact'))
     str = sprintf('%s %s', str, a);
   elseif k==2 && ischar(a) && ~isempty(strmatch(a, strtoks('top bottom middle'), 'exact'))
@@ -40,3 +43,6 @@ end
 fprintf(fd, '%s\n', str);
 qp_flush(fd);
 
+idx = qp_idx;
+global qp_data;
+qp_data.info(idx).atcoord = atcoord;

@@ -103,8 +103,19 @@ QPointF Figure::map(double x, double y) const {
   return xax.map(x) + yax.map(y);
 }
 
+QPointF Figure::map(QPointF const &xy) const {
+  return xax.map(xy.x()) + yax.map(xy.y());
+}
+
 QPointF Figure::maprel(double dx, double dy) const {
   return xax.maprel(dx) + yax.maprel(dy);
+}
+
+QTransform Figure::xform() const {
+  return QTransform(xax.maprel(1).x(), 0,
+		    0, yax.maprel(1).y(),
+		    xax.map(0).x(),
+		    yax.map(0).y());
 }
 
 void Figure::clearBBox(bool full) {

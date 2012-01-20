@@ -8,6 +8,17 @@ zz = cos(xx).*sin(yy+xx);
 qlut(jet(1024));
 qimsc(x,x,zz);
 
+
+
+qat(3*pi,3*pi)
+qcbar(72/6,72*2,72/4,0)
+qcaxis([-1:.5:1],'Values');
+
+qfudge
+return
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 xywh = [3*pi+4 -2*pi .5 4*pi];
 qcbar(xywh);
 qaxshift 3

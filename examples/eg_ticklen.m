@@ -34,7 +34,7 @@ qyaxis(9,[0.5 3.5],[1:3],'Axis G');
 
 qticklen 3
 qtextdist -3 3
-qyaxis(11,[0.5 3.5],[1:3],'Axis H');
+qyaxis(11,[],[1:3],'Axis H');
 
 qticklen -3
 qtextdist -3 -3

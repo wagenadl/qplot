@@ -1,51 +1,81 @@
-function qcbar(xywh, vh)
-% QCBAR - Adds a colorbar to the figure
-%    QCBAR(xywh) represents the current LUT at location XYWH, specified
-%    in data coordinates.
-%    QCBAR(xywh, vh) draws a colorbar in a nonstandard direction:
-%      VH = 'h' or 'r' draws a left-to-right colorbar,
-%      VH = 'l' draws a right-to-left colorbar,
-%      VH = 'd' draws a top-to-bottom colorbar,
-%      VH = 'v' or 'u' draws a bottom-to-top colorbar (default).
-%
-%    In the future, QCBAR(xywh, hv, wid) will override the width of the 
-%    bar with a specification in points, but the current "image" command
-%    cannot yet handle that.
+function qcbar(w, l, varargin)
+% QCBAR - Add a color bar to a figure
+%   QCBAR(w, h) adds a vertical color bar of given width and height (in points)
+%   at the position specified by QAT. H may be positive or negative. In either
+%   case, the color scale runs from bottom to top.
+%   QCBAR(w, h, 'd') makes the color scale run down.
+%   QCBAR(w, h, dx, dy) or QCBAR(w, h, dx, dy, 'd') shifts the bar by the 
+%   given number of points.
+%   QCBAR(w, [], dh) or QCBAR(w,[], dx, dy, dh) specifies the height in data 
+%   coordinates instead. In this case, the color scale runs up (down) if DH 
+%   is positive (negative).
+%   This command only works after a previous QIMSC.
 
-if nargin<2 || isempty(vh)
-  vh = 'v';
-end
-
-if strcmp(vh, 'v') || strcmp(vh, 'u')
-  hori = 0;
-  flip = 0;
-elseif strcmp(vh, 'd')
-  hori = 0;
-  flip = 1;
-elseif strcmp(vh, 'h') || strcmp(vh, 'r')
-  hori = 1;
-  flip = 0;
-elseif strcmp(vh,'l')
-  hori = 1;
-  flip = 1;
+if nargin==2
+  dh = 'u';
+  dx = 0;
+  dy = 0;
+elseif nargin==3
+  dh = varargin{1};
+  dx = 0;
+  dy = 0;
+elseif nargin==4
+  dx = varargin{1};
+  dy = varargin{2};
+  dh = 'u';
+elseif nargin==5
+  dx = varargin{1};
+  dy = varargin{2};
+  dh = varargin{3};
 else
-  error('Usage: qcbar XYWH [v|h|l|d]');
-end
- 
-lut = qlut;
-if flip 
-  lut = flipud(lut);
-end
-
-C = size(lut,1);
-if hori
-  qimage(xywh, reshape(lut, [1 C 3]));
-else
-  qimage(xywh, reshape(flipud(lut), [C 1 3]));
+  error('QCBAR: syntax error');
 end
 
 idx = qp_idx;
 global qp_data;
-qp_data.info(idx).cbar.flip = flip;
-qp_data.info(idx).cbar.hori = hori;
-qp_data.info(idx).cbar.xywh = xywh;
+if ~isfield(qp_data.info(idx), 'atcoord')
+  error('QCBAR needs a previous QAT');
+end
+xy = qp_data.info(idx).atcoord;
+
+lut = qlut;
+C = size(lut,1);
+
+if isempty(l)
+  l=0;
+end
+if l<0
+  dy=dy+l;
+  l=-l;
+end
+if w<0
+  dx=dx+w;
+  w=-w;
+end
+
+if ischar(dh)
+  isup = strcmp(dh, 'u');
+  xywh_d = [xy(1) xy(2) 0 0];
+  xywh_p = [dx dy w l];
+else
+  isup = dh>0;
+  if dh<0
+    xy(2) = xy(2)+dh;
+    dh = -dh;
+  end
+  xywh_d = [xy(1) xy(2) 0 dh];
+  xywh_p = [dx dy w l];
+end
+if isup
+  lut = flipud(lut);
+end
+qgimage(xywh_d, xywh_p, reshape(lut,[C 1 3]));
+
+idx = qp_idx;
+global qp_data
+qp_data(idx).info.cbar.xywh_d = xywh_d;
+qp_data(idx).info.cbar.xywh_p = xywh_p;
+qp_data(idx).info.cbar.orient = 'y';
+qp_data(idx).info.cbar.rev = ~isup;
+qp_data(idx).info.cbar.clim = qp_data(idx).info.clim;
+

@@ -8,17 +8,15 @@ if isempty(qp_data.info(idx).lastax)
   error('No previous axis');
 end
 
-xx = xx(xx>=qp_data.info(idx).lastlim(1) & xx<=qp_data.info(idx).lastlim(2));
-X = length(xx);
-
-if strcmp(qp_data.info(idx).lastax, 'x')
-  for k=1:X
-    qat(xx(k), qp_data.info(idx).lastcoord);
-    qline([0 0], [0 qp_data.info(idx).ticklen]);
-  end
-elseif strcmp(qp_data.info(idx).lastax, 'y')
-  for k=1:X
-    qat(qp_data.info(idx).lastcoord, xx(k));
-    qline([0 -qp_data.info(idx).ticklen], [0 0]);
-  end
+kv = qp_data.info(idx).lastax;
+kv.lim_d=[];
+kv.lim_p=[];
+kv.tick_d = xx;
+kv.tick_p = [];
+kv.tick_lbl = {};
+kv.ttl = [];
+kv.ticklen = qticklen;
+if strcmp(kv.orient,'y')
+  kv.ticklen = -kv.ticklen;
 end
+qp_axis(kv);

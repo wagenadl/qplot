@@ -13,6 +13,10 @@ public:
   virtual void render(Statement const &, Figure &, bool);
 private:
   bool usage();
+  bool parse_complex(Statement const &);
+  bool parse_simple(Statement const &);
+  void render_complex(Statement const &, Figure &, bool);
+  void render_simple(Statement const &, Figure &, bool);
 };
 
 #endif
