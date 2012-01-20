@@ -19,6 +19,7 @@ function qp_axis(varargin)
 
 kv = getopt('orient=''x'' lim_d=[] lim_p=[] tick_d=[] tick_p=[] tick_lbl={} ttl='''' ticklen=3 lbldist=3 ttldist=3 coord_d=nan coord_p=0 ttlrot=0',  varargin);
 
+
 idx = qp_idx;
 global qp_data;
 qp_data.info(idx).lastax=kv;

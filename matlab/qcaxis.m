@@ -20,17 +20,17 @@ function qcaxis(varargin)
 side=1;
 if ~isempty(varargin)
   if ischar(varargin{1})
-    side=varargin{1};
-    if strcmp(side, 'l')
-      side = -1;
-    elseif strcmp(side, 't')
-      side = -1;
-    elseif strcmp(side, 'b')
-      side = 1;
-    elseif strcmp(side, 'r')
-      side = -1;
-    else
-      error('Side must be l/t/b/r');
+    switch varargin{1};
+      case 'l'
+	side = -1;
+      case 't'
+	side = -1;
+      case 'b'
+	side = 1;
+      case 'r'
+	side = -1;
+      otherwise
+	error('Side must be l/t/b/r');
     end
     varargin = varargin(2:end);
   end
@@ -113,13 +113,13 @@ crel = (cc-cb.clim(1))/(cb.clim(2)-cb.clim(1));
 
 switch cb.orient
   case 'y'
-    rng = cb.xywh_p(3);
-    d0 = cb.xywh_p(1);
-  case 'x'
     rng = cb.xywh_p(4);
     d0 = cb.xywh_p(2);
+  case 'x'
+    rng = cb.xywh_p(3);
+    d0 = cb.xywh_p(1);
 end
-if cb.rev
+if ~cb.rev
   d0 = d0+rng;
   rng = -rng;
 end

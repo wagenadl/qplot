@@ -11,8 +11,15 @@ qimsc(x,x,zz);
 
 
 qat(3*pi,3*pi)
-qcbar(72/6,72*2,72/4,0)
+qcbar(72/6,72,72/4,0)
 qcaxis([-1:.5:1],'Values');
+qcaxis('l',[-.8:.4:.8],'Color');
+
+
+qat(3*pi,-3*pi)
+qcbar(72/6,-72,72/4,0)
+
+
 
 qfudge
 return
