@@ -26,7 +26,7 @@ int Statement::read(QFile &source, QString label) {
     return 0;
   int nlines = 1;
   
-  QStringList words = line.split(QRegExp("\\s+"));
+  QStringList words = line.split(QRegExp("[ \t\n\r]+"));
   foreach (QString w, words) 
     process(w);
 

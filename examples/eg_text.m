@@ -34,4 +34,7 @@ qat 0.1 -.2
 qtext 0 0 sin(/x/) = (e^/ix/ ~– e^–/ix/ ) / 2
 qtext 0 15 l’Hôpital
 qtext 0 30 *F* = /m/ *a*
-qtext 0 45 a^x~+~y ~ b^3
+qtext 0 45 a^x~+~y ~ 2^3^5 b
+% You can't continue a nested superscript, but some cases have solutions:
+qtext 0 60 e^–½ (/x/ ²~+~/y/ ²)
+% Note the unicode thin spaces in the last example

@@ -45,7 +45,7 @@ void Text::addInterpreted(QString txt) {
 	bld+="/";
       }
     } else if (x=="_") {
-      int id1 = txt.indexOf(QRegExp("\\s"),idx+1);
+      int id1 = txt.indexOf(QRegExp("[ \t\n\r]"),idx+1);
       if (id1<0)
 	id1 = txt.size();
       add(bld);
@@ -55,7 +55,7 @@ void Text::addInterpreted(QString txt) {
       restore();
       idx=id1;
     } else if (x=="^") {
-      int id1 = txt.indexOf(QRegExp("\\s"),idx+1);
+      int id1 = txt.indexOf(QRegExp("[ \t\n\r]"),idx+1);
       if (id1<0)
 	id1 = txt.size();
       add(bld);
