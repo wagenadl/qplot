@@ -1,32 +1,42 @@
-The current pen/brush/subplot should be actively removed from the map.
-I don't remember why this needs to happen. Presumably, the affected
+120126. Error reporting should be better: For interactive use, they
+should be collected and reported upon click on a simple message
+displayed at the bottom of the graph. No more automatic popups. If a
+C++-level error results from MLOCT use, a request for a bug report
+should be issued. For noninteractive use, return code from the
+executable should be set.
+
+120126. Shrink/ShareLim should set a flag in the figure to indicate
+whether or not a substantive change was made. Then, instead of blindly
+doing two prerendering steps, iteration could be intelligently
+controlled. And "shrink failed" would be issued after (5) iterations
+rather than based on an arbitrary "too much shrinkage" criterion.
+
+120126. When converting to new Axes implementation, I need to eradicate all
+instances of the assumption that x-axes run left to right and y-axes upward.
+
+11xxxx. The current pen/brush/subplot should be actively removed from the map.
+1201xx. I don't remember why this needs to happen. Presumably, the affected
 functions are Figure::choosenPen/Brush/Panel.
 
-BBoxes should be handled properly at subplot change.  I don't remember
-what the problem is, or whether I fixed it yet. I suspect I probably
-did.
+11xxxx. BBoxes should be handled properly at subplot change.
+1201xx. I don't remember what the problem is, or whether I fixed it
+yet. I suspect I probably did.
 
-More examples are in order.
+1201xx. More examples are in order.
 
-The Matlab code should be checked for Octave compatibility.
+1201xx. The Matlab code should be checked for Octave compatibility.
+120126. I made some progress on this.
 
-The specification of label positions in qcolorbar.m is less than
-ideal. Or at least, I find it confusing.
+1201xx. The thing needs to be published somehow!
 
-The thing needs to be published somehow!
-
-The new QCBAR and QCAXIS need to be documented along with the new axis
+1201xx. The new QCBAR and QCAXIS need to be documented along with the new axis
 modifiers.
-
-A new (C level) command "gimage" should allow drawing images in more
-general coordinates: mixing data and paper coordinates is useful for
-colorbars.
 
 A new (C level) command "sharelim" should link either or both the x and y
 ranges of selected subplots:
 
   sharelim [x|y] ID1 ID2 ...
 
-The matlab functions QPLOT and friends should automatically split up
-the data into multiple chunks at NaNs. Or perhaps this is best
-implemented at C level.
+q3plot q3view q3xaxis q3yaxis q3zaxis ?
+
+Functions for making legends?

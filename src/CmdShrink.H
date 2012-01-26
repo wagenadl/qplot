@@ -1,17 +1,17 @@
-// CmdFudge.H
+// CmdShrink.H
 
-#ifndef CMDFUDGE_H
+#ifndef CMDSHRINK_H
 
-#define CMDFUDGE_H
+#define CMDSHRINK_H
 
 #include "Command.H"
 
-class CmdFudge: public Command {
-  /*:C CmdFudge
-   *:D "fudge" reduces the placement of axes to attempt to fit inside a figure.
+class CmdShrink: public Command {
+  /*:C CmdShrink
+   *:D "shrink" reduces the placement of axes to attempt to fit inside a figure.
    *:D Syntax:
-         fudge
-         fudge margin_pt
+         shrink
+         shrink margin_pt
        Default is 1 pt.
    *:N This does not yet work for rotated axes, and it assumes that
        the y-axis runs up.

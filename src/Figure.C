@@ -238,6 +238,10 @@ Panel &Figure::panelRef(QString p) {
   return panels[p];
 }
 
+bool Figure::hasPanel(QString p) const {
+  return panels.contains(p);
+}
+
 QString Figure::currentPanelName() const {
   return currentPanel;
 }

@@ -20,7 +20,8 @@ HEADERS += Align.H \
            CmdEndGroup.H \
            CmdFigSize.H \
            CmdFont.H \
-           CmdFudge.H \
+           CmdShareLim.H \
+           CmdShrink.H \
            CmdGLine.H \
            CmdGroup.H \
            CmdImage.H \
@@ -41,6 +42,7 @@ HEADERS += Align.H \
            Marker.H \
            Program.H \
            QPWidget.H \
+           Range.H \
            Rotate.H \
            ScrollWidget.H \
            Statement.H \
@@ -55,7 +57,8 @@ SOURCES += Axis.C \
            CmdFigSize.C \
            CmdEndGroup.C \
            CmdFont.C \
-           CmdFudge.C \
+           CmdShareLim.C \
+           CmdShrink.C \
            CmdGLine.C \
            CmdGroup.C \
            CmdImage.C \
@@ -75,6 +78,7 @@ SOURCES += Axis.C \
            main.C \
            Program.C \
            QPWidget.C \
+           Range.C \	
            Rotate.C \
            ScrollWidget.C \
            Statement.C \

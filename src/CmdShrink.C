@@ -1,19 +1,19 @@
-// CmdFudge.C
+// CmdShrink.C
 
-#include "CmdFudge.H"
+#include "CmdShrink.H"
 #include <QDebug>
 #include <math.h>
 #include "Error.H"
 
-static CBuilder<CmdFudge> cbFudge("fudge");
+static CBuilder<CmdShrink> cbShrink("shrink");
 
-#define FUDGE_DEFAULT 0.2
+#define SHRINK_DEFAULT 0.2
 
-bool CmdFudge::usage() {
-  return error("Usage: fudge [margin_pt] [ratio]\n");
+bool CmdShrink::usage() {
+  return error("Usage: shrink [margin_pt] [ratio]\n");
 }
 
-bool CmdFudge::parse(Statement const &s) {
+bool CmdShrink::parse(Statement const &s) {
   if (s.length()==1)
     return true;
   else if (s.length()==2 && s[1].typ==Token::NUMBER)
@@ -25,8 +25,8 @@ bool CmdFudge::parse(Statement const &s) {
     return usage();
 }
 
-void CmdFudge::render(Statement const &s, Figure &f, bool) {
-  double mrg = pt2iu(FUDGE_DEFAULT);
+void CmdShrink::render(Statement const &s, Figure &f, bool) {
+  double mrg = pt2iu(SHRINK_DEFAULT);
   if (s.length()>=2 && s[1].typ==Token::NUMBER)
     mrg = pt2iu(s[1].num);
   bool hasRatio = s.length()>=3;
@@ -60,7 +60,7 @@ void CmdFudge::render(Statement const &s, Figure &f, bool) {
   double newdy = y1.y()-y0.y();
 
   if (newdx/olddx < .5 || newdy/olddy < .5) {
-    Error() << "Fudge failed";
+    Error() << "Shrink failed";
     return;
   }
 
