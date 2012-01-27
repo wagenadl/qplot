@@ -185,21 +185,27 @@ endgroup
 group
 gline ( absdata 7 0.5 relpaper 0 0 ) ( absdata 7 3.5 relpaper 0 0 )
 gline ( absdata 7 1 relpaper 0 0 ) ( absdata 7 1 relpaper -3 0 )
+gline ( absdata 7 1.5 relpaper 0 0 ) ( absdata 7 1.5 relpaper -3 0 )
 gline ( absdata 7 2 relpaper 0 0 ) ( absdata 7 2 relpaper -3 0 )
+gline ( absdata 7 2.5 relpaper 0 0 ) ( absdata 7 2.5 relpaper -3 0 )
 gline ( absdata 7 3 relpaper 0 0 ) ( absdata 7 3 relpaper -3 0 )
 group
 align right middle
 at 7 1
 text -6 0 "1"
+at 7 1.5
+text -6 0 "1.5"
 at 7 2
 text -6 0 "2"
+at 7 2.5
+text -6 0 "2.5"
 at 7 3
 text -6 0 "3"
 reftext ""
 endgroup
 at left 2 -1.5708
 align center bottom
-text 0 -3 "Axis F"
+text -0 -3 "Axis_v F"
 endgroup
 group
 gline ( absdata 9 0.5 relpaper 0 0 ) ( absdata 9 3.5 relpaper 0 0 )
@@ -218,7 +224,7 @@ reftext ""
 endgroup
 at left 2 -1.5708
 align center bottom
-text 0 -3 "Axis G"
+text -0 -3 "Axis G"
 endgroup
 group
 gline ( absdata 11 - relpaper 0 0 ) ( absdata 11 - relpaper 0 0 )
@@ -237,7 +243,7 @@ reftext ""
 endgroup
 at 11 2 -1.5708
 align center bottom
-text 0 -6 "Axis H"
+text -0 -6 "Axis H"
 endgroup
 group
 gline ( absdata 13 0.5 relpaper 0 0 ) ( absdata 13 3.5 relpaper 0 0 )
@@ -256,7 +262,7 @@ reftext ""
 endgroup
 at right 2 -1.5708
 align center top
-text 0 3 "Axis I"
+text -0 3 "Axis I"
 endgroup
 group
 gline ( absdata 15 0.5 relpaper 0 0 ) ( absdata 15 3.5 relpaper 0 0 )
@@ -275,7 +281,7 @@ reftext ""
 endgroup
 at 15 2 -1.5708
 align center top
-text 0 3 "Axis J"
+text -0 3 "Axis J"
 endgroup
 group
 gline ( absdata 15 0.5 relpaper 0 0 ) ( absdata 15 0.5 relpaper -1 0 )
@@ -346,7 +352,7 @@ reftext ""
 endgroup
 at left 4.5 1.5708
 align center top
-text -0 3 "Axis L"
+text 0 3 "Axis L"
 endgroup
 group
 gline ( absdata 12 4 relpaper 0 0 ) ( absdata 12 5 relpaper 0 0 )
@@ -365,7 +371,7 @@ reftext ""
 endgroup
 at 12 4.5 1.5708
 align center bottom
-text -0 -3 "Axis M"
+text 0 -3 "Axis M"
 endgroup
 group
 gline ( absdata 14 4 relpaper 0 0 ) ( absdata 14 5 relpaper 0 0 )
@@ -384,6 +390,6 @@ reftext ""
 endgroup
 at right 4.5 1.5708
 align center bottom
-text -0 -3 "Axis N"
+text 0 -3 "Axis N"
 endgroup
-fudge
+shrink

@@ -51,18 +51,18 @@ qmticks([.5:.1:3.5]);
 qticklen 3
 qtextdist 3 3
 
-qylabelrot 0
+qytitlerot 0
 qyaxis(8,[4:.5:5],[1 2 3],'Axis K');
 
-qylabelrot -1
+qytitlerot -1
 qyaxis(10,[4:.5:5],[1 2 3],'Axis L');
 
 qtextdist 3 -3
-qylabelrot -1
+qytitlerot -1
 qyaxis(12,[4:.5:5],[1 2 3],'Axis M');
 
 qtextdist -3 -3
-qylabelrot -1
+qytitlerot -1
 qyaxis(14,[4:.5:5],[1 2 3],'Axis N');
 
 qfudge
