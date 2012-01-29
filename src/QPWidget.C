@@ -243,7 +243,6 @@ void QPWidget::keyPressEvent(QKeyEvent *e) {
     break;
   case Qt::Key_C:
     setMouseTracking(!hasMouseTracking());
-    qDebug() << hasMouseTracking();
     if (hasMouseTracking())
       coord->show();
     else

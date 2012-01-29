@@ -26,6 +26,8 @@ public:
        In particular, that means that results from "fudge" will be preserved.
   */
   QRectF const &extent() const;
+  void setDashScale(double);
+  double dashScale() const;
   Axis &xAxis();
   Axis &yAxis();
   /*:N Note that the yAxis normally runs up, that is, the minimum of its
@@ -89,6 +91,7 @@ private:
   QString currentPanel;
   bool hairline_;
   QList<GroupData> groupstack;
+  double dashscale;
 private:
   void replaceAxes();
 };

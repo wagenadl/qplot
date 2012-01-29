@@ -6,24 +6,7 @@
 static CBuilder<CmdPen> cbPen("pen");
 
 bool CmdPen::usage() {
-  return error("Usage: pen [ID] color|width|miterjoin|beveljoin|roundjoin|flatcap|squarecap|roundcap|solid|dash|dot|dashdot|dashdotdot|none ...");
-}
-
-static int strokestyle(QString s) {
-  if (s=="solid")
-    return Qt::SolidLine;
-  else if (s=="dash")
-    return Qt::DashLine;
-  else if (s=="dot")
-    return Qt::DotLine;
-  else if (s=="dashdot")
-    return Qt::DashDotLine;
-  else if (s=="dashdotdot")
-    return Qt::DashDotDotLine;
-  else if (s=="none")
-    return Qt::NoPen;
-  else
-    return -1;
+  return error("Usage: pen [ID] color | width | miterjoin|beveljoin|roundjoin | flatcap|squarecap|roundcap | solid|none | dash [L1 ...] | dot L ...");
 }
 
 static int joinstyle(QString s) {
@@ -62,9 +45,19 @@ bool CmdPen::parse(Statement const &s) {
 	continue;
       else if (capstyle(w)>=0)
 	continue;
-      else if (strokestyle(w)>=0)
+      else if (w=="solid" || w=="none")
 	continue;
-      else if (QColor(w).isValid())
+      else if (w=="dash" || w=="dot") {
+	if (k+1<s.length() && s.isNumeric(k+1)) {
+	  k=s.nextIndex(k)-1;
+	  if (k>0)
+	    continue;
+	  else
+	    return usage();
+	} else {
+	  return usage();
+	}
+      } else if (QColor(w).isValid())
 	continue;
       else
 	return usage();
@@ -91,9 +84,35 @@ void CmdPen::render(Statement const &s, Figure &f, bool) {
 	p.setJoinStyle(Qt::PenJoinStyle(joinstyle(w)));
       else if (capstyle(w)>=0)
 	p.setCapStyle(Qt::PenCapStyle(capstyle(w)));
-      else if (strokestyle(w)>=0)
-	p.setStyle(Qt::PenStyle(strokestyle(w)));
-      else if (QColor(w).isValid()) {
+      else if (w=="none")
+	p.setStyle(Qt::NoPen);
+      else if (w=="solid")
+	p.setStyle(Qt::SolidLine);
+      else if (w=="dash") {
+	double w = p.widthF();
+	if (w==0)
+	  w = f.dashScale()/f.painter().transform().m11();
+	QVector<qreal> pat;
+	foreach (double x, s.data(k+1))
+	  pat.push_back(pt2iu(x)/w);
+	int L = pat.size();
+	if (L&1)
+	  for (int l=0; l<L; l++)
+	    pat.push_back(pat[l]);
+	p.setDashPattern(pat);
+	k = s.nextIndex(k+1)-1;
+      } else if (w=="dot") {
+	double w = p.widthF();
+	if (w==0)
+	  w = f.dashScale()/f.painter().transform().m11();
+	QVector<qreal> pat;
+	foreach (double x, s.data(k+1)) {
+	  pat.push_back(0.001);
+	  pat.push_back(pt2iu(x)/w);
+	}
+	p.setDashPattern(pat);	
+	k = s.nextIndex(k+1)-1;
+      } else if (QColor(w).isValid()) {
 	p.setColor(w);
 	if (p.style()==Qt::NoPen)
 	  p.setStyle(Qt::SolidLine);

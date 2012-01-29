@@ -10,6 +10,7 @@ Figure::Figure() {
 }
 
 void Figure::hardReset() {
+  dashscale = 1;
   figextent = QRectF(QPointF(0,0), QSizeF(72*6, 72*4));
   currentPanel = "-";
   panels.clear();
@@ -42,7 +43,15 @@ void Figure::reset() {
     pntr.setFont(font);
     pntr.setPen("black");
   }
-}  
+}
+
+void Figure::setDashScale(double s) {
+  dashscale = s;
+}
+
+double Figure::dashScale() const {
+  return dashscale;
+}
 
 void Figure::setHairline(bool h) {
   hairline_ = h;

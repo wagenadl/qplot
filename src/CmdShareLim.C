@@ -216,26 +216,21 @@ void CmdShareLim::render(Statement const &s, Figure &f, bool) {
     if (py.range()<MINOVERLAP) {
       // No common overlap. Revert to scaling only.
       // Get the scale
-      qDebug() << "no y overlap";
       double scale = fabs(f.yAxis().maprel(1).y());
-      qDebug() << scale;
       foreach (QString id, ids) {
 	Panel const &p(f.panelRef(id));
 	double sc1 = fabs(p.yaxis.maprel(1).y());
 	if (sc1<scale)
 	  scale = sc1;
-	qDebug() << scale;
       }
       
       // Apply the scale to current panel
       double sc1 = fabs(f.yAxis().maprel(1).y());
-      qDebug() << "sc:" << sc1;
       if (sc1>scale*(1+SCALETOLERANCE)) {
 	// Let's actually shrink
 	double currentHeight = f.yAxis().minp().y() - f.yAxis().maxp().y();
 	double newHeight = currentHeight * scale/sc1;
 	double shift = (currentHeight - newHeight)/2;
-	qDebug() << currentHeight << newHeight << shift;
 	f.yAxis().setPlacement(QPoint(0, f.yAxis().minp().y()-shift),
 			       QPoint(0, f.yAxis().maxp().y()+shift));
       }
@@ -243,12 +238,10 @@ void CmdShareLim::render(Statement const &s, Figure &f, bool) {
       foreach (QString id, ids) {
 	Panel &p(f.panelRef(id));
 	double sc1 = fabs(p.yaxis.maprel(1).y());
-	qDebug() << "sc1:" << sc1;
 	if (sc1>scale*(1+SCALETOLERANCE)) {
 	  double currentHeight = p.yaxis.minp().y() - p.yaxis.maxp().y();
 	  double newHeight = currentHeight * scale/sc1;
 	  double shift = (currentHeight - newHeight)/2;
-	  qDebug() << currentHeight << newHeight << shift;
 	  p.yaxis.setPlacement(QPoint(0, p.yaxis.minp().y()-shift),
 			       QPoint(0, p.yaxis.maxp().y()+shift));
 	}
@@ -256,7 +249,6 @@ void CmdShareLim::render(Statement const &s, Figure &f, bool) {
     } else {
       // Common overlap. Align all.
       // Find union of extents
-      qDebug() << "y overlap";
       Range py(f.extent().top(), f.extent().bottom());
       foreach (QString id, ids) {
 	Panel const &p(f.panelRef(id));
@@ -269,7 +261,6 @@ void CmdShareLim::render(Statement const &s, Figure &f, bool) {
       */      
       double y0 = f.yAxis().rev(QPointF(0, py.max()));
       double y1 = f.yAxis().rev(QPointF(0, py.min()));
-      qDebug() << y0 << y1;
       foreach (QString id, ids) {
 	Panel const &p(f.panelRef(id));
 	double y0a = p.yaxis.rev(QPointF(0, py.max()));
@@ -278,7 +269,6 @@ void CmdShareLim::render(Statement const &s, Figure &f, bool) {
 	  y0 = y0a;
 	if (y1a>y1)
 	  y1 = y1a;
-	qDebug() << y0 << y1;
       }
       /* Now I need to calculate the Placement that will ensure the
 	 appropriate mapping at the edges.

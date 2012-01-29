@@ -33,7 +33,6 @@ void CmdShrink::render(Statement const &s, Figure &f, bool) {
   double ratio = s[2].num;
   QRectF actual = f.fullBBox();
   QRectF desired = f.extent();
-  qDebug() << actual << desired;
 
   double dleft = actual.left() - desired.left(); // +ve means it's OK
   double dright = desired.right() - actual.right();
@@ -60,7 +59,6 @@ void CmdShrink::render(Statement const &s, Figure &f, bool) {
   double newdx = x1.x()-x0.x();
   double newdy = y1.y()-y0.y();
 
-  qDebug() << olddx << newdx << olddy << newdy;
   if (newdx*olddx<0 || newdy*olddy<0) {
     Error() << "Shrink failed";
     return;

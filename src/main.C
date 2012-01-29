@@ -130,6 +130,7 @@ void renderSVG(Program &prog, Figure &fig, QString ofn) {
 			       90./72*iu2pt(fig.extent().height()))));
   fig.painter().begin(&img);
   fig.painter().scale(90./72*iu2pt(), 90./72*iu2pt());
+  fig.setDashScale(90./72*iu2pt());
   fig.painter().translate(fig.extent().left(),
 			  fig.extent().top());
   prog.render(fig);
@@ -147,6 +148,7 @@ void renderPDF(Program &prog, Figure &fig, QString ofn) {
   img.setOutputFormat(QPrinter::PdfFormat);
   fig.painter().begin(&img);
   fig.painter().scale(iu2pt(), iu2pt());
+  fig.setDashScale(iu2pt());
   fig.painter().translate(-fig.extent().left(),
 			  -fig.extent().top());
   prog.render(fig);
@@ -192,6 +194,7 @@ void renderPS(Program &prog, Figure &fig, QString ofn, QString ttl="") {
   fig.painter().restore();
   /* Done with crop marks */
   fig.painter().scale(iu2pt(), iu2pt());
+  fig.setDashScale(iu2pt());
   fig.painter().translate(-fig.extent().left(),
 			  -fig.extent().top());
   prog.render(fig);
@@ -205,6 +208,7 @@ bool renderImage(Program &prog, Figure &fig, QString ofn) {
   img.fill(0xffffffff);
   fig.painter().begin(&img);
   //  fig.painter().scale(iu2pt(), iu2pt());
+  fig.setDashScale(1);
   fig.painter().translate(-fig.extent().left(),
 			  -fig.extent().top());
   prog.render(fig);

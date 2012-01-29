@@ -37,6 +37,171 @@ ranges of selected subplots:
 
   sharelim [x|y] ID1 ID2 ...
 
+The matlab functions QPLOT and friends should automatically split up
+the data into multiple chunks at NaNs. Or perhaps this is best
+implemented at C level.
+
+
+
+To do SHARELIM, the current way of placing axes needs to
+change. Axis::setPlacement() now appears a bit arcane to me. Wouldn't
+it be much simpler if a subplot simply has an extent that is set by
+either FIGSIZE or PANEL, and a data range that is initially set by
+either XLIM/YLIM or the data, and then modified by FUDGE? Why the need
+to have dataRange, extent, _and_ axisPlacement? Perhaps even better,
+Axis could be replaced by Axes which would take care of both axes
+simultaneously (or even optionally of 3 axes?). Axes would be aware of
+data range, which would come directly from the Program's dataRange and
+from the XLIM/YLIM commands. It would also be aware of placement,
+which would come directly from the FIGSIZE or PANEL commands. And it
+would maintain a transformation matrix that initially maps the
+datarange to the placement, but can be affected by FUDGE. 
+
+Note that the FUDGE command currently starts by comparing the Figure's
+"desired" extent to the Figure's actual "fullBBox". It then changes
+the mapping in Axis, but that does NOT immediately affect the Figure's
+fullBBox. Which means that calling FUDGE more than once will not have
+the desired result. 
+
+So what's a better solution? The trickiness is that fudging does need
+to be iterative. Right now, that is done using Program::render() with
+dryrun=true and letting the Axis placement change at every run. That
+is not so pretty, particularly since it interacts in ugly ways with
+Panels. Already, each Panel maintains its own pair of Axis
+objects. (Except that the current panel has its info directly in the
+Figure rather than in a Panel object, which is less than helpful.)
+
+In the new scheme, Axes will be able to handle two or three coordinate
+axes. There is a set3D method that rotates the xy-plane away from the
+paper plane. There are setXRange, setYRange, setZRange methods to
+inform the Axes of the data ranges. And there is a setDestination
+method that determines where on the paper the Axes should project. 
+
+So what's the right order of things? The Commands all have a dataRange
+method that (in 2D) measures the X and Y ranges. They do not have a
+bbox method. Instead, their render method updates the Figure's BBox
+directly. That is a rather strange way of doing business. I guess the
+reason is that the bbox depends on things like the current pen, which
+is obviously a Figure property. Indeed, CmdPlot accesses the Figure's
+QPainter's QPen's widthF directly. (Note that QPlot does not maintain
+independent state for pens and brushes; these are stored only inside
+the QPainter.) So that explains the dryrun system. It's actually
+fairly sensible.
+
+How are boundingRects currently calculated in the first round? The
+Axis starts by assuming a (0-1) data range and a (0,0)-(1,0)
+placement. Thus, in the first round, all boundingRects are completely
+off? No, because before even prerendering happens, the data range of
+the Program is measured and fed to the Axis objects by
+main::prerender. The first thing any Program does is to set the figure
+extent and then the panel extents, so boundingRects will be
+approximately correct right away. The real trick is how Figure in
+setExtent and setSize only resets the Axis placement the first time
+around: it does this by only resetting if the requested placement is
+different from the current value, and, of course, the first time
+around, the current value is null.
+
+For better results, FUDGE should not rely on the *current* Axis
+transformation. Rather, it should know what the transformation was
+that created the fullBBox. This is tricky, because if there are
+multiple FUDGE commands with some plotting happening in between, then
+the fullBBox is not calculated based on one consistent
+transformation. Should FUDGE then simply clear the BBox? That seems
+excessive too, because playing with FUDGE parameters live is a nice
+feature. Should we maintain a separate FUDGEd and nonFUDGEd Axes
+transform? Actually, the live feature is not in jeopardy, because
+QPlot completely rereads the script upon any change, even the addition
+of a single new statement. What needs to happen is that FUDGE corrects
+the BBox. In fact, all of them: lastbbox, fullbbox, and cumulbbox (the
+latter is different from fullbbox only inside groups).
+
+So when should the Axes mapping be recalculated? Currently, the Axis
+is passive, and recalculates automatically at CmdXLim and CmdYLim. But
+that works because the Axis's Placement follows Fudge. If instead the
+Axes has a Destination that doesn't follow Fudge, then CmdXLim and
+CmdYLim should not have this effect. Note that CmdXLim and CmdYLim do
+not clip, but they do override automatic range finding, for plots
+either before or after. However, CmdXLim/YLim should happen early,
+because anything plotted before it will result in incorrect bbox,
+since these are not corrected inside the CmdXLim/YLim. In fact, that
+cannot even be done (and not in FUDGE either), because of dual
+coordinate systems. Note that in the second round of rendering, the
+XLIM and YLIM from the previous round still apply: the data range does
+not get reset, so in fact the results are correct.
+
+This is quite ridiculously complicated, and the program is much
+smarter than I remember. I guess the Axis Placement system should not
+be jettisoned lightly. That makes SHARELIM a bit more complicated, because it could operate either on the DataRange or on the Placement of the axis, and probably will need to end up doing both. Because imagine that one panel has DataRange [2,3] and Placement [3,4] for that range and another has DataRange [2,4] and Placement [0,5] for that:
+
+Paper:    0 1 2 3 4 5
+Panel 1:      2   3
+Panel 2:  2         4
+
+In this case, both panels need to change: ultimately, at P=0, we need
+D=1, and at P=5 we need D=4. How to do this? Probably, SHARELIM should
+always be the last command. That is, we shouldn't guarantee that later
+FUDGE respects it. Then, SHARELIM can simply change the Placement of
+the affected panels. I think that works: First, determine the union of
+the current Placements. Then, calculate for each panel what the range
+is that fits within that union. Then, calculate the union of those
+ranges. Finally, change the Placement of each panel so that its own
+range gets mapped appropriately: If the union placement is [X0,X0+W], and
+the union data range is [x0,x1], then the overall transformation
+should be X=a*x+b where a=W/(x1-x0) and b=X0-a*x0. So for a panel with
+data range [x0',x1'], the placement should be (X0',W')
+s.t. a=W'/(x1'-x0') and b=X0'-a*x0'. That is, W'=a*(x1'-x0') and
+X0'=b+a*x0'. (Note that by construction [x0',x1'] is contained within
+[x0,x1], and so [X0',X0'+W'] is contained within [X0,X0+W].)
+
+Can this mess up a previous FUDGE? Absolutely. So really SHARELIM
+should happen before FUDGE, and the list of shared axes should be
+remembered so that FUDGE will run SHARELIM again? No. Because multiple
+rendering steps guarantee that FUDGE gets restored. I think it's OK.
+
+All of this is so complicated, that it had better be explained in the
+paper.
+
+The bottom line is:
+
+1. The Axis's setDataRange is called once before rendering, based on
+actual data range, and then during rendering in response to
+CmdXLim/YLim.
+
+2. The Axis's setPlacement is called during the first round of
+rendering in response to CmdFigSize and CmdPanel (which modify
+figextent only during the first round)
+
+3. The Axis's setPlacement is also called in response to CmdFudge.
+
+4. The Axis's setPlacement *will* also be called in response to
+CmdShareLim.
+
+I think it does still make sense to replace the two Axis instances by
+a single Axes instance, although perhaps I should figure out FUDGEing
+in 3D better first.
+
+A 3D axes system is defined by the angle between the xy-plane and the
+paper plane and the rotation around the z-axis. It also has
+independent scale for each of the axes. But FUDGE should absolutely
+respect the angles.
+
+Y = Y0 + H * [(z-z0)/az
+                + (y-y0)/ay*cos(phi)*cos(theta) 
+                + (x-x0)/ax*sin(phi)*sin(theta)]
+X = X0 + W * [(y-y0)/ay*sin(phi)*sin(theta)
+                + (x-x0)/ax*cos(phi)*cos(theta)]
+
+I think. I'm not sure of the signs, or even of the exact form. (The
+default, 2D, view is phi=0, theta=0. It is easy to derive the correct
+form from multiplying two rotation matrices.) The point is, it's OK to
+shift things by moving X0 and Y0 around, but *not* to scale things by
+setting H and W to different values if a 3D view is in use. Should
+FUDGE be allowed to change ax, ay, and az separately? Not allowing
+that is a bit like specifying RATIO in the 2D case. But allowing
+separate changes to ax, ay, and az makes FUDGEing underconstrained. So
+there's the answer.
+
+
 q3plot q3view q3xaxis q3yaxis q3zaxis ?
 
 Functions for making legends?

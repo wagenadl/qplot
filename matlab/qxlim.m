@@ -4,6 +4,15 @@ function qxlim(varargin)
 
 fd = qp_fd(1);
 
+if nargin==1
+  a = varargin{1};
+  if isnvector(a) && length(a)==2
+    fprintf(fd,'xlim %g %g\n',a(1), a(2));
+    qp_flush(fd);
+    return;
+  end
+end
+
 if nargin<2 || nargin>2
   error('Usage: qxlim x0 x1');
 end

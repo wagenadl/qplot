@@ -4,7 +4,9 @@ function qpen(varargin)
 %    ID must be a single capital letter
 %    JOIN must be one of: miterjoin beveljoin roundjoin
 %    CAP must be one of: flatcap squarecap roundcap
-%    PATTERN must be one of: solid dash dot dashdot dashdotdot
+%    PATTERN must be one of: solid dash dot none
+%       dash may optionally be followed by a vector of stroke and space lengths
+%       dot may optionally be followed by a vector of space lengths
 %    COLOR may be a single character matlab color, or a 3- or 6-digit RGB
 %    specification. 
 %    WIDTH is linewidth in points, or 0 for hairline.
@@ -15,8 +17,21 @@ for n=1:nargin
   if ischar(a)
     if length(a)==1 && a>='A' && a<='Z' && n==1
       ; % This is ID, so good
-    elseif strmatch(a, strtoks('miterjoin beveljoin roundjoin flatcap squarecap roundcap solid dash dot dashdot dashdotdot none'), 'exact')
+    elseif strmatch(a, strtoks('miterjoin beveljoin roundjoin flatcap squarecap roundcap solid none'), 'exact')
       ; % This is a known keyword, so good
+    elseif strmatch(a, strtoks('dash dot'), 'exact')
+      if n<nargin
+	if isnvector(varargin{n+1})
+	  varargin{n+1} = [ '[ ' sprintf('%.1f ', varargin{n+1}) ' ]' ];
+	  n=n+1;
+	elseif ischar(varargin{n+1}) && ~isnan(str2double(varargin{n+1}))
+	  n=n+1;
+	else
+	  varargin{n} = [ varargin{n} ' 3' ];
+	end
+      else
+	varargin{n} = [ varargin{n} ' 3' ];
+      end
     elseif ~isempty(qp_mapcolor(a))
       ; % This is a good color
       varargin{n} = qp_mapcolor(a);
