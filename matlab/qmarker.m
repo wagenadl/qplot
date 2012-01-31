@@ -1,5 +1,5 @@
 function qmarker(varargin)
-% QMARKER - Select a new marker for QPLOT
+% QMARKER - Select a new marker for QMARK and QPMARK
 %    QMARKER open|solid|brush  +|x|-|||o|s|d|<|>|^|v|p|h  size
 %    selects a marker.
 

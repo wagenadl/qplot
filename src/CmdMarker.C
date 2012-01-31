@@ -5,7 +5,7 @@
 static CBuilder<CmdMarker> cbMarker("marker");
 
 bool CmdMarker::usage() {
-  return error("Usage: marker size|open|solid|brush|circle|square|diamond|left|right|up|down|penta|hexa|hbar|vbar|plus|cross");
+  return error("Usage: marker size|open|solid|white|brush|circle|square|diamond|left|right|up|down|penta|hexa|hbar|vbar|plus|cross");
 }
 
 static int fillstyle(QString s) {

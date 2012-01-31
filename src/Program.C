@@ -99,8 +99,12 @@ void Program::render(Figure &f, bool dryrun) {
   if (!isOK)
     return; // won't render if not ok
   f.reset();
-  for (int l=0; l<stmt.size(); l++)
-    if (cmds[l])
+  for (int l=0; l<stmt.size(); l++) {
+    if (cmds[l]) {
       cmds[l]->render(stmt[l], f, dryrun);
+      if (dryrun && f.checkFudged())
+	break;
+    }
+  }
   f.leavePanel();
 }

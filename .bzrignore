@@ -14,5 +14,6 @@ doc/manual.pdf
 *.pid
 *.mex*
 *.mex*
+examples/*pdf
 octave-core
 

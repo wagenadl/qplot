@@ -69,6 +69,10 @@ public:
   void startGroup();
   void endGroup();
   QString panelAt(QPointF const &xy);
+  void setLocation(QString id, QPointF const &xy);
+  QPointF getLocation(QString id)  const;
+  void markFudged();
+  bool checkFudged() const;
 private:
   QRectF figextent;
   Axis xax, yax;
@@ -92,6 +96,8 @@ private:
   bool hairline_;
   QList<GroupData> groupstack;
   double dashscale;
+  QMap<QString, QPointF> locations;
+  bool fudged;
 private:
   void replaceAxes();
 };

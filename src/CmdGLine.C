@@ -24,6 +24,9 @@ enum GLineKW {
   KW_rotdata,
   KW_rotpaper,
   KW_retract,
+  KW_at,
+  KW_atx,
+  KW_aty,
 };
 
 static GLineKW glineKW(QString s) {
@@ -41,7 +44,13 @@ static GLineKW glineKW(QString s) {
     return KW_rotpaper;
   else if (s=="retract")
     return KW_retract;
-  else
+  else if (s=="at")
+    return KW_at;
+  else if (s=="atx")
+    return KW_atx;
+  else if (s=="ayt")
+    return KW_aty;
+  else  
     return KW_ERROR;
 }
 
@@ -73,6 +82,10 @@ bool CmdGLine::parse(Statement const &s) {
         if (s[k].typ!=Token::NUMBER && s[k].typ!=Token::DASH)
 	  return usage("expected number or dash after '" + s[k-1].str + "'");
         break;
+      case KW_at: case KW_atx: case KW_aty:
+	if (s[k].typ!=Token::CAPITAL)
+	  return usage("expected ID after '" + s[k-1].str + "'");
+	break;
       default:
         if (s[k].typ!=Token::NUMBER)
 	  return usage("expected number");
@@ -93,7 +106,7 @@ bool CmdGLine::parse(Statement const &s) {
         else if (s[k].typ!=Token::NUMBER)
 	  return usage("expected ')' or number after 'retract'");
         break;
-      case KW_rotpaper:
+      case KW_rotpaper: case KW_at: case KW_atx: case KW_aty:
 	--k; // no second number
 	break;
       default:
@@ -162,6 +175,18 @@ void CmdGLine::render(Statement const &s, Figure &f, bool dryrun) {
         phi = s[k+1].num;
         --k; // only one number
         break;
+      case KW_at:
+	p = f.getLocation(s[k+1].str);
+	--k;
+	break;
+      case KW_atx:
+	p.setX(f.getLocation(s[k+1].str).x());
+	--k;
+	break;
+      case KW_aty:
+	p.setY(f.getLocation(s[k+1].str).y());
+	--k;
+	break;
       case KW_retract:
         rL = pt2iu(s[k+1].num);
         if (s[k+2].typ==Token::NUMBER) {

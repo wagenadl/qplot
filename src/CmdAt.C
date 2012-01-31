@@ -7,7 +7,7 @@
 static CBuilder<CmdAt> cbAt("at");
 
 bool CmdAt::usage() {
-  return error("Usage: at x y [dx dy]|phi | -");
+  return error("Usage: at x y [dx dy]|phi | - | x y ID | ID");
 }
 
 static int horiAlign(QString s) {
@@ -35,7 +35,7 @@ static int vertAlign(QString s) {
   
 
 bool CmdAt::parse(Statement const &s) {
-  if (s.length()==2 && s[1].typ==Token::DASH)
+  if (s.length()==2 && (s[1].typ==Token::DASH || s[1].typ==Token::CAPITAL))
     return true;
   if (s.length()<3)
     return usage();
@@ -46,6 +46,8 @@ bool CmdAt::parse(Statement const &s) {
 	(s[2].typ==Token::BAREWORD && vertAlign(s[2].str)>=0)))
     return usage();
   if (s.length()==3)
+    return true;
+  if (s[3].typ==Token::CAPITAL && s.length()==4)
     return true;
   if (s[3].typ!=Token::NUMBER)
     return usage();
@@ -91,7 +93,11 @@ QRectF CmdAt::dataRange(Statement const &s) {
   
 void CmdAt::render(Statement const &s, Figure &f, bool) {
   if (s.length()<=2) {
-    f.setAnchor(QPointF(0,0));
+    if (s.length()==2 && s[1].typ==Token::CAPITAL)
+      f.setAnchor(f.getLocation(s[1].str));
+    else
+      f.setAnchor(f.extent().topLeft());
+      //f.setAnchor(QPointF(0,0));
     return;
   }
   
@@ -104,7 +110,8 @@ void CmdAt::render(Statement const &s, Figure &f, bool) {
     anchor.setX(f.lastBBox().left()
 		+ a*f.lastBBox().width()/2);
   } else if (s[1].typ==Token::DASH) {
-    anchor.setX(0);
+    //    anchor.setX(0);
+    anchor.setX(f.extent().left());
   }
   if (s[2].typ==Token::BAREWORD) {
     // that means y is as yet undefined. no matter:
@@ -112,13 +119,17 @@ void CmdAt::render(Statement const &s, Figure &f, bool) {
     anchor.setY(f.lastBBox().top()
 		+ a*f.lastBBox().height()/2);
   } else if (s[2].typ==Token::DASH) {
-    anchor.setY(0);
+    //anchor.setY(0);
+    anchor.setY(f.extent().top());
   }
   
   if (s.length()==5) 
     f.setAnchor(anchor, f.angle(s[3].num,s[4].num));
-  else if (s.length()==4)
-    f.setAnchor(anchor, s[3].num);
-  else 
+  else if (s.length()==4) {
+    if (s[3].typ==Token::CAPITAL)
+      f.setLocation(s[3].str, anchor);
+    else
+      f.setAnchor(anchor, s[3].num);
+  } else 
     f.setAnchor(anchor);
 }

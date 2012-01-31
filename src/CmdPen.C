@@ -5,6 +5,8 @@
 
 static CBuilder<CmdPen> cbPen("pen");
 
+#define PEN_DEFAULTLENGTH 3
+
 bool CmdPen::usage() {
   return error("Usage: pen [ID] color | width | miterjoin|beveljoin|roundjoin | flatcap|squarecap|roundcap | solid|none | dash [L1 ...] | dot L ...");
 }
@@ -53,9 +55,9 @@ bool CmdPen::parse(Statement const &s) {
 	  if (k>0)
 	    continue;
 	  else
-	    return usage();
+	    return usage(); // Bad vector is not OK
 	} else {
-	  return usage();
+	  continue; // OK if no vector follows
 	}
       } else if (QColor(w).isValid())
 	continue;
@@ -93,8 +95,17 @@ void CmdPen::render(Statement const &s, Figure &f, bool) {
 	if (w==0)
 	  w = f.dashScale()/f.painter().transform().m11();
 	QVector<qreal> pat;
-	foreach (double x, s.data(k+1))
-	  pat.push_back(pt2iu(x)/w);
+	bool flatcap = p.capStyle()==Qt::FlatCap;
+	if (k+1<s.length() && s.isNumeric(k+1)) {
+	  foreach (double x, s.data(k+1)) {
+	    if (x==0) 
+	      pat.push_back(flatcap ? 1 : .001);
+	    else 
+	      pat.push_back(pt2iu(x)/w);
+	  }
+	} else {
+	  pat.push_back(pt2iu(PEN_DEFAULTLENGTH)/w);
+	}
 	int L = pat.size();
 	if (L&1)
 	  for (int l=0; l<L; l++)
@@ -106,9 +117,15 @@ void CmdPen::render(Statement const &s, Figure &f, bool) {
 	if (w==0)
 	  w = f.dashScale()/f.painter().transform().m11();
 	QVector<qreal> pat;
-	foreach (double x, s.data(k+1)) {
+	bool flatcap = p.capStyle()==Qt::FlatCap;
+	if (k+1<s.length() && s.isNumeric(k+1)) {
+	  foreach (double x, s.data(k+1)) {
+	    pat.push_back(flatcap ? 1 : 0.001);
+	    pat.push_back(pt2iu(x)/w);
+	  }
+	} else {
 	  pat.push_back(0.001);
-	  pat.push_back(pt2iu(x)/w);
+	  pat.push_back(pt2iu(PEN_DEFAULTLENGTH)/w);
 	}
 	p.setDashPattern(pat);	
 	k = s.nextIndex(k+1)-1;

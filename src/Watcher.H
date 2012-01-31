@@ -12,7 +12,7 @@
 class Watcher: public QObject {
   Q_OBJECT;
 public:
-  Watcher(QString fn, Program *prog, Figure *fig);
+  Watcher(QString fn, Program *prog, Figure *fig, QWidget *dest);
   virtual ~Watcher();
   bool reread(bool errorbox);
 signals:
@@ -20,13 +20,15 @@ signals:
 private slots:
   void fileChanged(); // file changed
   void tick(); // timer event
+  void openDetails();
 private:
   QString fn;
   Program *prog;
   Figure *fig;
   class QFileSystemWatcher *fsw;
-  class QMessageBox *qmb;
   class QTimer *timer;
+  QWidget *dest;
+  class QPushButton *warnlabel;
   bool working;
   QDateTime lastMod;
 };

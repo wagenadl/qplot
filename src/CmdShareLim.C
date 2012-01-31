@@ -133,6 +133,7 @@ void CmdShareLim::render(Statement const &s, Figure &f, bool) {
 	double shift = (currentWidth - newWidth)/2;
 	f.xAxis().setPlacement(QPoint(f.xAxis().minp().x()+shift,0),
 			       QPoint(f.xAxis().maxp().x()-shift,0));
+	f.markFudged();
       }
       // Apply the scale to other panels
       foreach (QString id, ids) {
@@ -144,6 +145,7 @@ void CmdShareLim::render(Statement const &s, Figure &f, bool) {
 	  double shift = (currentWidth - newWidth)/2;
 	  p.xaxis.setPlacement(QPoint(p.xaxis.minp().x()+shift,0),
 			       QPoint(p.xaxis.maxp().x()-shift,0));
+	  f.markFudged();
 	}
       }
     } else {
@@ -188,17 +190,20 @@ void CmdShareLim::render(Statement const &s, Figure &f, bool) {
       double b = px.min() - a*x0;
       // Should current panel be shrunk?
       if (f.xAxis().map(x0).x()<px.min()-SHIFTTOLERANCE ||
-	  f.xAxis().map(x1).x()>px.max()+SHIFTTOLERANCE) 
+	  f.xAxis().map(x1).x()>px.max()+SHIFTTOLERANCE)  {
 	f.xAxis().setPlacement(QPointF(a*f.xAxis().min()+b, 0),
 			       QPointF(a*f.xAxis().max()+b, 0));
-      
+      	f.markFudged();
+      }
       // Now do the same for each of the panels
       foreach (QString id, ids) {
 	Panel &p(f.panelRef(id));
 	if (p.xaxis.map(x0).x()<px.min()-SHIFTTOLERANCE ||
-	    p.xaxis.map(x1).x()>px.max()+SHIFTTOLERANCE) 
+	    p.xaxis.map(x1).x()>px.max()+SHIFTTOLERANCE)  {
 	  p.xaxis.setPlacement(QPointF(a*p.xaxis.min()+b, 0),
 			       QPointF(a*p.xaxis.max()+b, 0));
+	  f.markFudged();
+	}	  
       }
     }
   }
@@ -233,6 +238,7 @@ void CmdShareLim::render(Statement const &s, Figure &f, bool) {
 	double shift = (currentHeight - newHeight)/2;
 	f.yAxis().setPlacement(QPoint(0, f.yAxis().minp().y()-shift),
 			       QPoint(0, f.yAxis().maxp().y()+shift));
+	f.markFudged();
       }
       // Apply the scale to other panels
       foreach (QString id, ids) {
@@ -244,6 +250,7 @@ void CmdShareLim::render(Statement const &s, Figure &f, bool) {
 	  double shift = (currentHeight - newHeight)/2;
 	  p.yaxis.setPlacement(QPoint(0, p.yaxis.minp().y()-shift),
 			       QPoint(0, p.yaxis.maxp().y()+shift));
+	  f.markFudged();
 	}
       }
     } else {
@@ -288,17 +295,21 @@ void CmdShareLim::render(Statement const &s, Figure &f, bool) {
       double b = py.max() - a*y0;
       // Should current panel be shrunk?
       if (f.yAxis().map(y1).y()<py.min()-SHIFTTOLERANCE ||
-	  f.yAxis().map(y0).y()>py.max()+SHIFTTOLERANCE) 
+	  f.yAxis().map(y0).y()>py.max()+SHIFTTOLERANCE) {
 	f.yAxis().setPlacement(QPointF(0, a*f.yAxis().min()+b),
 			       QPointF(0, a*f.yAxis().max()+b));
+	f.markFudged();
+      }	
       
       // Now do the same for each of the panels
       foreach (QString id, ids) {
 	Panel &p(f.panelRef(id));
 	if (p.yaxis.map(y1).y()<py.min()-SHIFTTOLERANCE ||
-	    p.yaxis.map(y0).y()>py.max()+SHIFTTOLERANCE) 
+	    p.yaxis.map(y0).y()>py.max()+SHIFTTOLERANCE) {
 	  p.yaxis.setPlacement(QPointF(0, a*p.yaxis.min()+b),
 			       QPointF(0, a*p.yaxis.max()+b));
+	  f.markFudged();
+	}	
       }
     }
   }

@@ -43,6 +43,7 @@ void Figure::reset() {
     pntr.setFont(font);
     pntr.setPen("black");
   }
+  fudged = false;
 }
 
 void Figure::setDashScale(double s) {
@@ -309,4 +310,21 @@ QString Figure::panelAt(QPointF const &xy) {
   return "-";
 }
 
-  
+void Figure::setLocation(QString id, QPointF const &xy) {
+  locations[id] = xy;
+}
+
+QPointF Figure::getLocation(QString id) const {
+  if (locations.contains(id))
+    return locations[id];
+  else
+    return QPointF(0,0);
+}
+
+void Figure::markFudged() {
+  fudged = true;
+}
+
+bool Figure::checkFudged() const {
+  return fudged;
+}

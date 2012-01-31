@@ -60,7 +60,7 @@ void CmdShrink::render(Statement const &s, Figure &f, bool) {
   double newdy = y1.y()-y0.y();
 
   if (newdx*olddx<0 || newdy*olddy<0) {
-    Error() << "Shrink failed";
+    f.markFudged();
     return;
   }
 
@@ -81,7 +81,13 @@ void CmdShrink::render(Statement const &s, Figure &f, bool) {
     }
   }      
 
-  f.xAxis().setPlacement(x0, x1);
-  f.yAxis().setPlacement(y0, y1);
+  if ((x0 - f.xAxis().minp()).manhattanLength()>mrg ||
+      (x1 - f.xAxis().maxp()).manhattanLength()>mrg ||
+      (y0 - f.yAxis().minp()).manhattanLength()>mrg ||
+      (y1 - f.yAxis().maxp()).manhattanLength()>mrg) {
+    f.xAxis().setPlacement(x0, x1);
+    f.yAxis().setPlacement(y0, y1);
+    f.markFudged();
+  }
 }
 

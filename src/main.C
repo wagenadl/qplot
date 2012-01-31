@@ -10,6 +10,8 @@
 #include <QFileInfo>
 #include <QTemporaryFile>
 #include <QDateTime>
+#include <QProcessEnvironment>
+#include <QDebug>
 
 #include <sys/types.h>
 #include <unistd.h>
@@ -24,6 +26,9 @@
 #include "Factor.H"
 
 double BITMAPRES = 300;
+
+#define MAXTRIES_DEFAULT 100
+int MAXTRIES = MAXTRIES_DEFAULT;
 
 extern void setFACTOR(double); // in Factor.C
 
@@ -67,10 +72,22 @@ void prerender(Program &prog, Figure &fig) {
       fig.panelRef(p).yaxis.setDataRange(dataExtent.top(), dataExtent.bottom());
     }
   }
-  prog.render(fig, true); // render to determine paper bbox & fudge
-  //qDebug() << "2" << prog.dataRange() << fig.xAxis().min() << fig.xAxis().max();
-  prog.render(fig, true); // render to determine paper bbox & fudge
-  //qDebug() << "3" << prog.dataRange() << fig.xAxis().minp() << fig.xAxis().maxp();
+
+  int iter = 0;
+  while (iter<MAXTRIES) {
+    prog.render(fig, true); // render to determine paper bbox & fudge
+    if (!fig.checkFudged())
+      break;
+    iter++;
+  } 
+
+  if (MAXTRIES==MAXTRIES_DEFAULT) {
+    if (iter>=MAXTRIES)
+      Error() << "Shrink failed";
+  } else {
+    qDebug() << "Iterations used: " << iter;
+  }
+
   fig.painter().end();
 }
 
@@ -96,8 +113,8 @@ int interactive(QString ifn, QApplication *app) {
   Figure fig;
   prerender(prog, fig);
 
-  Watcher wtch(ifn, &prog, &fig);
   QPWidget win;
+  Watcher wtch(ifn, &prog, &fig, &win);
   int idx = ifn.lastIndexOf('/');
   win.setWindowTitle("qplot: " + ((idx>=0) ? ifn.mid(idx+1) : ifn));
   QObject::connect(&wtch, SIGNAL(ping()), &win, SLOT(raise()));
@@ -319,6 +336,12 @@ int main(int argc, char **argv) {
     } else {
       break;
     }
+  }
+
+  QProcessEnvironment env(QProcessEnvironment::systemEnvironment());
+  if (env.contains("QPLOT_MAXITER")) {
+    MAXTRIES = env.value("QPLOT_MAXITER").toInt();
+    qDebug() << "Max shrink iterations set to " << MAXTRIES;
   }
   
   if (argc-argi == 1) 

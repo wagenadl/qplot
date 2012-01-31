@@ -5,17 +5,21 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QDebug>
+#include <QToolTip>
 #include <QTimer>
-#include <QMessageBox>
+#include <QPushButton>
 
 #include "Error.H"
 
 extern void prerender(Program &prog, Figure &fig); // defined in main.C
 
-Watcher::Watcher(QString fn, Program *prog, Figure *fig):
-  fn(fn), prog(prog), fig(fig) {
+Watcher::Watcher(QString fn, Program *prog, Figure *fig, QWidget *dest):
+  fn(fn), prog(prog), fig(fig), dest(dest) {
   working = false;
-  qmb = new QMessageBox(0);
+  warnlabel = new QPushButton(dest);
+  warnlabel->hide();
+  connect(warnlabel, SIGNAL(clicked()),
+	  this, SLOT(openDetails()));
   fsw = new QFileSystemWatcher();
   fsw->addPath(fn);
   connect(fsw, SIGNAL(fileChanged(QString const &)),
@@ -45,6 +49,7 @@ void Watcher::tick() {
   if (reread(report)) {
       // success!
       working = false;
+      warnlabel->hide();
   } else {
     // wait a little longer
     int ival = 2*timer->interval();
@@ -65,7 +70,6 @@ void Watcher::fileChanged() {
 }
 
 bool Watcher::reread(bool errorbox) {
-  qmb->hide();
   QFile f(fn);
   if (f.open(QFile::ReadOnly)) {
     QString errors;
@@ -86,11 +90,12 @@ bool Watcher::reread(bool errorbox) {
       return true;
     } else {
       if (errorbox) {
-	qmb->setWindowTitle("qplot " + fn);
-	if (errors.size()>1000)
-	  errors = errors.left(1000) + " ...";
-	qmb->setText(errors);
-	qmb->show();
+	warnlabel->setGeometry(0, dest->height()-32, dest->width(), 32);
+	warnlabel->setToolTip(errors);
+	//int idx = errors.indexOf("\n");
+	//QString first = (idx>0) ? errors.left(idx) : errors;
+	warnlabel->setText("Render errors: Click to see details");
+	warnlabel->show();
       }
       return false;
     }
@@ -98,4 +103,11 @@ bool Watcher::reread(bool errorbox) {
     Error() << "Couldn't open file";
     return false;
   }
+}
+
+void Watcher::openDetails() {
+  QPoint x(warnlabel->mapToGlobal(QPoint(warnlabel->width()/2, warnlabel->height()/2)));
+  QString t(warnlabel->toolTip());
+  qDebug() << x << t;
+  QToolTip::showText(x, t);
 }

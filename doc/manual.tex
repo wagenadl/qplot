@@ -30,6 +30,8 @@ alternatives.\bigskip
 \cmd{at}{\emph{x} \emph{y} \emph{$\xi$} \emph{$\eta$}}
 \cmd{at}{\emph{x} \emph{y} \emph{$\phi$}}
 \cmd{at}{--}
+\cmd{at}{\emph{x} \emph{y} \emph{ID}}
+\cmd{at}{\emph{ID}}
 \expl{Places subsequent text and lines at graph
     position (\emph{x}, \emph{y}). If (\emph{$\xi$}, \emph{$\eta$})
     are given, this specifies a rotation such that the baseline of the
@@ -45,7 +47,9 @@ alternatives.\bigskip
     Likewise, \emph{y} may be one of {``top''}, {``bottom''}, {``middle''}, or a dash. ``at --''
     reverts to absolute placement (relative to top left of the
     figure (not the current panel!))
-    in both horizontal and vertical directions.}
+    in both horizontal and vertical directions. \cref{at} may also be
+    used to mark a location for later reference, as per the final two
+    syntax forms.}
 
 \cmd{brush}{(\emph{ID}) \emph{color}\bar{}none\bar{}\emph{opacity} \ldots}
 \expl{Selects a brush by \emph{ID}, defines its color (or sets it to
@@ -58,14 +62,6 @@ alternatives.\bigskip
 \cmd{font}{\emph{family} (bold) (italic) \emph{size}}
 \expl{Selects a new font with a given family, point size, weight
   and/or slant.}
-
-\cmd{fudge}{(\emph{margin})}
-\cmd{fudge}{\emph{margin} \emph{ratio}}
-\cmd{fudge}{-- \emph{ratio}}
-\expl{Shrinks the axes as necessary so that all graphics and text fits
-  within the bounding box of the figure as defined by
-  \cref{figsize}. Margin is specified in points. Optional \emph{ratio}
-specifies the desired aspect ratio of y:x data units.}
 
 \cmd{garea}{( \emph{ptspec} ) \ldots}
 \cmd{gline}{( \emph{ptspec} ) \ldots}
@@ -86,7 +82,11 @@ subsequent relative positioning) \\
 {\bf retract} \emph{L} & Retract preceding and following segments by
               \emph{L} pt \\
 {\bf retract} \emph{L$_1$} \emph{L$_2$} & Retract preceding and following
-              segments by \emph{L$_1$} and \emph{L$_2$} pt respectively \\
+              segments by \emph{L$_1$} and \emph{L$_2$} pt
+              respectively \\
+{\bf at} \emph{ID} & Absolute paper coordinates of location set by \cref{at} \\              
+{\bf atx} \emph{ID} & Absolute paper x-coordinate of location set by \cref{at} \\              
+{\bf aty} \emph{ID} & Absolute paper y-coordinate of location set by \cref{at} \\              
 \end{tabular}\medskip\\
 For {\bf absdata} or {\bf abspaper}, either \emph{dx} or \emph{dy} may
 be given as a dash (``-''), in which case the corresponding coordinate
@@ -131,6 +131,25 @@ they designate optional parameters. For instance:\medskip\\
   points and are relative to the position set by \cref{at}. See also
   \cref{plot}.}
 
+\cmd{mark}{[ \emph{x$_1$ x$_2$ \ldots} ] [ \emph{y$_1$ y$_2$ \ldots} ]}
+\expl{Renders markers set by \cmd{marker} at the given data
+  coordinates.}
+
+\cmd{marker}{\emph{size}\bar\emph{fill}\bar\emph{shape} \ldots}) (open\bar{}solid\bar{}brush)
+  ()
+  \ldots}
+\expl{Define a marker of the given \emph{size} in points and shape
+  (one of
+  ``circle'', ``square'', ``diamond'', ``left'', ``right'', ``up'',
+  ``down'', ``penta'', ``hexa'', ``hbar'', ``vbar'', ``plus'', or ``cross'')
+  for
+  later use by \cref{mark} and \cref{pmark}. The \emph{fill} style
+  specifies how the marks are rendered: An ``open'' mark  is 
+  is outlined with the current pen and filled with white,  a ``solid'' is
+  outlined with the current pen and filled with the pen color, and a  ``brush'' mark is outlined  with
+  the current pen and filled with the current brush (which may be ``none''). The fill style
+  has no effect on ``hbar'', ``vbar'', ``plus'', or ``cross'' marks.}
+
 \cmd{panel}{\emph{ID}\bar--}
 \cmd{panel}{\emph{ID x$_0$ y$_0$ w h}}
 \expl{Defines a new panel with given ID to have its top left corner on
@@ -147,12 +166,23 @@ they designate optional parameters. For instance:\medskip\\
   and \emph{y$_i$} are specified in data coordinates. See also \cref{area}.}
 
 \cmd{pen}{(\emph{ID})
-  \emph{color}\bar{}\emph{width}\bar{}miterjoin\bar{}beveljoin\bar{}roundjoin\bar{}flatcap\bar{}squarecap\bar{}roundcap\bar{}solid\bar\linebreak\mbox{}\kern25pt{}dash\bar{}dot\bar{}dashdot\bar{}dashdotdot\bar{}none
-\ldots}
+  \emph{color}\bar{}\emph{width}\bar{}%
+  \emph{capstyle}\bar{}\emph{joinstyle}\bar{}%
+  \emph{linestyle} \ldots}
+
 \expl{Selects a pen by \emph{ID}, defines its color, its width (in
-  points), its join style, its cap style, and/or its dash
-  pattern. Setting the color or width while the dash pattern is
-  ``none'' automatically switches to ``solid.''}
+  points), its join style (one of ``miterjoin'', ``beveljoin'', or ``roundjoin''),
+  its capstyle (one of ``flatcap'', ``squarecap'', or ``roundcap''), and/or its
+  line style (one of ``solid'', ``dash'', ``dot'', or ``none'').
+The word ``dash'' may optionally be followed by a single number or a
+vector of numbers (in brackets) that defines the lengths of marks and
+spaces (in points); the word ``dot'' may be followed by a single
+number or a vector of numbers (in brackets) that defines the lengths
+of the spaces between dots (in points). The default is
+3~pts.
+  Setting the color or width while the dash pattern is
+  ``none'' automatically switches to ``solid.'' Any number of
+  subcommands may be given on one line in any order.}
 
 \cmd{plot}{[ \emph{x$_1$ x$_2$ \ldots} ] [ \emph{y$_1$ y$_2$ \ldots}
 ]}
@@ -160,10 +190,29 @@ they designate optional parameters. For instance:\medskip\\
   and \emph{y$_i$} are specified in data coordinates. See also
   \cref{line}.}
 
+\cmd{pmark}{[ \emph{dx$_1$ dx$_2$ \ldots} ] [ \emph{dy$_1$ dy$_2$ \ldots} ]}
+\expl{Renders markers set by \cmd{marker}. \emph{dx$_i$} and \emph{dy$_i$} are specified in
+  points and are relative to the position set by \cref{at}. See also
+  \cref{mark} and \cref{marker}.}
+
 \cmd{reftext}{\emph{string}\bar{}--}
 \expl{Sets or unsets a fixed text that will be used to calculate the
   ascent and descent of text for the ``bottom'' and ``top'' alignment
   modes.}
+
+\cmd{sharelim}{(x|y) \emph{ID} \ldots}
+\expl{Shrinks the x-axis and/or y-axis of the current panel and the
+  named panel(s) so that they have a common scale. If the panels
+  overlap horizontally (vertically) on the page, the x-axis (y-axis)
+  are additionally aligned.}
+
+\cmd{shrink}{(\emph{margin})}
+\cmd{shrink}{\emph{margin} \emph{ratio}}
+\cmd{shrink}{-- \emph{ratio}}
+\expl{Shrinks the axes as necessary so that all graphics and text fits
+  within the bounding box of the figure as defined by
+  \cref{figsize}. Margin is specified in points. Optional \emph{ratio}
+specifies the desired aspect ratio of y:x data units.}
 
 \cmd{text}{\emph{dx} \emph{dy} \emph{string}}
 \expl{Places the given text \emph{string} at the position (\emph{dx},

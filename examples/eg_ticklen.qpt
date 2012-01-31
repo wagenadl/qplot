@@ -185,27 +185,21 @@ endgroup
 group
 gline ( absdata 7 0.5 relpaper 0 0 ) ( absdata 7 3.5 relpaper 0 0 )
 gline ( absdata 7 1 relpaper 0 0 ) ( absdata 7 1 relpaper -3 0 )
-gline ( absdata 7 1.5 relpaper 0 0 ) ( absdata 7 1.5 relpaper -3 0 )
 gline ( absdata 7 2 relpaper 0 0 ) ( absdata 7 2 relpaper -3 0 )
-gline ( absdata 7 2.5 relpaper 0 0 ) ( absdata 7 2.5 relpaper -3 0 )
 gline ( absdata 7 3 relpaper 0 0 ) ( absdata 7 3 relpaper -3 0 )
 group
 align right middle
 at 7 1
 text -6 0 "1"
-at 7 1.5
-text -6 0 "1.5"
 at 7 2
 text -6 0 "2"
-at 7 2.5
-text -6 0 "2.5"
 at 7 3
 text -6 0 "3"
 reftext ""
 endgroup
 at left 2 -1.5708
 align center bottom
-text -0 -3 "Axis_v F"
+text -0 -3 "Axis F"
 endgroup
 group
 gline ( absdata 9 0.5 relpaper 0 0 ) ( absdata 9 3.5 relpaper 0 0 )

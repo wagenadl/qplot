@@ -3,11 +3,13 @@
 #include "CmdMark.H"
 #include <math.h>
 #include <QPolygonF>
+#include "Rotate.H"
 
 static CBuilder<CmdMark> cbMark("mark");
+static CBuilder<CmdMark> cbPMark("pmark");
 
 bool CmdMark::usage() {
-  return error("Usage: mark xdata ydata");
+  return error("Usage: mark|pmark xdata ydata");
 }
 
 static void rendermark(QPainter &p, QPointF const &xy,
@@ -122,6 +124,10 @@ bool CmdMark::parse(Statement const &s) {
 }
 
 QRectF CmdMark::dataRange(Statement const &s) {
+  if (s[0].str=="pmark")
+    return QRectF(); // paper coord -> no data range
+
+  
   QVector<double> const &xdata = s.data(1);
   QVector<double> const &ydata = s.data(s.nextIndex(1));
 
@@ -154,30 +160,43 @@ void CmdMark::render(Statement const &s, Figure &f, bool dryrun) {
     return;
   }
 
-  QRectF extent = dataRange(s);
+  QPolygonF p(xdata.size());
 
-  QPointF p1 = f.map(extent.left(),extent.top());
-  QPointF p2 = f.map(extent.right(),extent.bottom());
-  QRectF bbox = QRectF(p1,p2).normalized();
+  if (s[0].str=="mark") {
+    for (int k=0; k<xdata.size(); k++)
+      p[k] = f.map(xdata[k],ydata[k]);
+  } else {
+    double a = f.anchorAngle();
+    QPointF xy0 = f.anchor();
+    for (int k=0; k<xdata.size(); k++) {
+      QPointF xy(pt2iu(xdata[k]), pt2iu(ydata[k]));
+      if (a)
+	xy = ::rotate(xy, a);
+      xy += xy0;
+      p[k] = xy;
+    }
+  }
+
+  QRectF bbox = p.boundingRect();
   double w = f.painter().pen().widthF();
   if (w>0)
     bbox.adjust(-w/2, -w/2, w/2, w/2);
   double r = f.marker().radius;
   bbox.adjust(-r, -r, r, r);
   f.setBBox(bbox);
-
+  
   if (dryrun)
     return;
 
-  QPainter &p(f.painter());
-  p.save();
+  QPainter &ptr(f.painter());
+  ptr.save();
 
   switch (f.marker().fill) {
   case Marker::CLOSED:
-    f.painter().setBrush(f.painter().pen().color());
+    ptr.setBrush(ptr.pen().color());
     break;
   case Marker::OPEN:
-    f.painter().setBrush(QColor("white"));
+    ptr.setBrush(QColor("white"));
     break;
   case Marker::BRUSH:
     break;
@@ -185,8 +204,20 @@ void CmdMark::render(Statement const &s, Figure &f, bool dryrun) {
 
   Marker::Type t = f.marker().type;
 
-  for (int k=0; k<xdata.size(); k++)
-    rendermark(p, f.map(xdata[k],ydata[k]), r, t);
+  if (s[0].str=="pmark") {
+    double a = f.anchorAngle();
+    QPointF xy0 = f.anchor();
+    for (int k=0; k<xdata.size(); k++) {
+      QPointF xy(pt2iu(xdata[k]), pt2iu(ydata[k]));
+      if (a)
+	xy = ::rotate(xy, a);
+      xy += xy0;
+      rendermark(ptr, xy, r, t);
+    }
+  } else {
+    for (int k=0; k<xdata.size(); k++)
+      rendermark(ptr, f.map(xdata[k],ydata[k]), r, t);
+  }
 
-  p.restore();  
+  ptr.restore();  
 }
