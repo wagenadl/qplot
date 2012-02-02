@@ -7,3 +7,4 @@ fd = qp_data.info(idx).fd;
 if fd<0
   error('No open window');
 end
+

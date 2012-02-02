@@ -28,9 +28,11 @@ private:
   class QFileSystemWatcher *fsw;
   class QTimer *timer;
   QWidget *dest;
-  class QPushButton *warnlabel;
+  //class QPushButton *warnlabel;
+  class QTextEdit *warnlabel;
   bool working;
   QDateTime lastMod;
+  qint64 lastSize;
 };
 
 #endif

@@ -229,13 +229,18 @@ void Figure::choosePanel(QString s) {
   store.cumulbbox = cumulbbox;
   store.lastbbox = lastbbox;
 
-  Panel &src(panels[currentPanel=s]);
+  currentPanel = s;
+  
+  Panel &src(panels[currentPanel]);
   xax = src.xaxis;
   yax = src.yaxis;
   figextent = src.desiredExtent;
   fullbbox = src.fullbbox;
   cumulbbox = src.cumulbbox;
   lastbbox = src.lastbbox;
+  
+  setAnchor(figextent.topLeft());
+
   if (s=="-") {
     // dropping to toplevel, include last panel's bbox in our calc.
     fullbbox |= store.fullbbox;

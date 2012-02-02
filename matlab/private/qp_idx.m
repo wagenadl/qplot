@@ -19,3 +19,4 @@ idx = strmatch(qp_data.curfn, qp_data.fns, 'exact');
 if isempty(idx)
   error('No open window');
 end
+

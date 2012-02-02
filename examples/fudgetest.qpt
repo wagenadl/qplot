@@ -46,3 +46,6 @@ text 2 0 "longer text"
 
 
 shrink 1
+pen 2
+panel -
+line [ 0 20] [ 10 0 ]

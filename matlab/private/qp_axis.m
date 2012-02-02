@@ -1,4 +1,5 @@
 function qp_axis(varargin)
+
 % QP_AXIS - Internal backend for axis rendering
 %   QP_AXIS(k1, v1, ...) draws an axis according to the parameters:
 %     orient: 'x' or 'y'
@@ -17,10 +18,24 @@ function qp_axis(varargin)
 %     coord_p (scalar) shift of that position in paper coordinates
 %     ttlrot (scalar) rotation of title: 0=normal +ve=CCW -ve=CW
 
-kv = getopt('orient=''x'' lim_d=[] lim_p=[] tick_d=[] tick_p=[] tick_lbl={} ttl='''' ticklen=3 lbldist=3 ttldist=3 coord_d=nan coord_p=0 ttlrot=0',  varargin);
+opt.orient='x';
+opt.lim_d=[];
+opt.lim_p=[];
+opt.tick_d=[];
+opt.tick_p=[];
+opt.tick_lbl={};
+opt.ttl='';
+opt.ticklen=3;
+opt.lbldist=3;
+opt.ttldist=3;
+opt.coord_d=nan;
+opt.coord_p=0;
+opt.ttlrot=0;
+kv = getopt(opt,  varargin);
 
 idx = qp_idx;
 global qp_data;
+
 qp_data.info(idx).lastax=kv;
 
 if strcmp(kv.orient,'x')
@@ -205,3 +220,4 @@ else
     xa = 'right';
   end
 end
+

@@ -15,22 +15,20 @@ else
   end
   if isnscalar(x) && isreal(x)
     x = sprintf('%g', x);
+  elseif isnan(str2double(x))  
+    error('Usage: qtext x y text')
   end
   if isnscalar(y) && isreal(y)
     y = sprintf('%g', y);
+  elseif isnan(str2double(y))  
+    error('Usage: qtext x y text')
   end
-  
   txt = varargin{1};
   for k=2:length(varargin);
     txt = [ txt ' ' varargin{k} ];
   end
 end
 
-if isnan(str2double(x)) || isnan(str2double(y))
-  error('Usage: qtext x y text');
-end
-
 fprintf(fd,'text %s %s "%s"\n',x, y, txt);
 
 qp_flush(fd);
-

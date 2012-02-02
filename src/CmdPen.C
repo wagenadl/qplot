@@ -3,6 +3,8 @@
 #include "CmdPen.H"
 #include <QDebug>
 
+#include "Error.H"
+
 static CBuilder<CmdPen> cbPen("pen");
 
 #define PEN_DEFAULTLENGTH 3
@@ -51,7 +53,7 @@ bool CmdPen::parse(Statement const &s) {
 	continue;
       else if (w=="dash" || w=="dot") {
 	if (k+1<s.length() && s.isNumeric(k+1)) {
-	  k=s.nextIndex(k)-1;
+	  k=s.nextIndex(k+1)-1;
 	  if (k>0)
 	    continue;
 	  else
@@ -103,6 +105,7 @@ void CmdPen::render(Statement const &s, Figure &f, bool) {
 	    else 
 	      pat.push_back(pt2iu(x)/w);
 	  }
+	  k = s.nextIndex(k+1)-1;
 	} else {
 	  pat.push_back(pt2iu(PEN_DEFAULTLENGTH)/w);
 	}
@@ -111,7 +114,6 @@ void CmdPen::render(Statement const &s, Figure &f, bool) {
 	  for (int l=0; l<L; l++)
 	    pat.push_back(pat[l]);
 	p.setDashPattern(pat);
-	k = s.nextIndex(k+1)-1;
       } else if (w=="dot") {
 	double w = p.widthF();
 	if (w==0)
@@ -123,18 +125,19 @@ void CmdPen::render(Statement const &s, Figure &f, bool) {
 	    pat.push_back(flatcap ? 1 : 0.001);
 	    pat.push_back(pt2iu(x)/w);
 	  }
+	  k = s.nextIndex(k+1)-1;
 	} else {
 	  pat.push_back(0.001);
 	  pat.push_back(pt2iu(PEN_DEFAULTLENGTH)/w);
 	}
 	p.setDashPattern(pat);	
-	k = s.nextIndex(k+1)-1;
       } else if (QColor(w).isValid()) {
 	p.setColor(w);
 	if (p.style()==Qt::NoPen)
 	  p.setStyle(Qt::SolidLine);
-      } else
-	qDebug() << "pen render surprise";
+      } else {
+	Error() << "pen render surprise";
+      }
     }
   }
   f.painter().setPen(p);
