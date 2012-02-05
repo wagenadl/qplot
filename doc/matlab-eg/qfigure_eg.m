@@ -1,1 +1,1 @@
-qfigure('qfigure.qpt', 6)
+qfigure('qfigure', 6)

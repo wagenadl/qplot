@@ -1,4 +1,4 @@
-qfigure('qpmark.qpt', 3, 3);
+qfigure('qpmark', 3, 3);
 
 xx = [1 2 3];
 yy = [3 .5 1.5];

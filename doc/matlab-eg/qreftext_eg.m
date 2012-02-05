@@ -1,4 +1,4 @@
-qfigure('qreftext.qpt', 3, 3);
+qfigure('qreftext', 3, 3);
 
 qpen 666
 qplot([0 1],[0 0]);

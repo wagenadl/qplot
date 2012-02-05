@@ -1,4 +1,4 @@
-qfigure('qcbar.qpt', 3, 3);
+qfigure('qcbar', 3, 3);
 
 xx = repmat([1:10], 10, 1);
 yy = xx';

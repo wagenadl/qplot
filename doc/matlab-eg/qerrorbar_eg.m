@@ -1,4 +1,4 @@
-qfigure('qerrorbar.qpt', 3, 3);
+qfigure('qerrorbar', 3, 3);
 
 tt = [-pi:.5:pi]';
 

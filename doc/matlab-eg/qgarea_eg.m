@@ -1,4 +1,4 @@
-qfigure('qgarea.qpt', 3, 3);
+qfigure('qgarea', 3, 3);
 
 qplot([-pi:.1:pi],sin(-pi:.1:pi));
 

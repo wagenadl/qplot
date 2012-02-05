@@ -1,4 +1,4 @@
-qfigure('qmarker.qpt', 3, 3);
+qfigure('qmarker', 3, 3);
 
 sty = { 'open', 'solid', 'brush' };
 shp = '+x-|osd<>^vph';

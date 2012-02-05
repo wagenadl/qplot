@@ -1,4 +1,4 @@
-qfigure('qplot.qpt', 3, 3);
+qfigure('qplot', 3, 3);
 
 xx = [0:.1:2*pi];
 

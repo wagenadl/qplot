@@ -1,4 +1,4 @@
-qfigure('qgline.qpt', 3, 3);
+qfigure('qgline', 3, 3);
 
 xx=[-1.5*pi:1.5*pi];
 yy=cos(xx);

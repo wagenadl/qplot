@@ -1,4 +1,4 @@
-qfigure('qplegend.qpt', 3, 3);
+qfigure('qplegend', 3, 3);
 
 qlegopt('x', 2*pi, 'y', 1, 'dx', 10)
 

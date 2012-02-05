@@ -9,17 +9,47 @@ function qyaxis(y0, varargin)
 %    suppressed if LBLS is empty.
 %    QYAXIS(..., ttl) adds a title to the axis.
 % 
-%    QYAXIS obeys settings from QTICKLEN, QTEXTDIST, and QAXSHIFT.
+%    QYAXIS obeys settings from QAXSHIFT, QTICKLEN, QTEXTDIST, and QAXSHIFT.
+%    QXAXIS('r', ...) inverts the sign of these settings.
+%    QXAXIS('R', ...) additionally orients the title the other way.
 
 % Note that we use variable names from qxaxis, which may be confusing.
 
 err = 'Usage: qyaxis X0 [ylim] ypts [lbls] [title]';
+
+if ischar(y0)
+  if strcmp(y0, 'r') | strcmp(y0, 'R')
+    flip = 1;
+    if y0=='R'
+      rot = 1;
+    else
+      rot = 0;
+    end
+    y0 = varargin{1};
+    varargin = varargin(2:end);
+  else
+    error(err);
+  end
+else
+  flip = 0;
+end
+
 [xlim, xpts, lbls, ttl] = qp_axargs(err, varargin{:});
 
 ticklen = qticklen;
 axshift = qaxshift;
 [lbldist, ttldist] = qtextdist;
 lblrot = qytitlerot;
+
+if flip
+  ticklen = -ticklen;
+  axshift = -axshift;
+  lbldist = -lbldist;
+  ttldist = -ttldist;
+  if rot
+    lblrot = -lblrot;
+  end
+end
 
 qp_axis('orient', 'y', 'lim_d', xlim, 'tick_d', xpts, 'tick_lbl', lbls, ...
     'ttl', ttl, ...

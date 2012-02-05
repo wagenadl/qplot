@@ -1,4 +1,4 @@
-qfigure('qshrink_eg.qpt', 3, 3);
+qfigure('qshrink', 3, 3);
 
 qbrush 888
 qpen none

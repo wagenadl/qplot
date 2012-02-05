@@ -1,4 +1,4 @@
-qfigure('qsharelim.qpt', 3, 3);
+qfigure('qsharelim', 3, 3);
 
 id=qsubplot(0, 0, 1, .5);
 qplot(1:100, sqrt(1:100));

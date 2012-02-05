@@ -1,4 +1,4 @@
-qfigure('qpen.qpt', 3, 3);
+qfigure('qpen', 3, 3);
 
 qpen r 2
 qplot([0 1],[0 0]);

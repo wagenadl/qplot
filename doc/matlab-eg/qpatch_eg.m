@@ -1,4 +1,4 @@
-qfigure('qpatch.qpt', 3, 3);
+qfigure('qpatch', 3, 3);
 qbrush g
 
 qpatch(cos(0:pi/3:2*pi), sin(0:pi/3:2*pi));

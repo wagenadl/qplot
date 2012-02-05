@@ -1,4 +1,4 @@
-qfigure('qmark.qpt', 3, 3);
+qfigure('qmark', 3, 3);
 
 qmarker o solid
 

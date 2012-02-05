@@ -1,4 +1,4 @@
-qfigure('qpanel.qpt', 3, 3);
+qfigure('qpanel', 3, 3);
 xx=[0:.01:3*pi];
 
 qplot(xx, sin(xx));

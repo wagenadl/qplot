@@ -1,4 +1,4 @@
-qfigure('qdarrow.qpt', 3, 3);
+qfigure('qdarrow', 3, 3);
 
 tt = [0:.1:4*pi];
 xx = sin(tt/2);

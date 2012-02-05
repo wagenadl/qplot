@@ -1,4 +1,4 @@
-qfigure('qecoplot.qpt', 3, 3);
+qfigure('qecoplot', 3, 3);
 
 N=1e6;
 tt=[1:N];

@@ -1,4 +1,4 @@
-qfigure('qalign.qpt', 3, 3)
+qfigure('qalign', 3, 3)
 
 qpen 777
 qplot([-1 1], [0 0]);

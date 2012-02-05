@@ -1,4 +1,4 @@
-qfigure('qbrush.qpt', 3, 3)
+qfigure('qbrush', 3, 3)
 
 qbrush 777
 qpatch([0 1 1 0], [0 0 1 1]);

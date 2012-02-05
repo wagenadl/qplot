@@ -10,6 +10,7 @@ manual.log
 manual.dvi
 a.out
 examples/eg_*.qpt
+doc/matlab-eg/*qpt
 doc/manual.pdf
 *.pid
 *.mex*

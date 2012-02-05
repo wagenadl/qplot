@@ -1,4 +1,4 @@
-qfigure('qat.qpt', 3, 3)
+qfigure('qat', 3, 3)
 qplot([0 1 2 3 4], [0 1 4 2 5]);
 qalign top left
 

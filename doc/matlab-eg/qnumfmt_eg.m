@@ -1,4 +1,4 @@
-qfigure('qnumfmt.qpt', 3, 3);
+qfigure('qnumfmt', 3, 3);
 
 qxaxis(0, [0:.5:2]);
 

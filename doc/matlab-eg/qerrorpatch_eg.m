@@ -1,4 +1,4 @@
-qfigure('qerrorpatch.qpt', 3, 3);
+qfigure('qerrorpatch', 3, 3);
 
 tt = [-pi:.1:pi]';
 
