@@ -15,28 +15,53 @@ if nargin==0
   return;
 end
 
-if nargin<2 || nargin>4
-  error('Usage: qat x y [dx dy]|phi');
+if nargin<1 || nargin>4
+  error('Cannot interpret arguments');
 end
 
 str = 'at';
-atcoord = zeros(length(nargin),1) + nan;;
-for k=1:nargin
-  a = varargin{k};
-  if ischar(a) && ~isnan(str2double(a))
-    str = sprintf('%s %s', str, a);
-    atcoord(k) = str2double(a);
-  elseif isnscalar(a) && isreal(a) && ~isnan(a)
-    str = sprintf('%s %g', str, a);
-    atcoord(k) = a;
-  elseif k==1 && ischar(a) && ~isempty(strmatch(a, strtoks('left right center'), 'exact'))
-    str = sprintf('%s %s', str, a);
-  elseif k==2 && ischar(a) && ~isempty(strmatch(a, strtoks('top bottom middle'), 'exact'))
-    str = sprintf('%s %s', str, a);
-  elseif k<=2 && ((ischar(a) && strcmp(a, '-')) || (isnscalar(a) && isnan(a)))
-    str = sprintf('%s -', str);
-  else
+atcoord = zeros(length(nargin),1) + nan;
+  
+if ischar(varargin{1}) && varargin{1}>='A' && varargin{1}<='Z'
+  % at ID [dx dy]|[angle]
+  str = sprintf('%s %s', str, varargin{1});
+  if nargin>3
+    error('Cannot interpret arguments following ID');
+  end
+  for k=2:nargin
+    a = varargin{k};
+    if ischar(a) && ~isnan(str2double(a))
+      str = sprintf('%s %s', str, a);
+    elseif isnscalar(a) && isreal(a) && ~isnan(a)
+      str = sprintf('%s %g', str, a);
+    else
+      error('Cannot interpret arguments following ID');
+    end
+  end
+else
+  if nargin<2
     error('Cannot interpret arguments');
+  end
+  % at x y [dx dy]|[angle]|[ID]
+  for k=1:nargin
+    a = varargin{k};
+    if nargin==3 && k==3 && ischar(a) && a>='A' && a<='Z'
+      str = sprintf('%s %s', str, a); % add ID
+    elseif ischar(a) && ~isnan(str2double(a))
+      str = sprintf('%s %s', str, a);
+      atcoord(k) = str2double(a);
+    elseif isnscalar(a) && isreal(a) && ~isnan(a)
+      str = sprintf('%s %g', str, a);
+      atcoord(k) = a;
+    elseif k==1 && ischar(a) && ~isempty(strmatch(a, strtoks('left right center'), 'exact'))
+      str = sprintf('%s %s', str, a);
+    elseif k==2 && ischar(a) && ~isempty(strmatch(a, strtoks('top bottom middle'), 'exact'))
+      str = sprintf('%s %s', str, a);
+    elseif k<=2 && ((ischar(a) && strcmp(a, '-')) || (isnscalar(a) && isnan(a)))
+      str = sprintf('%s -', str);
+    else
+      error('Cannot interpret arguments');
+    end
   end
 end
 

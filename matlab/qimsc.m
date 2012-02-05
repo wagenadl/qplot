@@ -16,6 +16,7 @@ switch nargin
   case 2
     xywh = varargin{1};
     data = varargin{2};
+    [Y X] = size(data);
     c0 = min(data(:));
     c1 = max(data(:));
   case 3    
@@ -42,6 +43,7 @@ switch nargin
   case 4
     xywh = varargin{1};
     data = varargin{2};
+    [Y X] = size(data);
     c0 = varargin{3};
     c1 = varargin{4};
   case 5

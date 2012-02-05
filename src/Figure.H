@@ -55,6 +55,8 @@ public:
   QString refText() const;
   QPainter &painter();
   Marker &marker();
+  void storePen();
+  void storeBrush();
   void choosePen(QString);
   void chooseBrush(QString);
   bool hairline() const;

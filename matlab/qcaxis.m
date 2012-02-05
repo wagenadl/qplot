@@ -71,8 +71,9 @@ switch cb.orient
     lblrot = 0;
     dcoord = cb.xywh_d(2);
     pcoord = cb.xywh_p(2);
-    if side>0
+    if side<0
       dcoord = dcoord+cb.xywh_d(4);
+    else
       pcoord = pcoord+cb.xywh_p(4);
     end
 end

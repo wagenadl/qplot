@@ -1,33 +1,30 @@
-function qarrow(x, y, ang, l, w, dist, dimple)
+function qarrow(l, w, dl, dimple, dw)
 % QARROW - Draw an arrowhead
-%   QARROW(x, y, ang) draws an arrow head pointing to (X,Y)
-%   in the direction ANG. ANG may be given in radians in paper (0: pointing
-%   right, pi/2: pointing down), or as a (DX,DY) pair of data coordinates.
-%   QARROW(x, y, ang, l, w) specifies length and (full) width of the arrow
-%   head. These are specified in points, and default to L=8, W=5.
-%   QARROW(x, y, ang, l, w, dist) specifies that the arrow is to be retracted
-%   a given distance from the point (X, Y).
-%   QARROW(x, y, ang, l, w, dist, dimple) specifies that the back of the 
-%   arrow head is indented by DIMPLE points.
+%   QARROW draws an arrow head pointing to the current anchor set by QAT.
+%   QARROW(l, w) specifies length and (full) width of the arrow head
+%   These are specified in points, and default to L=8, W=5.
+%   QARROW(l, w, dl) specifies that the arrow is to be displaced from the
+%   anchor by a distance DL along the arrow's axis.
+%   QARROW(l, w, dl, dimple) specifies that the back of the arrow head is
+%   indented by DIMPLE points.
+%   QARROW(l, w, dl, dimple, dw) specifies that the arrow is to be displaced
+%   from the anchor by DW points in the orthogonal direction of the arrow's
+%   axis.
 
-
-if length(ang)==2
-  qat(x, y, ang(1), ang(2));
-else
-  qat(x, y, ang);
-end
-
-if nargin<4 || isempty(l)
+if nargin<1 || isempty(l)
   l = 8;
 end
-if nargin<5 || isempty(w)
-  w = .6*l;
+if nargin<2 || isempty(w)
+  w = 0.6 * l;
 end
-if nargin<6 || isempty(dist)
-  dist=0;
+if nargin<3 || isempty(dl)
+  dl = 0;
 end
-if nargin<7 || isempty(dimple)
-  dimple=0;
+if nargin<4 || isempty(dimple)
+  dimple = 0;
+end
+if nargin<5 || isempty(dw)
+  dw = 0;
 end
 
-qarea([0 -l dimple-l -l]-dist, [0 w 0 -w]/2);
+qarea([0 -l dimple-l -l]-dl, [0 w 0 -w]/2+dw);

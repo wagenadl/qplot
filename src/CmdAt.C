@@ -1,8 +1,8 @@
 // CmdAt.C
 
 #include "CmdAt.H"
-
-#define EPSI (1e-25)
+#include <QDebug>
+#include "Slightly.H"
 
 static CBuilder<CmdAt> cbAt("at");
 
@@ -35,75 +35,93 @@ static int vertAlign(QString s) {
   
 
 bool CmdAt::parse(Statement const &s) {
-  if (s.length()==2 && (s[1].typ==Token::DASH || s[1].typ==Token::CAPITAL))
-    return true;
-  if (s.length()<3)
+  if (s.length()<2)
     return usage();
+  if (s[1].typ==Token::CAPITAL) {
+    switch (s.length()) {
+    case 2:
+      return true;
+    case 3:
+      return s[2].typ==Token::NUMBER ? true : usage();
+    case 4:
+      return (s[2].typ==Token::NUMBER && s[3].typ==Token::NUMBER)
+	? true : usage();
+    default:
+      return usage();
+    }
+  }
+  if (s.length()==2 && s[1].typ==Token::DASH)
+    return true;
+  else if (s.length()<3)
+    return usage();
+  
   if (!(s[1].typ==Token::NUMBER || s[1].typ==Token::DASH ||
 	(s[1].typ==Token::BAREWORD && horiAlign(s[1].str)>=0)))
     return usage();
+
   if (!(s[2].typ==Token::NUMBER || s[2].typ==Token::DASH ||
 	(s[2].typ==Token::BAREWORD && vertAlign(s[2].str)>=0)))
     return usage();
+
   if (s.length()==3)
     return true;
+
   if (s[3].typ==Token::CAPITAL && s.length()==4)
     return true;
+
   if (s[3].typ!=Token::NUMBER)
     return usage();
+
   if (s.length()==4)
     return true;
+
   if (s[4].typ!=Token::NUMBER)
     return usage();
-  return s.length()==5;
+
+  return s.length()==5 ? true : usage();
 }
 
-static double slightlyless(double x) {
-  double epsi = EPSI;
-  double x0 = x-epsi;
-  while (x0==x) {
-    epsi *= 10;
-    x0 = x-epsi;
-  }
-  return x0;
-}
-    
-static double slightlymore(double x) {
-  double epsi = EPSI;
-  double x0 = x+epsi;
-  while (x0==x) {
-    epsi *= 10;
-    x0 = x+epsi;
-  }
-  return x0;
-}
-    
     
 
 QRectF CmdAt::dataRange(Statement const &s) {
+  if (s.length()<3)
+    return QRectF();
+  
   if (s[1].typ==Token::NUMBER && s[2].typ==Token::NUMBER) {
     double x = s[1].num;
     double y = s[2].num;
-    return QRectF(QPointF(slightlyless(x),slightlyless(y)),
-		  QPointF(slightlymore(x),slightlymore(y)));
+    return QRectF(QPointF(Slightly::less(x),Slightly::less(y)),
+		  QPointF(Slightly::more(x),Slightly::more(y)));
   } else {
     return QRectF();
   }
 }
   
 void CmdAt::render(Statement const &s, Figure &f, bool) {
-  if (s.length()<=2) {
-    if (s.length()==2 && s[1].typ==Token::CAPITAL)
+  if (s[1].typ==Token::CAPITAL) {
+    switch (s.length()) {
+    case 2:
       f.setAnchor(f.getLocation(s[1].str));
-    else
-      f.setAnchor(f.extent().topLeft());
-      //f.setAnchor(QPointF(0,0));
+      return;
+    case 3:
+      f.setAnchor(f.getLocation(s[1].str), s[2].num);
+      return;
+    case 4:
+      f.setAnchor(f.getLocation(s[1].str), f.angle(s[2].num,s[3].num));
+      return;
+    }
+    qDebug() << "Unexpected syntax in AT";
+  } 
+
+  if (s.length()<=2) {
+    f.setAnchor(f.extent().topLeft());
     return;
   }
   
   double x = s[1].typ==Token::NUMBER ? s[1].num : f.xAxis().min(); 
   double y = s[2].typ==Token::NUMBER ? s[2].num : f.yAxis().min(); 
   QPointF anchor = f.map(x,y);
+
   if (s[1].typ==Token::BAREWORD) {
     // that means x is as yet undefined. no matter:
     int a = horiAlign(s[1].str);
@@ -113,6 +131,7 @@ void CmdAt::render(Statement const &s, Figure &f, bool) {
     //    anchor.setX(0);
     anchor.setX(f.extent().left());
   }
+  
   if (s[2].typ==Token::BAREWORD) {
     // that means y is as yet undefined. no matter:
     int a = vertAlign(s[2].str);
@@ -122,14 +141,21 @@ void CmdAt::render(Statement const &s, Figure &f, bool) {
     //anchor.setY(0);
     anchor.setY(f.extent().top());
   }
-  
-  if (s.length()==5) 
+
+  switch (s.length()) {
+  case 5:
     f.setAnchor(anchor, f.angle(s[3].num,s[4].num));
-  else if (s.length()==4) {
+    break;
+  case 4:
     if (s[3].typ==Token::CAPITAL)
       f.setLocation(s[3].str, anchor);
     else
       f.setAnchor(anchor, s[3].num);
-  } else 
+    break;
+  case 3: 
     f.setAnchor(anchor);
+    break;
+  default:
+    qDebug() << "Unexpected syntax in AT";
+  }
 }

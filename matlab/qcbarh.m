@@ -23,8 +23,8 @@ xy = qp_data.info(idx).atcoord;
 lut = qlut;
 C = size(lut,1);
 
-if isempty(l)
-  l=0;
+if isempty(w)
+  w=0;
 end
 if l<0
   dy=dy+l;

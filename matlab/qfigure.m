@@ -15,6 +15,7 @@ if nargin<1
   fn = tempname;
   istmp = 1;
 end
+
 if ~ischar(fn)
   if nargin<2
     w = fn;
@@ -32,6 +33,22 @@ else
   if nargin<3
     h=w*3/4;
   end
+end
+
+dotidx = find(fn=='.');
+slashidx = find(fn=='/');
+if ~isempty(slashidx)
+  dotidx = dotidx(dotidx>slashidx(end));
+end
+if isempty(dotidx)
+  fn = [ fn '.qpt' ];
+end
+
+THRESH = 36; % If attempting to make >36", treat dimensions as points
+
+if w>THRESH || h>THRESH
+  w=w/72;
+  h=h/72;
 end
 
 idx = strmatch(fn, qp_data.fns, 'exact');

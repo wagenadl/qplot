@@ -26,6 +26,7 @@ void Figure::reset() {
   currentPanel = "-"; // i.e., main
   pens.clear();
   brushes.clear();
+  reftxt = "";
   hairline_ = false;
   mrkr = Marker();
   anch = QPointF(0,0);
@@ -198,14 +199,22 @@ QString Figure::refText() const {
   return reftxt;
 }
 
-void Figure::choosePen(QString s) {
+void Figure::storePen() {
   pens[currentPen] = pntr.pen();
-  pntr.setPen(pens[currentPen=s]);
+}
+
+void Figure::storeBrush() {
+  brushes[currentBrush] = pntr.brush();
+}
+
+void Figure::choosePen(QString s) {
+  currentPen=s;
+  pntr.setPen(pens[currentPen]);
 }
 
 void Figure::chooseBrush(QString s) {
-  brushes[currentBrush] = pntr.brush();
-  pntr.setBrush(brushes[currentBrush=s]);
+  currentBrush=s;  
+  pntr.setBrush(brushes[currentBrush]);
 }
 
 void Figure::leavePanel() {

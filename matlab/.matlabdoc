@@ -1,0 +1,3 @@
+dest = ../doc/automat/html
+title = QPlot matlab/octave functions
+copyright = (C) Daniel Wagenaar 2011&ndash;2012

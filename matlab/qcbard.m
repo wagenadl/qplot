@@ -42,6 +42,12 @@ end
 
 idx = qp_idx;
 global qp_data;
-qp_data.info(idx).cbar.flip = flip;
-qp_data.info(idx).cbar.hori = hori;
-qp_data.info(idx).cbar.xywh = xywh;
+qp_data.info(idx).cbar.rev = flip;
+if hori
+  qp_data.info(idx).cbar.orient = 'x';
+else
+  qp_data.info(idx).cbar.orient = 'y';
+end
+qp_data.info(idx).cbar.xywh_d = xywh;
+qp_data.info(idx).cbar.xywh_p = [0 0 0 0];
+qp_data.info(idx).cbar.clim = qp_data.info(idx).clim;

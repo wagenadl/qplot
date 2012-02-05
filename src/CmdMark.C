@@ -4,6 +4,7 @@
 #include <math.h>
 #include <QPolygonF>
 #include "Rotate.H"
+#include "Slightly.H"
 
 static CBuilder<CmdMark> cbMark("mark");
 static CBuilder<CmdMark> cbPMark("pmark");
@@ -149,7 +150,8 @@ QRectF CmdMark::dataRange(Statement const &s) {
       miny=ydata[k];
     else if (ydata[k]>maxy)
       maxy=ydata[k];
-  return QRectF(QPointF(minx,miny), QPointF(maxx,maxy));
+  return QRectF(QPointF(Slightly::less(minx), Slightly::less(miny)),
+		QPointF(Slightly::more(maxx), Slightly::more(maxy)));
 }
 
 void CmdMark::render(Statement const &s, Figure &f, bool dryrun) {

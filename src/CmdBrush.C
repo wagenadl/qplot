@@ -36,11 +36,15 @@ void CmdBrush::render(Statement const &s, Figure &f, bool) {
   QColor c(b.color());
   double alpha = c.alphaF();
   bool newColor = false;
+  bool namedBrush = false;
   for (int k=1; k<s.length(); k++) {
     if (s[k].typ==Token::CAPITAL && k==1) {
-      f.painter().setBrush(b);
+      // f.painter().setBrush(b);
       f.chooseBrush(s[k].str);
       b = f.painter().brush();
+      c = b.color();
+      alpha = c.alphaF();
+      namedBrush = true;
     } else if (s[k].typ==Token::NUMBER) {
       alpha = s[k].num;
       if (alpha<0)
@@ -50,9 +54,10 @@ void CmdBrush::render(Statement const &s, Figure &f, bool) {
       newColor = true;
     } else if (s[k].typ==Token::BAREWORD) {
       QString w = s[k].str;
-      if (w=="none")
+      if (w=="none") {
+	b.setColor("black");
 	b.setStyle(Qt::NoBrush);
-      else if (QColor(w).isValid()) {
+      } else if (QColor(w).isValid()) {
 	c = w;
 	newColor = true;
       } else
@@ -65,6 +70,8 @@ void CmdBrush::render(Statement const &s, Figure &f, bool) {
     b.setStyle(Qt::SolidPattern);
   }
   f.painter().setBrush(b);
+  if (namedBrush)
+    f.storeBrush();
 }
 
 

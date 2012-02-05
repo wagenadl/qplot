@@ -73,11 +73,12 @@ bool CmdPen::parse(Statement const &s) {
 
 void CmdPen::render(Statement const &s, Figure &f, bool) {
   QPen p(f.painter().pen());
+  bool namedPen = false;
   for (int k=1; k<s.length(); k++) {
     if (s[k].typ==Token::CAPITAL && k==1) {
-      f.painter().setPen(p);
       f.choosePen(s[k].str);
       p = f.painter().pen();
+      namedPen = true;
     } else if (s[k].typ==Token::NUMBER) {
       p.setWidthF(pt2iu(s[k].num));
       if (p.style()==Qt::NoPen)
@@ -141,6 +142,8 @@ void CmdPen::render(Statement const &s, Figure &f, bool) {
     }
   }
   f.painter().setPen(p);
+  if (namedPen)
+    f.storePen();
 }
 
 

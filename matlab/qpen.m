@@ -12,67 +12,71 @@ function qpen(varargin)
 %    WIDTH is linewidth in points, or 0 for hairline.
 fd = qp_fd(1);
 
-for n=1:nargin
+cmd = 'pen';
+
+n=1;
+while n<=nargin
   a = varargin{n};
   if ischar(a)
     if length(a)==1 && a>='A' && a<='Z' && n==1
-      ; % This is ID, so good
+      cmd = [ cmd ' ' a ];
     elseif strmatch(a, strtoks('miterjoin beveljoin roundjoin flatcap squarecap roundcap solid none'), 'exact')
-      ; % This is a known keyword, so good
+      cmd = [ cmd ' ' a ];
     elseif strmatch(a, strtoks('dash dot'), 'exact')
-      if n<nargin
+      cmd = [ cmd ' ' a ];
+      vec=[];
+      while n<nargin
 	if isnvector(varargin{n+1})
-	  varargin{n+1} = [ '[ ' sprintf('%.1f ', varargin{n+1}) ' ]' ];
-	  n=n+1;
+	  vec = [ vec; varargin{n+1}(:); ];
 	elseif ischar(varargin{n+1}) && ~isnan(str2double(varargin{n+1}))
-	  n=n+1;
+	  vec = [ vec; str2double(varargin{n+1}) ];
 	else
-	  varargin{n} = [ varargin{n} ' 3' ];
+	  break;
 	end
-      else
-	varargin{n} = [ varargin{n} ' 3' ];
+	n=n+1;
       end
+      if isempty(vec)
+	vec = 3;
+      end
+      cmd = [ cmd ' [' sprintf(' %g', vec) ' ]'];
     elseif ~isempty(qp_mapcolor(a))
       ; % This is a good color
-      varargin{n} = qp_mapcolor(a);
+      cmd = [ cmd ' ' qp_mapcolor(a) ];
     elseif ~isnan(str2double(a)) 
       % This is a number
       if length(a)==3  && all(a>='0') && all(a<='9')
 	% This is a three-digit color
-	varargin{n} = sprintf('#%02x%02x%02x', ...
+	cmd = [ cmd ' ' sprintf('#%02x%02x%02x', ...
 	    floor(255.999*atoi(a(1))/9), ...
 	    floor(255.999*atoi(a(2))/9), ...
-	    floor(255.999*atoi(a(3))/9));
+	    floor(255.999*atoi(a(3))/9))];
       elseif length(a)==6 && all(a>='0') && all(a<='9')
 	% This is a six-digit color
-	varargin{n} =  sprintf('#%02x%02x%02x', ...
+	cmd = [ cmd ' ' sprintf('#%02x%02x%02x', ...
 	    floor(255.999*atoi(a(1:2))/99), ...
 	    floor(255.999*atoi(a(3:4))/99), ...
-	    floor(255.999*atoi(a(5:6))/99));
+	    floor(255.999*atoi(a(5:6))/99))];
       else
 	; % This is pen width
+	cmd = [ cmd ' ' a ];
       end
     else
       error([ 'Cannot interpret ' a ' as an argument for qpen' ]);
     end
   elseif isnscalar(a) && isreal(a)
     ; % This is a pen width
-    varargin{n} = sprintf('%g', a);
+    cmd = [ cmd ' ' sprintf('%g', a)];
   elseif isnvector(a) && isreal(a) && length(a)==3
     % This is a color
-    varargin{n} =  sprintf('#%02x%02x%02x', ...
-	floor(255.999*a));
+    cmd = [ cmd ' ' sprintf('#%02x%02x%02x', ...
+	  floor(255.999*a))];
   else
     error([ 'Cannot interpret ' disp(a) ' as an argument for qpen' ]);
   end
+  n=n+1;
 end
 
-str = 'pen';
-for n=1:nargin
-  str = [ str ' ' varargin{n}];
-end
-
-fprintf(fd, '%s\n', str);
+fprintf(fd, '%s\n', cmd);
 
 qp_flush(fd);
 

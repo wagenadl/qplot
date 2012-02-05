@@ -36,7 +36,7 @@ if N>K
   N=K;
 end
 
-ii = 1 + ceil([0:N]/N * (K-1));
+ii = 1 + ceil([0:N]/N * K);
 [ym, yM] = qp_sampleminmax(yy, ii);
 ii = ii(1:end-1) - .5;
 
