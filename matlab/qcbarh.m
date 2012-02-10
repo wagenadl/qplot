@@ -1,12 +1,12 @@
 function qcbarh(w, l, varargin)
-% QCBAR - Add a horizontal color bar to a figure
-%   QCBAR(w, h) adds a horizontal color bar of given width and height
+% QCBARH - Add a horizontal color bar to a figure
+%   QCBARH(w, h) adds a horizontal color bar of given width and height
 %   (in points) at the position specified by QAT. W may be positive or 
 %   negative. In either case, the color scale runs from left to right.
-%   QCBAR(w, h, 'l') makes the color scale run right-to-left.
-%   QCBAR(w, h, dx, dy) or QCBAR(w, h, dx, dy, 'l') shifts the bar by the 
+%   QCBARH(w, h, 'l') makes the color scale run right-to-left.
+%   QCBARH(w, h, dx, dy) or QCBARH(w, h, dx, dy, 'l') shifts the bar by the 
 %   given number of points to the right and down.
-%   QCBAR(w, [], dw) or QCBAR(w,[], dx, dy, dw) specifies the width in data 
+%   QCBARH(w, [], dw) or QCBARH(w,[], dx, dy, dw) specifies the width in data 
 %   coordinates instead. In this case, the color scale runs l->r (r->l) if DW 
 %   is positive (negative).
 %   This command only works after a previous QIMSC.
@@ -16,7 +16,7 @@ function qcbarh(w, l, varargin)
 idx = qp_idx;
 global qp_data;
 if ~isfield(qp_data.info(idx), 'atcoord')
-  error('QCBAR needs a previous QAT');
+  error('QCBARH needs a previous QAT');
 end
 xy = qp_data.info(idx).atcoord;
 

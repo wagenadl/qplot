@@ -1,4 +1,4 @@
-qfigure('qfont_eg', 3, 3);
+qfigure('qfont', 3, 3);
 
 qpatch([0 1 1 0], [0 0 1 1]);
 

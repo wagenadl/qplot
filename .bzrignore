@@ -17,4 +17,4 @@ doc/manual.pdf
 *.mex*
 examples/*pdf
 octave-core
-
+doc/html/html

@@ -12,8 +12,8 @@ function qgline(varargin)
 %      ROTPAPER phi   - Rotate by phi radians. (This affects subsequent 
 %                       relative positioning.) 
 %      RETRACT l      - Retract preceding and following segments by L pt.
-%      RETRACT l1 l   - Retract preceding and following segments by L1 and 
-%                     - L2 pt respectively.
+%      RETRACT l1 l2  - Retract preceding and following segments by L1 and 
+%                       L2 pt respectively.
 %   For instance,
 %
 %       qgline({'absdata', 0, 1, 'relpaper', 5, 0}, ...

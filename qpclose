@@ -16,4 +16,6 @@ fi
 if [[ $RUNNING == "1" ]]; then
   kill $PID
   unlink $PIDFILE
+else
+  echo qpclose: not running
 fi

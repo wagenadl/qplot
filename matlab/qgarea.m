@@ -12,8 +12,8 @@ function qgarea(varargin)
 %      ROTPAPER phi   - Rotate by phi radians. (This affects subsequent 
 %                       relative positioning.) 
 %      RETRACT l      - Retract preceding and following segments by L pt.
-%      RETRACT l1 l   - Retract preceding and following segments by L1 and 
-%                     - L2 pt respectively.
+%      RETRACT l1 l2  - Retract preceding and following segments by L1 and 
+%                       L2 pt respectively.
 %
 %   Note: The rather cumbersome syntax of QGAREA makes QAREA and QPATCH more
 %   attractive for general usage. See also QGLINE.

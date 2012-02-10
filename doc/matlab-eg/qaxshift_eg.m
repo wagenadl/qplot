@@ -1,4 +1,4 @@
-qfigure('axshift', 3, 3);
+qfigure('qaxshift', 3, 3);
 qplot([-pi:.1:pi], sin([-pi:.1:pi]));
 
 qaxshift 10
