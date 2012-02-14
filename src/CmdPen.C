@@ -80,7 +80,10 @@ void CmdPen::render(Statement const &s, Figure &f, bool) {
       p = f.painter().pen();
       namedPen = true;
     } else if (s[k].typ==Token::NUMBER) {
-      p.setWidthF(pt2iu(s[k].num));
+      if (s[k].num==0)
+	p.setWidthF(pt2iu(f.hairline()));
+      else
+	p.setWidthF(pt2iu(s[k].num));
       if (p.style()==Qt::NoPen)
 	p.setStyle(Qt::SolidLine);
     } else if (s[k].typ==Token::BAREWORD) {

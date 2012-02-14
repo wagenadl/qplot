@@ -18,6 +18,8 @@ end
 if length(xx) ~= length(yy)
   error('xx and yy must be equally long');
 end
+xx=xx(:);
+yy=yy(:);
 
 [iup, idn] = qp_schmitt(~isnan(xx+yy),.7,.3,2);
 

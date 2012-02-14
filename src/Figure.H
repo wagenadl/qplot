@@ -59,8 +59,8 @@ public:
   void storeBrush();
   void choosePen(QString);
   void chooseBrush(QString);
-  bool hairline() const;
-  void setHairline(bool h);
+  double hairline() const;
+  void setHairline(double h);
   void choosePanel(QString);
   void leavePanel();
   void reset(); // this is a soft reset. semantics need to be documented
@@ -95,7 +95,7 @@ private:
   QString currentPen;
   QString currentBrush;
   QString currentPanel;
-  bool hairline_;
+  double hairline_; // stored in points, not internal units!
   QList<GroupData> groupstack;
   double dashscale;
   QMap<QString, QPointF> locations;

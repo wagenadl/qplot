@@ -164,11 +164,13 @@ void renderPDF(Program &prog, Figure &fig, QString ofn) {
   img.setOutputFileName(ofn);
   img.setOutputFormat(QPrinter::PdfFormat);
   fig.painter().begin(&img);
+  //  qDebug() << "Render hint pre: " << fig.painter().renderHints();
   fig.painter().scale(iu2pt(), iu2pt());
   fig.setDashScale(iu2pt());
   fig.painter().translate(-fig.extent().left(),
 			  -fig.extent().top());
   prog.render(fig);
+  //  qDebug() << "Render hint: " << fig.painter().renderHints();
   fig.painter().end();
 }
 

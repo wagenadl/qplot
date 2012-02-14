@@ -5,6 +5,8 @@
 #include <math.h>
 #include <QDebug>
 
+#define DEFAULTHAIR 0.25
+
 Figure::Figure() {
   hardReset();
 }
@@ -27,7 +29,7 @@ void Figure::reset() {
   pens.clear();
   brushes.clear();
   reftxt = "";
-  hairline_ = false;
+  hairline_ = DEFAULTHAIR;
   mrkr = Marker();
   anch = QPointF(0,0);
   anchang = 0;
@@ -42,7 +44,9 @@ void Figure::reset() {
     QFont font("Helvetica");
     font.setPixelSize(pt2iu(10));
     pntr.setFont(font);
-    pntr.setPen("black");
+    QPen pen("black");
+    pen.setWidthF(pt2iu(hairline()));
+    pntr.setPen(pen);
   }
   fudged = false;
 }
@@ -55,11 +59,11 @@ double Figure::dashScale() const {
   return dashscale;
 }
 
-void Figure::setHairline(bool h) {
+void Figure::setHairline(double h) {
   hairline_ = h;
 }
 
-bool Figure::hairline() const {
+double Figure::hairline() const {
   return hairline_;
 }
 

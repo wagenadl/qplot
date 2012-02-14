@@ -18,7 +18,7 @@ function qyaxis(y0, varargin)
 err = 'Usage: qyaxis X0 [ylim] ypts [lbls] [title]';
 
 if ischar(y0)
-  if strcmp(y0, 'r') | strcmp(y0, 'R')
+  if strcmp(y0, 'r') || strcmp(y0, 'R')
     flip = 1;
     if y0=='R'
       rot = 1;

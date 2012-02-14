@@ -1,6 +1,6 @@
 qfigure('qpen', 3, 3);
 
-qpen r 2
+qpen A r 2
 qplot([0 1],[0 0]);
 
 qpen('b', 'dash', [ 10 6 1 6]);
@@ -21,3 +21,5 @@ qplot([.3 .5 .7],[.2 .8 .2]+1);
 qpen k beveljoin flatcap 10
 qplot([.3 .5 .7],[.2 .8 .2]+2);
 
+qpen A
+qplot([.4 .6], [.2 .2]);

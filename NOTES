@@ -1,5 +1,19 @@
+<<<<<<< TREE
+120127. Better dash patterns. Qt supports custom dash patterns where
+dash and space lengths are specified in multiples of the pen width. It
+is not entirely clear what happens when the pen width is 0. I think the
+scale is then one pixel, whatever that means. I would prefer to always
+set my pattern in points, I think. The current "dash", "dot", "dotdash", 
+etc. way of specifying pen styles is really no good. I would favor a
+syntax of "dash [ L1 L2 ... ]", where Li specify the length of strokes and
+spaces in pt, and "dot L", where the stroke length is implicitly 1 pen width
+and the space is L pt. Dotted would look best with rounded capstyle, so
+that should be implicit.
+
+=======
 120131 OIL CRISIS -> ECONOMIC CRISIS
 
+>>>>>>> MERGE-SOURCE
 120126. Error reporting should be better: For interactive use, they
 should be collected and reported upon click on a simple message
 displayed at the bottom of the graph. No more automatic popups. If a

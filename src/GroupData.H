@@ -22,7 +22,7 @@ public:
   Align::VAlign valign;
   Align::HAlign halign;
   QString reftext;
-  bool hairline;
+  double hairline;
 };
 
 #endif

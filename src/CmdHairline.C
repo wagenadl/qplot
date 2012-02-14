@@ -6,7 +6,7 @@
 static CBuilder<CmdHairline> cbHairline("hairline");
 
 bool CmdHairline::usage() {
-  return error("Usage: hairline 1|0");
+  return error("Usage: hairline -|width");
 }
 
 bool CmdHairline::parse(Statement const &s) {
@@ -18,5 +18,5 @@ bool CmdHairline::parse(Statement const &s) {
 
 
 void CmdHairline::render(Statement const &s, Figure &f, bool) {
-  f.setHairline(s[1].num>0);
+  f.setHairline(s[1].num);
 }
