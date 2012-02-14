@@ -94,23 +94,13 @@ bool Watcher::reread(bool errorbox) {
     Error::setDestination(0);
     if (ok) {
       fig->hardReset();
-      //qDebug() << "read ok: lines=" << prog->length();
-      //if (prog->length()>0)
-      //	qDebug() << "last line: " << (*prog)[prog->length()-1][0].str;
       ::prerender(*prog, *fig);
-      //qDebug() << "prerendered";
       emit ping();
-      //qDebug() << "ping emitted";
       return true;
     } else {
       if (errorbox) {
-	//warnlabel->setGeometry(0, dest->height()-32, dest->width(), 32);
 	warnlabel->setGeometry(0, 0, dest->width(), dest->height());
-	//warnlabel->setToolTip(errors);
 	warnlabel->setText("Rendering failed due to errors:\n\n" + errors);
-	//int idx = errors.indexOf("\n");
-	//QString first = (idx>0) ? errors.left(idx) : errors;
-	//	warnlabel->setText("Render errors: Click to see details");
 	warnlabel->show();
       }
       return false;

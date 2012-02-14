@@ -8,6 +8,7 @@
 #define DEFAULTHAIR 0.25
 
 Figure::Figure() {
+  hairline_ = DEFAULTHAIR;
   hardReset();
 }
 
@@ -29,7 +30,6 @@ void Figure::reset() {
   pens.clear();
   brushes.clear();
   reftxt = "";
-  hairline_ = DEFAULTHAIR;
   mrkr = Marker();
   anch = QPointF(0,0);
   anchang = 0;
@@ -61,6 +61,11 @@ double Figure::dashScale() const {
 
 void Figure::setHairline(double h) {
   hairline_ = h;
+  if (pntr.isActive()) {
+    QPen pen(pntr.pen());
+    pen.setWidthF(pt2iu(hairline()));
+    pntr.setPen(pen);
+  }
 }
 
 double Figure::hairline() const {

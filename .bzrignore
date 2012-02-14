@@ -18,3 +18,4 @@ doc/manual.pdf
 examples/*pdf
 octave-core
 doc/html/html
+examples/qaxis_eg.qpt

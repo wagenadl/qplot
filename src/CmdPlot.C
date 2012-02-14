@@ -94,13 +94,4 @@ void CmdPlot::render(Statement const &s, Figure &f, bool dryrun) {
   else
     f.painter().drawPolyline(p);
 
-  //// now add a zero-thick line if requested
-  //if (f.hairline() && (s[0].str=="plot" || s[0].str=="line")) {
-  //  QPen pen(f.painter().pen());
-  //  f.painter().save();
-  //  pen.setWidth(0);
-  //  f.painter().setPen(pen);
-  //  f.painter().drawPolyline(p);
-  //  f.painter().restore();
-  //}
 }

@@ -115,12 +115,13 @@ they designate optional parameters. For instance:\medskip\\
   group are not restored. All groups must be closed before changing
   panels, else the group stack is cleared automatically. }
 
-\cmd{hairline}{\emph{width}}
-\expl{Specifies a width for lines plotted with zero nominal width, in
-  points. Default: 0.25 pt. For raster output, it may be useful to
-set ``hairline 0'', which produces lines of precisely one pixel
-wide. This is not recommended for pdf or svg output, since the
-resulting file would become device dependent.}
+\cmd{hairline}{\emph{width}} \expl{Specifies a width for lines plotted
+  with zero nominal width, in points. If \emph{width} is zero,
+  hairlines are precisely one pixel wide in the output. This is very
+  useful for raster output but not recommended for pdf or svg output,
+  since the resulting file would become device dependent. The default
+  is 0 for raster output (including interactive output), and 0.25 pt
+  for svg/pdf/postscript.}
 
 \cmd{image}{\emph{x y w h K} [ \emph{cdata} ]}
 \expl{Renders an RGB image at given data location. \emph{cdata} is

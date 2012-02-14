@@ -238,13 +238,4 @@ void CmdGLine::render(Statement const &s, Figure &f, bool dryrun) {
   else
     f.painter().drawPolyline(pp);
 
-  if (f.hairline() && s[0].str=="gline") {
-    // now add a zero-thick gline
-    QPen pen(f.painter().pen());
-    f.painter().save();
-    pen.setWidth(0);
-    f.painter().setPen(pen);
-    f.painter().drawPolygon(pp);
-    f.painter().restore();
-  }
 }

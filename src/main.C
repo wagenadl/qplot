@@ -111,6 +111,7 @@ int interactive(QString ifn, QApplication *app) {
   Program prog;
   read(prog, ifn);
   Figure fig;
+  fig.setHairline(0);
   prerender(prog, fig);
 
   QPWidget win;
@@ -226,6 +227,7 @@ bool renderImage(Program &prog, Figure &fig, QString ofn) {
 	     QImage::Format_ARGB32);
   img.fill(0xffffffff);
   fig.painter().begin(&img);
+  fig.setHairline(0);
   //  fig.painter().scale(iu2pt(), iu2pt());
   fig.setDashScale(1);
   fig.painter().translate(-fig.extent().left(),
