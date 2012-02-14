@@ -31,5 +31,5 @@ fprintf(fd, '%s\n', str);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function qfont_usage()
   error('Usage: qfont family [bold] [italic] size');
-qp_flush(fd);
+
 

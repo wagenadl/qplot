@@ -66,7 +66,6 @@ else
 end
 
 fprintf(fd, '%s\n', str);
-qp_flush(fd);
 
 idx = qp_idx;
 global qp_data;

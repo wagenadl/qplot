@@ -63,5 +63,3 @@ if ~isempty(xywh)
 end
 qp_data.info(idx).panel = id;
 
-qp_flush(fd);
-

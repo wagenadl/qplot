@@ -56,5 +56,3 @@ end
 
 fprintf(fd, '%s\n', str);
 
-qp_flush(fd);
-

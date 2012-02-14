@@ -2,11 +2,10 @@
 
 #include "CmdHairline.H"
 
-
 static CBuilder<CmdHairline> cbHairline("hairline");
 
 bool CmdHairline::usage() {
-  return error("Usage: hairline -|width");
+  return error("Usage: hairline width");
 }
 
 bool CmdHairline::parse(Statement const &s) {

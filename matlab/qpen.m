@@ -78,5 +78,5 @@ end
 
 fprintf(fd, '%s\n', cmd);
 
-qp_flush(fd);
+
 

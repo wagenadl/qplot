@@ -20,10 +20,9 @@ HEADERS += Align.H \
            CmdEndGroup.H \
            CmdFigSize.H \
            CmdFont.H \
-           CmdShareLim.H \
-           CmdShrink.H \
            CmdGLine.H \
            CmdGroup.H \
+           CmdHairline.H \
            CmdImage.H \
            CmdMark.H \
            CmdMarker.H \
@@ -31,6 +30,8 @@ HEADERS += Align.H \
            CmdPen.H \
            CmdPlot.H \
            CmdRefText.H \
+           CmdShareLim.H \
+           CmdShrink.H \
            CmdText.H \
            CmdXLim.H \
            CmdYLim.H \
@@ -62,6 +63,7 @@ SOURCES += Axis.C \
            CmdShrink.C \
            CmdGLine.C \
            CmdGroup.C \
+           CmdHairline.C \
            CmdImage.C \
            CmdMark.C \
            CmdMarker.C \
