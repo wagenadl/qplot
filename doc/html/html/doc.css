@@ -1,0 +1,94 @@
+body { 
+  font-family: garamond, palatino, times, serif ;
+  background-color: white;
+  color: black;
+  margin: 0;
+  padding: 5px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+
+.title {
+    font-size: 140%;
+    font-weight: bold;
+}
+.tagline {
+    display: block;
+    font-style: italic;
+}
+
+.doc {
+    padding-left: 15px;
+}
+    
+.dochead {
+    padding-top: 25px;
+    margin-bottom: -10px;
+    font-size: 120%;
+    font-weight: bold;
+}
+
+.eghead {
+    padding-top: 10px;
+    padding-bottom: 5px;
+    font-size: 120%;
+    font-weight: bold;
+}
+
+.example {
+    font-family: ubuntu, sans;
+    padding-left: 15px;
+}
+
+.egimage {
+    padding-top: 30px;
+    float: right;
+}
+
+.egimg {
+    border: 2px;
+    border-style: solid;
+    padding: 5px
+}
+
+
+:link {
+    background-color: white; color: #0000dd; text-decoration: none;
+}
+:visited {
+    background-color: white; color: #440077;
+}
+:hover {
+    background-color: white; color: #ff0000;
+}
+
+.tmlink:link {
+    font-weight: bold;
+}
+.tmlink:visited {
+    font-weight: bold;
+}
+.tmlink:hover {
+    font-weight: bold;
+}
+
+.toindex {
+    float: right;
+}
+.tight {
+    margin-top: 0px;
+    padding-top: 2px;
+}
+.index {
+    float: right;
+    padding-top: 10px;
+}
+
+.toidx {
+    display: block;
+    text-align: left;
+}
+
+.egimg:hover {
+    color: black;
+    }

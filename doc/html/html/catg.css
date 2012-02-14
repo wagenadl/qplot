@@ -1,0 +1,21 @@
+
+.list {
+    column-count: 4;
+   -webkit-column-count:4;
+        -moz-column-count:4;
+}
+.letter {
+    font-size: 140%;
+    font-weight: bold;
+    vertical-align: baseline;
+}
+.letterspan {
+}
+.funcs {
+    padding-top: 4px;
+    padding-bottom: 2px;
+}
+.regular {
+    vertical-align: baseline;
+    padding-left: 40px;
+}
