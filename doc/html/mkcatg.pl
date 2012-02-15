@@ -7,10 +7,12 @@ open OUT, ">html/catg.html" or die;
 header("QPlot: Categorized list of functions");
 
 print OUT <<'EOF';
+<body>
+<div class="main">
 <div class="index">
-<span class="toidx"><a href="alpha.html">Alphabetic list</a></span>
+<span class="toidx"><a href="alpha.html">Alphabetical list</a></span>
 </div>
-<h1 class="tight">QPlot: Categoric list of functions</h1>
+<h1 class="tight">QPlot: Categorized List of Functions</h1>
 EOF
 
 my $first = 1;
@@ -47,8 +49,14 @@ EOF
 }
 
 sub trailer {
-  print OUT "</body>\n";
-  print OUT "</html>\n";
+  print OUT <<'EOF';
+</div>
+<div class="tail">
+QPlot Documentation — (C) Daniel Wagenaar, 2012
+</div>
+</body>
+</html>
+EOF
 }
 
 sub cfnoq {

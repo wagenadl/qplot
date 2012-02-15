@@ -49,7 +49,7 @@ sub output {
   open OUT, ">html/$fn.html" or die;
   header($fn);
 
-  print OUT "<body class=\"mloct\">\n";
+  print OUT "<body class=\"mloct\"><div class=\"main\">\n";
   indextext();
   ttltext($fn, $title);
   bodytext($fn, $body);
@@ -69,13 +69,19 @@ sub header {
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <link rel="stylesheet" href="doc.css" type="text/css">
 EOF
-  print OUT "    <title>$fn</title>\n";
+  print OUT "    <title>QPlot: $fn</title>\n";
   print OUT "  </head>\n";
 }
 
 sub trailer {
-  print OUT "</body>\n";
-  print OUT "</html>\n";
+  print OUT <<'EOF';
+</div>
+<div class="tail">
+QPlot Documentation — (C) Daniel Wagenaar, 2012
+</div>
+</body>
+</html>
+EOF
 }
 
 sub ttltext {
@@ -87,7 +93,7 @@ sub ttltext {
     chomp $title;
     $title =~ s/\.$//;
     print OUT "<span class=\"tagline\">";
-    splitout($fn, $title);
+    splitout($fn, $title, 0);
     print OUT "</span>\n";
   }
   print OUT "</div>\n";
@@ -104,7 +110,7 @@ sub egtext {
     if ($line =~ /^\s*$/) {
       print OUT "<p>\n";
     } else {
-      splitout($fn, $line);
+      splitout($fn, $line, 0);
       print OUT "<br>\n";
     }
   }
@@ -134,7 +140,7 @@ sub bodytext {
   print OUT "</div>\n";
   print OUT "<div class=\"doc\">\n";
   for my $line (@$body) {
-    splitout($fn, $line);
+    splitout($fn, $line, 1);
   }
 
   print OUT "</div>\n";
@@ -143,6 +149,7 @@ sub bodytext {
 sub splitout {
   my $fn = shift;
   my $line = shift;
+  my $useit = shift;
   
   my @bits = split(/(\W+)/, $line);
   while (@bits) {
@@ -157,7 +164,11 @@ sub splitout {
 	  print OUT "<a class=\"tmlink\" href=\"$word.html\">$word</a>";
 	}
       } else {
-	print OUT "<i>$word</i>";
+	if ($useit) {
+	  print OUT "<i>$word</i>";
+	} else {
+	  print OUT "$word";
+	}
       }
     } else {
       if (exists($files{$word}) && !(defined $sep && $sep =~ /^'/)) {
@@ -177,7 +188,7 @@ sub splitout {
 sub indextext {
   print OUT <<'EOF';
 <div class="toindex">
-<span class="toidx"><a href="alpha.html">Alphabetic list</a></span>
+<span class="toidx"><a href="alpha.html">Alphabetical list</a></span>
 <span class="toidx"><a href="catg.html">Categories</a></span>
 </div>
 EOF

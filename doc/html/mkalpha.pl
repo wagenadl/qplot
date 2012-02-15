@@ -13,13 +13,15 @@ for (sort { cfnoq($a,$b) } readdir DIR) {
 closedir DIR;
 
 open OUT, ">html/alpha.html" or die;
-header("QPlot: Alphabetic list of functions");
+header("QPlot: Alphabetical list of functions");
 
 print OUT <<'EOF';
+<body>
+<div class="main">
 <div class="index">
 <span class="toidx"><a href="catg.html">Categories</a></span>
 </div>
-<h1 class="tight">QPlot: Alphabetic list of functions</h1>
+<h1 class="tight">QPlot: Alphabetical list of functions</h1>
 EOF
 
 
@@ -60,8 +62,14 @@ EOF
 }
 
 sub trailer {
-  print OUT "</body>\n";
-  print OUT "</html>\n";
+  print OUT <<'EOF';
+</div>
+<div class="tail">
+QPlot Documentation — (C) Daniel Wagenaar, 2012
+</div>
+</body>
+</html>
+EOF
 }
 
 sub cfnoq {

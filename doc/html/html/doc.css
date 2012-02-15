@@ -1,27 +1,40 @@
 body { 
   font-family: garamond, palatino, times, serif ;
-  background-color: white;
+  background-color: #dddddd;
   color: black;
-  margin: 0;
+  margin: 0px;
   padding: 5px;
-  padding-top: 0px;
-  padding-bottom: 0px;
 }
 
+.main {
+  background-color: white;
+  padding: 15px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  width: 900px;
+}    
+
 .title {
-    font-size: 140%;
+    display: block;
+    font-size: 160%;
     font-weight: bold;
+    padding-left: 0px;
+    margin-bottom: 5px;
 }
 .tagline {
     display: block;
+    padding-left: 15px;
     font-style: italic;
 }
 
 .doc {
-    padding-left: 15px;
+    padding-left: 30px;
 }
     
 .dochead {
+    padding-left: 15px;
     padding-top: 25px;
     margin-bottom: -10px;
     font-size: 120%;
@@ -29,6 +42,7 @@ body {
 }
 
 .eghead {
+    padding-left: 15px;
     padding-top: 10px;
     padding-bottom: 5px;
     font-size: 120%;
@@ -37,18 +51,33 @@ body {
 
 .example {
     font-family: ubuntu, sans;
-    padding-left: 15px;
+    font-size: 85%;
+    padding-left: 30px;
 }
 
 .egimage {
+    padding: 25px;
+    margin-right: -15px;
     padding-top: 30px;
     float: right;
+    background-color: white;
 }
 
 .egimg {
-    border: 2px;
-    border-style: solid;
-    padding: 5px
+    border: 5px;
+    border-style: outset;
+    border-color: #aaaaaa;
+    padding: 5px;
+    background-color: white;
+}
+
+.tail {
+    padding: 15px;
+    margin-top: -20px;
+    margin-left: auto;
+    width: 900px;
+    margin-right: auto;
+    background-color: #eeeeee;
 }
 
 
@@ -87,6 +116,10 @@ body {
 .toidx {
     display: block;
     text-align: left;
+}
+
+.eglink {
+    padding-left: 15px;
 }
 
 .egimg:hover {

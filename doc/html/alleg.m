@@ -26,7 +26,7 @@ for f=1:F
   runone(fn);
   qselect([ fn '.qpt' ]);
   qsave([ fn '.pdf' ]);
-  qsave([ fn '.png' ], 72);  
+  qsave([ fn '.png' ], 100);  
   qclose([ fn '.qpt' ]);
 end
 
