@@ -32,4 +32,9 @@ end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function runone(fn)
-eval([fn '_eg'])
+[s,o] = system(sprintf('grep shrink %s_eg.m', fn));
+eval([fn '_eg']);
+if s
+  qshrink
+end
+
