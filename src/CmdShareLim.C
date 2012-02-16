@@ -131,8 +131,8 @@ void CmdShareLim::render(Statement const &s, Figure &f, bool) {
 	double currentWidth = f.xAxis().maxp().x() - f.xAxis().minp().x();
 	double newWidth = currentWidth * scale/sc1;
 	double shift = (currentWidth - newWidth)/2;
-	f.xAxis().setPlacement(QPoint(f.xAxis().minp().x()+shift,0),
-			       QPoint(f.xAxis().maxp().x()-shift,0));
+	f.xAxis().setPlacement(QPointF(f.xAxis().minp().x()+shift,0),
+			       QPointF(f.xAxis().maxp().x()-shift,0));
 	f.markFudged();
       }
       // Apply the scale to other panels
@@ -143,8 +143,8 @@ void CmdShareLim::render(Statement const &s, Figure &f, bool) {
 	  double currentWidth = p.xaxis.maxp().x() - p.xaxis.minp().x();
 	  double newWidth = currentWidth * scale/sc1;
 	  double shift = (currentWidth - newWidth)/2;
-	  p.xaxis.setPlacement(QPoint(p.xaxis.minp().x()+shift,0),
-			       QPoint(p.xaxis.maxp().x()-shift,0));
+	  p.xaxis.setPlacement(QPointF(p.xaxis.minp().x()+shift,0),
+			       QPointF(p.xaxis.maxp().x()-shift,0));
 	  f.markFudged();
 	}
       }
@@ -236,8 +236,8 @@ void CmdShareLim::render(Statement const &s, Figure &f, bool) {
 	double currentHeight = f.yAxis().minp().y() - f.yAxis().maxp().y();
 	double newHeight = currentHeight * scale/sc1;
 	double shift = (currentHeight - newHeight)/2;
-	f.yAxis().setPlacement(QPoint(0, f.yAxis().minp().y()-shift),
-			       QPoint(0, f.yAxis().maxp().y()+shift));
+	f.yAxis().setPlacement(QPointF(0, f.yAxis().minp().y()-shift),
+			       QPointF(0, f.yAxis().maxp().y()+shift));
 	f.markFudged();
       }
       // Apply the scale to other panels
@@ -248,8 +248,8 @@ void CmdShareLim::render(Statement const &s, Figure &f, bool) {
 	  double currentHeight = p.yaxis.minp().y() - p.yaxis.maxp().y();
 	  double newHeight = currentHeight * scale/sc1;
 	  double shift = (currentHeight - newHeight)/2;
-	  p.yaxis.setPlacement(QPoint(0, p.yaxis.minp().y()-shift),
-			       QPoint(0, p.yaxis.maxp().y()+shift));
+	  p.yaxis.setPlacement(QPointF(0, p.yaxis.minp().y()-shift),
+			       QPointF(0, p.yaxis.maxp().y()+shift));
 	  f.markFudged();
 	}
       }

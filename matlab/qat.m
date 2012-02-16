@@ -22,7 +22,8 @@ end
 str = 'at';
 atcoord = zeros(length(nargin),1) + nan;
   
-if ischar(varargin{1}) && varargin{1}>='A' && varargin{1}<='Z'
+if ischar(varargin{1}) && ~isempty(varargin{1}) && ...
+      varargin{1}(1)>='A' && varargin{1}(1)<='Z'
   % at ID [dx dy]|[angle]
   str = sprintf('%s %s', str, varargin{1});
   if nargin>3
