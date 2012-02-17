@@ -17,6 +17,7 @@ HEADERS += Align.H \
            CmdAlign.H \
            CmdAt.H \
            CmdBrush.H \
+           CmdCaligraph.H \
            CmdEndGroup.H \
            CmdFigSize.H \
            CmdFont.H \
@@ -56,6 +57,7 @@ SOURCES += Axis.C \
            CmdAlign.C \
            CmdAt.C \
            CmdBrush.C \
+           CmdCaligraph.C \
            CmdFigSize.C \
            CmdEndGroup.C \
            CmdFont.C \

@@ -75,12 +75,13 @@ void prerender(Program &prog, Figure &fig) {
 
   int iter = 0;
   while (iter<MAXTRIES) {
+    qDebug() << iter;
     prog.render(fig, true); // render to determine paper bbox & fudge
     if (!fig.checkFudged())
       break;
     iter++;
   } 
-
+  qDebug() << "Hello world";
   if (MAXTRIES==MAXTRIES_DEFAULT) {
     if (iter>=MAXTRIES)
       Error() << "Shrink failed";

@@ -55,6 +55,16 @@ alternatives.\bigskip
 \expl{Selects a brush by \emph{ID}, defines its color (or sets it to
   ``none''), and/or its \emph{opacity} (as a number between 0 and 1).}
 
+\cmd{caligraph}{[ \emph{x$_1$ x$_2$ \ldots} ] 
+                [ \emph{y$_1$ y$_2$ \ldots} ]
+                [ \emph{w$_1$ w$_2$ \ldots} ]}
+\expl{Draws a polyline of variable width.  \emph{x$_i$}
+  and \emph{y$_i$} are specified in data coordinates. \emph{w$_i$}
+  specify the line width (in points) at each vertex. (Thus, the length
+  of the vector \emph{w} must match the length of \emph{x} and
+  \emph{y}.) The line is rendered using the color of the current pen;
+  dash patterns and join and cap styles are not respected.}
+
 \cmd{figsize}{\emph{w} \emph{h}}
 \expl{Sets the size of the figure to (\emph{w} x \emph{h})
   points. This should appear before any other commands.}

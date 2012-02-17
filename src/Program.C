@@ -96,15 +96,21 @@ QRectF Program::dataRange(QString p) {
 }
 
 void Program::render(Figure &f, bool dryrun) {
+  qDebug() << "Prorgram ok: " << isOK;
+  f.reset();
+  qDebug() << "Program: fudged0? " << f.checkFudged();
   if (!isOK)
     return; // won't render if not ok
-  f.reset();
   for (int l=0; l<stmt.size(); l++) {
     if (cmds[l]) {
       cmds[l]->render(stmt[l], f, dryrun);
-      if (dryrun && f.checkFudged())
+      if (dryrun && f.checkFudged()) {
+	qDebug() << "Program: fudged! " << stmt[l].label() << ": " << stmt[l][0].str;
+	f.endGroups();
 	break;
+      }
     }
-  }
-  f.leavePanel();
+  } 
+  qDebug() << "Program: fudged? " << f.checkFudged();
+ f.leavePanel();
 }

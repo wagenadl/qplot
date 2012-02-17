@@ -297,6 +297,11 @@ void Figure::startGroup() {
   cumulbbox = QRectF();
 }
 
+void Figure::endGroups() {
+  while (!groupstack.isEmpty())
+    endGroup();
+}
+
 void Figure::endGroup() {
   if (groupstack.isEmpty()) {
     Error() << "Warning: pop from empty group stack";

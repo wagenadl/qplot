@@ -70,6 +70,7 @@ public:
   QString currentPanelName() const;
   void startGroup();
   void endGroup();
+  void endGroups();
   QString panelAt(QPointF const &xy);
   void setLocation(QString id, QPointF const &xy);
   QPointF getLocation(QString id)  const;

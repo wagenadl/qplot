@@ -20,6 +20,7 @@ public:
   Token const &operator[](int idx) const;
   bool isNumeric(int idx) const;
   int nextIndex(int idx) const;
+  
   QVector<double> const &data(int idx) const; // only valid if isNumeric says so
   QString const &label() const;
 private:
