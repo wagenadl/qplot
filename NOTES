@@ -1,4 +1,17 @@
-<<<<<<< TREE
+120313. New command "include"? This would push all group/pen/etc maps
+on a new stack, and run the included file as a separate panel. In the
+included file, the FIGSIZE and PANEL commands would have to be
+reinterpreted, that is transformed. The INCLUDE command would allow
+specification of width and height, either (keep ratio), or neither
+(keep size). This would be a convenient basis for putting together
+complex figures: the panels could be generated first and saved as
+.qpt, after which the whole can be assembled with panel lettering in a
+second pass. Very nice that resizing can happen at INCLUDE time
+without messing up font sizes and line widths. It would require some
+pretty intense storing of Figure state, and might suggest reorganizing
+Figure state. Currently, that state is spread out over a rather large
+number of member variables.
+
 120127. Better dash patterns. Qt supports custom dash patterns where
 dash and space lengths are specified in multiples of the pen width. It
 is not entirely clear what happens when the pen width is 0. I think the
@@ -8,37 +21,35 @@ etc. way of specifying pen styles is really no good. I would favor a
 syntax of "dash [ L1 L2 ... ]", where Li specify the length of strokes and
 spaces in pt, and "dot L", where the stroke length is implicitly 1 pen width
 and the space is L pt. Dotted would look best with rounded capstyle, so
-that should be implicit.
+that should be implicit. [DONE]
 
-=======
 120131 OIL CRISIS -> ECONOMIC CRISIS
 
->>>>>>> MERGE-SOURCE
 120126. Error reporting should be better: For interactive use, they
 should be collected and reported upon click on a simple message
 displayed at the bottom of the graph. No more automatic popups. If a
 C++-level error results from MLOCT use, a request for a bug report
 should be issued. For noninteractive use, return code from the
-executable should be set.
+executable should be set. [DONE]
 
 120126. Shrink/ShareLim should set a flag in the figure to indicate
 whether or not a substantive change was made. Then, instead of blindly
 doing two prerendering steps, iteration could be intelligently
 controlled. And "shrink failed" would be issued after (5) iterations
-rather than based on an arbitrary "too much shrinkage" criterion.
+rather than based on an arbitrary "too much shrinkage" criterion. [DONE]
 
 120126. When converting to new Axes implementation, I need to eradicate all
 instances of the assumption that x-axes run left to right and y-axes upward.
 
 11xxxx. The current pen/brush/subplot should be actively removed from the map.
 1201xx. I don't remember why this needs to happen. Presumably, the affected
-functions are Figure::choosenPen/Brush/Panel.
+functions are Figure::choosenPen/Brush/Panel. [NEVER MIND]
 
 11xxxx. BBoxes should be handled properly at subplot change.
 1201xx. I don't remember what the problem is, or whether I fixed it
-yet. I suspect I probably did.
+yet. I suspect I probably did. [NEVER MIND]
 
-1201xx. More examples are in order.
+1201xx. More examples are in order. [DONE]
 
 1201xx. The Matlab code should be checked for Octave compatibility.
 120126. I made some progress on this.
@@ -48,16 +59,15 @@ yet. I suspect I probably did.
 1201xx. The new QCBAR and QCAXIS need to be documented along with the new axis
 modifiers.
 
-A new (C level) command "sharelim" should link either or both the x and y
-ranges of selected subplots:
+12xxxx. A new (C level) command "sharelim" should link either or both
+the x and y ranges of selected subplots:
 
   sharelim [x|y] ID1 ID2 ...
 
 The matlab functions QPLOT and friends should automatically split up
 the data into multiple chunks at NaNs. Or perhaps this is best
-implemented at C level.
-
-
+implemented at C level. [DONE, SO THE FOLLOWING DISCUSSION IS NOW
+IMMATERIAL.]
 
 To do SHARELIM, the current way of placing axes needs to
 change. Axis::setPlacement() now appears a bit arcane to me. Wouldn't
@@ -147,7 +157,12 @@ not get reset, so in fact the results are correct.
 
 This is quite ridiculously complicated, and the program is much
 smarter than I remember. I guess the Axis Placement system should not
-be jettisoned lightly. That makes SHARELIM a bit more complicated, because it could operate either on the DataRange or on the Placement of the axis, and probably will need to end up doing both. Because imagine that one panel has DataRange [2,3] and Placement [3,4] for that range and another has DataRange [2,4] and Placement [0,5] for that:
+be jettisoned lightly. That makes SHARELIM a bit more complicated,
+because it could operate either on the DataRange or on the Placement
+of the axis, and probably will need to end up doing both. Because
+imagine that one panel has DataRange [2,3] and Placement [3,4] for
+that range and another has DataRange [2,4] and Placement [0,5] for
+that:
 
 Paper:    0 1 2 3 4 5
 Panel 1:      2   3
@@ -161,8 +176,8 @@ the affected panels. I think that works: First, determine the union of
 the current Placements. Then, calculate for each panel what the range
 is that fits within that union. Then, calculate the union of those
 ranges. Finally, change the Placement of each panel so that its own
-range gets mapped appropriately: If the union placement is [X0,X0+W], and
-the union data range is [x0,x1], then the overall transformation
+range gets mapped appropriately: If the union placement is [X0,X0+W],
+and the union data range is [x0,x1], then the overall transformation
 should be X=a*x+b where a=W/(x1-x0) and b=X0-a*x0. So for a panel with
 data range [x0',x1'], the placement should be (X0',W')
 s.t. a=W'/(x1'-x0') and b=X0'-a*x0'. That is, W'=a*(x1'-x0') and
@@ -217,7 +232,7 @@ that is a bit like specifying RATIO in the 2D case. But allowing
 separate changes to ax, ay, and az makes FUDGEing underconstrained. So
 there's the answer.
 
+12xxxx. q3plot q3view q3xaxis q3yaxis q3zaxis ?
 
-q3plot q3view q3xaxis q3yaxis q3zaxis ?
-
-Functions for making legends?
+12xxxx. Functions for making legends?
+[DONE]
