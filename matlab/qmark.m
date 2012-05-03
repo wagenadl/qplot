@@ -14,6 +14,10 @@ if length(xx) ~= length(yy)
   error('xx and yy must be equally long');
 end
 
+ok = ~isnan(xx+yy);
+xx=xx(ok);
+yy=yy(ok);
+
 fprintf(fd, 'mark *%i *%i\n', length(xx), length(yy));
 fwrite(fd, xx, 'double');
 fwrite(fd, yy, 'double');

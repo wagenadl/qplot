@@ -3,6 +3,8 @@ function qpanel(varargin)
 %    QPANEL(id, x, y, w, h) or QPANEL(id, xywh) defines a new panel.
 %    QPANEL(id) revisits a previously defined panel. ID must be a single
 %    capital or a dash ('-') to revert to the top level.
+%    Coordinates are in points from top left.
+%    See also QSUBPLOT.
 
 fd = qp_fd(1);
 
