@@ -25,6 +25,7 @@ public:
   void toggleBold();
   void restore();
   QRectF bbox() const;
+  double width() const;
   void render(QPainter &, QPointF const &);
 private:
   struct Span {

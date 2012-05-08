@@ -130,7 +130,7 @@ void CmdAt::render(Statement const &s, Figure &f, bool) {
   }
 
   QPointF oldAnc = f.anchor();
-  qDebug() << oldAnc;
+  //  qDebug() << oldAnc;
   
   double x = s[1].typ==Token::NUMBER ? s[1].num : f.xAxis().min(); 
   double y = s[2].typ==Token::NUMBER ? s[2].num : f.yAxis().min(); 
@@ -147,7 +147,7 @@ void CmdAt::render(Statement const &s, Figure &f, bool) {
     }
   } else if (s[1].typ==Token::DASH) {
     anchor.setX(oldAnc.x());
-    qDebug() << "using old X";
+    //    qDebug() << "using old X";
   }
   
   if (s[2].typ==Token::BAREWORD) {
@@ -161,7 +161,7 @@ void CmdAt::render(Statement const &s, Figure &f, bool) {
     }
   } else if (s[2].typ==Token::DASH) {
     anchor.setY(oldAnc.y());
-    qDebug() << "using old Y";
+    //    qDebug() << "using old Y";
   }
 
   switch (s.length()) {

@@ -61,7 +61,7 @@ void CmdShrink::render(Statement const &s, Figure &f, bool) {
 
   if (newdx*olddx<0 || newdy*olddy<0) {
     f.markFudged();
-    qDebug() << "Shrink at " << s.label() << " did work";
+    //    qDebug() << "Shrink at " << s.label() << " did work";
     return;
   }
 
@@ -89,7 +89,7 @@ void CmdShrink::render(Statement const &s, Figure &f, bool) {
     f.xAxis().setPlacement(x0, x1);
     f.yAxis().setPlacement(y0, y1);
     f.markFudged();
-    qDebug() << "Shrink at " << s.label() << " did work";
+    //qDebug() << "Shrink at " << s.label() << " did work";
   }
 }
 

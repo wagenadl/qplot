@@ -175,6 +175,10 @@ QRectF Text::bbox() const {
   return bb;
 }
 
+double Text::width() const {
+  return nextx;
+}
+
 void Text::render(QPainter &p, QPointF const &xy0) {
   foreach (Span const &s, spans) {
     p.setFont(s.font);

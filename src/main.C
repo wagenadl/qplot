@@ -75,18 +75,22 @@ void prerender(Program &prog, Figure &fig) {
 
   int iter = 0;
   while (iter<MAXTRIES) {
-    qDebug() << iter;
+    //qDebug() << iter;
     prog.render(fig, true); // render to determine paper bbox & fudge
-    if (!fig.checkFudged())
+    if (fig.checkFudged()) {
+      //qDebug() << "will reiterate";
+    } else {
+      //qDebug() << "won't reiterate";
       break;
+    }
     iter++;
   } 
-  qDebug() << "Hello world";
+  //  qDebug() << "Hello world";
   if (MAXTRIES==MAXTRIES_DEFAULT) {
     if (iter>=MAXTRIES)
       Error() << "Shrink failed";
   } else {
-    qDebug() << "Iterations used: " << iter;
+    //qDebug() << "Iterations used: " << iter;
   }
 
   fig.painter().end();
@@ -171,7 +175,9 @@ void renderPDF(Program &prog, Figure &fig, QString ofn) {
   fig.setDashScale(iu2pt());
   fig.painter().translate(-fig.extent().left(),
 			  -fig.extent().top());
+  //  qDebug() << "Final render";
   prog.render(fig);
+  //  qDebug() << "Final render done";
   //  qDebug() << "Render hint: " << fig.painter().renderHints();
   fig.painter().end();
 }

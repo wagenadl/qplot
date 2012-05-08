@@ -178,6 +178,7 @@ void Figure::setAnchor(double x, double y, double dx, double dy) {
 void Figure::setAnchor(QPointF const &x, double a) {
   anch = x;
   anchang = a;
+  textshiftaccum.reset();
 }
 
 QPointF const &Figure::anchor() const {
@@ -186,6 +187,10 @@ QPointF const &Figure::anchor() const {
 
 double const &Figure::anchorAngle() const {
   return anchang;
+}
+
+TextShiftAccum &Figure::textShiftAccum() {
+  return textshiftaccum;
 }
 
 QPainter &Figure::painter() {

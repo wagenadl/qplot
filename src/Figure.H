@@ -9,6 +9,7 @@
 #include "Marker.H"
 #include "Align.H"
 #include "GroupData.H"
+#include "TextShiftAccum.H"
 
 #include <QRectF>
 #include <QPainter>
@@ -41,6 +42,8 @@ public:
   void setBBox(QRectF const &); // sets lastbbox, updates fullbbox and cumulbbox
   void setAnchor(QPointF const &, double phi=0); // in paper coords
   void setAnchor(double x, double y, double dx=1, double dy=0); // in data coords
+  /* setAnchor also resets the textShiftAccum */
+  void updateTextShiftAccum(double dx, double dy);
   double angle(double dx, double dy) const; // paper angle from data displacement
   QPointF const &anchor() const;
   double const &anchorAngle() const;
@@ -76,6 +79,7 @@ public:
   QPointF getLocation(QString id)  const;
   void markFudged();
   bool checkFudged() const;
+  TextShiftAccum &textShiftAccum();
 private:
   QRectF figextent;
   Axis xax, yax;
@@ -101,6 +105,7 @@ private:
   double dashscale;
   QMap<QString, QPointF> locations;
   bool fudged;
+  TextShiftAccum textshiftaccum;
 private:
   void replaceAxes();
 };

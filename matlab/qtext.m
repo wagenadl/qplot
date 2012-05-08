@@ -7,21 +7,21 @@ fd = qp_fd(1);
 
 if nargin==1
   txt = x;
-  x = '0';
-  y = '0';
+  x = '';
+  y = '';
 else
   if nargin<3
-    error('Usage: qtext x y text');
+    error('Usage: qtext [x y] text');
   end
   if isnscalar(x) && isreal(x)
     x = sprintf('%g', x);
   elseif isnan(str2double(x))  
-    error('Usage: qtext x y text')
+    error('Usage: qtext [x y] text')
   end
   if isnscalar(y) && isreal(y)
     y = sprintf('%g', y);
   elseif isnan(str2double(y))  
-    error('Usage: qtext x y text')
+    error('Usage: qtext [x y] text')
   end
   txt = varargin{1};
   for k=2:length(varargin);

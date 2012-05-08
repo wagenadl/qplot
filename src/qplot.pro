@@ -50,6 +50,7 @@ HEADERS += Align.H \
            Slightly.H \
            Statement.H \
            Text.H \
+           TextShiftAccum.H \
            Token.H \
            Watcher.H
 
@@ -89,6 +90,7 @@ SOURCES += Axis.C \
            Slightly.C \
            Statement.C \
            Text.C \
+           TextShiftAccum.C \
            Token.C \
            Watcher.C
            
