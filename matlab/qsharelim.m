@@ -1,12 +1,11 @@
 function qsharelim(varargin)
-% QSHARELIM - Add margin to QPLOT panel
-%    QSHARELIM adds 1 point of margin to the current QPLOT panel.
-%    QSHARELIM(margin) adds the given margin (in points).
-%    QSHARELIM(margin, ratio) forces a given aspect ratio on the data units.
+% QSHARELIM - Share axis limits between QPLOT panels
+%    QSHARELIM [x|y] ID ... shares x and/or y-axis limits with the other named
+%    panels.
 
 fd = qp_fd(1);
 
-if nargin>2
+if nargin<1
   error('Usage: qsharelim [x|y] ID ...');
 end
 
