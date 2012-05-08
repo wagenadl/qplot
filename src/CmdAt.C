@@ -10,6 +10,15 @@ bool CmdAt::usage() {
   return error("Usage: at x y [dx dy]|phi | - | x y ID | ID");
 }
 
+static bool isAbs(QString s) {
+  if (s=="abs")
+    return true;
+  else if (s=="absolute")
+    return true;
+  else
+    return false;
+}
+
 static int horiAlign(QString s) {
   // These numbers are actually meaningfully used in calc, not just an enum. 
   if (s=="left")
@@ -56,11 +65,13 @@ bool CmdAt::parse(Statement const &s) {
     return usage();
   
   if (!(s[1].typ==Token::NUMBER || s[1].typ==Token::DASH ||
-	(s[1].typ==Token::BAREWORD && horiAlign(s[1].str)>=0)))
+	(s[1].typ==Token::BAREWORD &&
+	 (horiAlign(s[1].str)>=0 || isAbs(s[1].str)))))
     return usage();
 
   if (!(s[2].typ==Token::NUMBER || s[2].typ==Token::DASH ||
-	(s[2].typ==Token::BAREWORD && vertAlign(s[2].str)>=0)))
+	(s[2].typ==Token::BAREWORD
+	 && (vertAlign(s[2].str)>=0 || isAbs(s[2].str)))))
     return usage();
 
   if (s.length()==3)
@@ -117,6 +128,9 @@ void CmdAt::render(Statement const &s, Figure &f, bool) {
     f.setAnchor(f.extent().topLeft());
     return;
   }
+
+  QPointF oldAnc = f.anchor();
+  qDebug() << oldAnc;
   
   double x = s[1].typ==Token::NUMBER ? s[1].num : f.xAxis().min(); 
   double y = s[2].typ==Token::NUMBER ? s[2].num : f.yAxis().min(); 
@@ -124,22 +138,30 @@ void CmdAt::render(Statement const &s, Figure &f, bool) {
 
   if (s[1].typ==Token::BAREWORD) {
     // that means x is as yet undefined. no matter:
-    int a = horiAlign(s[1].str);
-    anchor.setX(f.lastBBox().left()
-		+ a*f.lastBBox().width()/2);
+    if (isAbs(s[1].str)) {
+      anchor.setX(f.extent().left());
+    } else {
+      int a = horiAlign(s[1].str);
+      anchor.setX(f.lastBBox().left()
+		  + a*f.lastBBox().width()/2);
+    }
   } else if (s[1].typ==Token::DASH) {
-    //    anchor.setX(0);
-    anchor.setX(f.extent().left());
+    anchor.setX(oldAnc.x());
+    qDebug() << "using old X";
   }
   
   if (s[2].typ==Token::BAREWORD) {
     // that means y is as yet undefined. no matter:
-    int a = vertAlign(s[2].str);
-    anchor.setY(f.lastBBox().top()
-		+ a*f.lastBBox().height()/2);
+    if (isAbs(s[2].str)) {
+      anchor.setY(f.extent().top());
+    } else {
+      int a = vertAlign(s[2].str);
+      anchor.setY(f.lastBBox().top()
+		  + a*f.lastBBox().height()/2);
+    }
   } else if (s[2].typ==Token::DASH) {
-    //anchor.setY(0);
-    anchor.setY(f.extent().top());
+    anchor.setY(oldAnc.y());
+    qDebug() << "using old Y";
   }
 
   switch (s.length()) {

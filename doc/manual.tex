@@ -42,11 +42,14 @@ alternatives.\bigskip
     may be one of {``left''}, {``right''}, or {``center''} to place 
     relative to the
     bounding box of the last drawn object (or group, see
-    \cref{group}), or a dash (`--') to revert to absolute placement in
+    \cref{group}), ``abs'' or ``absolute'' to revert to absolute
+    placement in the horizontal direction, or a dash (``--'') to
+    retain the previous anchor for
     the horizontal direction.  
-    Likewise, \emph{y} may be one of {``top''}, {``bottom''}, {``middle''}, or a dash. ``at --''
-    reverts to  placement relative to the top left of the
-    current panel
+    Likewise, \emph{y} may be one of {``top''}, {``bottom''},
+    {``middle''}, ``abs'', ``absolute'', or a dash. ``at --''
+    reverts to absolute placement (i.e., relative to the top left of the
+    current panel)
     in both horizontal and vertical directions. \cref{at} may also be
     used to mark a location for later reference, as per the final two
     syntax forms.}
@@ -149,7 +152,7 @@ they designate optional parameters. For instance:\medskip\\
 \expl{Renders markers set by \cmd{marker} at the given data
   coordinates.}
 
-\cmd{marker}{\emph{size}\bar\emph{fill}\bar\emph{shape} \ldots}) (open\bar{}solid\bar{}brush)
+\cmd{marker}{\emph{size}\bar\emph{fill}\bar\emph{shape} \ldots) (open\bar{}solid\bar{}brush)
   ()
   \ldots}
 \expl{Define a marker of the given \emph{size} in points and shape
@@ -196,7 +199,7 @@ of the spaces between dots (in points). The default is
 3~pts.
   Setting the color or width while the dash pattern is
   ``none'' automatically switches to ``solid.'' Any number of
-  subcommands may be given on one line in any order. A \cmdref{pen}
+  subcommands may be given on one line in any order. A \cref{pen}
   command without an \emph{ID} makes changes to the current pen but
   doesn't store the result as a named pen.}
 

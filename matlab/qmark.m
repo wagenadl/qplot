@@ -14,7 +14,7 @@ if length(xx) ~= length(yy)
   error('xx and yy must be equally long');
 end
 
-ok = ~isnan(xx+yy);
+ok = ~isnan(xx(:)+yy(:));
 xx=xx(ok);
 yy=yy(ok);
 

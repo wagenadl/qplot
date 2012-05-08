@@ -46,7 +46,7 @@ else
   % at x y [dx dy]|[angle]|[ID]
   for k=1:nargin
     a = varargin{k};
-    if nargin==3 && k==3 && ischar(a) && a>='A' && a<='Z'
+    if nargin==3 && k==3 && ischar(a) && length(a)==1 && a>='A' && a<='Z'
       str = sprintf('%s %s', str, a); % add ID
     elseif ischar(a) && ~isnan(str2double(a))
       str = sprintf('%s %s', str, a);
@@ -54,9 +54,9 @@ else
     elseif isnscalar(a) && isreal(a) && ~isnan(a)
       str = sprintf('%s %g', str, a);
       atcoord(k) = a;
-    elseif k==1 && ischar(a) && ~isempty(strmatch(a, strtoks('left right center'), 'exact'))
+    elseif k==1 && ischar(a) && ~isempty(strmatch(a, strtoks('left right center abs absolute'), 'exact'))
       str = sprintf('%s %s', str, a);
-    elseif k==2 && ischar(a) && ~isempty(strmatch(a, strtoks('top bottom middle'), 'exact'))
+    elseif k==2 && ischar(a) && ~isempty(strmatch(a, strtoks('top bottom middle abs absolute'), 'exact'))
       str = sprintf('%s %s', str, a);
     elseif k<=2 && ((ischar(a) && strcmp(a, '-')) || (isnscalar(a) && isnan(a)))
       str = sprintf('%s -', str);
