@@ -4,6 +4,10 @@ function qmark(xx, yy)
 %   QMARKER and QPMARK.
 fd = qp_fd(1);
 
+if isempty(xx)
+  return
+end
+
 if ~isnvector(xx) || ~isreal(xx)
   error('xx must be a real vector')
 end

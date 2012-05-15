@@ -31,7 +31,7 @@ id = varargin{1};
 if ~ischar(id) 
   error('Usage: qpanel ID [x y w h] | -');
 end
-if id=='-' && length(varargin)>1
+if strcmp(id,'-') && length(varargin)>1
   error('Usage: qpanel ID [x y w h] | -');
 end
 
