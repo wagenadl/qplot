@@ -1,3 +1,8 @@
+120514. New option for MARKER: "spine"? This would replace square by
+X, diamond by +, hexagon by *, and all other shapes by their spined
+versions, i.e., instead of connecting the outer vertices to each
+other, each vertex is instead connected to the midpoint.
+
 120313. New command "include"? This would push all group/pen/etc maps
 on a new stack, and run the included file as a separate panel. In the
 included file, the FIGSIZE and PANEL commands would have to be
