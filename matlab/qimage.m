@@ -46,7 +46,7 @@ if xywh(3)<0
   xywh(1) = xywh(1) - xywh(3);
 end
 if xywh(4)<0
-  data = flipdim(datam, 1);
+  data = flipdim(data, 1);
   xywh(4) = -xywh(4);
   xywh(2) = xywh(2) - xywh(4);
 end
