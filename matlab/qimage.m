@@ -24,11 +24,11 @@ switch nargin
     xx = varargin{1};
     yy = varargin{2};
     data = varargin{3};
-    [Y X] = size(data);
+    [Y X C] = size(data);
     dx = (xx(end)-xx(1))/(X-1);
     dy = (yy(end)-yy(1))/(Y-1);
-    xywh = [xx(1)-dx/2 yy(1)-dy/2 Y*dx Y*dy];
-    data = flipud(data);
+    xywh = [xx(1)-dx/2 yy(1)-dy/2 X*dx Y*dy];
+    data = flipdim(data, 1);
   otherwise
     error('qimage takes 1 to 3 arguments');
 end
@@ -41,12 +41,12 @@ if ~isnumeric(data) || ~isreal(data)
 end 
 
 if xywh(3)<0
-  data = fliplr(data);
+  data = flipdim(data, 2);
   xywh(3) = -xywh(3);
   xywh(1) = xywh(1) - xywh(3);
 end
 if xywh(4)<0
-  data = flipud(data);
+  data = flipdim(datam, 1);
   xywh(4) = -xywh(4);
   xywh(2) = xywh(2) - xywh(4);
 end

@@ -26,6 +26,7 @@ struct Marker {
     BRUSH,
     OPEN,
     CLOSED,
+    SPINE,
   };
   Type type;
   Fill fill;

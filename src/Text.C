@@ -15,6 +15,13 @@ Text::~Text() {
 }
 
 void Text::addInterpreted(QString txt) {
+  int i=-1;
+  while ((i=txt.indexOf('-', i+1), i>=0)) {
+    if (i==0 || !txt[i-1].isLetter()) {
+      txt.replace(i, 1, QChar(0x2212));
+    }
+  }
+
   QString bld;
   QRegExp word("\\w+");
   int idx=0;

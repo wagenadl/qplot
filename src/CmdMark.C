@@ -14,7 +14,7 @@ bool CmdMark::usage() {
 }
 
 static void rendermark(QPainter &p, QPointF const &xy,
-		       double r, Marker::Type t) {
+		       double r, Marker::Type t, bool asSpine) {
   QPolygonF pf;
   switch (t) {
   case Marker::CIRCLE:
@@ -22,7 +22,12 @@ static void rendermark(QPainter &p, QPointF const &xy,
     break;
   case Marker::SQUARE:
     r *= sqrt(M_PI/4);
-    p.drawRect(QRectF(xy + QPointF(-r,-r), QSizeF(2*r, 2*r)));
+    if (asSpine) {
+      p.drawLine(QPointF(xy)+QPointF(-r,-r), QPointF(xy)+QPointF(r,r));
+      p.drawLine(QPointF(xy)+QPointF(-r,r), QPointF(xy)+QPointF(r,-r));
+    } else {
+      p.drawRect(QRectF(xy + QPointF(-r,-r), QSizeF(2*r, 2*r)));
+    }
     break;
   case Marker::DIAMOND: 
     r *= sqrt(2*M_PI/4);
@@ -31,7 +36,12 @@ static void rendermark(QPainter &p, QPointF const &xy,
     pf[1] = xy + QPointF(0, -r);
     pf[2] = xy + QPointF(r, 0);
     pf[3] = xy + QPointF(0, r);
-    p.drawConvexPolygon(pf);
+    if (asSpine) {
+      p.drawLine(pf[0], pf[2]);
+      p.drawLine(pf[1], pf[3]);
+    } else {
+      p.drawConvexPolygon(pf);
+    }
     break;
   case Marker::LEFTTRIANGLE:
     r *= 2./3;
@@ -39,7 +49,13 @@ static void rendermark(QPainter &p, QPointF const &xy,
     pf[0] = xy + QPointF(-2*r, 0);
     pf[1] = xy + QPointF(r, -sqrt(3)*r);
     pf[2] = xy + QPointF(r, sqrt(3)*r);
-    p.drawConvexPolygon(pf);
+    if (asSpine) {
+      p.drawLine(xy, pf[0]);
+      p.drawLine(xy, pf[1]);
+      p.drawLine(xy, pf[2]);
+    } else {
+      p.drawConvexPolygon(pf);
+    }
     break;
   case Marker::DOWNTRIANGLE:
     r *= 2./3;
@@ -47,7 +63,13 @@ static void rendermark(QPainter &p, QPointF const &xy,
     pf[0] = xy + QPointF(0, 2*r);
     pf[1] = xy + QPointF(-sqrt(3)*r, -r);
     pf[2] = xy + QPointF(sqrt(3)*r, -r);
-    p.drawConvexPolygon(pf);
+    if (asSpine) {
+      p.drawLine(xy, pf[0]);
+      p.drawLine(xy, pf[1]);
+      p.drawLine(xy, pf[2]);
+    } else {
+      p.drawConvexPolygon(pf);
+    }
     break;
   case Marker::RIGHTTRIANGLE:
     r *= 2./3;
@@ -55,7 +77,13 @@ static void rendermark(QPainter &p, QPointF const &xy,
     pf[0] = xy + QPointF(2*r, 0);
     pf[1] = xy + QPointF(-r, sqrt(3)*r);
     pf[2] = xy + QPointF(-r, -sqrt(3)*r);
-    p.drawConvexPolygon(pf);
+    if (asSpine) {
+      p.drawLine(xy, pf[0]);
+      p.drawLine(xy, pf[1]);
+      p.drawLine(xy, pf[2]);
+    } else {
+      p.drawConvexPolygon(pf);
+    }
     break;
   case Marker::UPTRIANGLE:
     r *= 2./3;
@@ -63,7 +91,13 @@ static void rendermark(QPainter &p, QPointF const &xy,
     pf[0] = xy + QPointF(0, -2*r);
     pf[1] = xy + QPointF(-sqrt(3)*r, r);
     pf[2] = xy + QPointF(sqrt(3)*r, r);
-    p.drawConvexPolygon(pf);
+    if (asSpine) {
+      p.drawLine(xy, pf[0]);
+      p.drawLine(xy, pf[1]);
+      p.drawLine(xy, pf[2]);
+    } else {
+      p.drawConvexPolygon(pf);
+    }
     break;
   case Marker::PENTAGRAM: {
     r *= .5 + .5*sqrt(5);
@@ -79,7 +113,12 @@ static void rendermark(QPainter &p, QPointF const &xy,
       }
       pf[k] = xy + QPointF(dx, dy);
     }
-    p.drawPolygon(pf);
+    if (asSpine) {
+      for (int k=0; k<10; k+=2)
+	p.drawLine(xy, pf[k]);
+    } else {
+      p.drawPolygon(pf);
+    }
   } break;
   case Marker::HEXAGRAM: {
     r=r*sqrt(sqrt(3));
@@ -94,7 +133,12 @@ static void rendermark(QPainter &p, QPointF const &xy,
       }
       pf[k] = xy + QPointF(dx, dy);
     }
-    p.drawPolygon(pf);
+    if (asSpine) {
+      for (int k=0; k<6; k+=2)
+	p.drawLine(pf[k], pf[k+6]);
+    } else {
+      p.drawPolygon(pf);
+    }
   } break;
   case Marker::PLUS:
     p.drawLine(xy + QPointF(r,0), xy + QPointF(-r,0));
@@ -193,6 +237,7 @@ void CmdMark::render(Statement const &s, Figure &f, bool dryrun) {
   QPainter &ptr(f.painter());
   ptr.save();
 
+  bool asSpine = false;
   switch (f.marker().fill) {
   case Marker::CLOSED:
     ptr.setBrush(ptr.pen().color());
@@ -201,6 +246,9 @@ void CmdMark::render(Statement const &s, Figure &f, bool dryrun) {
     ptr.setBrush(QColor("white"));
     break;
   case Marker::BRUSH:
+    break;
+  case Marker::SPINE:
+    asSpine = true;
     break;
   }
 
@@ -214,11 +262,11 @@ void CmdMark::render(Statement const &s, Figure &f, bool dryrun) {
       if (a)
 	xy = ::rotate(xy, a);
       xy += xy0;
-      rendermark(ptr, xy, r, t);
+      rendermark(ptr, xy, r, t, asSpine);
     }
   } else {
     for (int k=0; k<xdata.size(); k++)
-      rendermark(ptr, f.map(xdata[k],ydata[k]), r, t);
+      rendermark(ptr, f.map(xdata[k],ydata[k]), r, t, asSpine);
   }
 
   ptr.restore();  

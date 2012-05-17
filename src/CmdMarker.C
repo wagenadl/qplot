@@ -15,6 +15,8 @@ static int fillstyle(QString s) {
     return Marker::CLOSED;
   else if (s=="brush")
     return Marker::BRUSH;
+  else if (s=="spine")
+    return Marker::SPINE;
   else
     return -1;
 }

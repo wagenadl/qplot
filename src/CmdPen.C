@@ -10,7 +10,7 @@ static CBuilder<CmdPen> cbPen("pen");
 #define PEN_DEFAULTLENGTH 3
 
 bool CmdPen::usage() {
-  return error("Usage: pen [ID] color | width | miterjoin|beveljoin|roundjoin | flatcap|squarecap|roundcap | solid|none | dash [L1 ...] | dot L ...");
+  return error("Usage: pen [ID] color | width  -alpha | miterjoin|beveljoin|roundjoin | flatcap|squarecap|roundcap | solid|none | dash [L1 ...] | dot L ...");
 }
 
 static int joinstyle(QString s) {
@@ -42,7 +42,7 @@ bool CmdPen::parse(Statement const &s) {
     if (s[k].typ==Token::CAPITAL && k==1) {
       continue; // OK, this is pen choice
     } else if (s[k].typ==Token::NUMBER) {
-      continue; // OK, this is width
+      continue; // OK, this is width or alpha
     } else if (s[k].typ==Token::BAREWORD) {
       QString w = s[k].str;
       if (joinstyle(w)>=0)
@@ -82,8 +82,13 @@ void CmdPen::render(Statement const &s, Figure &f, bool) {
     } else if (s[k].typ==Token::NUMBER) {
       if (s[k].num==0)
 	p.setWidthF(pt2iu(f.hairline()));
-      else
+      else if (s[k].num>0)
 	p.setWidthF(pt2iu(s[k].num));
+      else {
+	QColor c = p.color();
+	c.setAlphaF(-s[k].num);
+	p.setColor(c);
+      }
       if (p.style()==Qt::NoPen)
 	p.setStyle(Qt::SolidLine);
     } else if (s[k].typ==Token::BAREWORD) {
