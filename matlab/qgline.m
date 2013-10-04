@@ -24,7 +24,7 @@ function qgline(varargin)
 %
 %   Note: The rather cumbersome syntax of QGLINE makes QLINE and QPLOT more
 %   attractive for general usage. The same applies to QGAREA versus QAREA 
-%   and QPATCH.
+%   and QPATCH. See also QSHIFTEDLINE.
 
 fd = qp_fd(1);
 

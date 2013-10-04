@@ -3,6 +3,7 @@ function qlegend(str)
 %    QLEGEND(str) renders a sample of the most recently plotted line
 %    at the location set by QLEGOPT and writes the given string
 %    next to it.
+%    See also QMLEGEND and QPLEGEND.
 
 qlegopt; % ensure that we have options
 global qp_data;

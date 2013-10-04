@@ -19,4 +19,8 @@ kv.ticklen = qticklen;
 if strcmp(kv.orient,'y')
   kv.ticklen = -kv.ticklen;
 end
+if ~isempty(kv.cbar)
+  kv.tick_d = qca_ctodat(kv.tick_d, kv.cbar);
+end
+
 qp_axis(kv);

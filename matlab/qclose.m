@@ -1,5 +1,5 @@
 function qclose(fn)
-% QCLOSE - Close a QPLOT window
+% QCLOSE - Close a QPlot window
 %    QCLOSE closes the current window.
 %    QCLOSE(filename) closes the named window.
 %    QCLOSE('all') closes all windows.

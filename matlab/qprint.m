@@ -1,6 +1,6 @@
 function qprint(nowait)
-% QPRINT - Print current QPLOT figure to the default printer
-%    QPRINT prints the current QPLOT figure using qplotml and lpr after
+% QPRINT - Print current QPlot figure to the default printer
+%    QPRINT prints the current QPlot figure using qplotml and lpr after
 %    waiting for confirmation from the user.
 %    QPRINT(1) does not wait.
 

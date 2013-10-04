@@ -9,7 +9,7 @@ function qxaxis(y0, varargin)
 %    suppressed if LBLS is empty.
 %    QXAXIS(..., ttl) adds a title to the axis.
 % 
-%    QXAXIS obeys settings from QAXSHIFT QTICKLEN, QTEXTDIST, and QAXSHIFT.
+%    QXAXIS obeys settings from QTICKLEN, QTEXTDIST, and QAXSHIFT.
 %    QXAXIS('t', ...) inverts the sign of these settings.
 
 err = 'Usage: qxaxis Y0 [xlim] xpts [lbls] [title]';

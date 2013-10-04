@@ -1,6 +1,6 @@
 function qselect(fn)
-% QSELECT - Select a QPLOT figure by name
-%    QSELECT(fn) makes the names QPLOT figure current
+% QSELECT - Select a QPlot figure by name
+%    QSELECT(fn) makes the named QPlot figure current
 
 global qp_data;
 qp_ensure;

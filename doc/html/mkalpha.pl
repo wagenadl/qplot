@@ -12,7 +12,7 @@ for (sort { cfnoq($a,$b) } readdir DIR) {
 }
 closedir DIR;
 
-open OUT, ">html/alpha.html" or die;
+open OUT, ">ref/alpha.html" or die;
 header("QPlot: Alphabetical list of functions");
 
 print OUT <<'EOF';
@@ -54,8 +54,8 @@ sub header {
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <link rel="stylesheet" href="doc.css" type="text/css">
-    <link rel="stylesheet" href="alpha.css" type="text/css">
+    <link rel="stylesheet" href="../css/doc.css" type="text/css">
+    <link rel="stylesheet" href="../css/alpha.css" type="text/css">
 EOF
   print OUT "    <title>$fn</title>\n";
   print OUT "  </head>\n";
@@ -65,7 +65,7 @@ sub trailer {
   print OUT <<'EOF';
 </div>
 <div class="tail">
-QPlot Documentation — (C) Daniel Wagenaar, 2012
+QPlot Documentation — (C) Daniel Wagenaar, 2013
 </div>
 </body>
 </html>

@@ -1,5 +1,5 @@
 function qpen(varargin)
-% QPEN - Selects a new pen for QPLOT
+% QPEN - Selects a new pen for QPlot
 %    QPEN id | join | cap | pattern | color | width | 'none'  selects a new pen.
 %    ID must be a single capital letter
 %    JOIN must be one of: miterjoin beveljoin roundjoin

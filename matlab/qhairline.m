@@ -1,6 +1,6 @@
 function qhairline(x)
 % QHAIRLINE - Select hairline 
-%    QHAIRLINE family [bold] [italic] size  selects a new hairline for QPLOT.
+%    QHAIRLINE family [bold] [italic] size  selects a new hairline for QPlot.
 
 fd = qp_fd(1);
 

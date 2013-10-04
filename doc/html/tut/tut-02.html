@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="../css/doc.css" type="text/css">
+    <link rel="stylesheet" href="../css/catg.css" type="text/css">
+    <title>
+      QPlot Tutorial — Adorning your graph
+    </title>
+  </head>
+  <body>
+    <div class="main">
+
+<h1>Adorning your graph</h1>
+
+<p>In the <a href="tut-01.html">first page of the tutorial</a>, we created a very basic graph:
+
+<div class="example">
+<p class="eg">  x = -10:0.1:10;    </p>
+<p class="eg">  <a href="../ref/qplot.html">qplot</a>(x, sin(x));  </p>
+</div>
+
+<div><img src="tut-02-01.png"></div>
+
+<p>Compared with vanilla Matlab, the result was very sparse: the data
+are plotted, but there are no labeled axes or anything. The reason for
+this is QPlot’s design philosophy: you, the user, know what you want
+your graph to look like; automatic defaults are almost certain to be
+wrong.</p>
+
+<p>Fortunately, adding axes is quite easy. Here are a few
+suggestions for adding x-axes:</p>
+
+<div class="example">
+<p class="eg">  <a href="../ref/qxaxis.html">qxaxis</a>(-1.1, [-10:5:10]);    </p>
+<p class="eg">  <a href="../ref/qxaxis.html">qxaxis</a>(-1.4, [-10 10], [], 'Time');  </p>
+<p class="eg">  <a href="../ref/qxaxis.html">qxaxis</a>(-1.7, [-10 10], [-2*pi 0 2*pi], {'-2π', '0', '2π'}, 'Angle');  </p>
+</div>
+
+<div><img src="tut-02-02.png"></div>
+
+<p>As you can tell, you need to specify not just what you want your
+axis to look like, but also <i>where</i> you would like it to appear:
+the first argument to <span class="inlineeg">qxaxis</span> is the
+y-position of the axis. Following that, you can specify the range the
+axis should space (<span class="inlineeg">[-10 10]</span>), where to
+place ticks (<span class="inlineeg">[-10:5:10]</span>), what to print
+by those ticks (<span class="inlineeg">{'-2π', '0', '2π'}</span>) and
+what to name the axis (<span class="inlineeg">Time</span>). Any or all
+of these elements may be specified or omitted as required.</p>
+
+<p>By the way, does your text look cut off?
+Type <span class="inlineeg"><a href="../ref/qshrink.html">qshrink</a></span>
+to invoke QPlot’s shrink-to-fit algorithm.</p>
+
+<p>Naturally, there is an
+equivalent <span class="inlineeg"><a href="../ref/qyaxis.html">qyaxis</a></span>
+command. And the appearance of the axis may be further customized. For
+instance:</p>
+
+<div class="example">
+<p class="eg">  <a href="../ref/qfont.html">qfont</a> Times b 15
+<p class="eg">  <a href="../ref/qaxshift.html">qaxshift</a> 5
+<p class="eg">  <a href="../ref/qticklen.html">qticklen</a> 10
+<p class="eg">  <a href="../ref/qtextdist.html">qtextdist</a> 5
+<p class="eg">  <a href="../ref/qpen.html">qpen</a> r 2
+<p class="eg">  <a href="../ref/qyaxis.html">qyaxis</a>(-10, [-1:1], 'Height');
+</div>
+
+<div><img src="tut-02-03.png"></div>
+
+<p>(<span class="inlineeg"><a href="../ref/qfont.html">qfont</a></span>
+specifies font
+properties; <span class="inlineeg"><a href="../ref/qaxshift.html">qaxshift</a></span>
+causes the axis to be rendered some number of points to the left of
+the location
+specified; <span class="inlineeg"><a href="../ref/qticklen.html">qticklen</a></span>
+specifies how long the axis ticks are (in
+points); <span class="inlineeg"><a href="../ref/qtextdist.html">qtextdist</a></span>
+specifies how far from the ticks the text should be rendered;
+and <span class="inlineeg"><a href="../ref/qpen.html">qpen</a></span>
+specifies general line widths and colors for plotting. Note that all
+of these customizations are specified <i>before</i> the plot command
+(<span class="inlineeg"><a href="../ref/qyaxis.html">qyaxis</a>(...)</span>)
+that they modify, unlike in Matlab where
+the <span class="inlineeg">set</span> command is applied <i>after</i>
+the graphical element to be modified has been created.)</p>
+
+
+
+    </div>
+
+    <div class="tail">
+      QPlot Documentation — (C) Daniel Wagenaar, 2013
+    </div>
+
+  </body>
+</html>

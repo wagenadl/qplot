@@ -1,5 +1,5 @@
 function qsharelim(varargin)
-% QSHARELIM - Share axis limits between QPLOT panels
+% QSHARELIM - Share axis limits between QPlot panels
 %    QSHARELIM [x|y] ID ... shares x and/or y-axis limits with the other named
 %    panels.
 

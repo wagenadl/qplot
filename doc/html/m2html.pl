@@ -33,10 +33,16 @@ for my $f (@files) {
   my @example;
   if (open IN, "../matlab-eg/${f}_eg.m") {
     while (<IN>) {
-      s/ /&nbsp;/g;
+      s/^\s+$//;
+      if (s/^( +)//) {
+	$_ = "&nbsp;" x (2*length($1)) . $_;
+      }
       push @example, $_;
     }
     close IN;
+  }
+  while ($#example>0 && $example[$#example] =~ /^$/) {
+    pop @example;
   }
 
   output($f, $title, \@body, \@example);
@@ -46,7 +52,7 @@ for my $f (@files) {
 
 sub output {
   my ($fn, $title, $body, $example) = @_;
-  open OUT, ">html/$fn.html" or die;
+  open OUT, ">ref/$fn.html" or die;
   header($fn);
 
   print OUT "<body class=\"mloct\"><div class=\"main\">\n";
@@ -54,7 +60,7 @@ sub output {
   ttltext($fn, $title);
   bodytext($fn, $body);
 
-  egimage($fn) if -f "html/$fn.png";
+  egimage($fn) if -f "ref/$fn.png";
   egtext($fn, $example) if @$example;
 
   trailer();
@@ -67,7 +73,7 @@ sub header {
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <link rel="stylesheet" href="doc.css" type="text/css">
+    <link rel="stylesheet" href="../css/doc.css" type="text/css">
 EOF
   print OUT "    <title>QPlot: $fn</title>\n";
   print OUT "  </head>\n";
@@ -77,7 +83,7 @@ sub trailer {
   print OUT <<'EOF';
 </div>
 <div class="tail">
-QPlot Documentation — (C) Daniel Wagenaar, 2012
+QPlot Documentation — (C) Daniel Wagenaar, 2013
 </div>
 </body>
 </html>
@@ -102,24 +108,28 @@ sub ttltext {
 sub egtext {
   my $fn = shift;
   my $example = shift;
+  print OUT "<div class=\"egcontainer\">\n";
   print OUT "<div class=\"eghead\">\n";
   print OUT "Example:\n";
   print OUT "</div>\n";
   print OUT "<div class=\"example\">\n";
+    
   for my $line (@$example) {
     if ($line =~ /^\s*$/) {
-      print OUT "<p>\n";
+      print OUT "<p class=\"empty\"></p>\n";
     } else {
+      print OUT "<p class=\"eg\">";
       splitout($fn, $line, 0);
-      print OUT "<br>\n";
+      print OUT "</p>\n";
     }
   }
   print OUT "</div>\n";
   print OUT "<div class=\"eglink\">\n";
   print OUT "Download <a href=\"${fn}_eg.m\">source</a>.\n";
   print OUT "</div>\n";
+  print OUT "</div>\n";
 
-  system("cp ../matlab-eg/${fn}_eg.m html/") and die;
+  system("cp ../matlab-eg/${fn}_eg.m ref/") and die;
 }
 
 sub egimage {

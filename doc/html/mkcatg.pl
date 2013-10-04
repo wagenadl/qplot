@@ -3,7 +3,7 @@
 use strict;
 
 open IN, "../matlab-org.txt" or die;
-open OUT, ">html/catg.html" or die;
+open OUT, ">ref/catg.html" or die;
 header("QPlot: Categorized list of functions");
 
 print OUT <<'EOF';
@@ -41,8 +41,8 @@ sub header {
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <link rel="stylesheet" href="doc.css" type="text/css">
-    <link rel="stylesheet" href="catg.css" type="text/css">
+    <link rel="stylesheet" href="../css/doc.css" type="text/css">
+    <link rel="stylesheet" href="../css/catg.css" type="text/css">
 EOF
   print OUT "    <title>$fn</title>\n";
   print OUT "  </head>\n";
@@ -52,7 +52,7 @@ sub trailer {
   print OUT <<'EOF';
 </div>
 <div class="tail">
-QPlot Documentation — (C) Daniel Wagenaar, 2012
+QPlot Documentation — (C) Daniel Wagenaar, 2013
 </div>
 </body>
 </html>

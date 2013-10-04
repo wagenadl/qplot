@@ -1,7 +1,8 @@
 function alleg
 % Run all examples and save output
 
-cd html
+dir0=pwd;
+cd 'ref'
 
 ff = glob('*_eg.m');
 F = length(ff);
@@ -30,11 +31,13 @@ for f=1:F
   qclose([ fn '.qpt' ]);
 end
 
+cd(dir0);
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function runone(fn)
 [s,o] = system(sprintf('grep shrink %s_eg.m', fn));
 eval([fn '_eg']);
 if s
-  qshrink
+  qshrink(2);
 end
 

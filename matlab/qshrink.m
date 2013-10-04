@@ -1,6 +1,6 @@
 function qshrink(varargin)
-% QSHRINK - Add margin to QPLOT panel
-%    QSHRINK adds 1 point of margin to the current QPLOT panel.
+% QSHRINK - Add margin to QPlot panel
+%    QSHRINK adds 1 point of margin to the current QPlot panel.
 %    QSHRINK(margin) adds the given margin (in points).
 %    QSHRINK(margin, ratio) forces a given aspect ratio on the data units.
 

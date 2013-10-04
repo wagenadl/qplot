@@ -1,6 +1,6 @@
 function qfont(varargin)
 % QFONT - Select font 
-%    QFONT family [bold] [italic] size  selects a new font for QPLOT.
+%    QFONT family [bold] [italic] size  selects a new font for QPlot.
 
 fd = qp_fd(1);
 
@@ -16,7 +16,7 @@ for k=1:nargin
   end
 end
 for k=2:nargin-1
-  if isempty(strmatch(varargin{k},strtoks('bold italic'), 'exact'))
+  if isempty(strmatch(tolower(varargin{k}),strtoks('bold italic'), 'exact'))
     qfont_usage;
   end
 end

@@ -1,7 +1,7 @@
 function qtitle(ttl)
-% QTITLE - Render a title on the current QPLOT
+% QTITLE - Render a title on the current QPlot
 %    QTITLE(text) renders the given text centered along the top of the
-%    current QPLOT figure.
+%    current QPlot figure.
 
 fd = qp_fd(1);
 idx = qp_idx;

@@ -5,6 +5,7 @@ function qmlegend(str)
 %    next to it.
 %    QMLEGEND without a string renders the most recently used mark
 %    over a previously rendered (line) legend.
+%    See also QLEGEND and QPLEGEND.
 
 qlegopt; % ensure that we have options
 global qp_data;

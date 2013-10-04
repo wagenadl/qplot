@@ -49,10 +49,32 @@ body {
     font-weight: bold;
 }
 
+.inlineeg {
+    font-family: ubuntu, sans;
+    font-size: 85%;
+}
+.inlineeg:before {
+    font-family: garamond, palatino, times, serif ;
+    font-size: 118%;
+    content: "“";
+}
+.inlineeg:after {
+    font-family: garamond, palatino, times, serif ;
+    font-size: 118%;
+    content: "”";
+}
+
 .example {
     font-family: ubuntu, sans;
     font-size: 85%;
     padding-left: 30px;
+    margin-bottom: 15px;
+}
+
+.egcontainer {
+    padding: 0px;
+    margin: 0px;
+    min-height: 400px;
 }
 
 .egimage {
@@ -125,3 +147,17 @@ body {
 .egimg:hover {
     color: black;
     }
+
+p.eg {
+    padding-top: 0px;
+    padding-bottom: 0px;
+    margin-top: 2px;
+    margin-bottom: 1px;
+}
+p.empty {
+    padding-top: 0px;
+    padding-bottom: 0px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+    

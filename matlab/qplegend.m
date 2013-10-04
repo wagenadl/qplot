@@ -3,6 +3,7 @@ function qplegend(str)
 %    QPLEGEND(str) renders a sample of the most recently rendered 
 %    patch at the location set by QLEGOPT and writes the given string
 %    next to it.
+%    See also QLEGEND and QMLEGEND.
 
 qlegopt; % ensure that we have options
 global qp_data;

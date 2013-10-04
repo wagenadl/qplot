@@ -17,6 +17,7 @@ function qp_axis(varargin)
 %                      orthogonal to ORIENT)
 %     coord_p (scalar) shift of that position in paper coordinates
 %     ttlrot (scalar) rotation of title: 0=normal +ve=CCW -ve=CW
+%     cbar (struct) optional reference to colorbar
 
 opt.orient='x';
 opt.lim_d=[];
@@ -31,6 +32,7 @@ opt.ttldist=3;
 opt.coord_d=nan;
 opt.coord_p=0;
 opt.ttlrot=0;
+opt.cbar = [];
 kv = getopt(opt,  varargin);
 
 idx = qp_idx;

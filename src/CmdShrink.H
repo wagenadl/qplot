@@ -12,7 +12,9 @@ class CmdShrink: public Command {
    *:D Syntax:
          shrink
          shrink margin_pt
-       Default is 1 pt.
+         shrink margin_pt ratio
+       Default margin is 1 pt.
+       Default ratio is unspecified (x and y independent).
    *:N This does not yet work for rotated axes, and it assumes that
        the y-axis runs up.
    *:N The logic is: if we are a full margin within bounds, we don't do

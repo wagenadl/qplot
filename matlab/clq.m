@@ -1,6 +1,6 @@
 function clq 
-% CLQ - Clear current QPLOT figure
-%   CLQ clears the current QPLOT figure. 
+% CLQ - Clear current QPlot figure
+%   CLQ clears the current QPlot figure. 
 global qp_data
 fd = qp_fd(1);
 fn = qp_data.curfn;

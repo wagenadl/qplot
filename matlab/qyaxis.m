@@ -9,9 +9,9 @@ function qyaxis(y0, varargin)
 %    suppressed if LBLS is empty.
 %    QYAXIS(..., ttl) adds a title to the axis.
 % 
-%    QYAXIS obeys settings from QAXSHIFT, QTICKLEN, QTEXTDIST, and QAXSHIFT.
-%    QXAXIS('r', ...) inverts the sign of these settings.
-%    QXAXIS('R', ...) additionally orients the title the other way.
+%    QYAXIS obeys settings from QTICKLEN, QTEXTDIST, and QAXSHIFT.
+%    QYAXIS('r', ...) inverts the sign of these settings.
+%    QYAXIS('R', ...) additionally orients the title the other way.
 
 % Note that we use variable names from qxaxis, which may be confusing.
 
