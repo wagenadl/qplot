@@ -18,8 +18,8 @@ if prod(size(dy))==2*N
   dy_dn = -dy(:,1);
   dy_up = dy(:,2);
 else
-  dy_up = dy(:);
   dy_dn = -dy(:);
+  dy_up = dy(:);
 end
 
 switch dir
