@@ -1,6 +1,7 @@
 function qpen(varargin)
 % QPEN - Selects a new pen for QPlot
-%    QPEN id | join | cap | pattern | color | width | 'none'  selects a new pen.
+%    QPEN id | join | cap | pattern | color | width | -alpha | 'none'
+%    selects a new pen.
 %    ID must be a single capital letter
 %    JOIN must be one of: miterjoin beveljoin roundjoin
 %    CAP must be one of: flatcap squarecap roundcap
@@ -10,6 +11,7 @@ function qpen(varargin)
 %    COLOR may be a single character matlab color, or a 3- or 6-digit RGB
 %    specification. 
 %    WIDTH is linewidth in points, or 0 for hairline.
+%    ALPHA specifies transparency between 0 and 1.
 fd = qp_fd(1);
 
 cmd = 'pen';

@@ -5,8 +5,8 @@
 QT += svg
 CONFIG += debug
 TEMPLATE = app
-MOC_DIR = .moc
-OBJECTS_DIR = .obj
+MOC_DIR = ../build
+OBJECTS_DIR = ../build
 TARGET = ../qplot
 DEPENDPATH += .
 INCLUDEPATH += .
@@ -54,43 +54,43 @@ HEADERS += Align.H \
            Token.H \
            Watcher.H
 
-SOURCES += Axis.C \
-           CmdAlign.C \
-           CmdAt.C \
-           CmdBrush.C \
-           CmdCaligraph.C \
-           CmdFigSize.C \
-           CmdEndGroup.C \
-           CmdFont.C \
-           CmdShareLim.C \
-           CmdShrink.C \
-           CmdGLine.C \
-           CmdGroup.C \
-           CmdHairline.C \
-           CmdImage.C \
-           CmdMark.C \
-           CmdMarker.C \
-           CmdPanel.C \
-           CmdPen.C \
-           CmdPlot.C \
-           CmdRefText.C \
-           CmdText.C \
-           CmdXLim.C \
-           CmdYLim.C \
-           Command.C \
-           Error.C \
-           Factor.C \
-           Figure.C \
-           main.C \
-           Program.C \
-           QPWidget.C \
-           Range.C \	
-           Rotate.C \
-           ScrollWidget.C \
-           Slightly.C \
-           Statement.C \
-           Text.C \
-           TextShiftAccum.C \
-           Token.C \
-           Watcher.C
+SOURCES += Axis.cpp \
+           CmdAlign.cpp \
+           CmdAt.cpp \
+           CmdBrush.cpp \
+           CmdCaligraph.cpp \
+           CmdFigSize.cpp \
+           CmdEndGroup.cpp \
+           CmdFont.cpp \
+           CmdShareLim.cpp \
+           CmdShrink.cpp \
+           CmdGLine.cpp \
+           CmdGroup.cpp \
+           CmdHairline.cpp \
+           CmdImage.cpp \
+           CmdMark.cpp \
+           CmdMarker.cpp \
+           CmdPanel.cpp \
+           CmdPen.cpp \
+           CmdPlot.cpp \
+           CmdRefText.cpp \
+           CmdText.cpp \
+           CmdXLim.cpp \
+           CmdYLim.cpp \
+           Command.cpp \
+           Error.cpp \
+           Factor.cpp \
+           Figure.cpp \
+           main.cpp \
+           Program.cpp \
+           QPWidget.cpp \
+           Range.cpp \	
+           Rotate.cpp \
+           ScrollWidget.cpp \
+           Slightly.cpp \
+           Statement.cpp \
+           Text.cpp \
+           TextShiftAccum.cpp \
+           Token.cpp \
+           Watcher.cpp
            
