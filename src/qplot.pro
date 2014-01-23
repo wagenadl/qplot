@@ -3,11 +3,12 @@
 ######################################################################
 
 QT += svg
-CONFIG += debug
+CONFIG += debug_and_release
 TEMPLATE = app
-MOC_DIR = ../build
-OBJECTS_DIR = ../build
+#MOC_DIR = ../build
+#OBJECTS_DIR = ../build
 TARGET = ../qplot
+CONFIG(debug, debug|release) { TARGET=$${TARGET}_debug }
 DEPENDPATH += .
 INCLUDEPATH += .
 

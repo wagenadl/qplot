@@ -17,7 +17,7 @@ public:
    *   Returns true if OK, false if error.
    *   Errors are reported through qDebug.
    */
-  ~Program();
+  virtual ~Program();
   int length() const;
   Statement const &operator[](int) const;
   QSet<QString> panels();

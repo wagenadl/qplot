@@ -72,7 +72,8 @@ void CmdCaligraph::render(Statement const &s, Figure &f, bool dryrun) {
 
   QPointF pprev, pthis, pnext;
   QPointF dprev, dnext;
-  double thetaprev, thetanext; 
+  double thetaprev = 0; // this value not used unless N=1
+  double thetanext = 0; // this value not used unless N=1
   for (int k=0; k<N; k++) {
     if (k>0) 
       pprev = pthis;

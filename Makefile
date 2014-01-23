@@ -1,16 +1,20 @@
 ALL: SRC DOC
 
 SRC: src/Makefile
-	make -C src
+	$(MAKE) -C src
 
-DOC:; make -C doc
+DOC:; $(MAKE) -C doc
 
-DIST: clean
-	tar cf ../qplot.tgz -C.. qplot/src qplot/matlab qplot/qpclient qplot/qpclose qplot/qplotml qplot/doc qplot/Makefile
+#DIST: clean
+#	tar cf ../qplot.tgz -C.. qplot/src qplot/matlab qplot/qpclient qplot/qpclose qplot/qplotml qplot/doc qplot/Makefile
 
 src/Makefile: src/qplot.pro
 	cd src;	qmake qplot.pro
 
-clean:
-	make -C src clean
-	rm src/Makefile
+#clean:
+#	$(MAKE) -C src clean
+##	rm src/Makefile
+
+deb:	ALL
+	debuild -us -uc -Isrc/debug -Isrc/release -Isrc/Makefile.Release -Isrc/Makefile.Debug -INOTES -Iqplot -Iqplot_debug
+

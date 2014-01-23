@@ -1,0 +1,12 @@
+qplot (0.1.0) trusty; urgency=low
+
+  * Initial release
+
+ -- Daniel Wagenaar <daniel.wagenaar@uc.edu>  Wed, 22 Jan 2014 20:19:41 -0500
+
+
+qplot (0.1.0) saucy; urgency=low
+
+  * Initial release
+
+ -- Daniel Wagenaar <daniel.wagenaar@uc.edu>  Wed, 22 Jan 2014 20:19:41 -0500

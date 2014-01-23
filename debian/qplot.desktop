@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=QPlot
+GenericName=QPlot
+Comment=Publication-quality 2D scientific plotting
+Exec=qplot
+Terminal=false
+Type=Application
+Categories=Science
+Icon=/usr/share/pixmaps/qplot.svg
+

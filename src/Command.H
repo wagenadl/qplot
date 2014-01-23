@@ -11,6 +11,7 @@
 
 class Command {
 public:
+  virtual ~Command() {}
   virtual bool parse(Statement const &)=0;
   /*:F parse
    *:D Should check whether the statement is valid.

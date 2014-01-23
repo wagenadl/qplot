@@ -1,11 +1,11 @@
-#!/bin/zsh
+#!/bin/sh
 
 IFN=$1
 DIR=`dirname $IFN`
 LEAF=`basename $IFN`
 
 PIDFILE=$DIR/.qp-$LEAF.pid
-if [[ -f $PIDFILE ]]; then
+if [ -f $PIDFILE ]; then
   RUNNING=1
   PID=`cat $PIDFILE`
   grep -q $LEAF /proc/$PID/cmdline 2>/dev/null || RUNNING=0
@@ -13,7 +13,7 @@ else
   RUNNING=0
 fi
 
-if [[ $RUNNING == "1" ]]; then
+if [ $RUNNING = "1" ]; then
   kill $PID
   unlink $PIDFILE
 else
