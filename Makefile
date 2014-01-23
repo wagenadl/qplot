@@ -16,5 +16,5 @@ src/Makefile: src/qplot.pro
 ##	rm src/Makefile
 
 deb:	ALL
-	debuild -us -uc -Isrc/debug -Isrc/release -Isrc/Makefile.Release -Isrc/Makefile.Debug -INOTES -Iqplot -Iqplot_debug
+	debuild -us -uc -Isrc/debug -Isrc/release -Ifoo -Isrc/Makefile.Release -Isrc/Makefile.Debug -INOTES -Iqplot -Iqplot_debug -I.bzr -I*.mexglx -I.matlabdoc
 
