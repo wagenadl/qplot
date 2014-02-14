@@ -71,6 +71,16 @@ void Text::addInterpreted(QString txt) {
       addInterpreted(txt.mid(idx+1,id1-idx-1));
       restore();
       idx=id1;
+    } else if (x=="\\") {
+      int id1 = txt.indexOf("!", idx+1);
+      if (id1==idx+1) {
+	add(bld);
+	add("\\!");
+	bld="";
+	idx=id1;
+      } else {
+	bld += x;
+      }
     } else {
       bld+=x;
     }
@@ -153,6 +163,7 @@ QFont Text::makeFont(Text::State const &s) {
   f.setPixelSize(s.fontsize);
   f.setBold(s.bold);
   f.setItalic(s.slant);
+  f.setKerning(true);
   return f;
 }
 
@@ -170,12 +181,21 @@ void Text::add(QString txt) {
   Span span;
   span.startpos = QPointF(nextx, s.baseline);
   span.font = makeFont(s);
-  span.text = txt;
+  if (txt == "\\!") {
+    span.text = "";
+    QFontMetricsF fm(span.font);
+    QRectF r = fm.tightBoundingRect("x");
+    nextx -= r.width()/5;
+  } else {
+    span.text = txt;
+  }
   spans.push_back(span);
-  QFontMetricsF fm(span.font);
-  QRectF r = fm.tightBoundingRect(txt);
-  bb |= r.translated(span.startpos);
-  nextx += fm.width(txt);
+  if (span.text != "") {
+    QFontMetricsF fm(span.font);
+    QRectF r = fm.tightBoundingRect(txt);
+    bb |= r.translated(span.startpos);
+    nextx += fm.width(txt);
+  }
 }
 
 QRectF Text::bbox() const {

@@ -29,6 +29,14 @@ fprintf(fd, '%s\n', str);
 
     
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+function str = tolower(str)
+for l=1:length(str)
+  if str(l)>='A' && str(l)<='Z'
+    str(l) = str(l) + 32;
+  end
+end
+
+
 function qfont_usage()
   error('Usage: qfont family [bold] [italic] size');
 

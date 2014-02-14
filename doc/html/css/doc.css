@@ -160,4 +160,13 @@ p.empty {
     margin-top: 10px;
     margin-bottom: 10px;
 }
-    
+
+.qpt {
+    display:inline-block;
+    margin-left: 25px;
+    border-color: #333333;
+    border-style: outset;
+    border-width: 3px;
+    padding: 5px;
+    min-width: 0px;
+    }
