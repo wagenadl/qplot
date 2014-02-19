@@ -1,0 +1,59 @@
+#!/usr/bin/perl -w
+
+use strict;
+
+
+my $doc = <<"EOF";
+Commands are:
+
+  FONTPACKAGE latex-package
+  FONTSIZE    10pt | 11pt | 12pt
+  FONTSTYLE   latex-commands
+  PANEL       x y
+  LABEL       text [SHIFTED dx dy]
+  INCLUDE     filename [SIZE w h] [SHIFTED dx dy]
+
+Dimensions may be specified in pt, mm, cm, or in.
+
+EOF
+  
+my $temppfx = "/tmp/placeqpt-$$"; # Make sure to match chdir command below!
+my $out = "placeqpt.pdf";
+if (@ARGV) {
+  if ($ARGV[0] eq "-o") {
+    shift @ARGV;
+    $out = shift @ARGV or syntax();
+  } elsif ($ARGV[0] =~ s/^-o//) {
+    $out = shift @ARGV or syntax();
+  } elsif ($ARGV[0] =~ /^--?h/) {
+    syntax();
+  } else {
+    $out = $ARGV[0];
+    $out =~ s/\.txt$//;
+    $out .= ".pdf";
+  }
+}
+
+open OUT, ">$temppfx.txt" or die;
+print OUT "PREFIX $temppfx\n";
+while (<>) {
+  print OUT $_;
+}
+close OUT;
+
+my $here = `pwd`; chomp $here;
+
+$out = "$here/$out" unless $out =~ /^\//;
+
+system("placeqpt.pl < $temppfx.txt > $temppfx.tex") and die;
+chdir("/tmp"); # must match $temppfx above
+system("pdflatex $temppfx.tex") and die;
+system("mv $temppfx.pdf $out") and die;
+system("rm $temppfx.*");
+system("rm $temppfx-*.pdf");
+
+sub syntax {
+  print STDERR "Usage: placeqpt [-ooutput.pdf] [input.txt]\n";
+  print STDERR $doc;
+  exit 1;
+}

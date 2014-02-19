@@ -4,7 +4,7 @@ use strict;
 
 open IN, "../matlab-org.txt" or die;
 open OUT, ">html/catg.html" or die;
-header("QPlot: Categorized list of functions");
+header("QPlot: Functions by category");
 
 print OUT <<'EOF';
 <body>
@@ -12,7 +12,7 @@ print OUT <<'EOF';
 <div class="index">
 <span class="toidx"><a href="alpha.html">Alphabetical list</a></span>
 </div>
-<h1 class="tight">QPlot: Categorized List of Functions</h1>
+<h1 class="tight">QPlot: Functions by category</h1>
 EOF
 
 my $first = 1;

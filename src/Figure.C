@@ -97,7 +97,22 @@ void Figure::setExtent(QRectF xywh_pt) {
   replaceAxes();
 }
 
+void Figure::overrideSize(QSizeF wh) {
+  overrideWH = wh;
+}
+
 void Figure::setSize(QSizeF wh_pt) {
+  qDebug() << "setSize wh=" << wh_pt << " over=" << overrideWH;
+  if (!overrideWH.isEmpty())
+    wh_pt = overrideWH;
+  else if (overrideWH.width()>0) 
+    wh_pt = QSizeF(overrideWH.width(),
+		   overrideWH.width() * wh_pt.height()/wh_pt.width());
+  else if (overrideWH.height()>0) 
+    wh_pt = QSizeF(overrideWH.height() * wh_pt.width()/wh_pt.height(),
+		   overrideWH.height());
+  qDebug() << "-> " << wh_pt;
+
   if (figextent.size() == wh_pt)
     return;
   

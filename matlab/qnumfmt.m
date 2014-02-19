@@ -1,6 +1,6 @@
 function pt = qnumfmt(pt)
 % QNUMFMT - Specifies the format of numbers as tick labels
-%    QNUMFMT(fmt) specifies the format of numberic axis tick labels.
+%    QNUMFMT(fmt) specifies the format of numeric axis tick labels.
 %    FMT may be anything that SPRINTF understands, for instance: "%.1f".
 %    The default is "".
 

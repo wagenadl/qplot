@@ -26,6 +26,8 @@
 #include "Factor.H"
 
 double BITMAPRES = 300;
+double OVERRIDEWIDTH = 0;
+double OVERRIDEHEIGHT = 0;
 
 #define MAXTRIES_DEFAULT 100
 int MAXTRIES = MAXTRIES_DEFAULT;
@@ -41,6 +43,7 @@ int usage(int ex=1) {
   Error() << "Usage: qplot input.txt";
   Error() << "       qplot input.txt output.pdf|svg|ps";
   Error() << "       qplot [-rDPI] input.txt output.png|tif|jpg";
+  Error() << "       qplot -wWIDTH -hHEIGHT ... overrides output size (pts)";
   Error() << "";
   Error() << "For noninteractive use, input.txt may be '-' for stdin, and";
   Error() << "output.EXT may be '-.EXT' for stdout.";
@@ -280,6 +283,8 @@ int noninteractive(QString ifn, QString ofn) {
   }
 
   Figure fig;
+  fig.overrideSize(QSizeF(pt2iu(OVERRIDEWIDTH),
+			  pt2iu(OVERRIDEHEIGHT)));
   prerender(prog, fig);
 
   if (extn == "svg") {
@@ -326,7 +331,7 @@ int main(int argc, char **argv) {
     return usage();
   while (argi<argc) {
     QString arg = argv[argi];
-    if (arg=="-h" || arg=="--help") {
+    if (arg=="--help") {
       return usage(0);
     } else if (arg=="-r") {
       argi++;
@@ -341,6 +346,38 @@ int main(int argc, char **argv) {
     } else if (arg.startsWith("-r")) {
       bool ok;
       BITMAPRES = arg.mid(2).toDouble(&ok);
+      if (!ok)
+	return usage();
+      argi++;
+    } else if (arg=="-w") {
+      argi++;
+      if (argi>=argc)
+	return usage();
+      arg = argv[argi];
+      bool ok;
+      OVERRIDEWIDTH = arg.toDouble(&ok);
+      if (!ok)
+	return usage();
+      argi++;
+    } else if (arg.startsWith("-w")) {
+      bool ok;
+      OVERRIDEWIDTH = arg.mid(2).toDouble(&ok);
+      if (!ok)
+	return usage();
+      argi++;
+    } else if (arg=="-h") {
+      argi++;
+      if (argi>=argc)
+	return usage();
+      arg = argv[argi];
+      bool ok;
+      OVERRIDEHEIGHT = arg.toDouble(&ok);
+      if (!ok)
+	return usage();
+      argi++;
+    } else if (arg.startsWith("-h")) {
+      bool ok;
+      OVERRIDEHEIGHT = arg.mid(2).toDouble(&ok);
       if (!ok)
 	return usage();
       argi++;

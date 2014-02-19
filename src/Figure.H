@@ -21,6 +21,7 @@ class Figure {
 public:
   Figure();
   void setSize(QSizeF wh_pt);
+  void overrideSize(QSizeF wh_pt);
   void setExtent(QRectF xywh_pt);
   /*:N Iff this is a genuine change, I will reset axis mapping. Thus, the
        render() of a program can be rerun multiple times without axis reset.
@@ -106,6 +107,8 @@ private:
   QMap<QString, QPointF> locations;
   bool fudged;
   TextShiftAccum textshiftaccum;
+private:
+  QSizeF overrideWH;
 private:
   void replaceAxes();
 };
