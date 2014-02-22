@@ -3,7 +3,6 @@
 #include "Figure.H"
 #include "Error.H"
 #include <math.h>
-#include <QDebug>
 
 #define DEFAULTHAIR 0.25
 
@@ -97,7 +96,20 @@ void Figure::setExtent(QRectF xywh_pt) {
   replaceAxes();
 }
 
+void Figure::overrideSize(QSizeF wh) {
+  overrideWH = wh;
+}
+
 void Figure::setSize(QSizeF wh_pt) {
+  if (!overrideWH.isEmpty())
+    wh_pt = overrideWH;
+  else if (overrideWH.width()>0) 
+    wh_pt = QSizeF(overrideWH.width(),
+		   overrideWH.width() * wh_pt.height()/wh_pt.width());
+  else if (overrideWH.height()>0) 
+    wh_pt = QSizeF(overrideWH.height() * wh_pt.width()/wh_pt.height(),
+		   overrideWH.height());
+
   if (figextent.size() == wh_pt)
     return;
   
