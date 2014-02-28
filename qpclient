@@ -18,5 +18,5 @@ if [ $RUNNING = "0" ]; then
   LD_LIBRARY_PATH=`echo $LD_LIBRARY_PATH | perl -e '@a=split(/:/,<>); @b=(); for (@a) { push @b, $_ unless $_ =~ /matlab/; }; print join(":", @b);'`
   qplot $* </dev/null >/dev/null &
   #</dev/null >&/dev/null &
-  disown
+  # disown
 fi

@@ -72,12 +72,16 @@ void Text::addInterpreted(QString txt) {
       restore();
       idx=id1;
     } else if (x=="\\") {
-      int id1 = txt.indexOf("!", idx+1);
-      if (id1==idx+1) {
+      if (txt.mid(idx+1,1)=="!") {
 	add(bld);
 	add("\\!");
 	bld="";
-	idx=id1;
+	idx++;
+      } else if (txt.mid(idx+1,1)==",") {
+	add(bld);
+	add("\\,");
+	bld="";
+	idx++;
       } else {
 	bld += x;
       }
@@ -186,6 +190,11 @@ void Text::add(QString txt) {
     QFontMetricsF fm(span.font);
     QRectF r = fm.tightBoundingRect("x");
     nextx -= r.width()/5;
+  } else if (txt == "\\,") {
+    span.text = "";
+    QFontMetricsF fm(span.font);
+    QRectF r = fm.tightBoundingRect("x");
+    nextx += r.width()/5;
   } else {
     span.text = txt;
   }
