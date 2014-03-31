@@ -2,7 +2,7 @@
 
 use strict;
 
-my $FONTPACKAGE;
+my @FONTPACKAGES;
 my $FONTSIZE="10pt";
 my $FONTSTYLE="\\rm";
 my $STARTED=0;
@@ -24,7 +24,7 @@ while (<>) {
     $TEMPPFX = shift @bits or syntax();
     syntax() if @bits;
   } elsif ($k eq "FONTPACKAGE") {
-    $FONTPACKAGE = shift @bits or syntax();
+    push @FONTPACKAGES, shift @bits or syntax();
     syntax() if @bits;
   } elsif ($k eq "FONTSIZE") {
     $FONTSIZE = shift @bits or syntax();
@@ -139,7 +139,12 @@ sub interpretDim {
 sub ensureStarted {
   return if $STARTED;
   print "\\documentclass[$FONTSIZE]{standalone}\n";
-  print "\\usepackage{$FONTPACKAGE}\n" if defined $FONTPACKAGE;
+  if (@FONTPACKAGES) {
+    print "\\usepackage{$_}\n" for (@FONTPACKAGES);
+  } else {
+    print "\\usepackage{helvet}\n";
+    print "\\usepackage{times}\n";
+  }
   print "\\usepackage{tikz}\n";
   print "\\begin{document}\n";
   print "\\begin{tikzpicture}\n";

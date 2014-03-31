@@ -57,6 +57,7 @@ void CmdShareLim::render(Statement const &s, Figure &f, bool) {
     }
   }
   // Now we know that all IDS are actual panels.
+  ids.remove(f.currentPanelName());
 
   // Find union placement bbox of any of the graphs being considered
   /* Originally, I thought I would simply line up the graphs. But I think

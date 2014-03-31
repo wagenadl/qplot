@@ -6,10 +6,11 @@ function qcbar(w, l, varargin)
 %   QCBAR(w, h, 'd') makes the color scale run down.
 %   QCBAR(w, h, dx, dy) or QCBAR(w, h, dx, dy, 'd') shifts the bar by the 
 %   given number of points to the right and down.
-%   QCBAR(w, [], dh) or QCBAR(w,[], dx, dy, dh) specifies the height in data 
-%   coordinates instead. In this case, the color scale runs up (down) if DH 
+%   QCBAR(w, [], h) or QCBAR(w,[], dx, dy, h) specifies the height in data 
+%   coordinates instead. In this case, the color scale runs up (down) if H 
 %   is positive (negative).
 %   This command only works after a previous QIMSC.
+%   See also QCAXIS.
 
 [dh, dx, dy] = qp_cbargs('u', varargin{:});
 
