@@ -2,8 +2,8 @@
 
 use strict;
 
-open IN, "../matlab-org.txt" or die;
-open OUT, ">ref/catg.html" or die;
+open IN, "matlab-org.txt" or die;
+open OUT, ">html/ref/catg.html" or die;
 header("QPlot: Categorized list of functions");
 
 print OUT <<'EOF';
@@ -12,7 +12,7 @@ print OUT <<'EOF';
 <div class="index">
 <span class="toidx"><a href="alpha.html">Alphabetical list</a></span>
 </div>
-<h1 class="tight">QPlot: Categorized List of Functions</h1>
+<h1 class="tight">QPlot: Categorized list of functions</h1>
 EOF
 
 my $first = 1;
@@ -52,7 +52,7 @@ sub trailer {
   print OUT <<'EOF';
 </div>
 <div class="tail">
-QPlot Documentation — (C) Daniel Wagenaar, 2013
+QPlot Documentation — (C) <a href="http://www.danielwagenaar.net">Daniel Wagenaar</a>, 2014
 </div>
 </body>
 </html>

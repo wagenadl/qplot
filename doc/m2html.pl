@@ -2,7 +2,7 @@
 
 use strict;
 
-system("matlabdoc -f ../../matlab /tmp/qplotml 'QPlot' .") and die;
+system("matlabdoc -f ../matlab /tmp/qplotml 'QPlot' .") and die;
 
 my @files = ();
 my %files = ();
@@ -31,7 +31,7 @@ for my $f (@files) {
   close IN;
 
   my @example;
-  if (open IN, "../matlab-eg/${f}_eg.m") {
+  if (open IN, "matlab-eg/${f}_eg.m") {
     while (<IN>) {
       s/^\s+$//;
       if (s/^( +)//) {
@@ -52,7 +52,7 @@ for my $f (@files) {
 
 sub output {
   my ($fn, $title, $body, $example) = @_;
-  open OUT, ">ref/$fn.html" or die;
+  open OUT, ">html/ref/$fn.html" or die;
   header($fn);
 
   print OUT "<body class=\"mloct\"><div class=\"main\">\n";
@@ -83,7 +83,7 @@ sub trailer {
   print OUT <<'EOF';
 </div>
 <div class="tail">
-QPlot Documentation — (C) Daniel Wagenaar, 2013
+QPlot Documentation — (C) <a href="http://www.danielwagenaar.net">Daniel Wagenaar</a>, 2014
 </div>
 </body>
 </html>
@@ -129,7 +129,7 @@ sub egtext {
   print OUT "</div>\n";
   print OUT "</div>\n";
 
-  system("cp ../matlab-eg/${fn}_eg.m ref/") and die;
+  system("cp matlab-eg/${fn}_eg.m html/ref/") and die;
 }
 
 sub egimage {

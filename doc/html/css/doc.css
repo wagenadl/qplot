@@ -6,6 +6,18 @@ body {
   padding: 5px;
 }
 
+.top {
+    text-align: center;
+    }
+
+iframe {
+    padding: 0px;
+    margin: 0px;
+    border: 0px;
+    width: 100%;
+    height: 90%;
+    }
+
 .main {
   background-color: white;
   padding: 15px;
@@ -104,13 +116,13 @@ body {
 
 
 :link {
-    background-color: white; color: #0000dd; text-decoration: none;
+    background-color: inherit; color: #0000dd; text-decoration: none;
 }
 :visited {
-    background-color: white; color: #440077;
+    background-color: inherit; color: #440077;
 }
 :hover {
-    background-color: white; color: #ff0000;
+    background-color: inherit; color: #ff0000;
 }
 
 .tmlink:link {

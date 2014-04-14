@@ -4,7 +4,7 @@ use strict;
 
 my @files = ();
 my %files = ();
-opendir DIR, "../../matlab";
+opendir DIR, "../matlab";
 for (sort { cfnoq($a,$b) } readdir DIR) {
   s/.m$// or next;
   push @files, $_;
@@ -12,7 +12,7 @@ for (sort { cfnoq($a,$b) } readdir DIR) {
 }
 closedir DIR;
 
-open OUT, ">ref/alpha.html" or die;
+open OUT, ">html/ref/alpha.html" or die;
 header("QPlot: Alphabetical list of functions");
 
 print OUT <<'EOF';
@@ -65,7 +65,7 @@ sub trailer {
   print OUT <<'EOF';
 </div>
 <div class="tail">
-QPlot Documentation — (C) Daniel Wagenaar, 2013
+QPlot Documentation — (C) <a href="http://www.danielwagenaar.net">Daniel Wagenaar</a>, 2014
 </div>
 </body>
 </html>
