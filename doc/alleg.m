@@ -2,7 +2,7 @@ function alleg
 % Run all examples and save output
 
 dir0=pwd;
-cd 'ref'
+cd 'html/ref'
 
 ff = glob('*_eg.m');
 F = length(ff);

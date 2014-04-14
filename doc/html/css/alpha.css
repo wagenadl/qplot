@@ -10,6 +10,8 @@
     padding-right: 10px;
     vertical-align: baseline;
     line-height: 0px;
+    min-width: 25px;
+    text-align: center;
 }
 .letterspan {
     vertical-align: 7px;

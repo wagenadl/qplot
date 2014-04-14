@@ -1,7 +1,16 @@
 function qmarker(varargin)
 % QMARKER - Select a new marker for QMARK and QPMARK
 %    QMARKER open|solid|brush  +|x|-|||o|s|d|<|>|^|v|p|h  size
-%    selects a marker.
+%    selects a marker. An "open" mark is outlined with the current pen
+%    and filled with white; a "solid" mark is outlined with the current pen
+%    and filled with its color; a "brush" mark is outlined with the current
+%    pen and filled with the current brush (which may be "none").
+%    Marks are: o: circle/disk
+%               + x: horizontal+vertical or diagonal crosses
+%               - |: horizontal or vertical lines
+%               s d p h: square, diamond, pentagon, or hexagon
+%               < > ^ v: left / right / up / down pointing triangles
+%    The fill style has no effect on +|x|-|| marks.
 
 fd = qp_fd(1);
 
