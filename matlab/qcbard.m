@@ -25,7 +25,7 @@ elseif strcmp(vh,'l')
   hori = 1;
   flip = 1;
 else
-  error('Usage: qcbar XYWH [v|h|l|d]');
+  error('Usage: qcbard XYWH [v|h|l|d]');
 end
  
 lut = qlut;

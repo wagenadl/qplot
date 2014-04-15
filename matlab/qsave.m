@@ -27,6 +27,10 @@ if isempty(find(ofn=='.'))
   ofn = [ifn(1:idx(end)) ofn];
 end
 
+if ischar(reso)
+  reso = atoi(reso);
+end
+
 if isempty(reso)
   cmd = sprintf('qplotml %s %s', ifn, ofn);
 else
