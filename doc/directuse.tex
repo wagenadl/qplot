@@ -216,9 +216,9 @@ they designate optional parameters. For instance:\medskip\\
   paper position (\emph{x$_0$}, \emph{y$_0$}), in points, and size
   (\emph{w} x \emph{h}), in points. Or, reenters a previously defined
   panel. Or drops out to the top level. While drawing inside a panel,
-  \cref{figsize} changes the size of the panel, and \cref{fudge}
+  \cref{figsize} changes the size of the panel, and \cref{shrink}
   affects the panel rather than the figure as a whole. Also
-  \cref{xaxis} and \cref{yaxis} affector the axes in the
+  \cref{xaxis} and \cref{yaxis} affect the axes in the
   panel. Choices of pen, brush, font, etc., are not local to panels.}
 
 \cmd{patch}{[ \emph{x$_1$ x$_2$ \ldots} ] [ \emph{y$_1$ y$_2$ \ldots} ]}
@@ -294,11 +294,12 @@ specifies the desired aspect ratio of y:x data units.}
 
 \section{Specifying data}
 
-For specifying very long vectors or image data, the text-based ``[ a b c ... ]''
-syntax may be cumbersome. Instead, you can write ``*\emph{n}'' and
-place direct binary doubles after the command. Or you can write
-``*uc\emph{n}'' and place direct binary uint8s after the command. The
-matlab functions \cref{qplot} and \cref{qimage} give examples.
+For specifying very long vectors or image data, the text-based ``[ a b
+  c ... ]'' syntax may be cumbersome. Instead, you can write
+``*\emph{n}'' and place \emph{n} binary doubles directly after the
+command. Or you can write ``*uc\emph{n}'' and place \emph{n} binary
+unsigned 8-bit integers directly after the command. The matlab
+functions \cref{qplot.m} and \cref{qimage.m} give examples.
 
 \section{Example}
 
@@ -316,12 +317,11 @@ shrink 1
 ~
 ~
 \begin{minipage}[b]{.45\textwidth}
-\includegraphics[width=200pt]{world}
+\includegraphics[width=200pt]{directuse-eg}
 \end{minipage}
 
 \end{centering}
 \medskip
 
-\noindent (The box around the graphic is not part of the actual output.)
   
 \end{document}

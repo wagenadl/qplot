@@ -1,0 +1,6 @@
+figsize 200 150
+plot [1 2 3] [1 3 2]
+at 2 3
+align left bottom
+text 0 -5 "Hello world"
+shrink 1
