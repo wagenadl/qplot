@@ -13,7 +13,7 @@ html/ref/qylim.html: m2html.pl
 	./m2html.pl
 
 html/ref/qylim_eg.png: alleg.m
-	octave --eval alleg
+	PATH=`pwd/..:$PATH` octave --eval alleg
 
 directuse.pdf: directuse.tex directuse-eg.pdf
 	pdflatex $<
