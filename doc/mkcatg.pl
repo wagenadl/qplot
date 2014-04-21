@@ -19,6 +19,8 @@
 use strict;
 
 open IN, "matlab-org.txt" or die;
+mkdir "html" unless -d "html";
+mkdir "html/ref" unless -d "html/ref";
 open OUT, ">html/ref/catg.html" or die;
 header("QPlot: Categorized list of functions");
 
