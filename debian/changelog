@@ -1,11 +1,11 @@
-qplot (0.1.0) trusty; urgency=low
+qqplot (0.1.0) trusty; urgency=low
 
   * Initial release
 
  -- Daniel Wagenaar <daniel.wagenaar@uc.edu>  Mon, 21 Apr 2014 12:48:17 -0500
 
 
-qplot (0.1.0) saucy; urgency=low
+qqplot (0.1.0) saucy; urgency=low
 
   * Initial release
 
