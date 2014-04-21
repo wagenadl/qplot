@@ -4,6 +4,8 @@ function alleg
 dir0=pwd;
 cd 'html/ref'
 
+addpath('../../../matlab');
+
 ff = glob('*_eg.m');
 F = length(ff);
 
