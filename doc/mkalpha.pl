@@ -28,6 +28,8 @@ for (sort { cfnoq($a,$b) } readdir DIR) {
 }
 closedir DIR;
 
+mkdir "html" unless -d "html";
+mkdir "html/ref" unless -d "html/ref";
 open OUT, ">html/ref/alpha.html" or die;
 header("QPlot: Alphabetical list of functions");
 
