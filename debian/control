@@ -2,7 +2,7 @@ Source: qqplot
 Section: science
 Priority: optional
 Maintainer: Daniel Wagenaar <wagenadl@uc.edu>
-Build-Depends: debhelper (>= 8.0.0), libqt4-dev (>= 4.8.0), qt4-qmake (>= 4.8.0)
+Build-Depends: debhelper (>= 8.0.0), libqt4-dev (>= 4.8.0), qt4-qmake (>= 4.8.0), octave (>= 3.6.4)
 Standards-Version: 3.9.3
 Homepage: http://www.danielwagenaar.net/qplot
 
