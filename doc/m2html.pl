@@ -20,6 +20,9 @@ use strict;
 
 system("matlabdoc -f ../matlab /tmp/qplotml 'QPlot' .") and die;
 
+mkdir("html") unless -d "html";
+mkdir("html/ref") unless -d "html/ref";
+
 my @files = ();
 my %files = ();
 opendir DIR, "/tmp/qplotml";
