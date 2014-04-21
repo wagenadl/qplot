@@ -26,3 +26,5 @@ Makefile.Release
 debug
 release
 qplot_debug
+*.aux
+*.log
