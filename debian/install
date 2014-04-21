@@ -2,8 +2,10 @@ qplot /usr/bin
 qpclient /usr/bin
 qpclose /usr/bin
 qplotml /usr/bin
+placeqpt/placeqpt /usr/bin
+placeqpt/placeqpt.pl /usr/share/qplot
 matlab /usr/share/qplot
-doc /usr/share/qplot
-examples /usr/share/qplot
+doc/html /usr/share/qplot
+doc/examples /usr/share/qplot
 debian/qplot.desktop /usr/share/applications
 debian/qplot.svg /usr/share/pixmaps
