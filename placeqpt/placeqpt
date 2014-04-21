@@ -61,7 +61,7 @@ my $here = `pwd`; chomp $here;
 
 $out = "$here/$out" unless $out =~ /^\//;
 
-system("placeqpt.pl < $temppfx.txt > $temppfx.tex") and die "Failed to run placeqpt.pl\n";
+system("/usr/share/qplot/placeqpt.pl < $temppfx.txt > $temppfx.tex") and die "Failed to run placeqpt.pl\n";
 chdir("/tmp"); # must match $temppfx above
 system("pdflatex $temppfx.tex") and die;
 system("mv $temppfx.pdf $out") and die;

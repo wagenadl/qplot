@@ -8,7 +8,10 @@ ff = glob('*_eg.m');
 F = length(ff);
 
 for f=1:F
-  fn = basename(ff{f}, '_eg.m');
+  fn = ff{f};
+  if length(fn)>5 && strcmp(fn(end-4:end), 'eg_.m')==0
+    fn = fn(1:end-5);
+  end
   if exist([fn '.png'])
     continue;
   end
