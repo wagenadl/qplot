@@ -1,13 +1,13 @@
-Source: qplot
+Source: qqplot
 Section: science
 Priority: optional
-Maintainer: Daniel Wagenaar <daw@caltech.edu>
+Maintainer: Daniel Wagenaar <wagenadl@uc.edu>
 Build-Depends: debhelper (>= 8.0.0), libqt4-dev (>= 4.8.0), qt4-qmake (>= 4.8.0)
 Standards-Version: 3.9.3
-Homepage: http://www.danielwagenaar.net
+Homepage: http://www.danielwagenaar.net/qplot
 
-Package: qplot
+Package: qqplot
 Architecture: any
-Depends: ${shlibs:Depends},${misc:Depends}, libqtcore4 (>= 4.8), libqtgui4 (>= 4.8)
+Depends: ${shlibs:Depends},${misc:Depends}, libqtcore4 (>= 4.8), libqtgui4 (>= 4.8), octave (>= 3.6.4)
 Description: Publication-quality plotting package for Matlab, Octave, or stand-alone
  QPlot is a package for production of publication-quality 2D graphics. QPlot can run stand-alone, or, more conveniently, from within Matlab or Octave.
