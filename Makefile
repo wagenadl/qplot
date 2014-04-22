@@ -23,7 +23,6 @@ DOC:; $(MAKE) -C doc
 
 DIST: clean
 	tar czf ../qplot.tgz -C.. --transform s/trunk/qplot/ trunk/src trunk/matlab trunk/qpclient trunk/qpclose trunk/qplotml trunk/doc trunk/Makefile
-	tar czf ../qplot-web.tgz --transform s/web/qplot/ -h web
 
 src/Makefile: src/qplot.pro
 	cd src;	qmake qplot.pro
