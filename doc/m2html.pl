@@ -20,9 +20,6 @@ use strict;
 
 system("./matlabdoc -f ../matlab /tmp/qplotml 'QPlot' .") and die;
 
-mkdir("html") unless -d "html";
-mkdir("html/ref") unless -d "html/ref";
-
 my @files = ();
 my %files = ();
 opendir DIR, "/tmp/qplotml";
@@ -50,7 +47,7 @@ for my $f (@files) {
   close IN;
 
   my @example;
-  if (open IN, "matlab-eg/${f}_eg.m") {
+  if (open IN, "html/ref/${f}_eg.m") {
     while (<IN>) {
       s/^\s+$//;
       if (s/^( +)//) {
@@ -78,8 +75,7 @@ sub output {
   indextext();
   ttltext($fn, $title);
   bodytext($fn, $body);
-
-  egimage($fn) if -f "ref/$fn.png";
+  egimage($fn) if -f "html/ref/$fn.png";
   egtext($fn, $example) if @$example;
 
   trailer();
@@ -147,8 +143,6 @@ sub egtext {
   print OUT "Download <a href=\"${fn}_eg.m\">source</a>.\n";
   print OUT "</div>\n";
   print OUT "</div>\n";
-
-  system("cp matlab-eg/${fn}_eg.m html/ref/") and die;
 }
 
 sub egimage {

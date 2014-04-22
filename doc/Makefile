@@ -3,17 +3,21 @@ ALL: directuse.pdf HTML
 HTML: html/ref/catg.html html/ref/alpha.html \
 	html/ref/qylim.html html/ref/qylim_eg.png
 
-html/ref/alpha.html: mkalpha.pl
+html/ref/alpha.html: mkalpha.pl html/ref/qylim.html
 	./mkalpha.pl
 
-html/ref/catg.html: mkcatg.pl
+html/ref/catg.html: mkcatg.pl html/ref/qylim.html
 	./mkcatg.pl
 
-html/ref/qylim.html: m2html.pl
+html/ref/qylim.html: m2html.pl html/ref/qylim_eg.png
 	./m2html.pl
 
-html/ref/qylim_eg.png: alleg.m
+html/ref/qylim_eg.png: alleg.m html/ref/qylim_eg.m
 	PATH=`pwd`/..:$$PATH octave --eval alleg
+
+html/ref/qylim_eg.m: matlab-eg/qylim_eg.m
+	mkdir -p html/ref
+	/bin/cp matlab-eg/*_eg.m html/ref
 
 directuse.pdf: directuse.tex directuse-eg.pdf
 	pdflatex $<
