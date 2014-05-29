@@ -55,4 +55,4 @@ end
 
 qp_data.curfn = qp_data.fns{idx};
 
-unix(sprintf('touch %s', qp_data.curfn)); % Bring to front
+qunix(sprintf('touch %s', qp_data.curfn)); % Bring to front

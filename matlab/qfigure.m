@@ -97,7 +97,7 @@ qp_data.info(idx).istemp = istmp;
 qp_data.info(idx).extent = [0 0 w h];
 qp_reset(idx);
 
-unix(sprintf('qpclient %s', fn));
+qunix(sprintf('qpclient %s', fn));
 
 if nargout<1
   clear fn

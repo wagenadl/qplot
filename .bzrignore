@@ -28,3 +28,6 @@ release
 qplot_debug
 *.aux
 *.log
+debian/qqplot
+debian/qqplot.substvars
+debian/qplot.substvars
