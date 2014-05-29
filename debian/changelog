@@ -1,3 +1,16 @@
+qqplot (0.1.1) trusty; urgency=low
+
+  * Bugfix release
+
+ -- Daniel Wagenaar <daniel.wagenaar@uc.edu>  Thu, 29 May 2014 19:28:00 -0500
+
+
+qqplot (0.1.1) saucy; urgency=low
+
+  * Bugfix release
+
+ -- Daniel Wagenaar <daniel.wagenaar@uc.edu>  Thu, 29 May 2014 19:28:00 -0500
+
 qqplot (0.1.0) trusty; urgency=low
 
   * Initial release
