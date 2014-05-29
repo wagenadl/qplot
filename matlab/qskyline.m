@@ -37,4 +37,8 @@ else
   yyy = yyy(:);
 end
 
-qpatch([xxx(1); xxx; xxx(end)],[y0; yyy; y0]);
+if isnan(y0)
+  qplot([xxx(1); xxx; xxx(end)],[yyy(1); yyy; yyy(end)]);
+else
+  qpatch([xxx(1); xxx; xxx(end)],[y0; yyy; y0]);
+end

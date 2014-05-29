@@ -53,7 +53,7 @@ else
   cmd = sprintf('qplotml -r%i %s %s', floor(reso), ifn, ofn);
 end
 
-s = unix(cmd);
+s = qunix(cmd);
 if s
   error('qplot failed');
 end

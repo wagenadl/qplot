@@ -51,7 +51,7 @@ end
 if qp_data.info(idx).fd>=0
   fd = qp_data.info(idx).fd;
   qp_data.info(idx).fd=-1;
-  unix(sprintf('qpclose %s', fn));
+  qunix(sprintf('qpclose %s', fn));
   if qp_data.info(idx).istemp
     delete(fn);
   end

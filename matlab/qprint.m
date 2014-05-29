@@ -34,7 +34,7 @@ qselect(ifn);
 
 ofn = sprintf('%s.ps', tempname);
 
-s = unix(sprintf('qplotml %s %s', ifn, ofn));
+s = qunix(sprintf('qplotml %s %s', ifn, ofn));
 if s
   error('qplot failed');
 end
