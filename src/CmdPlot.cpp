@@ -21,7 +21,7 @@
 
 #include "CmdPlot.H"
 #include "Rotate.H"
-
+#include "Range.H"
 #include <QDebug>
 
 static CBuilder<CmdPlot> cbPlot("plot");
@@ -53,22 +53,13 @@ QRectF CmdPlot::dataRange(Statement const &s) {
   if (xdata.isEmpty())
     return QRectF();
 
-  double minx = xdata[0];
-  double maxx = xdata[0];
-  double miny = ydata[0];
-  double maxy = ydata[0];
-
-  for (int k=1; k<xdata.size(); k++)
-    if (xdata[k]<minx)
-      minx=xdata[k];
-    else if (xdata[k]>maxx)
-      maxx=xdata[k];
-  for (int k=1; k<ydata.size(); k++)
-    if (ydata[k]<miny)
-      miny=ydata[k];
-    else if (ydata[k]>maxy)
-      maxy=ydata[k];
-  return QRectF(QPointF(minx,miny), QPointF(maxx,maxy));
+  Range rangex, rangey;
+  foreach (double x, xdata)
+    rangex.extend(x);
+  foreach (double y, ydata)
+    rangey.extend(y);
+  return QRectF(QPointF(rangex.min(),rangey.min()),
+                QPointF(rangex.max(),rangey.max()));
 }
 
 void CmdPlot::render(Statement const &s, Figure &f, bool dryrun) {

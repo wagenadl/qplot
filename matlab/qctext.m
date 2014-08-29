@@ -1,7 +1,7 @@
 function qctext(x, y, varargin)
-% QCTEXT - Render ctext 
-%   QCTEXT(ctext) renders ctext at the current anchor point.
-%   QCTEXT(dx, dy, ctext) renders ctext displaced by the given number of points.
+% QCTEXT - Render text after previous text
+%   QCTEXT(ctext) renders text where previous text plotting left off.
+%   QCTEXT(dx, dy, ctext) modifies placement by the given number of points.
 
 % QPlot - Publication quality 2D graphs with dual coordinate systems
 % Copyright (C) 2014  Daniel Wagenaar
