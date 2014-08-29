@@ -35,6 +35,7 @@ HEADERS += Align.H \
            CmdShareLim.H \
            CmdShrink.H \
            CmdText.H \
+           CmdTextOnPath.H \
            CmdXLim.H \
            CmdYLim.H \
            Command.H \
@@ -76,6 +77,7 @@ SOURCES += Axis.cpp \
            CmdPlot.cpp \
            CmdRefText.cpp \
            CmdText.cpp \
+           CmdTextOnPath.cpp \
            CmdXLim.cpp \
            CmdYLim.cpp \
            Command.cpp \

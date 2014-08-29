@@ -1,4 +1,4 @@
-// Range.H - This file is part of QPlot
+// CmdTextonpath.H - This file is part of QPlot
 
 /* QPlot - Publication quality 2D graphs with dual coordinate systems
    Copyright (C) 2014  Daniel Wagenaar
@@ -17,37 +17,24 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// Range.H
+// CmdTextonpath.H
 
-#ifndef RANGE_H
+#ifndef CMDTEXTONPATH_H
 
-#define RANGE_H
+#define CMDTEXTONPATH_H
 
-class Range {
+#include "Command.H"
+
+class CmdTextOnPath: public Command {
+  /* Syntax:
+       textonpath xdata ydata dxpaper dypaper text
+   */
 public:
-  Range();
-  Range(double x);
-  Range(double x, double y);
-  bool empty() const;
-  void extend(double x) {
-    if (empty_) {
-      min_ = max_ = x;
-      empty_ = false;
-    } else if (x<min_)
-      min_=x;
-    else if (x>max_)
-      max_=x;
-  }
-  void unionize(Range const &r);
-  void intersect(Range const &r);
-  bool contains(double x) const;
-  double min() const { return min_; }
-  double max() const { return max_; }
-  double range() const;
+  virtual bool parse(Statement const &);
+  virtual QRectF dataRange(Statement const &);
+  virtual void render(Statement const &, Figure &, bool);
 private:
-  double min_;
-  double max_;
-  bool empty_;
+  bool usage();
 };
 
 #endif

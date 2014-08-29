@@ -40,17 +40,6 @@ bool Range::empty() const {
   return empty_;
 }
 
-void Range::extend(double x) {
-  if (empty_) {
-    min_ = max_ = x;
-    empty_ = false;
-  } else {
-    if (x<min_)
-      min_=x;
-    if (x>max_)
-      max_=x;
-  }
-}
 
 void Range::unionize(Range const &r) {
   if (r.empty_)

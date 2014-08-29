@@ -29,7 +29,7 @@ static CBuilder<CmdText> cbText("text");
 static CBuilder<CmdText> cbCText("ctext");
 
 bool CmdText::usage() {
-  return error("Usage: text dx dy string");
+  return error("Usage: text [dx dy] string");
 }
 
 bool CmdText::parse(Statement const &s) {
