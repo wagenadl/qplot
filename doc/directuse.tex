@@ -289,22 +289,28 @@ specifies the desired aspect ratio of y:x data units.}
 \cmd{text}{\emph{dx} \emph{dy} \emph{string}}
 \expl{Places the given text \emph{string} at the position (\emph{dx},
   \emph{dy}), specified in points relative to the anchor set by
-  \cref{at}.\\
-  Underscores and hats  make
-  subscripts and superscripts (up to the next space). Slashes and
-  asterisks make enclosed words appear in /italics/
-  and *bold*. Unicode is supported. The string must be enclosed in single or double quotes.}
+  \cref{at}.\\ Underscores and hats make subscripts and superscripts
+  (up to the next space). Slashes and asterisks make enclosed words
+  appear in /italics/ and *bold*. Unicode is supported. The string
+  must be enclosed in single or double quotes. Respects alignment
+  options set by \cref{align}.}
+
+\cmd{ctext}{\emph{dx} \emph{dy} \emph{string}}
+\expl{Places the given text \emph{string} at the position (\emph{dx},
+  \emph{dy}), specified in points relative to the position where the
+  previous text rendering ended (rather than at the anchor set by
+  \cref{at}). This ignores alignment options set by \cref{align}.}
 
 \cmd{xlim}{\emph{x$_0$} \emph{x$_1$}}
-\expl{Fixes the limits of the x-axis. If no xlim is given, tight
-  automatic axis limits apply.}
+\expl{Fixes the limits of the x-axis. (If no xlim is given for a panel, tight
+  automatic axis limits apply.)}
 
 \cmd{ylim}{\emph{y$_0$} \emph{y$_1$}}
 \expl{Fixes the limits of the y-axis.}
 
 \section{Specifying data}
 
-For specifying very long vectors or image data, the text-based ``[ a b
+For specifying long vectors or image data, the text-based ``[ a b
   c ... ]'' syntax may be cumbersome. Instead, you can write
 ``*\emph{n}'' and place \emph{n} binary doubles directly after the
 command. Or you can write ``*uc\emph{n}'' and place \emph{n} binary
