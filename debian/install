@@ -4,7 +4,7 @@ qpclose /usr/bin
 qplotml /usr/bin
 placeqpt/placeqpt /usr/bin
 placeqpt/placeqpt.pl /usr/share/qplot
-matlab /usr/share/qplot
+qplot-0.1.1 /usr/share/octave/packages
 doc/html /usr/share/qplot
 doc/examples /usr/share/qplot
 debian/qplot.desktop /usr/share/applications
