@@ -36,3 +36,6 @@ clean:
 deb:	ALL
 	debuild -us -uc -Isrc/debug -Isrc/release -Ifoo -Isrc/Makefile.Release -Isrc/Makefile.Debug -INOTES -Iqplot -Iqplot_debug -I.bzr -I*.mexglx -I.matlabdoc
 
+intra:	deb
+	sudo cp -u ../qqplot_*.deb /usr/local/dw/apt/archive/
+	sudo /usr/local/dw/apt/update.sh
