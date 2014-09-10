@@ -153,6 +153,9 @@ if ~isempty(kv.tick_lbl)
   if ishori
     reftxt='';
     for k=1:length(kv.tick_lbl)
+      if str2double(kv.tick_lbl{k}) < 0
+	kv.tick_lbl{k} = [ kv.tick_lbl{k} ' ' ];
+      end
       reftxt = [ reftxt kv.tick_lbl{k} ];
     end
     qreftext(reftxt);

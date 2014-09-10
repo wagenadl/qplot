@@ -196,10 +196,11 @@ Text &Text::operator<<(QString const &txt) {
 }
 
 void Text::add(QString txt) {
-  txt.replace("~", " ");
   txt.replace(QRegExp("  +")," ");
+  txt.replace("~", " ");
   if (txt.isEmpty())
     return;
+  txt = QString(QChar(0x200b)) + txt + QString(QChar(0x200b));
   State s(stack.last());
   Span span;
   span.startpos = QPointF(nextx, s.baseline);
@@ -227,9 +228,7 @@ void Text::add(QString txt) {
 }
 
 QRectF Text::bbox() const {
-  QRectF b(bb);
-  b.setRight(nextx);
-  return b;
+  return bb;
 }
 
 double Text::width() const {
