@@ -227,7 +227,9 @@ void Text::add(QString txt) {
 }
 
 QRectF Text::bbox() const {
-  return bb;
+  QRectF b(bb);
+  b.setRight(nextx);
+  return b;
 }
 
 double Text::width() const {
