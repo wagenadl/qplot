@@ -21,6 +21,15 @@ function qselect(fn)
 global qp_data;
 qp_ensure;
 
+dotidx = find(fn=='.');
+slashidx = find(fn=='/');
+if ~isempty(slashidx)
+  dotidx = dotidx(dotidx>slashidx(end));
+end
+if isempty(dotidx)
+  fn = [ fn '.qpt' ];
+end
+
 idx = strmatch(fn, qp_data.fns, 'exact');
 
 if isempty(idx)
