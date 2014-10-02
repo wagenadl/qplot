@@ -50,7 +50,11 @@ end
 if isempty(reso)
   cmd = sprintf('qplotml %s %s', ifn, ofn);
 else
-  cmd = sprintf('qplotml -r%i %s %s', floor(reso), ifn, ofn);
+  if ischar(reso)
+    cmd = sprintf('qplotml -r%s %s %s', reso, ifn, ofn);
+  else
+    cmd = sprintf('qplotml -r%i %s %s', floor(reso), ifn, ofn);
+  end
 end
 
 s = qunix(cmd);
