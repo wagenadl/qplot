@@ -65,6 +65,12 @@ while k<=K
       ptspec{n} = {};
     end
   end
+  
+  for i=1:narg
+    if isscalar(args{k+i})
+      args{k+i} = repmat(args{k+i}, N, 1);
+    end
+  end
     
   for n=1:N
     ptspec{n}{end+1} = subcmd;

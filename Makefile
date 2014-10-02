@@ -34,6 +34,7 @@ clean:
 	$(MAKE) -C doc clean
 
 deb:	ALL
+	updatechangelog
 	debuild -us -uc -Isrc/debug -Isrc/release -Ifoo -Isrc/Makefile.Release -Isrc/Makefile.Debug -INOTES -Iqplot -Iqplot_debug -I.bzr -I*.mexglx -I.matlabdoc
 
 intra:	deb
