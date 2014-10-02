@@ -247,7 +247,8 @@ void CmdGLine::render(Statement const &s, Figure &f, bool dryrun) {
   double w = f.painter().pen().widthF();
   if (w>0)
     bbox.adjust(-w/2, -w/2, w/2, w/2);
-  f.setBBox(QRectF()); // GLines do *not* affect fudge
+  f.setBBox(bbox); // Now GLines do affect shrink. Why would that be bad?
+  // QRectF()); // GLines do *not* affect fudge
 
   if (dryrun)
     return;
