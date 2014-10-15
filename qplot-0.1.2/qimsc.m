@@ -49,8 +49,16 @@ switch nargin
       yy = varargin{2};
       data = varargin{3};
       [Y X] = size(data);
-      dx = (xx(end)-xx(1))/(X-1);
-      dy = (yy(end)-yy(1))/(Y-1);
+      if X==1
+	dx = 1;
+      else
+	dx = (xx(end)-xx(1))/(X-1);
+      end
+      if Y==1
+	dy = 1;
+      else
+	dy = (yy(end)-yy(1))/(Y-1);
+      end
       xywh = [xx(1)-dx/2 yy(1)-dy/2 X*dx Y*dy];
       c0 = min(data(:));
       c1 = max(data(:));
@@ -69,8 +77,16 @@ switch nargin
     c0 = varargin{4};
     c1 = varargin{5};
     [Y X] = size(data);
-    dx = (xx(end)-xx(1))/(X-1);
-    dy = (yy(end)-yy(1))/(Y-1);
+    if X==1
+      dx = 1;
+    else
+      dx = (xx(end)-xx(1))/(X-1);
+    end
+    if Y==1
+      dy = 1;
+    else
+      dy = (yy(end)-yy(1))/(Y-1);
+    end
     xywh = [xx(1)-dx/2 yy(1)-dy/2 X*dx Y*dy];
     data = flipud(data);
   otherwise
