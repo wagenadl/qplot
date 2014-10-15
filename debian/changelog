@@ -1,3 +1,10 @@
+qqplot (0.1.111) trusty; urgency=low
+
+   * Up to date to bzr revision 111
+
+ -- Daniel Wagenaar <wagenadl@uc.edu>  Tue, 07 Oct 2014 12:21:18 -0400
+
+
 qqplot (0.1.109) trusty; urgency=low
 
    * Up to date to bzr revision 109

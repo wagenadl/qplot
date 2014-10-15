@@ -196,6 +196,7 @@ Text &Text::operator<<(QString const &txt) {
 }
 
 void Text::add(QString txt) {
+  QString t0 = txt;
   txt.replace(QRegExp("  +")," ");
   txt.replace("~", " ");
   if (txt.isEmpty())
@@ -205,12 +206,12 @@ void Text::add(QString txt) {
   Span span;
   span.startpos = QPointF(nextx, s.baseline);
   span.font = makeFont(s);
-  if (txt == "\\!") {
+  if (t0 == "\\!") {
     span.text = "";
     QFontMetricsF fm(span.font);
     QRectF r = fm.tightBoundingRect("x");
     nextx -= r.width()/5;
-  } else if (txt == "\\,") {
+  } else if (t0 == "\\,") {
     span.text = "";
     QFontMetricsF fm(span.font);
     QRectF r = fm.tightBoundingRect("x");
