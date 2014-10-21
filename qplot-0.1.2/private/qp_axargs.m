@@ -26,18 +26,30 @@ varargin=varargin(2:end);
 if isempty(xlim)
   xlim=[nan nan];
 end
-if ~isnvector(xlim)
+if ~isa(xlim, 'function_handle') && ~isnvector(xlim)
   error(err);
 end
 
 if length(xlim)~=2
-  xpts = xlim;
-  xlim = [xlim(1) xlim(end)];
+  if isa(xlim, 'function_handle')
+    if isempty(varargin)
+      error(err);
+    else
+      xpts = xlim(varargin{1});
+    end
+  else
+    xpts = xlim;
+  end
+  xlim = [xpts(1) xpts(end)];
 elseif ~isempty(varargin) && isnvector(varargin{1})
   xpts = varargin{1};
   varargin = varargin(2:end);
 elseif ~isempty(varargin) && isnumeric(varargin{1}) && isempty(varargin{1})
   xpts = [];
+  varargin = varargin(2:end);
+elseif length(varargin)>=2 && isa(varargin{1}, 'function_handle') ...
+      && isnvector(varargin{2})
+  xpts = varargin{1}(varargin{2});
   varargin = varargin(2:end);
 else
   xpts = xlim;
@@ -54,6 +66,18 @@ if ~isempty(varargin)
     varargin = varargin(2:end);
   elseif iscell(varargin{1})
     lbls = varargin{1};
+    varargin = varargin(2:end);
+  elseif isa(varargin{1}, 'function_handle') && ~isempty(xpts)
+    lbls = cell(size(xpts));
+    for k=1:length(xpts)
+      lb = varargin{1}(xpts(k));
+      if isnumeric(lb)
+	lb = qp_format(lb);
+	lbls{k} = lb{1};
+      else
+	lbls{k} = lb;
+      end
+    end
     varargin = varargin(2:end);
   end
 end

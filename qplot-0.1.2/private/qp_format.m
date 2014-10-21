@@ -22,20 +22,16 @@ idx = qp_idx;
 global qp_data;
 fmt = qp_data.info(idx).numfmt;
 
-[X Y]=size(xx);
-txt=cell(X,Y);
+S = size(xx);
+txt=cell(S);
 
 if isempty(fmt)
-  for x=1:X
-    for y=1:Y
-      txt{x,y} = num2str(xx(x,y));
-    end
+  for k=1:prod(S)
+    txt{k} = num2str(xx(k));
   end
 else
-  for x=1:X
-    for y=1:Y
-      txt{x,y} = sprintf(fmt, xx(x,y));
-    end
+  for k=1:prod(S)
+    txt{k} = sprintf(fmt, xx(k));
   end
 end
 

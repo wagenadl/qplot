@@ -95,6 +95,7 @@ end
 qp_data.info(idx).fd = fd;
 qp_data.info(idx).istemp = istmp;
 qp_data.info(idx).extent = [0 0 w h];
+qp_data.info(idx).datarange = [nan nan nan nan];
 qp_reset(idx);
 
 qunix(sprintf('qpclient %s', fn));

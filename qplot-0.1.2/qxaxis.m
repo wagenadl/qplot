@@ -11,6 +11,12 @@ function qxaxis(y0, varargin)
 % 
 %    QXAXIS obeys settings from QTICKLEN, QTEXTDIST, and QAXSHIFT.
 %    QXAXIS('t', ...) inverts the sign of these settings.
+%
+%    Either LBLS or XX (but not both) may be a function handle in which case
+%    the labels are calculated from the tick positions (or vice versa). For
+%    example:
+%      QXAXIS(0, @(x) (x/100), [0:25:100], 'Value (%)')
+
 
 % QPlot - Publication quality 2D graphs with dual coordinate systems
 % Copyright (C) 2014  Daniel Wagenaar
@@ -29,6 +35,30 @@ function qxaxis(y0, varargin)
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 err = 'Usage: qxaxis Y0 [xlim] xpts [lbls] [title]';
+
+if nargin<2
+  % All automatic
+  if nargin==1
+    ttl = y0;
+  else
+    ttl = '';
+  end
+  global qp_data;
+  idx = qp_idx;
+  dr = qp_data.info(idx).datarange;
+  if any(isnan(dr))
+    error('QXAXIS needs previous plot for automatic operation');
+  end
+  yy = sensibleticks(dr(3:4), 1);
+  xx = sensibleticks(dr(1:2), 1);
+  tk_t = '';
+  for k=1:length(xx)
+    tk_t = [ tk_t sprintf(' %g', xx(k))];
+  end
+  fprintf(1,'qxaxis(%g, [%s], ''%s'');\n', yy(1), tk_t(2:end), ttl);
+  qxaxis(yy(1), xx, ttl);
+  return;
+end
 
 if ischar(y0)
   if strcmp(y0, 't')

@@ -7,9 +7,11 @@ function qcaxis(varargin)
 %    the same size as CC overrides the default tick labels. Labels are
 %    suppressed if LBLS is empty.
 %    QCAXIS(..., ttl) adds a title to the axis.
-%    QCAXIS normally places the axis to the right or below the color bar.
-%    QCAXIS('t', ...) places the axis above, and QCAXIS('l', ...) places the
-%    axis to the left instead. 
+%    QCAXIS normally places the axis to the right or below the color bar, but
+%    if the color bar was created with negative width, the axis goes to the
+%    left or above instead.
+%    QCAXIS(dir, ...), where DIR is one of 'l', 't', 'b', or 'r', overrides
+%    the default location.
 % 
 %    QCAXIS interprets settings from QTICKLEN, QTEXTDIST, and QAXSHIFT
 %    differently from QXAXIS and QYAXIS: positive values are away from the
@@ -33,7 +35,36 @@ function qcaxis(varargin)
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-side=1;
+idx = qp_idx;
+global qp_data;
+if ~isfield(qp_data.info(idx), 'cbar')
+  error('QCAXIS needs a previous QCBAR');
+end
+cb = qp_data.info(idx).cbar;
+
+if nargin<=1
+  if nargin==1
+    ttl = varargin{1};
+  else
+    ttl = '';
+  end
+  % Automatic everything
+  clim = cb.clim;
+  tkx = sensibleticks(clim);
+  clim_t = sprintf('[%g %g]', clim);
+  tkx_t = '';
+    for i=1:length(tkx)
+      tkx_t = [tkx_t sprintf(' %g', tkx(i))];
+    end
+    tkx_t = [ tkx_t ']' ];
+  tkx_t(1) = '[';
+  fprintf(1, 'qcaxis(%s, %s, ''%s'');\n', clim_t, tkx_t, ttl);
+  qcaxis(clim, tkx, ttl);
+  return
+end
+
+side = sign(cb.xywh_p(3)+cb.xywh_p(4));
+
 if ~isempty(varargin)
   if ischar(varargin{1})
     switch varargin{1};
@@ -55,16 +86,10 @@ end
 err = 'Usage: qcaxis [side] [clim] cpts [lbls] [title]';
 [clim, cpts, lbls, ttl] = qp_axargs(err, varargin{:});
 
-idx = qp_idx;
-global qp_data;
 ticklen = qp_data.info(idx).ticklen;
 axshift = qp_data.info(idx).axshift;
 lbldist = qp_data.info(idx).textdist(1);
 ttldist = qp_data.info(idx).textdist(2);
-if ~isfield(qp_data.info(idx), 'cbar')
-  error('QCAXIS needs a previous QCBAR');
-end
-cb = qp_data.info(idx).cbar;
 
 dlim = qca_ctodat(clim, cb);
 dpts = qca_ctodat(cpts, cb);
@@ -81,7 +106,13 @@ switch cb.orient
     pcoord = cb.xywh_p(1);
     if side>0
       dcoord = dcoord+cb.xywh_d(3);
-      pcoord = pcoord+cb.xywh_p(3);
+      if cb.xywh_p(3)>0
+	pcoord = pcoord+cb.xywh_p(3);
+      end
+    else
+      if cb.xywh_p(3)<0
+	pcoord = pcoord+cb.xywh_p(3);
+      end
     end
   case 'x'
     lblrot = 0;
@@ -89,8 +120,13 @@ switch cb.orient
     pcoord = cb.xywh_p(2);
     if side<0
       dcoord = dcoord+cb.xywh_d(4);
+      if cb.xywh_p(4)<0
+	pcoord = pcoord+cb.xywh_p(4);
+      end
     else
-      pcoord = pcoord+cb.xywh_p(4);
+      if cb.xywh_p(4)>0
+	pcoord = pcoord+cb.xywh_p(4);
+      end
     end
 end
 ticklen = ticklen*side;

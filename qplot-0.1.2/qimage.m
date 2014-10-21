@@ -83,6 +83,10 @@ elseif C~=3
   error('data must be YxXx1 or YxXx3');
 end
 
+idx = qp_idx(1);
+global qp_data;
+qp_data.info(idx).imrect = xywh;
+
 data = permute(data,[3 2 1]);
 fprintf(fd, 'image %g %g %g %g %i *uc%i\n', ...
     xywh(1), xywh(2), xywh(3), xywh(4), ...

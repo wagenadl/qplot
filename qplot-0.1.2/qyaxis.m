@@ -12,6 +12,11 @@ function qyaxis(y0, varargin)
 %    QYAXIS obeys settings from QTICKLEN, QTEXTDIST, and QAXSHIFT.
 %    QYAXIS('r', ...) inverts the sign of these settings.
 %    QYAXIS('R', ...) additionally orients the title the other way.
+%
+%    Either LBLS or YY (but not both) may be a function handle in which case
+%    the labels are calculated from the tick positions (or vice versa). For
+%    example:
+%      QYAXIS(0, [0:0.2:1], @(y) (y*100), 'Value (%)')
 
 % QPlot - Publication quality 2D graphs with dual coordinate systems
 % Copyright (C) 2014  Daniel Wagenaar
@@ -32,6 +37,30 @@ function qyaxis(y0, varargin)
 % Note that we use variable names from qxaxis, which may be confusing.
 
 err = 'Usage: qyaxis X0 [ylim] ypts [lbls] [title]';
+
+if nargin<2
+  % All automatic
+  if nargin==1
+    ttl = y0;
+  else
+    ttl = '';
+  end
+  global qp_data;
+  idx = qp_idx;
+  dr = qp_data.info(idx).datarange;
+  if any(isnan(dr))
+    error('QYAXIS needs previous plot for automatic operation');
+  end
+  yy = sensibleticks(dr(3:4), 1);
+  xx = sensibleticks(dr(1:2), 1);
+  tk_t = '';
+  for k=1:length(yy)
+    tk_t = [ tk_t sprintf(' %g', yy(k))];
+  end
+  fprintf(1,'qyaxis(%g, [%s], ''%s'');\n', xx(1), tk_t(2:end), ttl);
+  qyaxis(xx(1), yy, ttl);
+  return;
+end
 
 if ischar(y0)
   if strcmp(y0, 'r') || strcmp(y0, 'R')
