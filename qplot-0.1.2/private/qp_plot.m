@@ -36,6 +36,9 @@ if length(xx) ~= length(yy)
 end
 xx=xx(:);
 yy=yy(:);
+if isempty(xx)
+  return;
+end
 
 [iup, idn] = qp_schmitt(~isnan(xx+yy),.7,.3,2);
 
@@ -45,5 +48,26 @@ for k=1:length(iup)
   fwrite(fd, xx(iup(k):idn(k)-1), 'double');
   fwrite(fd, yy(iup(k):idn(k)-1), 'double');
 end
+
+global qp_data;
+idx = qp_idx;
+dr = qp_data.info(idx).datarange;
+mx = min(xx);
+Mx = max(xx);
+my = min(yy);
+My = max(yy);
+if isnan(dr(1)) || mx<dr(1)
+  dr(1) = mx;
+end
+if isnan(dr(2)) || Mx>dr(2)
+  dr(2) = Mx;
+end
+if isnan(dr(3)) || my<dr(3)
+  dr(3) = my;
+end
+if isnan(dr(4)) || My>dr(4)
+  dr(4) = My;
+end
+qp_data.info(idx).datarange = dr;
 
 qp_flush(fd);

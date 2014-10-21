@@ -81,3 +81,4 @@ if ~isempty(xywh)
 end
 qp_data.info(idx).panel = id;
 
+qp_data.info(idx).datarange = [nan nan nan nan];
