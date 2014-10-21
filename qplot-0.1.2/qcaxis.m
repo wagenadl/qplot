@@ -42,7 +42,7 @@ if ~isfield(qp_data.info(idx), 'cbar')
 end
 cb = qp_data.info(idx).cbar;
 
-if nargin<=1
+if nargin==0 || (nargin==1 && ischar(varargin{1}))
   if nargin==1
     ttl = varargin{1};
   else
