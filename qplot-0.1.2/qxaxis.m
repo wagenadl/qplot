@@ -16,6 +16,10 @@ function qxaxis(y0, varargin)
 %    the labels are calculated from the tick positions (or vice versa). For
 %    example:
 %      QXAXIS(0, @(x) (x/100), [0:25:100], 'Value (%)')
+%
+%    Without any arguments or with just a title as an argument, QXAXIS tries
+%    to determine sensible defaults based on previous calls to QPLOT. Your
+%    mileage may vary.
 
 
 % QPlot - Publication quality 2D graphs with dual coordinate systems

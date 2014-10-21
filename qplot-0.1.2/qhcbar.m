@@ -1,4 +1,4 @@
-function qhcbar(x0, y0, y1, w)
+function qhcbar(y0, x0, x1, w)
 % QHCBAR - Add a horizontal color bar to a figure
 %   QHCBAR(y0, x0, x1) adds a horizontal color bar to the figure between
 %   (X0, Y0) and (X1, Y0), expressed in data coordinates.
