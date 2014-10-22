@@ -1,7 +1,7 @@
 Figures:
-clq
-qfigure
+qclf
 qclose
+qfigure
 qpanel
 qprint
 qselect
@@ -42,35 +42,38 @@ qpen
 
 Tick axes:
 qcaxis
+qmticks
 qxaxis
 qyaxis
-qmticks
 
 Annotations:
 qarrow
 qat
-qtext
 qdarrow
+qtext
 qtitle
 
 Legends:
 qlegend
-qmlegend
 qlegopt
+qmlegend
 qplegend
 
 Color bars:
-qcbar
-qcbard
-qcbarh
+qhcbar
+qvcbar
 
 Paper coordinate plotting:
 qarea
-qgarea
-qgimage
-qgline
 qline
 qpmark
+
+Mixed coordinate plotting:
+qgarea
+qgarea2
+qgimage
+qgline
+qgline2
 
 Grouping:
 qendgroup
