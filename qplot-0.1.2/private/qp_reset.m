@@ -30,3 +30,4 @@ qp_data.info(idx).panelextent = { };
 qp_data.info(idx).panel = '-';
 qp_data.info(idx).numfmt = '';
 qp_data.info(idx).legopt = [];
+qp_data.info(idx).datarange = [nan nan nan nan];
