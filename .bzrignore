@@ -32,3 +32,4 @@ debian/qqplot
 debian/qqplot.substvars
 debian/qplot.substvars
 eg_legend.qpt
+debian/files

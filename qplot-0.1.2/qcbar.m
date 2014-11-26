@@ -10,6 +10,7 @@ function qcbar(w, l, varargin)
 %   coordinates instead. In this case, the color scale runs up (down) if H 
 %   is positive (negative).
 %   This command only works after a previous QIMSC.
+%   QVCBAR and QHCBAR offer the same functionality with an easier interface.
 %   See also QCAXIS.
 
 % QPlot - Publication quality 2D graphs with dual coordinate systems
