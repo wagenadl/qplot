@@ -2,6 +2,7 @@ function id = qsubplot(x, y, w, h)
 % QSUBPLOT - Define a new subpanel in relative units
 %    QSUBPLOT(x, y, w, h) defines a new subpanel. X, Y, W, H are specified
 %    as fractions of the figure size.
+%    QSUBPLOT(rows, cols, idx) defines a new subpanel in Matlab style.
 %    id = QSUBPLOT(...) returns the ID of the subpanel, for use with QPANEL.
 
 % QPlot - Publication quality 2D graphs with dual coordinate systems
@@ -36,8 +37,17 @@ end
 if ischar(w)
   w = str2double(w);
 end
-if ischar(h)
+if nargin>=4 && ischar(h)
   h = str2double(h);
+end
+if nargin==3
+  rows = x;
+  cols = y;
+  idx = w;
+  h=1/rows;
+  w=1/cols;
+  x=w*mod(idx-1, cols);
+  y=h*floor((idx-1)/cols);
 end
 
 idx = qp_idx(1);
