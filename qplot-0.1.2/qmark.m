@@ -44,3 +44,4 @@ fwrite(fd, yy, 'double');
 
 qp_flush(fd);
 
+qp_updaterange(xx, yy);

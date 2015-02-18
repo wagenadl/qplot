@@ -51,14 +51,7 @@ else
   end
 end
 
-dotidx = find(fn=='.');
-slashidx = find(fn=='/');
-if ~isempty(slashidx)
-  dotidx = dotidx(dotidx>slashidx(end));
-end
-if isempty(dotidx)
-  fn = [ fn '.qpt' ];
-end
+fn = qp_ensureqpt(fn);
 
 THRESH = 36; % If attempting to make >36", treat dimensions as points
 
