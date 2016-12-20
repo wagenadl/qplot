@@ -24,7 +24,7 @@
 #include <QDebug>
 #include <QImage>
 #include <QFile>
-#include <QPrinter>
+#include <QPdfWriter>
 #include <QSvgGenerator>
 #include <QFileInfo>
 #include <QTemporaryFile>
@@ -32,6 +32,7 @@
 #include <QProcessEnvironment>
 #include <QDebug>
 
+#include <math.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -50,6 +51,8 @@ double OVERRIDEHEIGHT = 0;
 
 #define MAXTRIES_DEFAULT 100
 int MAXTRIES = MAXTRIES_DEFAULT;
+
+#undef QPLOT_POSTSCRIPT_SUPPORT
 
 extern void setFACTOR(double); // in Factor.C
 
@@ -183,26 +186,28 @@ void renderSVG(Program &prog, Figure &fig, QString ofn) {
 }
 
 void renderPDF(Program &prog, Figure &fig, QString ofn) {
-  QPrinter img(QPrinter::ScreenResolution);
-  img.setResolution(72);
-  img.setPageMargins(0, 0, 0, 0, QPrinter::Point);
-  img.setPaperSize(QSizeF(iu2pt(fig.extent().width()),
-			  iu2pt(fig.extent().height())),
-		   QPrinter::Point);
-  img.setOutputFileName(ofn);
-  img.setOutputFormat(QPrinter::PdfFormat);
+  QPdfWriter img(ofn);
+  img.setPageSizeMM(QSizeF(iu2pt(fig.extent().width())*25.4/72,
+			   iu2pt(fig.extent().height())*25.4/72));
+
   fig.painter().begin(&img);
-  //  qDebug() << "Render hint pre: " << fig.painter().renderHints();
-  fig.painter().scale(iu2pt(), iu2pt());
-  fig.setDashScale(iu2pt());
+
+  double dpix = img.logicalDpiX();
+  double dpiy = img.logicalDpiY();
+
+  fig.painter().translate(-10*dpix/72., -10*dpiy/72.);
+  // I don't know why this translation is needed.
+
+  fig.painter().scale(iu2pt()*dpix/72.0,
+		      iu2pt()*dpix/72.0);
+  fig.setDashScale(iu2pt()*sqrt(dpix*dpiy)/72.0);
   fig.painter().translate(-fig.extent().left(),
 			  -fig.extent().top());
-  //  qDebug() << "Final render";
   prog.render(fig);
-  //  qDebug() << "Final render done";
-  //  qDebug() << "Render hint: " << fig.painter().renderHints();
   fig.painter().end();
 }
+
+#ifdef QPLOT_POSTSCRIPT_SUPPORT
 
 void renderPS(Program &prog, Figure &fig, QString ofn, QString ttl="") {
   QSizeF p = papersize();
@@ -249,6 +254,8 @@ void renderPS(Program &prog, Figure &fig, QString ofn, QString ttl="") {
   prog.render(fig);
   fig.painter().end();
 }
+
+#endif
 
 bool renderImage(Program &prog, Figure &fig, QString ofn) {
   QImage img(int(fig.extent().width()),
@@ -309,13 +316,17 @@ int noninteractive(QString ifn, QString ofn) {
   if (extn == "svg") {
     renderSVG(prog, fig, ofn);
   } else if (extn == "eps") {
-    return error("Writing to eps is not supported");
+    return error("Writing to .eps is not supported in this version");
   } else if (extn == "pdf") {
     renderPDF(prog, fig, ofn);
   } else if (extn=="ps") {
+#ifdef QPLOT_POSTSCRIPT_SUPPORT
     renderPS(prog, fig, ofn, ifn + QString::fromUtf8(" — ")
 	     + QDateTime::currentDateTime()
 	     .toString(QString::fromUtf8("MM/dd/’yy hh:mm")));
+#else
+    return error("Writing to .ps is not supported in this version");
+#endif
   } else if (extnIsBitmap) {
     if (!renderImage(prog, fig, ofn))
       return error("Failed to save.");
