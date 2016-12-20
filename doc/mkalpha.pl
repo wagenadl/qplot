@@ -20,7 +20,7 @@ use strict;
 
 my @files = ();
 my %files = ();
-opendir DIR, "../matlab";
+opendir DIR, "../qplot-0.1.2";
 for (sort { cfnoq($a,$b) } readdir DIR) {
   s/.m$// or next;
   push @files, $_;

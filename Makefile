@@ -25,7 +25,7 @@ DIST: clean
 	tar czf ../qplot.tgz -C.. --transform s/trunk/qplot/ trunk/src trunk/matlab trunk/qpclient trunk/qpclose trunk/qplotml trunk/doc trunk/Makefile
 
 src/Makefile: src/qplot.pro
-	cd src;	qmake qplot.pro
+	cd src;	qmake -qt=qt5 qplot.pro
 
 clean:
 	$(MAKE) -C src clean
