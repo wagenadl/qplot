@@ -18,7 +18,7 @@
 
 use strict;
 
-system("./matlabdoc -f ../matlab /tmp/qplotml 'QPlot' .") and die;
+system("./matlabdoc -f ../qplot-0.1.2 /tmp/qplotml 'QPlot' .") and die;
 
 my @files = ();
 my %files = ();
