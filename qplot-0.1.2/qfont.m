@@ -1,6 +1,7 @@
 function qfont(varargin)
 % QFONT - Select font 
 %    QFONT family [bold] [italic] size  selects a new font for QPlot.
+%    The default font is Helvetica at 10 points.
 
 % QPlot - Publication quality 2D graphs with dual coordinate systems
 % Copyright (C) 2014  Daniel Wagenaar

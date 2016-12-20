@@ -29,6 +29,7 @@ my $H=0;
 my $LASTLINE;
 my $PDFNO = 1;
 my $TEMPPFX = "/tmp/placeqpt-$$";
+my $TEXTCOL = "black";
 
 while (<>) {
   chomp;
@@ -47,6 +48,10 @@ while (<>) {
     syntax() if @bits;
   } elsif ($k eq "FONTSTYLE") {
     $FONTSTYLE = shift @bits or syntax();
+    syntax() if @bits;
+  } elsif ($k eq "COLOR") {
+    print STDERR "Color set\n";
+    $TEXTCOL = shift @bits or syntax();
     syntax() if @bits;
   } elsif ($k eq "PANEL") {
     my $x = shift @bits;
@@ -181,7 +186,7 @@ sub writeText {
   $y = -$y;
 
   ensureStarted();
-  print "\\path (${x}pt,${y}pt) node {$txt};\n";
+  print "\\path (${x}pt,${y}pt) node[text=$TEXTCOL] {$txt};\n";
 }
 
 sub writeInclude {
