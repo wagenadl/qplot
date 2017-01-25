@@ -1,0 +1,11 @@
+table {
+    text-align: center;
+    width: 100%;
+}
+td {
+    padding: 10px;
+}
+h2 {
+    margin-top: 12px;
+    margin-bottom: 7px;
+}

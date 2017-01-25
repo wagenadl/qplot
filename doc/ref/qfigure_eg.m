@@ -1,0 +1,1 @@
+qfigure('qfigure', 6)
