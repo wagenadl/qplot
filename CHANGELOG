@@ -1,0 +1,25 @@
+qplot 0.2.0
+
+  Many accumulated octave improments
+
+Better build process
+
+  -- Daniel A. Wagenaar <daw@caltech.edu>  Wed, 25 Jan 2017 15:07:00 -0800
+
+qplot 0.1.2
+
+  Octave improvements
+
+  -- Daniel Wagenaar <daniel.wagenaar@uc.edu>  Wed, 3 Sep 2014 19:28:00 -0500
+
+qplot 0.1.1
+
+  Bugfix release
+
+  -- Daniel Wagenaar <daniel.wagenaar@uc.edu>  Fri, 29 Aug 2014 19:28:00 -0500
+
+qplot 0.1.0
+
+  * Initial release
+
+  -- Daniel Wagenaar <daniel.wagenaar@uc.edu>  Mon, 21 Apr 2014 12:48:17 -0500
