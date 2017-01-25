@@ -14,46 +14,6 @@
 HERE=`dirname $0`
 MNAME=$1
 
-echo $MNAME
-
-which Xvfb > /dev/null || {
-  echo ensurexvfb: Xvfb not found >&2
-  exit 1
-}
-
-# Find a free server number by looking at .X*-lock files in /tmp.
-find_free_servernum() {
-    i=79
-    while [ -f /tmp/.X$i-lock ]; do
-        i=$(($i + 1))
-    done
-    echo $i
-}
-
-if [ -f /tmp/xvfb-$USER.running ]; then
-  # We're supposed to already have one; let's check
-  export DISPLAY=`cat /tmp/xvfb-$USER.running`
-  if xdpyinfo > /dev/null 2>&1; then
-      true
-  else
-      DISPLAY=""
-      rm -f /tmp/xvfb-$USER.running
-  fi
-else
-      DISPLAY=""
-fi
-
-if [ -z $DISPLAY ]; then
-  # If we're here, we clearly do not have a display running
-  SERVERNUM=$(find_free_servernum)
-  MCOOKIE=$(mcookie)
-  xauth add ":$SERVERNUM" "." "$MCOOKIE" > /dev/null 2>/dev/null || exit 1
-  Xvfb ":$SERVERNUM" -screen 0 2048x1536x24 -nolisten tcp > /dev/null 2>/dev/null &
-  echo ":$SERVERNUM" > /tmp/xvfb-$USER.running
-  export DISPLAY=":$SERVERNUM"
-  echo $DISPLAY
-  # Should we sleep briefly?
-  sleep 0.100
-fi
+export DISPLAY=`$HERE/ensurexvfb`
 
 PATH=$HERE/../build:$PATH /usr/bin/octave --no-gui --path $HERE/../octave/qplot-0.2 $MNAME
