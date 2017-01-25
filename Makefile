@@ -96,7 +96,13 @@ install: ALL
 	install -m644 $(wildcard $(DOCSRC)/home/*.m) $(DOCPATH)/home
 	install -m644 $(wildcard $(DOCSRC)/home/*.png) $(DOCPATH)/home
 	install -m644 $(wildcard $(DOCSRC)/home/*.pdf) $(DOCPATH)/home
-# Install placeqpt
+# Install PLACEQPT:
 	install -d $(SHAREPATH)/qplot
 	install placeqpt/placeqpt.pl $(SHAREPATH)/qplot
 	install placeqpt/placeqpt $(INSTALLPATH)/bin
+# Install OTHER THINGS
+	install -d $(SHAREPATH)/pixmaps
+	install tools/qplot.svg $(SHAREPATH)/pixmaps
+	install -d $(SHAREPATH)/applications
+	install tools/qplot.desktop $(SHAREPATH)/applications
+# I should create a mimetype entry for .qpt
