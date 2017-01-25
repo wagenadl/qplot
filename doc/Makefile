@@ -96,7 +96,7 @@ qplot-directuse.pdf: ../doc/qplot-directuse.tex directuse-eg.pdf
 	pdflatex $<
 
 directuse-eg.pdf: ../doc/directuse-eg.qpt
-	../build/qplot $< $@
+	DISPLAY=`../tools/ensurexvfb` ../build/qplot $< $@
 
 clean:;	rm -f *.aux *.dvi *.log
 	rm -f html/tut/*.qpt

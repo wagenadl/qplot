@@ -1,0 +1,51 @@
+#!/bin/zsh
+
+# ensurexvfb ensures that an xvfb server is running for the current user,
+# and returns its display number.
+
+# (C) Daniel Wagenaar, 2008
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; version 2 of the License. A copy of the
+# GNU General Public License can be found in the file COPYING.
+
+# This program is inspired by xvfb-run.sh:
+# Copyright (C) 2005 The T2 SDE Project
+# Copyright (C) XXXX - 2005 Debian
+
+which Xvfb > /dev/null || {
+  echo ensurexvfb: Xvfb not found >&2
+  exit 1
+}
+
+# Find a free server number by looking at .X*-lock files in /tmp.
+find_free_servernum() {
+    i=79
+    while [ -f /tmp/.X$i-lock ]; do
+        i=$(($i + 1))
+    done
+    echo $i
+}
+
+if [[ -f /tmp/xvfb-$USER.running ]]; then
+  # We're supposed to already have one; let's check
+  export DISPLAY=`cat /tmp/xvfb-$USER.running`
+  if xdpyinfo > /dev/null 2>&1; then
+    echo $DISPLAY
+    exit 0
+  fi
+  rm -f /tmp/xvfb-$USER.running
+fi
+
+# If we're here, we clearly do not have a display running
+SERVERNUM=$(find_free_servernum)
+MCOOKIE=$(mcookie)
+xauth add ":$SERVERNUM" "." "$MCOOKIE" > /dev/null 2>/dev/null || exit 1
+Xvfb ":$SERVERNUM" -screen 0 2048x1536x24 -nolisten tcp > /dev/null 2>/dev/null &
+echo ":$SERVERNUM" > /tmp/xvfb-$USER.running
+echo ":$SERVERNUM"
+echo "ensurexvfb: Xvfb started on display :$SERVERNUM" >&2
+
+# Should we sleep briefly?
+sleep 0.100
