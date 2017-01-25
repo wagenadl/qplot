@@ -28,7 +28,7 @@ endif
 
 OCTPKGVSN=0.2
 OCTPKG=qplot-$(OCTPKGVSN)
-OCTPATH=$(SHAREPATH)/share/octave/packages/$(OCTPKG)
+OCTPATH=$(SHAREPATH)/octave/packages/$(OCTPKG)
 
 QMAKE=qmake
 SELECTQT="-qt=qt5"
@@ -73,10 +73,10 @@ install: ALL
 	install scripts/qpclose  $(INSTALLPATH)/bin
 	install scripts/qplotml  $(INSTALLPATH)/bin
 # Install OCTAVE:
-	install -d $(SHAREPATH)/octave/packages/$(OCTPKG)/private
+	install -d $(OCTPATH)/private
 	install -m644 $(wildcard octave/$(OCTPKG)/*.m) $(OCTPATH)
 	install -m644 $(wildcard octave/$(OCTPKG)/private/*.m) $(OCTPATH)/private
-	install -d $(SHAREPATH)/octave/packages/$(OCTPKG)/packinfo
+	install -d $(OCTPATH)/packinfo
 	install -m644 octave/$(OCTPKG)/packinfo/DESCRIPTION $(OCTPATH)/packinfo
 # Install DOCS:
 	install -d $(DOCPATH)
