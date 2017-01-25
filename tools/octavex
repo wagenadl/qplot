@@ -16,4 +16,4 @@ MNAME=$1
 
 export DISPLAY=`$HERE/ensurexvfb`
 
-PATH=$HERE/../build:$PATH /usr/bin/octave --no-gui --path $HERE/../octave/qplot-0.2 $MNAME
+PATH=$HERE/../build:$HERE/../scripts:$PATH /usr/bin/octave --no-gui --path $HERE/../octave/qplot-0.2 $MNAME
