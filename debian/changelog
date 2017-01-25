@@ -1,3 +1,9 @@
+qqplot (0.2.0-1) yakkety; urgency=low
+
+  Many accumulated octave improments
+
+ -- Daniel A. Wagenaar <daw@caltech.edu>  Wed, 25 Jan 2017 15:16:41 -0800
+
 qqplot (0.2) yakkety; urgency=low
 
    * Upstream version 0.2
