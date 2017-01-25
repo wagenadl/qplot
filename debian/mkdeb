@@ -60,7 +60,6 @@ $first =~ /^(.*?)\s+\((.*?)\)\s+(.*)$/ or die "Cannot parse debian/changelog\n";
 my $debpkg = $1;
 my $debvsn = $2;
 my $debinfo = $3;
-die "Debian package mismatch\n" unless $debpkg eq $package;
 
 print STDERR "Version: $debvsn vs $vsn ($debinfo; $debpkg)\n";
 
