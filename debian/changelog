@@ -1,3 +1,9 @@
+qqplot (1.2) yakkety; urgency=low
+
+   * Upstream version 1.2
+
+ -- Daniel Wagenaar <daw@caltech.edu>  Wed, 02 Jan 2016  15:04:21 -0800
+
 qqplot (1.0.133) trusty; urgency=low
 
    * Up to date to bzr revision 133
