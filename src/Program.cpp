@@ -131,5 +131,6 @@ void Program::render(Figure &f, bool dryrun) {
     }
   } 
   //qDebug() << "Program: fudged? " << f.checkFudged();
+  f.endGroups(); // this prevents panel change warning when file is incomplete
   f.leavePanel();
 }

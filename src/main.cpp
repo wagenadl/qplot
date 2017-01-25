@@ -24,6 +24,7 @@
 #include <QDebug>
 #include <QImage>
 #include <QFile>
+#include <QDir>
 #include <QPdfWriter>
 #include <QSvgGenerator>
 #include <QFileInfo>
@@ -61,11 +62,36 @@ int error(QString const &s) {
   return 1;
 }
 
+int error_failtosave(QString const &fn) {
+  if (fn.isEmpty())
+    return error("Failed to save: no filename");
+  QFileInfo fi(fn);
+  QDir d(fi.dir());
+  if (!d.exists())
+    return error(QString::fromUtf8("Failed to save as “%1”: The folder “%2” does not exist.").arg(fn).arg(d.path()));
+  else if (!QFileInfo(d.path()).isWritable())
+    return error(QString::fromUtf8("Failed to save as “%1”: The folder “%2” is not writable.").arg(fn).arg(d.path()));
+  else if (fi.exists() && !fi.isWritable()) 
+    return error(QString::fromUtf8("Failed to save as “%1”: File exists and is not writable.").arg(fn));
+  else
+    return error(QString::fromUtf8("Failed to save as “%1”. (Reason unknown.)"));
+}
+
+int error_unknownextension(QString const &extn) {
+  if (extn.isEmpty())
+    return error("Failed to save: filename without an extension.");
+  else
+    return error(QString::fromUtf8("Failed to save. Unknown extension “") + extn
+		 + QString::fromUtf8("”."));
+}
+
 int usage(int ex=1) {
   Error() << "Usage: qplot input.txt";
   Error() << "       qplot input.txt output.pdf|svg|ps";
   Error() << "       qplot [-rDPI] input.txt output.png|tif|jpg";
   Error() << "       qplot -wWIDTH -hHEIGHT ... overrides output size (pts)";
+  Error() << "       qplot --maxtries N ... overrides max tries for shrink";
+  Error() << "       qplot --autoraise ... automatically raises the window on update";
   Error() << "";
   Error() << "For noninteractive use, input.txt may be '-' for stdin, and";
   Error() << "output.EXT may be '-.EXT' for stdout.";
@@ -134,6 +160,8 @@ int read(Program &prog, QString ifn) {
   return 1;
 }  
 
+static bool autoraise = false;
+
 int interactive(QString ifn, QApplication *app) {
   if (ifn=="-")
     Error() << "Input may not be stdin for interactive use";
@@ -148,7 +176,8 @@ int interactive(QString ifn, QApplication *app) {
   Watcher wtch(ifn, &prog, &fig, &win);
   int idx = ifn.lastIndexOf('/');
   win.setWindowTitle("qplot: " + ((idx>=0) ? ifn.mid(idx+1) : ifn));
-  QObject::connect(&wtch, SIGNAL(ping()), &win, SLOT(raise()));
+  if (autoraise)
+    QObject::connect(&wtch, SIGNAL(ping()), &win, SLOT(raise()));
   QObject::connect(&wtch, SIGNAL(ping()), &win, SLOT(update()));
   win.setContents(&fig, &prog);
   win.setMargin(pt2iu(20));
@@ -159,6 +188,9 @@ int interactive(QString ifn, QApplication *app) {
   QString path = fi.path();
   QString leaf = fi.fileName();
   QFile pidfile(path + "/.qp-" + leaf + ".pid");
+  QFile fbfile(path + "/.qp-" + leaf + ".fb");
+  if (fbfile.exists())
+    win.setFeedbackFile(fbfile.fileName());
   pidfile.open(QIODevice::WriteOnly);
   char pid[100];
   snprintf(pid, 100, "%i\n", getpid());
@@ -169,28 +201,31 @@ int interactive(QString ifn, QApplication *app) {
   return r;
 }
 
-void renderSVG(Program &prog, Figure &fig, QString ofn) {
+bool renderSVG(Program &prog, Figure &fig, QString ofn) {
   QSvgGenerator img;
   img.setFileName(ofn);
   img.setResolution(90); // anything else seems to be poorly supported
   img.setViewBox(QRectF(QPointF(0,0),
 			QSizeF(90./72*iu2pt(fig.extent().width()),
 			       90./72*iu2pt(fig.extent().height()))));
-  fig.painter().begin(&img);
+  if (!fig.painter().begin(&img))
+    return false;
   fig.painter().scale(90./72*iu2pt(), 90./72*iu2pt());
   fig.setDashScale(90./72*iu2pt());
   fig.painter().translate(fig.extent().left(),
 			  fig.extent().top());
   prog.render(fig);
   fig.painter().end();
+  return true;
 }
 
-void renderPDF(Program &prog, Figure &fig, QString ofn) {
+bool renderPDF(Program &prog, Figure &fig, QString ofn) {
   QPdfWriter img(ofn);
   img.setPageSizeMM(QSizeF(iu2pt(fig.extent().width())*25.4/72,
 			   iu2pt(fig.extent().height())*25.4/72));
 
-  fig.painter().begin(&img);
+  if (!fig.painter().begin(&img))
+    return false;
 
   double dpix = img.logicalDpiX();
   double dpiy = img.logicalDpiY();
@@ -205,11 +240,12 @@ void renderPDF(Program &prog, Figure &fig, QString ofn) {
 			  -fig.extent().top());
   prog.render(fig);
   fig.painter().end();
+  return true;
 }
 
 #ifdef QPLOT_POSTSCRIPT_SUPPORT
 
-void renderPS(Program &prog, Figure &fig, QString ofn, QString ttl="") {
+bool renderPS(Program &prog, Figure &fig, QString ofn, QString ttl="") {
   QSizeF p = papersize();
   QPrinter img(QPrinter::ScreenResolution);
   img.setResolution(72);
@@ -219,7 +255,8 @@ void renderPS(Program &prog, Figure &fig, QString ofn, QString ttl="") {
 		       iu2pt(fig.extent().height())));
   img.setOutputFileName(ofn);
   img.setOutputFormat(QPrinter::PostScriptFormat);
-  fig.painter().begin(&img);
+  if (!fig.painter().begin(&img))
+    return false;
   fig.painter().translate((p.width()-imsize.width())/2,
 			  (p.height()-imsize.height())/2);
 
@@ -253,6 +290,7 @@ void renderPS(Program &prog, Figure &fig, QString ofn, QString ttl="") {
 			  -fig.extent().top());
   prog.render(fig);
   fig.painter().end();
+  return true;
 }
 
 #endif
@@ -314,11 +352,13 @@ int noninteractive(QString ifn, QString ofn) {
   prerender(prog, fig);
 
   if (extn == "svg") {
-    renderSVG(prog, fig, ofn);
-  } else if (extn == "eps") {
+    if (!renderSVG(prog, fig, ofn))
+      return error_failtosave(ofn);
+   } else if (extn == "eps") {
     return error("Writing to .eps is not supported in this version");
   } else if (extn == "pdf") {
-    renderPDF(prog, fig, ofn);
+    if (!renderPDF(prog, fig, ofn))
+      return error_failtosave(ofn);
   } else if (extn=="ps") {
 #ifdef QPLOT_POSTSCRIPT_SUPPORT
     renderPS(prog, fig, ofn, ifn + QString::fromUtf8(" — ")
@@ -329,9 +369,9 @@ int noninteractive(QString ifn, QString ofn) {
 #endif
   } else if (extnIsBitmap) {
     if (!renderImage(prog, fig, ofn))
-      return error("Failed to save.");
+      return error_failtosave(ofn);
   } else {
-    return error("Unknown extension.");
+    return error_unknownextension(extn);
   }
 
   if (usetmpf) {
@@ -355,6 +395,12 @@ int noninteractive(QString ifn, QString ofn) {
 
 int main(int argc, char **argv) {
   QApplication app(argc, argv);
+
+  QProcessEnvironment env(QProcessEnvironment::systemEnvironment());
+  if (env.contains("QPLOT_MAXITER")) {
+    MAXTRIES = env.value("QPLOT_MAXITER").toInt();
+    qDebug() << "Max shrink iterations set to " << MAXTRIES;
+  }
 
   int argi=1;
   if (argc<2)
@@ -411,17 +457,30 @@ int main(int argc, char **argv) {
       if (!ok)
 	return usage();
       argi++;
+    } else if (arg=="--autoraise") {
+      autoraise = true;
+      argi++;
+    } else if (arg=="--maxtries") {
+      argi++;
+      if (argi>=argc)
+	return usage();
+      arg = argv[argi];
+      bool ok;
+      MAXTRIES = arg.toInt(&ok);
+      if (!ok)
+	return usage();
+      argi++;
+    } else if (arg.startsWith("--maxtries=")) {
+      argi++;
+      bool ok;
+      MAXTRIES=arg.mid(QString("--maxtries=").length()).toInt(&ok);
+      if (!ok)
+	return usage();
     } else {
       break;
     }
   }
 
-  QProcessEnvironment env(QProcessEnvironment::systemEnvironment());
-  if (env.contains("QPLOT_MAXITER")) {
-    MAXTRIES = env.value("QPLOT_MAXITER").toInt();
-    qDebug() << "Max shrink iterations set to " << MAXTRIES;
-  }
-  
   if (argc-argi == 1) 
     return interactive(argv[argi], &app);
   else if (argc-argi == 2) 

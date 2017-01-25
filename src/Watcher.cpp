@@ -20,6 +20,7 @@
 // Watcher.C
 
 #include "Watcher.H"
+#include "QPWidget.H"
 #include <QFileSystemWatcher>
 #include <QFile>
 #include <QFileInfo>
@@ -33,7 +34,7 @@
 
 extern void prerender(Program &prog, Figure &fig); // defined in main.C
 
-Watcher::Watcher(QString fn, Program *prog, Figure *fig, QWidget *dest):
+Watcher::Watcher(QString fn, Program *prog, Figure *fig, QPWidget *dest):
   fn(fn), prog(prog), fig(fig), dest(dest) {
   working = false;
   //  warnlabel = new QPushButton(dest);
@@ -112,6 +113,7 @@ bool Watcher::reread(bool errorbox) {
     bool ok = prog->read(f, fn);
     Error::setDestination(0);
     if (ok) {
+      dest->resetFeedbackFile();
       fig->hardReset();
       ::prerender(*prog, *fig);
       emit ping();
