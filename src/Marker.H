@@ -40,6 +40,7 @@ struct Marker {
     CROSS,
     HBAR,
     VBAR,
+    STAR,
   };
   enum Fill {
     BRUSH,

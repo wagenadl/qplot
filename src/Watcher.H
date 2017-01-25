@@ -31,7 +31,7 @@
 class Watcher: public QObject {
   Q_OBJECT;
 public:
-  Watcher(QString fn, Program *prog, Figure *fig, QWidget *dest);
+  Watcher(QString fn, Program *prog, Figure *fig, class QPWidget *dest);
   virtual ~Watcher();
   bool reread(bool errorbox);
 signals:
@@ -46,7 +46,7 @@ private:
   Figure *fig;
   class QFileSystemWatcher *fsw;
   class QTimer *timer;
-  QWidget *dest;
+  QPWidget *dest;
   //class QPushButton *warnlabel;
   class QTextEdit *warnlabel;
   bool working;

@@ -26,6 +26,7 @@
 #include "ScrollWidget.H"
 #include "Figure.H"
 #include "Program.H"
+#include <QFile>
 
 class QPWidget: public ScrollWidget {
   Q_OBJECT;
@@ -37,19 +38,28 @@ public:
   virtual void setWindowTitle(QString s);
   void setRuler(bool);
   bool hasRuler() const;
+  void setFeedbackFile(QString);
+  void resetFeedbackFile();
+  void takeScreenShot();
 protected:
   virtual void keyPressEvent(QKeyEvent *);
   virtual void paintEvent(QPaintEvent *);
   virtual void resizeEvent(QResizeEvent *);
+  virtual void mouseReleaseEvent(QMouseEvent *);
   virtual void mouseMoveEvent(QMouseEvent *);
   virtual void mousePressEvent(QMouseEvent *);
+  virtual void mouseDoubleClickEvent(QMouseEvent *);
+  virtual void closeEvent(QCloseEvent *);
 private:
-  void reportTrack(QPointF xy);
+  void reportTrack(QPointF xy, int button, QString what);
   void renderMargin(QPainter &);
   void renderRuler(QPainter &);
   Axis *findXAxis();
   Axis *findYAxis();
+  void feedback(QString);
+  void deleteFeedbackFile();
 private:
+  QFile fbfile;
   Figure *fig;
   Program *prog;
   double marg;

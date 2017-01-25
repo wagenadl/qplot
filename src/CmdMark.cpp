@@ -174,6 +174,13 @@ static void rendermark(QPainter &p, QPointF const &xy,
   case Marker::VBAR:
     p.drawLine(xy + QPointF(0,r), xy + QPointF(0,-r));
     break;
+  case Marker::STAR: {
+    double rx = 0.5*r; // cos(60)
+    double ry = 0.866*r; // sin(60)
+    p.drawLine(xy + QPointF(r,0), xy + QPointF(-r,0));
+    p.drawLine(xy + QPointF(rx,ry), xy + QPointF(-rx,-ry));
+    p.drawLine(xy + QPointF(rx,-ry), xy + QPointF(-rx,ry));
+  } break;
   }
 }      
       

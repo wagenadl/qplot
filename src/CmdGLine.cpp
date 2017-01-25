@@ -226,36 +226,52 @@ void CmdGLine::render(Statement const &s, Figure &f, bool dryrun) {
     retractR.push_back(rR);
   }
 
+  QList<QPolygonF> ppp;
+  QPolygonF pcurrent;
   int N = pts.size();
-  QPolygonF pp(N);
   for (int n=0; n<N; n++) {
     QPointF p = pts[n];
-    if (n>0 && retractL[n]!=0) {
+    if (n>0 && (retractL[n]!=0 || retractR[n]!=0)) {
+      // break after this segment
       QPointF dp = p-pts[n-1];
       double phi = atan2(dp.y(), dp.x());
-      p -= QPointF(cos(phi)*retractL[n], sin(phi)*retractL[n]);
+      pcurrent << p - QPointF(cos(phi)*retractL[n], sin(phi)*retractL[n]);
+      ppp << pcurrent;
+      pcurrent = QPolygonF();
     }
     if (n<N-1 && retractR[n]!=0) {
       QPointF dp = p-pts[n+1];
       double phi = atan2(dp.y(), dp.x());
       p -= QPointF(cos(phi)*retractR[n], sin(phi)*retractR[n]);
     }
-    pp[n] = p;
+    pcurrent << p;
+  }
+  if (pcurrent.size()>1)
+    ppp << pcurrent;
+
+  QRectF bbox;
+  foreach (QPolygonF const &p, ppp) {
+    if (bbox.isNull())
+      bbox = p.boundingRect();
+    else
+      bbox |= p.boundingRect();
   }
 
-  QRectF bbox = pp.boundingRect();
   double w = f.painter().pen().widthF();
   if (w>0)
     bbox.adjust(-w/2, -w/2, w/2, w/2);
+
   f.setBBox(bbox); // Now GLines do affect shrink. Why would that be bad?
   // QRectF()); // GLines do *not* affect fudge
 
   if (dryrun)
     return;
 
-  if (s[0].str=="garea")
-    f.painter().drawPolygon(pp);
-  else
-    f.painter().drawPolyline(pp);
+  foreach (QPolygonF const &p, ppp) {
+    if (s[0].str=="garea")
+      f.painter().drawPolygon(p);
+    else
+      f.painter().drawPolyline(p);
+  }
 
 }

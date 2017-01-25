@@ -24,6 +24,9 @@
 #include <QKeyEvent>
 #include <QLabel>
 #include <math.h>
+#include <QApplication>
+#include <QClipboard>
+
 #define MARGPIX 15
 
 QPWidget::QPWidget(QWidget *parent): ScrollWidget(parent) {
@@ -236,11 +239,11 @@ void QPWidget::renderMargin(QPainter &p) {
 
 void QPWidget::mousePressEvent(QMouseEvent *e) {
   ScrollWidget::mousePressEvent(e);
-  if (e->button()==1 && fig) {
+  if (fig) {
     QPointF xy = e->pos();
     QPointF world = (xy-tlDest()) / scale() + topLeft();
     trackpanel = fig->panelAt(world);
-    reportTrack(xy);
+    reportTrack(xy, e->button(), "press");
   }
 }
 
@@ -261,11 +264,15 @@ void QPWidget::keyPressEvent(QKeyEvent *e) {
     update();
     break;
   case Qt::Key_C:
-    setMouseTracking(!hasMouseTracking());
-    if (hasMouseTracking())
-      coord->show();
-    else
-      coord->hide();
+    if (e->modifiers() & Qt::ControlModifier) {
+      takeScreenShot();
+    } else {
+      setMouseTracking(!hasMouseTracking());
+      if (hasMouseTracking())
+	coord->show();
+      else
+	coord->hide();
+    }
     break;
   case Qt::Key_R:
     setRuler(!hasRuler());
@@ -273,6 +280,25 @@ void QPWidget::keyPressEvent(QKeyEvent *e) {
   default:
     ScrollWidget::keyPressEvent(e);
   }
+}
+
+void QPWidget::takeScreenShot() {
+  if (!fig || !prog)
+    return;
+
+  QRect r0(QPoint(0,0), size());
+  QRectF world = fig->extent();
+  QPointF tld = tlDest();
+  double s = scale();
+  QPointF tlw = topLeft();
+  world.translate(-tlw);
+  world = QRectF(world.topLeft()*s, world.size()*s);
+  world.translate(tld);
+  QRectF r = r0;
+  r &= world;
+  QPixmap pm = QPixmap::grabWidget(this, r.toRect());
+  QClipboard *cb = QApplication::clipboard();
+  cb->setPixmap(pm);
 }
 
 bool QPWidget::hasRuler() const {
@@ -299,9 +325,23 @@ void QPWidget::resizeEvent(QResizeEvent *e) {
 
 void QPWidget::mouseMoveEvent(QMouseEvent *e) {
   ScrollWidget::mouseMoveEvent(e);
-  if (e->buttons()==0)
-    reportTrack(e->pos());
- }
+  reportTrack(e->pos(), e->buttons(), "move");
+}
+
+void QPWidget::mouseReleaseEvent(QMouseEvent *e) {
+  ScrollWidget::mouseReleaseEvent(e);
+  reportTrack(e->pos(), e->button(), "release");
+}
+
+void QPWidget::mouseDoubleClickEvent(QMouseEvent *e) {
+  ScrollWidget::mouseDoubleClickEvent(e);
+  reportTrack(e->pos(), e->button(), "double");
+}
+
+void QPWidget::closeEvent(QCloseEvent *e) {
+  ScrollWidget::closeEvent(e);
+  deleteFeedbackFile();
+}
 
 Axis *QPWidget::findXAxis() {
   if (trackpanel == fig->currentPanelName())
@@ -317,7 +357,7 @@ Axis *QPWidget::findYAxis() {
     return &fig->panelRef(trackpanel).yaxis;
 }
 
-void QPWidget::reportTrack(QPointF xy) {
+void QPWidget::reportTrack(QPointF xy, int button, QString what) {
   if (!fig)
     return;
   QPointF world = (xy-tlDest()) / scale() + topLeft();
@@ -336,4 +376,36 @@ void QPWidget::reportTrack(QPointF xy) {
   if (trackpanel != "-")
     c = "[" + trackpanel + "] " + c;
   coord->setText(c);
+  if (button || what!="move")
+    feedback(QString("%1 %2 %3 %4 %5").
+	     arg(what).arg(trackpanel).arg(x).arg(y).arg(button));
 }
+
+void QPWidget::setFeedbackFile(QString f) {
+  if (fbfile.isOpen())
+    fbfile.close();
+  fbfile.setFileName(f);
+  resetFeedbackFile();
+}
+
+void QPWidget::resetFeedbackFile() {
+  if (fbfile.isOpen())
+    fbfile.close();
+  if (fbfile.exists())
+    fbfile.open(QIODevice::WriteOnly | QIODevice::Append);
+}
+
+void QPWidget::feedback(QString s) {
+  if (fbfile.isOpen()) {
+    fbfile.write((s+"\n").toUtf8());
+    fbfile.flush();
+  }
+}
+
+void QPWidget::deleteFeedbackFile() {
+  if (fbfile.isOpen()) {
+    fbfile.close();
+    fbfile.remove();
+  }
+}
+
