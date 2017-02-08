@@ -102,7 +102,7 @@ install: ALL
 	install placeqpt/placeqpt $(INSTALLPATH)/bin
 # Install OTHER THINGS
 	install -d $(SHAREPATH)/pixmaps
-	install tools/qplot.svg $(SHAREPATH)/pixmaps
+	install -m644 tools/qplot.svg $(SHAREPATH)/pixmaps
 	install -d $(SHAREPATH)/applications
 	install tools/qplot.desktop $(SHAREPATH)/applications
 # I should create a mimetype entry for .qpt
