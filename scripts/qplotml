@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/usr/bin/perl -w
+
+use strict;
 
 # QPlot - Publication quality 2D graphs with dual coordinate systems
 # Copyright (C) 2014  Daniel Wagenaar
@@ -16,8 +18,31 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# This drops Matlabs private labraries from the library path
+# This drops Matlab's private labraries from the library path.
+# This version optimized for running in sshfs-mounted location.
 
-LD_LIBRARY_PATH=`echo $LD_LIBRARY_PATH | perl -e '@a=split(/:/,<>); @b=(); for (@a) { push @b, $_ unless $_ =~ /matlab/; }; print join(":", @b);'`
+use Cwd;
 
-qplot $*
+my @args = @ARGV;
+
+my $libpath = $ENV{LD_LIBRARY_PATH};
+my @libs = split(/:/, $libpath);
+my @olibs;
+for (@libs) {
+  push @olibs, $_ unless $_ =~ /matlab/;
+}
+$ENV{LD_LIBRARY_PATH} = join(":", @olibs);
+
+my $cwd = Cwd::cwd();
+
+for (@args) {
+  if (/\./ && !(/^\//)) {
+    $_ = "$cwd/$_";
+  }
+}
+
+chdir('/tmp');
+
+unshift @args, "qplot";
+
+exec(@args);
