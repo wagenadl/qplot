@@ -25,7 +25,7 @@ use Cwd;
 
 my @args = @ARGV;
 
-my $libpath = $ENV{LD_LIBRARY_PATH};
+my $libpath = $ENV{LD_LIBRARY_PATH} || "";
 my @libs = split(/:/, $libpath);
 my @olibs;
 for (@libs) {
@@ -43,6 +43,7 @@ for (@args) {
 
 chdir('/tmp');
 
-unshift @args, "qplot";
+my $qplotbin = $ENV{QPLOT_BINARY} || "qplot";
+unshift @args, $qplotbin;
 
 exec(@args);
