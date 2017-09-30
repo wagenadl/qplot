@@ -55,7 +55,7 @@ if (-f $pidfile) {
 }
 
 unless ($running) {
-  my $libpath = $ENV{LD_LIBRARY_PATH};
+  my $libpath = $ENV{LD_LIBRARY_PATH} || "";
   my @libs = split(/:/, $libpath);
   my @olibs;
   for (@libs) {
@@ -69,7 +69,8 @@ unless ($running) {
     close STDIN;
     close STDOUT;
     my @args;
-    push @args, "qplot";
+    my $qplotbin = $ENV{QPLOT_BINARY} || "qplot";
+    push @args, $qplotbin;
     push @args, $ifn;
     exec(@args);
   }
