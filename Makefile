@@ -34,7 +34,8 @@ QMAKE=qmake
 SELECTQT="-qt=qt5"
 
 DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
-export QPLOT_BINARY = build/qplot
+export QPLOT_BINARY = $(PWD)/build/qplot
+$(echo $(QPLOT_BINARY)
 
 # Build QPLOT (release and debug)
 COMMON=src/qplot.pro
