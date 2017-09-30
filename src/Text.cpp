@@ -201,7 +201,12 @@ void Text::add(QString txt) {
   txt.replace("~", " ");
   if (txt.isEmpty())
     return;
-  txt = QString(QChar(0x200b)) + txt + QString(QChar(0x200b));
+  /* In Qt5, ZWNJ and ZWSP result in incorrect measurements. I am therefore
+     forced to get rid of their use. That doesn't make me happy, because
+     I know there was a reason why I put them in. I just cannot remember.
+  */
+  // txt = QString(QChar(0x200b)) + txt + QString(QChar(0x200b));
+  // txt = QString(QChar(0x200c)) + txt + QString(QChar(0x200c));
   State s(stack.last());
   Span span;
   span.startpos = QPointF(nextx, s.baseline);
@@ -223,6 +228,7 @@ void Text::add(QString txt) {
   if (span.text != "") {
     QFontMetricsF fm(span.font);
     QRectF r = fm.tightBoundingRect(txt);
+    //    qDebug() << "add" << txt << txt.size() << r << span.startpos << fm.width(txt) << fm.boundingRect(txt);
     bb |= r.translated(span.startpos);
     nextx += fm.width(txt);
   }
@@ -240,6 +246,7 @@ void Text::render(QPainter &p, QPointF const &xy0) {
   foreach (Span const &s, spans) {
     p.setFont(s.font);
     QString txt = s.text;
+    //    qDebug() << "render" << txt << txt.size() << xy0 << s.startpos << p.boundingRect(QRectF(0,0,0,0), Qt::AlignLeft| Qt::AlignBottom, txt);
     p.drawText(xy0+s.startpos, txt);
   }
 }

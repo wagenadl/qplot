@@ -33,11 +33,11 @@ while k<=K
     error('Expecting a command');
   end
   narg = [];
-  if ~isempty(strcmp(tolower(subcmd), ...
-	strtoks('absdata reldata abspaper relpaper')))
+  if ~isempty(strmatch(tolower(subcmd), ...
+	strtoks('absdata reldata abspaper relpaper'), 'exact'))
     narg = 2;
-  elseif ~isempty(strcmp(tolower(subcmd), ...
-	strtoks('rotdata rotpaper')))
+  elseif ~isempty(strmatch(tolower(subcmd), ...
+	strtoks('rotdata rotpaper'), 'exact'))
     narg = 1;
   elseif strcmp(tolower(subcmd), 'retract')
     if k+2 <= K && isnvector(args{k+2})
@@ -47,13 +47,13 @@ while k<=K
     end
   end
   if isempty(narg)
-    error('Unknown command');
+    error(sprintf('Unknown command: %s', subcmd));
   elseif k+narg > K
-    error('Missing arguments');
+    error(sprintf('Missing arguments to %s', subcmd));
   else
     for i=1:narg
       if ~isnvector(args{k+i})
-	error('Missing arguments');
+	error(sprintf('Wrong arguments to %s', subcmd));
       end
     end
   end

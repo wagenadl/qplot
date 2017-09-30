@@ -1,6 +1,4 @@
-#!/usr/bin/perl -w
-
-use strict;
+#!/bin/sh
 
 # QPlot - Publication quality 2D graphs with dual coordinate systems
 # Copyright (C) 2014  Daniel Wagenaar
@@ -18,31 +16,31 @@ use strict;
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# This drops Matlab's private labraries from the library path.
-# This version optimized for running in sshfs-mounted location.
+date '+%H:%M:%S:%N'
 
-use Cwd;
+IFN=$1
 
-my @args = @ARGV;
+DIR=`dirname $IFN`
+LEAF=`basename $IFN`
 
-my $libpath = $ENV{LD_LIBRARY_PATH};
-my @libs = split(/:/, $libpath);
-my @olibs;
-for (@libs) {
-  push @olibs, $_ unless $_ =~ /matlab/;
-}
-$ENV{LD_LIBRARY_PATH} = join(":", @olibs);
+date '+%H:%M:%S:%N'
 
-my $cwd = Cwd::cwd();
+PIDFILE=$DIR/.qp-$LEAF.pid
+if [ -f $PIDFILE ]; then
+  RUNNING=1
+  PID=`cat $PIDFILE`
+  grep -q $LEAF /proc/$PID/cmdline 2>/dev/null || RUNNING=0
+else
+  RUNNING=0
+fi
 
-for (@args) {
-  if (/\./ && !(/^\//)) {
-    $_ = "$cwd/$_";
-  }
-}
+date '+%H:%M:%S:%N'
 
-chdir('/tmp');
+if [ $RUNNING = "0" ]; then
+  LD_LIBRARY_PATH=`echo $LD_LIBRARY_PATH | perl -e '@a=split(/:/,<>); @b=(); for (@a) { push @b, $_ unless $_ =~ /matlab/; }; print join(":", @b);'`
+  qplot $* </dev/null >/dev/null &
+  #</dev/null >&/dev/null &
+  # disown
+fi
 
-unshift @args, "qplot";
-
-exec(@args);
+date '+%H:%M:%S:%N'

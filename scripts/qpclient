@@ -1,4 +1,6 @@
-#!/bin/sh
+#!/usr/bin/perl -w
+
+use strict;
 
 # QPlot - Publication quality 2D graphs with dual coordinate systems
 # Copyright (C) 2014  Daniel Wagenaar
@@ -16,24 +18,59 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# This nasty perl version is much faster from an sshfs mounted location
+# than the original shell version.
 
-IFN=$1
+use Cwd;
 
-DIR=`dirname $IFN`
-LEAF=`basename $IFN`
+sub usage {
+  print STDERR "Usage: qpclient FILE.qpt\n";
+  exit 1;
+}
 
-PIDFILE=$DIR/.qp-$LEAF.pid
-if [ -f $PIDFILE ]; then
-  RUNNING=1
-  PID=`cat $PIDFILE`
-  grep -q $LEAF /proc/$PID/cmdline 2>/dev/null || RUNNING=0
-else
-  RUNNING=0
-fi
+my $ifn = shift @ARGV or usage();
+usage() if @ARGV;
 
-if [ $RUNNING = "0" ]; then
-  LD_LIBRARY_PATH=`echo $LD_LIBRARY_PATH | perl -e '@a=split(/:/,<>); @b=(); for (@a) { push @b, $_ unless $_ =~ /matlab/; }; print join(":", @b);'`
-  qplot $* </dev/null >/dev/null &
-  #</dev/null >&/dev/null &
-  # disown
-fi
+my $dir = $ifn;
+$dir = "." unless $dir =~ s/\/[^\/]*$//;
+$dir = "/" if $dir eq "";
+$dir = Cwd::cwd() if $dir eq ".";
+my $leaf = $ifn;
+$leaf =~ s/^.*\///;
+
+my $running = 0;
+
+my $pidfile = "$dir/.qp-$leaf.pid";
+if (-f $pidfile) {
+  open PID, "<$pidfile" or die;
+  my $pid = <PID>;
+  close PID;
+  chomp $pid;
+  if (open PROC, "</proc/$pid/cmdline") {
+    while (<PROC>) {
+      $running = 1 if /$leaf/;
+    }
+    close PROC;
+  }
+}
+
+unless ($running) {
+  my $libpath = $ENV{LD_LIBRARY_PATH};
+  my @libs = split(/:/, $libpath);
+  my @olibs;
+  for (@libs) {
+    push @olibs, $_ unless $_ =~ /matlab/;
+  }
+  $ENV{LD_LIBRARY_PATH} = join(":", @olibs);
+  if (fork()) {
+    # parent
+  } else {
+    # child
+    close STDIN;
+    close STDOUT;
+    my @args;
+    push @args, "qplot";
+    push @args, $ifn;
+    exec(@args);
+  }
+}
