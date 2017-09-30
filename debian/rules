@@ -9,5 +9,8 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
+DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+
 %:
-	dh $@ 
+	echo rules: $@: $(DEB_BUILD_OPTIONS)
+	DEB_BUILD_OPTIONS="parallel=6" dh $@ --parallel
