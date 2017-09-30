@@ -48,10 +48,10 @@ html/tut/tut-01-01.png: ../doc/tut/tut-01-01.png
 	mkdir -p html/tut
 	cp $^ $@
 
-html/tut/tut-02-01.png html/tut/tut-02-02.png html/tut-02-03.png: html/tut/tut-01.m
+html/tut/tut-02-01.png html/tut/tut-02-02.png html/tut/tut-02-03.png: html/tut/tut-01.m
 	(cd html/tut; ../../$(OCTAVE) ../../$< )
 
-html/tut/tut-03-01.png html/tut/tut-03-02.png html/tut-03-03.png: html/tut/tut-03.m
+html/tut/tut-03-01.png html/tut/tut-03-02.png html/tut/tut-03-03.png: html/tut/tut-03.m
 	(cd html/tut; ../../$(OCTAVE) ../../$< )
 
 # Style files
