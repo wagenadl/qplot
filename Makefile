@@ -58,7 +58,7 @@ clean:; rm -rf build build-dbg build-doc
 
 # Build DOCS
 DOCS: build-doc/Makefile QPLOT
-	+make -C build-doc
+	make -C build-doc
 
 build-doc/Makefile: doc/Makefile
 	mkdir -p build-doc
