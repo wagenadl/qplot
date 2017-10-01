@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/sh
 
 # ensurexvfb ensures that an xvfb server is running for the current user,
 # and returns its display number.
