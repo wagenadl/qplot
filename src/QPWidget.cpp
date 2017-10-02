@@ -296,7 +296,7 @@ void QPWidget::takeScreenShot() {
   world.translate(tld);
   QRectF r = r0;
   r &= world;
-  QPixmap pm = QPixmap::grabWidget(this, r.toRect());
+  QPixmap pm = grab(r.toRect());
   QClipboard *cb = QApplication::clipboard();
   cb->setPixmap(pm);
 }
