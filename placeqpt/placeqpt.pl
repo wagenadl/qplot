@@ -227,8 +227,8 @@ sub getSize {
       return \@wh;
     }
   } elsif ($fn =~ /pdf$/) {
-    my $id = `identify $fn`;
-    $id =~ / (\d+)x(\d+) / or die;
+    my $id = `gm identify $fn`;
+    $id =~ / (\d+)x(\d+)[+ ]/ or die;
     @wh = ($1, $2);
   }
   return \@wh;
