@@ -3,7 +3,8 @@ build
 build-doc
 octave-core
 *~
-
+doc/html
+doc/*.pdf
 debian/qqplot
 debian/*.substvars
 debian/files

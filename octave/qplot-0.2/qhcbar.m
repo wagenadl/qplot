@@ -11,6 +11,7 @@ function qhcbar(y0, x0, x1, w)
 %   QHCBAR uses QAXSHIFT to create distance between Y0 and the color bar.
 %   Positive QAXSHIFT creates space, negative creates overlap.
 %   QHCBAR without arguments creates a color bar below the QIMSC.
+%   See also QCAXIS.
 
 % QPlot - Publication quality 2D graphs with dual coordinate systems
 % Copyright (C) 2014  Daniel Wagenaar
