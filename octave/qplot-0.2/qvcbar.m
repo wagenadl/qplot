@@ -11,6 +11,7 @@ function qvcbar(x0, y0, y1, w)
 %   QVCBAR uses QAXSHIFT to create distance between X0 and the color bar.
 %   Positive QAXSHIFT creates space, negative creates overlap.
 %   QVCBAR without arguments creates a color bar to the right of the QIMSC.
+%   See also QCAXIS.
 
 % QPlot - Publication quality 2D graphs with dual coordinate systems
 % Copyright (C) 2014  Daniel Wagenaar

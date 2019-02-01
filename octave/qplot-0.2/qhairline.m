@@ -1,6 +1,9 @@
 function qhairline(x)
-% QHAIRLINE - Select hairline 
-%    QHAIRLINE family [bold] [italic] size  selects a new hairline for QPlot.
+% QHAIRLINE - Specify hairline width
+%    QHAIRLINE(width) specifies the width of hairlines (lines with 
+%    nominal width 0) as rendered to screen or pdf.
+%    The default is 0.25 pt when rendering to pdf. When rendering to
+%    screen, the default is 0, which implies "one pixel wide".
 
 % QPlot - Publication quality 2D graphs with dual coordinate systems
 % Copyright (C) 2014  Daniel Wagenaar
