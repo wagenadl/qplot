@@ -1,6 +1,7 @@
 qplot
 build
 build-doc
+build-web
 octave-core
 *~
 doc/html
