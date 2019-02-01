@@ -60,14 +60,16 @@ clean:; rm -rf build build-dbg build-doc
 DOCS: build-doc/Makefile QPLOT
 	make -C build-doc
 
-build-doc/Makefile: doc/Makefile
+build-doc/Makefile: doc/Makefile.doc
 	mkdir -p build-doc
-	cp doc/Makefile build-doc/
+	cp doc/Makefile.doc build-doc/Makefile
 
 DOCSRC=build-doc/html
 DOCPATH=$(SHAREPATH)/doc/qplot
 
-install: ALL
+install: install-qplot # install-doc
+
+install-qplot: ALL
 # Install QPLOT:
 	install -d $(INSTALLPATH)/bin
 	install build/qplot      $(INSTALLPATH)/bin
