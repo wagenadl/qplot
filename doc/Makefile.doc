@@ -1,3 +1,5 @@
+# DO NOT RUN THIS MAKEFILE IN PLACE. Use toplevel Makefile instead.
+
 ALL: qplot-directuse.pdf HTML
 
 HTML: REF TUT CSS HOME
