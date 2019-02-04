@@ -14,8 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-ALL: QPLOT # DOCS
-
+ALL: QPLOT # DOCS WEB
 
 ifdef DESTDIR
   # Debian uses this
@@ -54,20 +53,31 @@ build-dbg/Makefile: $(GENERATED) $(COMMON) FORCE
 	mkdir -p build-dbg
 	( cd build-dbg; $(QMAKE) $(SELECTQT) ../src/qplot.pro )
 
-clean:; rm -rf build build-dbg build-doc
+clean:; rm -rf build build-dbg build-doc build-web
+
+# Build WEB
+WEB: build-web/Makefile DOCS
+	make -C build-web
+
+build-web/Makefile: web/Makefile.web
+	mkdir -p build-web
+	cp web/Makefile.web build-web/Makefile
 
 # Build DOCS
 DOCS: build-doc/Makefile QPLOT
 	make -C build-doc
+	make -C build-doc cleanup
 
-build-doc/Makefile: doc/Makefile
+build-doc/Makefile: doc/Makefile.doc
 	mkdir -p build-doc
-	cp doc/Makefile build-doc/
+	cp doc/Makefile.doc build-doc/Makefile
 
 DOCSRC=build-doc/html
 DOCPATH=$(SHAREPATH)/doc/qplot
 
-install: ALL
+install: install-qplot # install-doc
+
+install-qplot: ALL
 # Install QPLOT:
 	install -d $(INSTALLPATH)/bin
 	install build/qplot      $(INSTALLPATH)/bin
