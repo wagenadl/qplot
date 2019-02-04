@@ -10,6 +10,7 @@ function qcolorbar(xywh, lut, varargin)
 %    If LUT is given as [], QLUT is used to query the figure.
 %
 %    This command is deprecated. Use QCBAR and QCAXIS instead.
+
 if nargin<2
   lut=[];
 end

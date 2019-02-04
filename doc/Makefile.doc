@@ -1,3 +1,6 @@
+#                                                          -*- Makefile -*-
+# DO NOT RUN THIS MAKEFILE IN PLACE. Use toplevel Makefile instead.
+
 ALL: qplot-directuse.pdf HTML
 
 HTML: REF TUT CSS HOME
@@ -98,6 +101,12 @@ qplot-directuse.pdf: ../doc/qplot-directuse.tex directuse-eg.pdf
 directuse-eg.pdf: ../doc/directuse-eg.qpt
 	DISPLAY=`../tools/ensurexvfb` ../build/qplot $< $@
 
-clean:;	rm -f *.aux *.dvi *.log
-	rm -f html/tut/*.qpt
+cleanup:
+	rm -f *.aux *.dvi *.log
+	rm -f html/*/*.qpt
+	rm -f html/*/.*.pid
 
+clean: cleanup
+	rm -rf html
+
+.PHONY: clean cleanup HOME ALL HTML

@@ -7,6 +7,7 @@ qprint
 qselect
 qsubplot
 qsave
+qcurrent
 
 Plotting:
 qbars
@@ -22,28 +23,12 @@ Images:
 qimage
 qimsc
 
-Text styling:
-qalign
-qfont
-qreftext
-
-Tick axis styling:
-qaxshift
-qnumfmt
-qtextdist
-qticklen
-qytitlerot
-
-Graphics styling:
-qbrush
-qlut
-qmarker
-qpen
-
 Tick axes:
 qcaxis
 qmticks
+qoverline
 qxaxis
+qxcaxis
 qyaxis
 
 Annotations:
@@ -63,12 +48,34 @@ Color bars:
 qhcbar
 qvcbar
 
+Graphics styling:
+qbrush
+qlut
+qmarker
+qpen
+
+Text styling:
+qalign
+qfont
+qreftext
+
+Tick axis styling:
+qaxshift
+qnumfmt
+qtextdist
+qticklen
+qytitlerot
+qoverlinedist
+qoverlinemin
+
 Paper coordinate plotting:
 qarea
 qline
 qpmark
+qmm
 
 Mixed coordinate plotting:
+qshiftedline
 qgarea
 qgarea2
 qgimage
@@ -84,3 +91,9 @@ qsharelim
 qshrink
 qxlim
 qylim
+
+Specialized functions:
+qcaligraph
+qctext
+qhairline
+qtextonpath

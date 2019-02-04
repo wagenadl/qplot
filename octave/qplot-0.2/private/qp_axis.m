@@ -139,7 +139,7 @@ if isvert
 end
 if kv.ticklen~=0
   if isempty(kv.lim_d) && ~isempty(tickdx) % Avoid failing shrink
-    for k=uniq([1 length(tickdx)])
+    for k=unique([1 length(tickdx)])
       qat(tickdx(k), tickdy(k));
     end
   end
