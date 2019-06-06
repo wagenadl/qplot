@@ -127,6 +127,7 @@ if ~isempty(kv.lim_d)
            'relpaper', limpx(1), limpy(1)}, ...
 	 { 'absdata',  limdx(2), limdy(2), ...
 	   'relpaper', limpx(2), limpy(2)});
+  qat(limdx(1), limdy(1)); qat(limdx(2), limdy(2)); % This avoids failing shrink
 end	   
 
 % Draw ticks if desired
@@ -137,6 +138,11 @@ if isvert
   [lbllx, lblly]   = identity(lblly, lbllx);
 end
 if kv.ticklen~=0
+  if isempty(kv.lim_d) && ~isempty(tickdx) % Avoid failing shrink
+    for k=unique([1 length(tickdx)])
+      qat(tickdx(k), tickdy(k));
+    end
+  end
   for k=1:length(tickdx)
     qgline({ 'absdata',  tickdx(k), tickdy(k), ...
 	     'relpaper', tickpx(k), tickpy(k) }, ...

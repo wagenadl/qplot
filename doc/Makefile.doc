@@ -1,3 +1,6 @@
+#                                                          -*- Makefile -*-
+# DO NOT RUN THIS MAKEFILE IN PLACE. Use toplevel Makefile instead.
+
 ALL: qplot-directuse.pdf HTML
 
 HTML: REF TUT CSS HOME
@@ -48,10 +51,10 @@ html/tut/tut-01-01.png: ../doc/tut/tut-01-01.png
 	mkdir -p html/tut
 	cp $^ $@
 
-html/tut/tut-02-01.png html/tut/tut-02-02.png html/tut-02-03.png: html/tut/tut-01.m
+html/tut/tut-02-01.png html/tut/tut-02-02.png html/tut/tut-02-03.png: html/tut/tut-01.m
 	(cd html/tut; ../../$(OCTAVE) ../../$< )
 
-html/tut/tut-03-01.png html/tut/tut-03-02.png html/tut-03-03.png: html/tut/tut-03.m
+html/tut/tut-03-01.png html/tut/tut-03-02.png html/tut/tut-03-03.png: html/tut/tut-03.m
 	(cd html/tut; ../../$(OCTAVE) ../../$< )
 
 # Style files
@@ -98,6 +101,12 @@ qplot-directuse.pdf: ../doc/qplot-directuse.tex directuse-eg.pdf
 directuse-eg.pdf: ../doc/directuse-eg.qpt
 	DISPLAY=`../tools/ensurexvfb` ../build/qplot $< $@
 
-clean:;	rm -f *.aux *.dvi *.log
-	rm -f html/tut/*.qpt
+cleanup:
+	rm -f *.aux *.dvi *.log
+	rm -f html/*/*.qpt
+	rm -f html/*/.*.pid
 
+clean: cleanup
+	rm -rf html
+
+.PHONY: clean cleanup HOME ALL HTML

@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/sh
 
 # ensurexvfb ensures that an xvfb server is running for the current user,
 # and returns its display number.
@@ -28,7 +28,7 @@ find_free_servernum() {
     echo $i
 }
 
-if [[ -f /tmp/xvfb-$USER.running ]]; then
+if [ -f /tmp/xvfb-$USER.running ]; then
   # We're supposed to already have one; let's check
   export DISPLAY=`cat /tmp/xvfb-$USER.running`
   if xdpyinfo > /dev/null 2>&1; then

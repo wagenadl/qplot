@@ -1,7 +1,14 @@
-function qp_reset(idx)
+function ld = qoverlinedist(ld)
+% QOVERLINEDIST - Specifies distance between QOVERLINEs and data
+%    QOVERLINEDIST(dist) specifies the distance between QOVERLINEs and 
+%    the data, in points.
+%    dist = QOVERLINEDIST returns current settings.
+%
+%    NOTE: Positive numbers are up, negative are down, unlike for most
+%          displacements in QPlot.
 
 % QPlot - Publication quality 2D graphs with dual coordinate systems
-% Copyright (C) 2014  Daniel Wagenaar
+% Copyright (C) 2014-2019  Daniel Wagenaar
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
@@ -16,20 +23,15 @@ function qp_reset(idx)
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-global qp_data
+idx = qp_idx;
+global qp_data;
 
-qp_data.info(idx).ticklen = 3;
-qp_data.info(idx).axshift = 0;
-qp_data.info(idx).ytitlerot = pi/2;
-qp_data.info(idx).textdist = [3 3];
-qp_data.info(idx).overlinedist = -7;
-qp_data.info(idx).overlinemin = 3;
-qp_data.info(idx).lastax = '';
-qp_data.info(idx).lut = repmat([0:.01:1]',[1 3]);
-qp_data.info(idx).lut_nan = [1 1 1];
-qp_data.info(idx).panels = {'-'};
-qp_data.info(idx).panelextent = { };
-qp_data.info(idx).panel = '-';
-qp_data.info(idx).numfmt = '';
-qp_data.info(idx).legopt = [];
-qp_data.info(idx).datarange = [nan nan nan nan];
+if nargin==0
+  ld = qp_data.info(idx).overlinedist;
+else
+  if ischar(ld)
+    ld = str2double(ld);
+  end
+  qp_data.info(idx).overlinedist = ld;
+  clear ld;
+end
