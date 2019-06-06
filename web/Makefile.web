@@ -1,0 +1,13 @@
+#                                                      -*- Makefile -*-
+# DO NOT RUN THIS MAKEFILE IN PLACE. Use toplevel Makefile instead.
+
+ALL: qplot-web.tgz
+
+qplot-web.tgz: qplot
+	tar cvzf qplot-web.tgz -h qplot
+
+qplot:;
+	rm -f qplot
+	ln -s ../build-doc/html qplot
+
+.PHONY: qplot

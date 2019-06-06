@@ -12,6 +12,7 @@ function qcaxis(varargin)
 %    left or above instead.
 %    QCAXIS(dir, ...), where DIR is one of 'l', 't', 'b', or 'r', overrides
 %    the default location.
+%    In all cases, QCAXIS must follow QVCBAR or QHCBAR.
 % 
 %    QCAXIS interprets settings from QTICKLEN, QTEXTDIST, and QAXSHIFT
 %    differently from QXAXIS and QYAXIS: positive values are away from the

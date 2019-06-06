@@ -7,6 +7,7 @@ function qcbard(xywh, vh)
 %      VH = 'l' draws a right-to-left colorbar,
 %      VH = 'd' draws a top-to-bottom colorbar,
 %      VH = 'v' or 'u' draws a bottom-to-top colorbar (default).
+%   See also QVCBAR and QHCBAR, which are easier to use.
 
 % QPlot - Publication quality 2D graphs with dual coordinate systems
 % Copyright (C) 2014  Daniel Wagenaar

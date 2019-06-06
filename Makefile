@@ -14,8 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-ALL: QPLOT DOCS
-
+ALL: QPLOT # DOCS WEB
 
 ifdef DESTDIR
   # Debian uses this
@@ -34,6 +33,8 @@ QMAKE=qmake
 SELECTQT="-qt=qt5"
 
 DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+export QPLOT_BINARY = $(PWD)/build/qplot
+$(echo $(QPLOT_BINARY)
 
 # Build QPLOT (release and debug)
 COMMON=src/qplot.pro
@@ -52,20 +53,31 @@ build-dbg/Makefile: $(GENERATED) $(COMMON) FORCE
 	mkdir -p build-dbg
 	( cd build-dbg; $(QMAKE) $(SELECTQT) ../src/qplot.pro )
 
-clean:; rm -rf build build-dbg build-doc
+clean:; rm -rf build build-dbg build-doc build-web
+
+# Build WEB
+WEB: build-web/Makefile DOCS
+	make -C build-web
+
+build-web/Makefile: web/Makefile.web
+	mkdir -p build-web
+	cp web/Makefile.web build-web/Makefile
 
 # Build DOCS
-DOCS: build-doc/Makefile
-	+make -C build-doc
+DOCS: build-doc/Makefile QPLOT
+	make -C build-doc
+	make -C build-doc cleanup
 
-build-doc/Makefile: doc/Makefile
+build-doc/Makefile: doc/Makefile.doc
 	mkdir -p build-doc
-	cp doc/Makefile build-doc/
+	cp doc/Makefile.doc build-doc/Makefile
 
 DOCSRC=build-doc/html
 DOCPATH=$(SHAREPATH)/doc/qplot
 
-install: ALL
+install: install-qplot # install-doc
+
+install-qplot: ALL
 # Install QPLOT:
 	install -d $(INSTALLPATH)/bin
 	install build/qplot      $(INSTALLPATH)/bin
@@ -78,6 +90,18 @@ install: ALL
 	install -m644 $(wildcard octave/$(OCTPKG)/private/*.m) $(OCTPATH)/private
 	install -d $(OCTPATH)/packinfo
 	install -m644 octave/$(OCTPKG)/packinfo/DESCRIPTION $(OCTPATH)/packinfo
+# Install PLACEQPT:
+	install -d $(SHAREPATH)/qplot
+	install placeqpt/placeqpt.pl $(SHAREPATH)/qplot
+	install placeqpt/placeqpt $(INSTALLPATH)/bin
+# Install OTHER THINGS
+	install -d $(SHAREPATH)/pixmaps
+	install -m644 tools/qplot.svg $(SHAREPATH)/pixmaps
+	install -d $(SHAREPATH)/applications
+	install tools/qplot.desktop $(SHAREPATH)/applications
+# I should create a mimetype entry for .qpt
+
+install-docs: DOCS
 # Install DOCS:
 	install -d $(DOCPATH)
 	install -m644 $(wildcard $(DOCSRC)/*.html) $(DOCPATH)
@@ -96,13 +120,3 @@ install: ALL
 	install -m644 $(wildcard $(DOCSRC)/home/*.m) $(DOCPATH)/home
 	install -m644 $(wildcard $(DOCSRC)/home/*.png) $(DOCPATH)/home
 	install -m644 $(wildcard $(DOCSRC)/home/*.pdf) $(DOCPATH)/home
-# Install PLACEQPT:
-	install -d $(SHAREPATH)/qplot
-	install placeqpt/placeqpt.pl $(SHAREPATH)/qplot
-	install placeqpt/placeqpt $(INSTALLPATH)/bin
-# Install OTHER THINGS
-	install -d $(SHAREPATH)/pixmaps
-	install -m644 tools/qplot.svg $(SHAREPATH)/pixmaps
-	install -d $(SHAREPATH)/applications
-	install tools/qplot.desktop $(SHAREPATH)/applications
-# I should create a mimetype entry for .qpt
