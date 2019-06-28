@@ -1,49 +1,3 @@
-# ------------------------------------------------------
-class CBar:
-    clim = [0, 1]
-    orient = 'x'
-    xywh_d = [0,0,1,1]
-    rev = False
-
-# ------------------------------------------------------
-#  function dat = qca_ctodat(cc, cb)
-def qca_ctodat(cc, cb):
-    '''
-qca_ctodat: private function for qcaxis
-'''
-    crel = (cc-cb.clim[0]) / (cb.clim[1]-cb.clim[0])
-    
-    if cb.orient=='y':
-        rng = cb.xywh_d[3]
-        d0 = cb.xywh_d[1]
-    elif cb.orient=='x':
-        rng = cb.xywh_d[2]
-        d0 = cb.xywh_d[0]
-    if cb.rev:
-        d0 = d0+rng
-        rng = -rng
-    
-    return d0 + rng*crel
-
-# ------------------------------------------------------
-#  function pap = qca_ctopap(cc, cb)
-def qca_ctopap(cc, cb):
-    '''
-qca_ctopap: private function for qcaxis
-'''
-    crel = (cc-cb.clim[0]) / (cb.clim[1]-cb.clim[0])
-    
-    if cb.orient=='y':
-        rng = cb.xywh_p[3]
-        d0 = cb.xywh_p[1]
-    elif cb.orient=='x':
-        rng = cb.xywh_p[2]
-        d0 = cb.xywh_p[0]
-    if not cb.rev:
-        d0 = d0+rng
-        rng = -rng
-    
-    return d0 + rng*crel
 
 class AxArgs:
     orient='x'
@@ -61,11 +15,9 @@ class AxArgs:
     cbar=None
 
 # ------------------------------------------------------
-#  function [xlim, xpts, lbls, ttl] = qp_axargs(err, varargin)
-def qp_axargs(err, *args):
-    '''
-QP_AXARGS - Regularize arguments for qxaxis and qyaxis
-'''
+#  function [xlim, xpts, lbls, ttl] = qi.axargs(err, varargin)
+def qi.axargs(err, *args):
+    '''QI.AXARGS - Regularize arguments for qxaxis and qyaxis'''
     nargin = 1 + len(args)
     
     
@@ -104,10 +56,10 @@ QP_AXARGS - Regularize arguments for qxaxis and qyaxis
     if length(xlim)~=2:
         error(err)
     
-    lbls = qp_format(xpts)
+    lbls = qi.format(xpts)
     if ~isempty(varargin):
         if isnumeric(varargin{1}):
-            lbls = qp_format(varargin{1})
+            lbls = qi.format(varargin{1})
             varargin = varargin(2:end)
         elif iscell(varargin{1})
             lbls = varargin{1}
@@ -117,14 +69,13 @@ QP_AXARGS - Regularize arguments for qxaxis and qyaxis
             for k=1:length(xpts):
                 lb = varargin{1}(xpts(k))
                 if isnumeric(lb):
-    	lb = qp_format(lb)
+    	lb = qi.format(lb)
     	lbls{k} = lb{1}
                 else:
     	lbls{k} = lb
             varargin = varargin(2:end)
     
-    ttl = ''
-    if ~isempty(varargin):
+    ttl = ''    if ~isempty(varargin):
         if ischar(varargin{1}):
             ttl = varargin{1}
             varargin = varargin(2:end)
@@ -136,15 +87,15 @@ QP_AXARGS - Regularize arguments for qxaxis and qyaxis
     
 
 # ------------------------------------------------------
-#  function qp_axis(varargin)
-def qp_axis(orient='x', lim_d=None, tick_d=None, tick_p=None,
+#  function qi.axis(varargin)
+def qi.axis(orient='x', lim_d=None, tick_d=None, tick_p=None,
             tick_lbl=None, ttl='',
             ticklen=3, lbldist=3, ttldist=3,
             coord_d=None, coord_p=0,
             ttlrot=0,
             cbar=None):
-    '''QP_AXIS - Internal backend for axis rendering
-  QP_AXIS(...) draws an axis according to the parameters:
+    '''QI.AXIS - Internal backend for axis rendering
+    QI.AXIS(...) draws an axis according to the parameters:
       orient: 'x' or 'y'
       lim_d (2x1) limits of the axis in data coordinates (in the direction
                               of ORIENT)
@@ -160,10 +111,9 @@ def qp_axis(orient='x', lim_d=None, tick_d=None, tick_p=None,
                                          orthogonal to ORIENT)
       coord_p (scalar) shift of that position in paper coordinates
       ttlrot (scalar) rotation of title: 0=normal +ve=CCW -ve=CW
-          cbar (struct) optional reference to colorbar
-'''
+          cbar (struct) optional reference to colorbar'''
 
-    idx = qp_idx()
+    idx = qi.idx()
     global qdata
     
     qdata.figs[fn].lastax=kv
@@ -175,8 +125,7 @@ def qp_axis(orient='x', lim_d=None, tick_d=None, tick_p=None,
         ishori=0
         isvert=1
     else:
-        error('orient must be ''x'' or ''y''')
-    
+        error('orient must be ''x'' or ''y''')    
     if isempty(kv.lim_d):
         kv.lim_d = zeros(size(kv.lim_p)) + nan
     elif isempty(kv.lim_p)
@@ -328,8 +277,8 @@ def qp_axis(orient='x', lim_d=None, tick_d=None, tick_p=None,
     
 
 # ------------------------------------------------------
-#  function [dh,dx,dy] = qp_cbargs(dflt, varargin)
-def qp_cbargs(dflt, *args):
+#  function [dh,dx,dy] = qi.cbargs(dflt, varargin)
+def qi.cbargs(dflt, *args):
     '''
 '''
     
@@ -355,40 +304,36 @@ def qp_cbargs(dflt, *args):
         error('QCBAR: syntax error')
 
 # ------------------------------------------------------
-#  function cb = qp_cbinfo
-def qp_cbinfo():
-    '''
-QP_CBINFO - Extract information about colorbar
-   cb = QP_CBINFO extracts information about the most recent QCOLORBAR.
+#  function cb = qi.cbinfo
+def qi.cbinfo():
+    '''QI.CBINFO - Extract information about colorbar
+   cb = QI.CBINFO extracts information about the most recent QCOLORBAR.
    CB will be a struct with fields:
      hori: 1/0 if the colorbar is horizontal/vertical
      flip: 1/0 if the orientation is flipped
      c0: lower limit of data range represented
      c1: upper limit of data range represented
-     xywh: rectangle of the colorbar in data space
-'''
+     xywh: rectangle of the colorbar in data space'''
     
     
-    idx = qp_idx
+    idx = qi.idx
     global qdata
     
     if ~isfield(qdata.figs[fn], 'cbar'):
-        error('QP_CBINFO cannot function without a colorbar')
+        error('QI.CBINFO cannot function without a colorbar')
     
     cb = qdata.figs[fn].cbar
-    [cb.c0, cb.c1] = qp_clim
+    [cb.c0, cb.c1] = qi.clim
     
 
 # ------------------------------------------------------
-#  function [c0, c1] = qp_clim
-def qp_clim():
-    '''
-QP_CLIM - Get current color limits
-   [c0, c1] = QP_CLIM gets the color limits from the most recent QIMSC.
-'''
+#  function [c0, c1] = qi.clim
+def qi.clim():
+    '''QI.CLIM - Get current color limits
+   [c0, c1] = QI.CLIM gets the color limits from the most recent QIMSC.'''
     
     
-    idx = qp_idx
+    idx = qi.idx
     global qdata
     if isfield(qdata.figs[fn], 'clim'):
         c0 = qdata.figs[fn].clim(1)
@@ -396,152 +341,12 @@ QP_CLIM - Get current color limits
     else:
         c0 = 0
         c1 = 1
-    
-    
+
 
 # ------------------------------------------------------
-#  function fd = qp_fd(varargin)
-def qp_fd(*args):
-    '''
-'''
-    
-    
-    idx = qp_idx(varargin{:})
-    global qdata
-    
-    fd = qdata.figs[fn].fd
-    if fd<0:
-        error('No open window')
-    
-
-# ------------------------------------------------------
-#  function qp_flush(fd)
-def qp_flush(fd):
-    '''
-'''
-    global qdata
-    if qdata.isoctave:
-        fflush(fd)
-    
-
-# ------------------------------------------------------
-#  function txt=qp_format(xx)
-def qp_format(xx):
-    '''
-txt = QP_FORMAT(xx) performs num2str for a matrix of numbers.
-Each input value is stored in a cell of the output.
-'''
-    
-    
-    idx = qp_idx
-    global qdata
-    fmt = qdata.figs[fn].numfmt
-    
-    S = size(xx)
-    txt=cell(S)
-    
-    if isempty(fmt):
-        for k=1:prod(S):
-            txt{k} = num2str(xx(k))
-    else:
-        for k=1:prod(S):
-            txt{k} = sprintf(fmt, xx(k))
-    
-
-# ------------------------------------------------------
-#  function qp_gline(cmd, varargin)
-def qp_gline(cmd, *args):
-    '''
-'''
-    
-    
-    args = varargin
-    if length(args)==1 && iscell(args) && iscell(args{1}):
-        args = args{:}
-    
-    for k=1:length(args):
-        cmd = [ cmd ' (' ]
-        for q=1:length(args{k}):
-            x = args{k}{q}
-            if ischar(x):
-                cmd = [ cmd ' ' x ]
-            else:
-                cmd = [ cmd ' ' sprintf('#g', x) ]
-        cmd = [ cmd ' )' ]
-    
-    fd = qp_fd(1)
-    fprintf(fd, '#s\n', cmd)
-    qp_flush(fd)
-    
-
-# ------------------------------------------------------
-#  function qp_gline2(cmd, varargin)
-def qp_gline2(cmd, *args):
-    '''
-'''
-    
-    
-    # We will convert to ptspecs for qgline
-    
-    ptspec = {}
-    N = []; # Number of points, currently unknown
-    
-    args = varargin
-    if length(args)==1 && iscell(args):
-        args = args{:}
-    K = length(args)
-    k = 1; # index into args
-    while k<=K:
-        subcmd = args{k}
-        if ~ischar(subcmd):
-            error('Expecting a command')
-        narg = []
-        if ~isempty(strmatch(tolower(subcmd), ...:
-    	strtoks('absdata reldata abspaper relpaper'), 'exact'))
-            narg = 2
-        elif ~isempty(strmatch(tolower(subcmd), ...
-    	strtoks('rotdata rotpaper'), 'exact'))
-            narg = 1
-        elif strcmp(tolower(subcmd), 'retract')
-            if k+2 <= K && isnvector(args{k+2}):
-                narg = 2
-            else:
-                narg = 1
-        if isempty(narg):
-            error(sprintf('Unknown command: #s', subcmd))
-        elif k+narg > K
-            error(sprintf('Missing arguments to #s', subcmd))
-        else:
-            for i=1:narg:
-                if ~isnvector(args{k+i}):
-    	error(sprintf('Wrong arguments to #s', subcmd))
-    
-        if isempty(N) && narg>0 :
-            N = length(args{k+1})
-            ptspec = cell(N, 1)
-            for n=1:N:
-                ptspec{n} = {}
-    
-        for i=1:narg:
-            if isscalar(args{k+i}):
-                args{k+i} = repmat(args{k+i}, N, 1)
-    
-        for n=1:N:
-            ptspec{n}{end+1} = subcmd
-            for i=1:narg:
-                ptspec{n}{end+1} = args{k+i}(n)
-    
-        k = k + 1 + narg
-    
-    qp_gline(cmd, ptspec)
-
-# ------------------------------------------------------
-#  function str = qp_id(n)
-def qp_id(n):
-    '''
-'''
-    str = ''
-    n=n-1
+#  function str = qi.id(n)
+def qi.id(n):    ''''''
+    str = ''    n=n-1
     while n>0 || isempty(str):
         x = mod(n,26)
         n = floor(n/26)
@@ -550,9 +355,8 @@ def qp_id(n):
 
     
 # ------------------------------------------------------
-#  function n = qp_revid(str)
-def qp_revid(str):
-    '''
+#  function n = qi.revid(str)
+def qi.revid(str):    '''
 '''
     n=0
     while ~isempty(str):
@@ -561,16 +365,14 @@ def qp_revid(str):
     n = n+1;
 
 # ------------------------------------------------------
-#  function [y_min,y_max] = qp_sampleminmax(xx,ii)
-def qp_sampleminmax(xx,ii):
-    '''
-QP_SAMPLEMINMAX - Find minima and maxima in bins of sampled data
+#  function [y_min,y_max] = qi.sampleminmax(xx,ii)
+def qi.sampleminmax(xx,ii):
+    '''QI.SAMPLEMINMAX - Find minima and maxima in bins of sampled data
    [y_min,y_max] = SAMPLEMINMAX(xx,ii) finds the minima and the maxima
    of the data XX in the intervals [ii_1,ii_2), [ii_2,ii_3), ...,
    [ii_n-1,ii_n). Note that xx(ii_n) is never used. 
    Usage note: This is useful for plotting an electrode trace at just
-   the resolution of the screen, without losing spikes.
-'''
+   the resolution of the screen, without losing spikes.'''
     
     
     # warning('this should have been a mex/oct file')
@@ -584,10 +386,9 @@ QP_SAMPLEMINMAX - Find minima and maxima in bins of sampled data
         y_max(n) = max(xx(ii(n):ii(n+1)-1))
 
 # ------------------------------------------------------
-#  function [on,off] = qp_schmitt(xx,thr_on,thr_off,laststyle)
-def qp_schmitt(xx,thr_on,thr_off,laststyle):
-    '''
-SCHMITT  Schmitt trigger of a continuous process.
+#  function [on,off] = qi.schmitt(xx,thr_on,thr_off,laststyle)
+def qi.schmitt(xx,thr_on,thr_off,laststyle):
+    '''SCHMITT  Schmitt trigger of a continuous process.
   [on,off] = SCHMITT(xx,thr_on,thr_off) is like a Schmitt trigger:
   ON are the indices when XX crosses up through THR_ON coming from 
   below THR_OFF;
@@ -602,8 +403,7 @@ SCHMITT  Schmitt trigger of a continuous process.
   [on,off] = SCHMITT(xx,thr_on,thr_off,3) detects the last upward crossing,
   making the last entry of OFF be +inf.
   If THR_OFF is not specified, it defaults to THR_ON/2.
-  If neither THR_ON nor THR_OFF are specified, THR_ON=2/3 and THR_OFF=1/3.
-'''
+  If neither THR_ON nor THR_OFF are specified, THR_ON=2/3 and THR_OFF=1/3.'''
     nargin = 4
     
     
@@ -663,120 +463,16 @@ SCHMITT  Schmitt trigger of a continuous process.
             else:
                 off=[off;length(xx)+1]
 
-# ------------------------------------------------------
-#  function qp_updaterange(xx, yy);
-def qp_updaterange(xx, yy);():
-    '''
-'''
-    
-    global qdata
-    idx = qp_idx
-    dr = qdata.figs[fn].datarange
-    mx = min(xx)
-    Mx = max(xx)
-    my = min(yy)
-    My = max(yy)
-    if isnan(dr(1)) || mx<dr(1):
-        dr(1) = mx
-    if isnan(dr(2)) || Mx>dr(2):
-        dr(2) = Mx
-    if isnan(dr(3)) || my<dr(3):
-        dr(3) = my
-    if isnan(dr(4)) || My>dr(4):
-        dr(4) = My
-    qdata.figs[fn].datarange = dr
 
-
-# ------------------------------------------------------
-#  function dx=sensiblestep(mx)
-def sensiblestep(mx):
-    '''
-dx = SENSIBLESTEP(mx) returns a sensible step size not much smaller
-than MX:
-
-  1<=MX<2  -> DX=1
-  2<=MX<5  -> DX=2
-  5<=MX<10 -> DX=5
-  etc.
-
-To get a dense inclusive tick bar, use as in:
-
-  dx = sensiblestep((maxx-minx)/5);
-  minx = floor(minx/dx)*dx;
-  maxx = ceil(maxx/dx)*dx;
-  set(gca,'xtick',[minx:dx:maxx]);
-
-Or, to get a smaller tick bar:
-
-  dx = sensiblestep((maxx-minx)/2);
-  minx = ceil(minx/dx)*dx;
-  maxx = floor(maxx/dx)*dx;
-  xtickbar([minx:dx:maxx],0,-.05,[],'');
-'''
-    
-    lg=log10(mx)
-    ord=floor(lg)
-    sub=10.^(lg-ord)
-    if sub>5:
-        sub=5
-    elif sub>2
-        sub=2
-    else:
-        sub=1
-    dx = sub * 10^ord
-
-# ------------------------------------------------------
-#  function tx = sensibleticks(xxx, cnt, inc)
-def sensibleticks(xxx, cnt, inc):
-    '''
-SENSIBLETICKS - Coordinates of sensible ticks
-   tx = SENSIBLETICKS(xxx) returns approx. 5 ticks that span the range of  
-   the data XXX.
-   tx = SENSIBLETICKS(xx, cnt) overrides the number of approx. ticks.
-   tx = SENSIBLETICKS(..., 1) makes the ticks extend past the data. (The
-   default is for the ticks to not go beyond the data limits.)
-'''
-    nargin = 3
-    
-    if nargin<2:
-        cnt = 5
-    if nargin<3:
-        if cnt==1:
-            inc=1
-            cnt=5
-        else:
-            inc=0
-    
-    x0 = min(xxx)
-    x1 = max(xxx)
-    rng = x1 - x0
-    
-    tx=[]
-    scl=1
-    while length(tx)<cnt:
-        dx = sensiblestep(rng/scl)
-        if inc:
-            x0a = floor(x0/dx)*dx
-        else:
-            x0a = ceil(x0/dx)*dx
-        if inc:
-            x1a = ceil(x1/dx)*dx
-        else:
-            x1a = floor(x1/dx)*dx
-        tx = [x0a:dx:x1a]
-        scl=scl*1.5
-    
 
 # ------------------------------------------------------
 #  function y=strtoks(x,s,needle)
 def strtoks(x,s,needle):
-    '''
-y = STRTOKS(x) returns a cell array of strings consisting of the
+    '''y = STRTOKS(x) returns a cell array of strings consisting of the
 space delimited parts of X.
 y = STRTOKS(x,s) uses S instead of space.
 y = STRTOKS(...,needle) only returns those tokens that contain NEEDLE
-as a substring.
-'''
+as a substring.'''
     nargin = 3
     
     
@@ -810,12 +506,10 @@ as a substring.
 # ------------------------------------------------------
 #  function qclf 
 def qclf():
-    '''
-QCLF - Clear current QPlot figure
-  QCLF clears the current QPlot figure. 
-'''
+    '''QCLF - Clear current QPlot figure
+  QCLF clears the current QPlot figure. '''
     global qdata
-    fd = qp_fd(1)
+    fd = qi.fd(1)
     fn = qdata.curfn
     fclose(fd)
     fd = fopen(fn, 'r')
@@ -827,9 +521,9 @@ QCLF - Clear current QPlot figure
     qdata.figs[fn].fd = fd
     
     
-    qp_reset(idx)
+    qi.reset(idx)
     
-    qp_flush(fd)
+    qi.flush(fd)
     
 
 
@@ -839,21 +533,19 @@ QCLF - Clear current QPlot figure
 # ------------------------------------------------------
 #  function qcaligraph(xx, yy, ww)
 def qcaligraph(xx, yy, ww):
-    '''
-QCALIGRAPH - Draw a variable-width line series in data space
+    '''QCALIGRAPH - Draw a variable-width line series in data space
    QCALIGRAPH(xx, yy, ww) plots the data YY vs XX. XX and YY are given in 
    data coordinates. WW specifies the line width at each point, in postscript
    points.
    The line is rendered in the current pen's color; dash patterns and cap
-   and join styles are not used.
-'''
+   and join styles are not used.'''
     nargin = 3
     
     
     if nargin<3:
         error('Usage: qcaligraph xx yy ww')
     
-    fd = qp_fd(1)
+    fd = qi.fd(1)
     
     if ~isnvector(xx) || ~isreal(xx):
         error('xx must be a real vector')
@@ -867,7 +559,7 @@ QCALIGRAPH - Draw a variable-width line series in data space
     yy=yy(:)
     ww=ww(:)
     
-    [iup, idn] = qp_schmitt(~isnan(xx+yy+ww),.7,.3,2)
+    [iup, idn] = qi.schmitt(~isnan(xx+yy+ww),.7,.3,2)
     
     for k=1:length(iup):
         N = idn(k) - iup(k)
@@ -876,13 +568,12 @@ QCALIGRAPH - Draw a variable-width line series in data space
         fwrite(fd, yy(iup(k):idn(k)-1), 'double')
         fwrite(fd, ww(iup(k):idn(k)-1), 'double')
     
-    qp_flush(fd)
+    qi.flush(fd)
 
 # ------------------------------------------------------
 #  function qcaxis(varargin)
 def qcaxis(*args):
-    '''
-QCAXIS - Plot colorbar axis
+    '''QCAXIS - Plot colorbar axis
    QCAXIS([c0 c1], cc) plots a colorbar axis with ticks at represented
    values CC with the bar stretching to C0 and C1. (CC may be empty.)
    QCAXIS(cc) calculates C0 and C1 from CC.
@@ -900,12 +591,11 @@ QCAXIS - Plot colorbar axis
    differently from QXAXIS and QYAXIS: positive values are away from the
    colorbar.
    Note that currently QMTICKS doesn't understand about this convention,
-   so QMTICKS will produce unexpected results when used with QCAXIS.
-'''
+   so QMTICKS will produce unexpected results when used with QCAXIS.'''
     nargin = 0 + len(args)
     
     
-    idx = qp_idx
+    idx = qi.idx
     global qdata
     if ~isfield(qdata.figs[fn], 'cbar'):
         error('QCAXIS needs a previous QCBAR')
@@ -915,8 +605,7 @@ QCAXIS - Plot colorbar axis
         if nargin==1:
             ttl = varargin{1}
         else:
-            ttl = ''
-        # Automatic everything
+            ttl = ''        # Automatic everything
         clim = cb.clim
         tkx = sensibleticks(clim)
         clim_t = sprintf('[#g #g]', clim)
@@ -947,7 +636,7 @@ QCAXIS - Plot colorbar axis
             varargin = varargin(2:end)
     
     err = 'Usage: qcaxis [side] [clim] cpts [lbls] [title]'
-    [clim, cpts, lbls, ttl] = qp_axargs(err, varargin{:})
+    [clim, cpts, lbls, ttl] = qi.axargs(err, varargin{:})
     
     ticklen = qdata.figs[fn].ticklen
     axshift = qdata.figs[fn].axshift
@@ -990,7 +679,7 @@ QCAXIS - Plot colorbar axis
     ttldist = ttldist*side
     axshift = axshift*side
     
-    qp_axis('orient', cb.orient, ...
+    qi.axis('orient', cb.orient, ...
             'lim_d', dlim, 'lim_p', plim, ...
             'tick_d', dpts, 'tick_p', ppts, ...
             'coord_d', dcoord, 'coord_p', pcoord+axshift, ...
@@ -1034,8 +723,7 @@ QCAXIS - Plot colorbar axis
 
 # ------------------------------------------------------
 #  function qcbar(w, l, varargin)
-def qcbar(w, l, *args):
-    '''
+def qcbar(w, l, *args):    '''
 QCBAR - Add a vertical color bar to a figure
   QCBAR(w, h) adds a vertical color bar of given width and height (in points)
   at the position specified by QAT. H may be positive or negative. In either
@@ -1052,9 +740,9 @@ QCBAR - Add a vertical color bar to a figure
 '''
     
     
-    [dh, dx, dy] = qp_cbargs('u', varargin{:})
+    [dh, dx, dy] = qi.cbargs('u', varargin{:})
     
-    idx = qp_idx
+    idx = qi.idx
     global qdata
     if ~isfield(qdata.figs[fn], 'atcoord'):
         error('QCBAR needs a previous QAT')
@@ -1087,7 +775,7 @@ QCBAR - Add a vertical color bar to a figure
         lut = flipud(lut)
     qgimage(xywh_d, xywh_p, reshape(lut,[C 1 3]))
     
-    idx = qp_idx
+    idx = qi.idx
     global qdata
     qdata.figs[fn].cbar.xywh_d = xywh_d
     qdata.figs[fn].cbar.xywh_p = xywh_p
@@ -1099,16 +787,14 @@ QCBAR - Add a vertical color bar to a figure
 # ------------------------------------------------------
 #  function qcbard(xywh, vh)
 def qcbard(xywh, vh):
-    '''
-QCBARD - Adds a colorbar to the figure
+    '''QCBARD - Adds a colorbar to the figure
    QCBARD(xywh) represents the current LUT at location XYWH, specified
    in data coordinates.
    QCBARD(xywh, vh) draws a colorbar in a nonstandard direction:
      VH = 'h' or 'r' draws a left-to-right colorbar,
      VH = 'l' draws a right-to-left colorbar,
      VH = 'd' draws a top-to-bottom colorbar,
-     VH = 'v' or 'u' draws a bottom-to-top colorbar (default).
-'''
+     VH = 'v' or 'u' draws a bottom-to-top colorbar (default).'''
     nargin = 2
     
     
@@ -1140,7 +826,7 @@ QCBARD - Adds a colorbar to the figure
     else:
         qimage(xywh, reshape(flipud(lut), [C 1 3]))
     
-    idx = qp_idx
+    idx = qi.idx
     global qdata
     qdata.figs[fn].cbar.rev = flip
     if hori:
@@ -1154,8 +840,7 @@ QCBARD - Adds a colorbar to the figure
 # ------------------------------------------------------
 #  function qcbarh(w, l, varargin)
 def qcbarh(w, l, *args):
-    '''
-QCBARH - Add a horizontal color bar to a figure
+    '''QCBARH - Add a horizontal color bar to a figure
   QCBARH(w, h) adds a horizontal color bar of given width and height
   (in points) at the position specified by QAT. W may be positive or 
   negative. In either case, the color scale runs from left to right.
@@ -1165,13 +850,12 @@ QCBARH - Add a horizontal color bar to a figure
   QCBARH(w, [], dw) or QCBARH(w,[], dx, dy, dw) specifies the width in data 
   coordinates instead. In this case, the color scale runs l->r (r->l) if DW 
   is positive (negative).
-  This command only works after a previous QIMSC.
-'''
+  This command only works after a previous QIMSC.'''
     
     
-    [dw, dx, dy] = qp_cbargs('r', varargin{:})
+    [dw, dx, dy] = qi.cbargs('r', varargin{:})
     
-    idx = qp_idx
+    idx = qi.idx
     global qdata
     if ~isfield(qdata.figs[fn], 'atcoord'):
         error('QCBARH needs a previous QAT')
@@ -1204,7 +888,7 @@ QCBARH - Add a horizontal color bar to a figure
         lut = flipud(lut)
     qgimage(xywh_d, xywh_p, reshape(lut,[1 C 3]))
     
-    idx = qp_idx
+    idx = qi.idx
     global qdata
     qdata.figs[fn].cbar.xywh_d = xywh_d
     qdata.figs[fn].cbar.xywh_p = xywh_p
@@ -1216,12 +900,10 @@ QCBARH - Add a horizontal color bar to a figure
 # ------------------------------------------------------
 #  function qclf 
 def qclf():
-    '''
-QCLF - Clear current QPlot figure
-  QCLF clears the current QPlot figure. 
-'''
+    '''QCLF - Clear current QPlot figure
+  QCLF clears the current QPlot figure. '''
     global qdata
-    fd = qp_fd(1)
+    fd = qi.fd(1)
     fn = qdata.curfn
     fclose(fd)
     fd = fopen(fn, 'r')
@@ -1233,23 +915,21 @@ QCLF - Clear current QPlot figure
     qdata.figs[fn].fd = fd
     
     
-    qp_reset(idx)
+    qi.reset(idx)
     
-    qp_flush(fd)
+    qi.flush(fd)
     
 
 # ------------------------------------------------------
 #  function qclose(fn)
 def qclose(fn):
-    '''
-QCLOSE - Close a QPlot window
+    '''QCLOSE - Close a QPlot window
    QCLOSE closes the current window.
    QCLOSE(filename) closes the named window.
-   QCLOSE('all') closes all windows.
-'''
+   QCLOSE('all') closes all windows.'''
     nargin = 1
     global qdata
-    qp_ensure
+    qi.ensure
     
     
     if nargin==0:
@@ -1268,7 +948,7 @@ QCLOSE - Close a QPlot window
         warning('No open windows')
         return
     
-    fn = qp_ensureqpt(fn)
+    fn = qi.ensureqpt(fn)
     idx = strmatch(fn, qdata.fns, 'exact')
     if isempty(idx):
         warning('No such window')
@@ -1289,16 +969,14 @@ QCLOSE - Close a QPlot window
         fclose(fd)
     
     if strcmp(fn, qdata.curfn):
-        qdata.curfn = ''
-        for k=1:length(qdata.fns):
+        qdata.curfn = ''        for k=1:length(qdata.fns):
             if qdata.info(k).fd>=0:
                 qdata.curfn = qdata.fns{k}
                 break
 
 # ------------------------------------------------------
 #  function qcolorbar(xywh, lut, varargin)
-def qcolorbar(xywh, lut, *args):
-    '''
+def qcolorbar(xywh, lut, *args):    '''
 QCOLORBAR - Adds a colorbar to the figure
    QCOLORBAR(xywh, lut) represents the LUT at location XYWH.
    QCOLORBAR(xywh, lut, tickvals) adds ticks. The first and last labels
@@ -1327,8 +1005,7 @@ QCOLORBAR - Adds a colorbar to the figure
     
         clim = [lblloc(1) lblloc(end)]
         lbltxt = lblloc
-        caption = ''
-        if ~isempty(varargin):
+        caption = ''        if ~isempty(varargin):
             if length(lblloc)==2 && isnvector(varargin{1}):
                 lblloc = varargin{1}
                 lbltxt = lblloc
@@ -1371,8 +1048,7 @@ QCOLORBAR - Adds a colorbar to the figure
 
 # ------------------------------------------------------
 #  function qctext(x, y, varargin)
-def qctext(x, y, *args):
-    '''
+def qctext(x, y, *args):    '''
 QCTEXT - Render text after previous text
   QCTEXT(ctext) renders text where previous text plotting left off.
   QCTEXT(dx, dy, ctext) modifies placement by the given number of points.
@@ -1380,12 +1056,11 @@ QCTEXT - Render text after previous text
     nargin = 2 + len(args)
     
     
-    fd = qp_fd(1)
+    fd = qi.fd(1)
     
     if nargin==1:
         txt = x
-        x = ''
-        y = ''
+        x = ''        y = ''
     else:
         if nargin<3:
             error('Usage: qctext [x y] ctext')
@@ -1403,19 +1078,18 @@ QCTEXT - Render text after previous text
     
     fprintf(fd,'ctext #s #s "#s"\n',x, y, txt)
     
-    qp_flush(fd)
+    qi.flush(fd)
 
 # ------------------------------------------------------
 #  function fn = qcurrent
-def qcurrent():
-    '''
+def qcurrent():    '''
 QCURRENT - Filename of current QPlot figure
    QCURRENT returns the name of the current QPlot figure or an
    empty matrix if no QPlot figures are currently open.
 '''
     
     
-    qp_ensure
+    qi.ensure
     global qdata
     if isempty(qdata.curfn):
         fn = []
@@ -1425,8 +1099,7 @@ QCURRENT - Filename of current QPlot figure
 # ------------------------------------------------------
 #  function qdarrow(x, y, ang, l, w, dist, dimple)
 def qdarrow(x, y, ang, l, w, dist, dimple):
-    '''
-QDARROW - Draw an arrowhead
+    '''QDARROW - Draw an arrowhead
   QDARROW(x, y, ang) draws an arrow head pointing to (X,Y)
   in the direction ANG. ANG may be given in radians in paper (0: pointing
   right, pi/2: pointing down), or as a (DX,DY) pair of data coordinates.
@@ -1435,8 +1108,7 @@ QDARROW - Draw an arrowhead
   QDARROW(x, y, ang, l, w, dist) specifies that the arrow is to be retracted
   a given distance from the point (X, Y).
   QDARROW(x, y, ang, l, w, dist, dimple) specifies that the back of the 
-  arrow head is indented by DIMPLE points.
-'''
+  arrow head is indented by DIMPLE points.'''
     nargin = 7
     
     
@@ -1460,8 +1132,7 @@ QDARROW - Draw an arrowhead
 # ------------------------------------------------------
 #  function qecoplot(x0, dx, yy, N)
 def qecoplot(x0, dx, yy, N):
-    '''
-QECOPLOT - Economically plot large datasets
+    '''QECOPLOT - Economically plot large datasets
    QECOPLOT(xx, yy, N) plots the data (xx,yy) using SAMPLEMINMAX to
    reduce data length to the given number of points.
    The results are plotted as a QPATCH.
@@ -1469,8 +1140,7 @@ QECOPLOT - Economically plot large datasets
    QECOPLOT(x0, dx, yy, N) specifies x-coordinates in a more efficicient
    way: xx = (x0, x0+dx, x0+2*dx, ...).
    If N is omitted, it defaults to 100.
-   Note: This is the kind of plot that MEABench calls "TrueBlue".
-'''
+   Note: This is the kind of plot that MEABench calls "TrueBlue".'''
     nargin = 4
     
     
@@ -1497,29 +1167,16 @@ QECOPLOT - Economically plot large datasets
         N=K
     
     ii = 1 + ceil([0:N]/N * K)
-    [ym, yM] = qp_sampleminmax(yy, ii)
+    [ym, yM] = qi.sampleminmax(yy, ii)
     ii = ii(1:end-1) - .5
     
     qpatch(x0+dx*[ii fliplr(ii)], [ym fliplr(yM)])
 
-# ------------------------------------------------------
-#  function qendgroup
-def qendgroup():
-    '''
-QENDGROUP - Ends a group for bbox collection
-'''
-    fd = qp_fd(1)
-    fprintf(fd, 'endgroup\n')
-    
-    
-    qp_flush(fd)
-    
 
 # ------------------------------------------------------
 #  function qerrorbar(xx, yy, dy, varargin)
 def qerrorbar(xx, yy, dy, *args):
-    '''
-QERRORBAR - Draw error bars
+    '''QERRORBAR - Draw error bars
    QERRORBAR(xx, yy, dy) plots error bars at (XX,YY+-DY).
    Normally, XX, YY, and DY have the same shape. However, it is permissible
    for DY to be shaped Nx2, in which case lower and upper error bounds
@@ -1527,8 +1184,7 @@ QERRORBAR - Draw error bars
    QERRORBAR(xx, yy, dy, w) adorns the error bars with horizontal lines of
    given width (W in points).
    QERRORBAR(..., 'up') only plots upward; QERRORBAR(..., 'down') only plots
-   downward.
-'''
+   downward.'''
     
     
     dir = 'both'
@@ -1580,15 +1236,13 @@ QERRORBAR - Draw error bars
 # ------------------------------------------------------
 #  function qerrorpatch(xx, yy, dy, dir)
 def qerrorpatch(xx, yy, dy, dir):
-    '''
-QERRORPATCH - Draw error patch
+    '''QERRORPATCH - Draw error patch
    QERRORPATCH(xx, yy, dy) plots an error patch at (XX,YY+-DY).
    Normally, XX, YY, and DY have the same shape. However, it is permissible
    for DY to be shaped Nx2, in which case lower and upper error bounds
    are different.
    QERRORPATCH(..., 'up') only plots upward; QERRORPATCH(..., 'down') only 
-   plots downward.
-'''
+   plots downward.'''
     nargin = 4
     
     
@@ -1615,15 +1269,13 @@ QERRORPATCH - Draw error patch
 
 
 def qfont(*args):
-    '''
-QFONT - Select font 
+    '''QFONT - Select font 
    QFONT family [bold] [italic] size  selects a new font for QPlot.
-   The default font is Helvetica at 10 points.
-'''
+   The default font is Helvetica at 10 points.'''
     nargin = 0 + len(args)
     
     
-    fd = qp_fd(1)
+    fd = qi.fd(1)
     
     if nargin<2 || nargin>4:
         qfont_usage
@@ -1657,8 +1309,7 @@ QFONT - Select font
 # ------------------------------------------------------
 #  function qgarea(varargin)
 def qgarea(*args):
-    '''
-QGAREA - Generalized line drawing
+    '''QGAREA - Generalized line drawing
   QGAREA(ptspec1, ptspec2, ...).
   A PTSPEC is a cell array containing a sequence of commands from the 
   following list:
@@ -1675,17 +1326,15 @@ QGAREA - Generalized line drawing
                       L2 pt respectively.
 
   Note: The rather cumbersome syntax of QGAREA makes QAREA and QPATCH more
-  attractive for general usage. See also QGLINE.
-'''
+  attractive for general usage. See also QGLINE.'''
     
     
-    qp_gline('garea', varargin{:})
+    qi.gline('garea', varargin{:})
 
 # ------------------------------------------------------
 #  function qgarea2(varargin)
 def qgarea2(*args):
-    '''
-QGAREA2 - Generalized area drawing
+    '''QGAREA2 - Generalized area drawing
   QGAREA(cmd1, args1, cmd2, args2, ...) specifies a area in mixed
   data and paper coordinates.
   Commands are given as (lower case) strings and are followed by
@@ -1707,24 +1356,21 @@ QGAREA2 - Generalized area drawing
                       L2 pt respectively.
 
   Note: The rather cumbersome syntax of QGAREA2 makes QAREA and QPATCH more
-  attractive for general usage. See also QGLINE2 and QGAREA.
-'''
+  attractive for general usage. See also QGLINE2 and QGAREA.'''
     
     
-    qp_gline2('garea', varargin{:})
+    qi.gline2('garea', varargin{:})
 
 # ------------------------------------------------------
 #  function qgimage(dxywh, pxywh, img)
 def qgimage(dxywh, pxywh, img):
-    '''
-QGIMAGE - Place an image with data and paper coordinates
+    '''QGIMAGE - Place an image with data and paper coordinates
   QGIMAGE(xywh_data, xywh_paper, img) places the image on a location in
   the graph specified by both data coordinates and image coordinates.
   For example: QGIMAGE([5 5 0 0],[0 0 36 72],img) creates an image of 0.5x1"
   at data location (5,5). QGIMAGE([5 nan 0 5],[0 36 72 0],img) creates an 
   image 1" wide, 5 data units high, at x=5, 1" below the top of the graph.
-  Etc.
-'''
+  Etc.'''
     
     
     [Y X C] = size(img)
@@ -1751,17 +1397,16 @@ QGIMAGE - Place an image with data and paper coordinates
     if ~isa(img, 'uint8'):
         img = uint8(floor(255*img+.5))
     
-    fd = qp_fd(1)
+    fd = qi.fd(1)
     fprintf(fd,'#s', str)
     fwrite(fd, img, 'uint8')
-    qp_flush(fd)
+    qi.flush(fd)
     
 
 # ------------------------------------------------------
 #  function qgline(varargin)
 def qgline(*args):
-    '''
-QGLINE - Generalized line drawing
+    '''QGLINE - Generalized line drawing
   QGLINE(ptspec1, ptspec2, ...).
   A PTSPEC is a cell array containing a sequence of commands from the 
   following list:
@@ -1793,17 +1438,15 @@ QGLINE - Generalized line drawing
 
   Note: The rather cumbersome syntax of QGLINE makes QLINE and QPLOT more
   attractive for general usage. The same applies to QGAREA versus QAREA 
-  and QPATCH. See also QSHIFTEDLINE and QGLINE2.
-'''
+  and QPATCH. See also QSHIFTEDLINE and QGLINE2.'''
     
     
-    qp_gline('gline', varargin{:})
+    qi.gline('gline', varargin{:})
 
 # ------------------------------------------------------
 #  function qgline2(varargin)
 def qgline2(*args):
-    '''
-QGLINE2 - Generalized line drawing
+    '''QGLINE2 - Generalized line drawing
   QGLINE(cmd1, args1, cmd2, args2, ...) specifies a line in mixed
   data and paper coordinates.
   Commands are given as (lower case) strings and are followed by
@@ -1835,35 +1478,21 @@ QGLINE2 - Generalized line drawing
 
   Note: The rather cumbersome syntax of QGLINE2 makes QLINE and QPLOT more
   attractive for general usage. The same applies to QGAREA versus QAREA 
-  and QPATCH. See also QSHIFTEDLINE and QGLINE.
-'''
+  and QPATCH. See also QSHIFTEDLINE and QGLINE.'''
     
-    qp_gline2('gline', varargin{:})
+    qi.gline2('gline', varargin{:})
 
-# ------------------------------------------------------
-#  function qgroup
-def qgroup():
-    '''
-QGROUP - Starts a group for bbox collection
-'''
-    fd = qp_fd(1)
-    fprintf(fd, 'group\n')
-    
-    
-    qp_flush(fd)
     
 
 # ------------------------------------------------------
 #  function qhairline(x)
 def qhairline(x):
-    '''
-QHAIRLINE - Select hairline 
-   QHAIRLINE family [bold] [italic] size  selects a new hairline for QPlot.
-'''
+    '''QHAIRLINE - Select hairline 
+   QHAIRLINE family [bold] [italic] size  selects a new hairline for QPlot.'''
     nargin = 1
     
     
-    fd = qp_fd(1)
+    fd = qi.fd(1)
     
     if nargin~=1:
         qhairline_usage
@@ -1883,8 +1512,7 @@ QHAIRLINE - Select hairline
 # ------------------------------------------------------
 #  function qhcbar(y0, x0, x1, w)
 def qhcbar(y0, x0, x1, w):
-    '''
-QHCBAR - Add a horizontal color bar to a figure
+    '''QHCBAR - Add a horizontal color bar to a figure
   QHCBAR(y0, x0, x1) adds a horizontal color bar to the figure between
   (X0, Y0) and (X1, Y0), expressed in data coordinates.
   If X1>X0, the color bar to the right, else: to the left.
@@ -1895,12 +1523,11 @@ QHCBAR - Add a horizontal color bar to a figure
   used by that QIMSC.
   QHCBAR uses QAXSHIFT to create distance between Y0 and the color bar.
   Positive QAXSHIFT creates space, negative creates overlap.
-  QHCBAR without arguments creates a color bar below the QIMSC.
-'''
+  QHCBAR without arguments creates a color bar below the QIMSC.'''
     nargin = 4
     
     
-    idx = qp_idx
+    idx = qi.idx
     global qdata
     lut = qlut
     C = size(lut,1)
@@ -1937,7 +1564,7 @@ QHCBAR - Add a horizontal color bar to a figure
     
     qgimage(xywh_d, xywh_p, reshape(lut,[1 C 3]))
     
-    idx = qp_idx
+    idx = qi.idx
     global qdata
     qdata.figs[fn].cbar.xywh_d = xywh_d
     qdata.figs[fn].cbar.xywh_p = xywh_p
@@ -1950,8 +1577,7 @@ QHCBAR - Add a horizontal color bar to a figure
 # ------------------------------------------------------
 #  function qimage(varargin)
 def qimage(*args):
-    '''
-QIMAGE - Plot an image
+    '''QIMAGE - Plot an image
    QIMAGE(xywh, data) plots an image. XYWH specifies a rectangle in
    data coordinates. The image data must be YxXx1 or YxXx3 and may
    either be UINT8 or DOUBLE.
@@ -1960,12 +1586,11 @@ QIMAGE - Plot an image
    QIMAGE(xx, yy, data) specifies bin centers. (Only the first and last
    elements of XX and YY actually matter).
    It is permissable for W or H to be negative; in that case, the
-   image will be plotted upside down.
-'''
+   image will be plotted upside down.'''
     nargin = 0 + len(args)
     
     
-    fd = qp_fd(1)
+    fd = qi.fd(1)
     
     switch nargin
         case 1
@@ -2014,7 +1639,7 @@ QIMAGE - Plot an image
     elif C~=3
         error('data must be YxXx1 or YxXx3')
     
-    idx = qp_idx(1)
+    idx = qi.idx(1)
     global qdata
     qdata.figs[fn].imrect = xywh
     
@@ -2026,20 +1651,18 @@ QIMAGE - Plot an image
         data = uint8(floor(255*data+.5))
     fwrite(fd, data, 'uint8')
     
-    qp_flush(fd)
+    qi.flush(fd)
     
 
 # ------------------------------------------------------
 #  function qimsc(varargin)
 def qimsc(*args):
-    '''
-QIMSC - Plot 2D data as an image using lookup table
+    '''QIMSC - Plot 2D data as an image using lookup table
    QIMSC(xywh, data) plots the DATA as an image using a lookup previously
    set by QLUT. The color axis limits default to the min and max of the data.
    QIMSC(xywh, data, c0, c1) overrides those limits.
    QIMSC(xx, yy, data) or QIMSC(xx, yy, data, c0, c1) specifies bin centers.
-   QIMSC(data) or QIMSC(data, c0, c1) sets XYWH to (0,0)+(X,Y) as in QIMAGE.
-'''
+   QIMSC(data) or QIMSC(data, c0, c1) sets XYWH to (0,0)+(X,Y) as in QIMAGE.'''
     nargin = 0 + len(args)
     
     
@@ -2108,7 +1731,7 @@ QIMSC - Plot 2D data as an image using lookup table
         otherwise
             error('qimsc takes 1 to 5 arguments')
     
-    idx = qp_idx(1)
+    idx = qi.idx(1)
     global qdata
     lut = qdata.figs[fn].lut
     nanc = qdata.figs[fn].lut_nan
@@ -2129,18 +1752,16 @@ QIMSC - Plot 2D data as an image using lookup table
 # ------------------------------------------------------
 #  function qlegend(str)
 def qlegend(str):
-    '''
-QLEGEND - Render legend element for plotted line
+    '''QLEGEND - Render legend element for plotted line
    QLEGEND(str) renders a sample of the most recently plotted line
    at the location set by QLEGOPT and writes the given string
    next to it.
-   See also QMLEGEND and QPLEGEND.
-'''
+   See also QMLEGEND and QPLEGEND.'''
     
     
     qlegopt; # ensure that we have options
     global qdata
-    idx = qp_idx(1)
+    idx = qi.idx(1)
     opt = qdata.figs[fn].legopt
     
     qat(opt.x0, opt.y0)
@@ -2156,8 +1777,7 @@ QLEGEND - Render legend element for plotted line
 # ------------------------------------------------------
 #  function qlegopt(varargin)
 def qlegopt(*args):
-    '''
-QLEGOPT - Set options for QLEGEND and friends
+    '''QLEGOPT - Set options for QLEGEND and friends
    QLEGOPT(k1, v1, ...) specifies options for legend rendering.
    Options are specified as key, value pairs. Keys are:
      x0 - x position of left edge of legend, in data coordinates
@@ -2171,11 +1791,10 @@ QLEGOPT - Set options for QLEGEND and friends
      dx, dy - additional horizontal and vertical displaced, in points
    All of sensible defaults, except X0 and Y0, which default to (0, 0).
    Legend elements are automatically rendered one below the other starting
-   at Y0.
-'''
+   at Y0.'''
     kw = 'x0 y0 skip height width indent color drop dx dy'
     opt = getopt(kw, varargin)
-    idx = qp_idx(1)
+    idx = qi.idx(1)
     global qdata
     if ~isfield(qdata.figs[fn],'legopt') || isempty(qdata.figs[fn].legopt):
         qdata.figs[fn].legopt.x0 = 0
@@ -2204,32 +1823,28 @@ QLEGOPT - Set options for QLEGEND and friends
 # ------------------------------------------------------
 #  function qline(xx, yy)
 def qline(xx, yy):
-    '''
-QLINE - Draw a line series in paper space
+    '''QLINE - Draw a line series in paper space
    QLINE(xx, yy) draws a line series between the points (XX,YY).
-   XX and YY are given in postscript points. See also QPLOT and QGLINE.
-'''
+   XX and YY are given in postscript points. See also QPLOT and QGLINE.'''
     
     
-    qp_plot(xx, yy, 'line')
+    qi.plot(xx, yy, 'line')
 
 # ------------------------------------------------------
 #  function [lut, nanc] = qlut(lut, nanc) 
 def qlut(lut, nanc):
-    '''
-QLUT - Set lookup table for future QIMSC.
+    '''QLUT - Set lookup table for future QIMSC.
    QLUT(lut) where LUT is Nx3 sets a new lookup table for QIMSC.
    QLUT(lut, nanc) where NANC is 1x3 (or 3x1) sets a special color to use
    for NaN values. (The default is white.)
-   [lut, nanc] = QLUT returns current values.
-'''
+   [lut, nanc] = QLUT returns current values.'''
     nargin = 2
     
     
     if nargin<2:
         nanc=[1 1 1]
     
-    idx = qp_idx
+    idx = qi.idx
     global qdata
     
     if nargin>=1:
@@ -2248,12 +1863,10 @@ QLUT - Set lookup table for future QIMSC.
 # ------------------------------------------------------
 #  function qmark(xx, yy)
 def qmark(xx, yy):
-    '''
-QMARK - Draw on the current graph with the current marker
+    '''QMARK - Draw on the current graph with the current marker
   QMARK(xx, yy) draws marks at the given location in data space. See also
-  QMARKER and QPMARK.
-'''
-    fd = qp_fd(1)
+  QMARKER and QPMARK.'''
+    fd = qi.fd(1)
     
     
     if isempty(xx):
@@ -2274,15 +1887,14 @@ QMARK - Draw on the current graph with the current marker
     fwrite(fd, xx, 'double')
     fwrite(fd, yy, 'double')
     
-    qp_flush(fd)
+    qi.flush(fd)
     
-    qp_updaterange(xx, yy)
+    qi.updaterange(xx, yy)
 
 # ------------------------------------------------------
 #  function qmarker(varargin)
 def qmarker(*args):
-    '''
-QMARKER - Select a new marker for QMARK and QPMARK
+    '''QMARKER - Select a new marker for QMARK and QPMARK
    QMARKER open|solid|brush  +|x|-|||o|s|d|<|>|^|v|p|h  size
    selects a marker. An "open" mark is outlined with the current pen
    and filled with white; a "solid" mark is outlined with the current pen
@@ -2293,21 +1905,20 @@ QMARKER - Select a new marker for QMARK and QPMARK
               - |: horizontal or vertical lines
               s d p h: square, diamond, pentagon, or hexagon
               < > ^ v: left / right / up / down pointing triangles
-   The fill style has no effect on +|x|-|| marks.
-'''
+   The fill style has no effect on +|x|-|| marks.'''
     nargin = 0 + len(args)
     
     
-    fd = qp_fd(1)
+    fd = qi.fd(1)
     
     for n=1:nargin:
         a = varargin{n}
         if ischar(a):
             if strmatch(a, strtoks('open solid brush'), 'exact'):
                 ; # This is a known keyword, so good
-            elif ~isempty(qp_mapmarker(a))
+            elif ~isempty(qi.mapmarker(a))
                 ; # This is a good marker
-                varargin{n} = qp_mapmarker(a)
+                varargin{n} = qi.mapmarker(a)
             elif ~isnan(str2double(a))
                 ; # This is a number: size
             else:
@@ -2323,10 +1934,10 @@ QMARKER - Select a new marker for QMARK and QPMARK
         str = [ str ' ' varargin{n}]
     
     fprintf(fd, '#s\n', str)
-    qp_flush(fd)
+    qi.flush(fd)
     
     ######################################################################
-    function str = qp_mapmarker(str)
+    function str = qi.mapmarker(str)
     switch str
         case 'o'
             str = 'circle'
@@ -2362,21 +1973,19 @@ QMARKER - Select a new marker for QMARK and QPMARK
 # ------------------------------------------------------
 #  function qmlegend(str)
 def qmlegend(str):
-    '''
-QMLEGEND - Render legend element for marks
+    '''QMLEGEND - Render legend element for marks
    QMLEGEND(str) renders a sample of the most recently rendered 
    mark at the location set by QLEGOPT and writes the given string
    next to it.
    QMLEGEND without a string renders the most recently used mark
    over a previously rendered (line) legend.
-   See also QLEGEND and QPLEGEND.
-'''
+   See also QLEGEND and QPLEGEND.'''
     nargin = 1
     
     
     qlegopt; # ensure that we have options
     global qdata
-    idx = qp_idx(1)
+    idx = qi.idx(1)
     opt = qdata.figs[fn].legopt
     
     qat(opt.x0, opt.y0)
@@ -2396,13 +2005,11 @@ QMLEGEND - Render legend element for marks
 # ------------------------------------------------------
 #  function y = qmm
 def qmm():
-    '''
-QMM - Equivalent to 1 mm in postscript points
+    '''QMM - Equivalent to 1 mm in postscript points
    QMM returns the number of postscript points in a millimeter. This
    makes it easy to write things like
 
-      qtext(2 * qmm, 0, 'Label');
-'''
+      qtext(2 * qmm, 0, 'Label');'''
     
     
     y = 72/25.4
@@ -2410,12 +2017,10 @@ QMM - Equivalent to 1 mm in postscript points
 # ------------------------------------------------------
 #  function qmticks(xx)
 def qmticks(xx):
-    '''
-QMTICKS - Add more ticks to an existing axis
-'''
+    '''QMTICKS - Add more ticks to an existing axis'''
     
     
-    idx = qp_idx(1)
+    idx = qi.idx(1)
     global qdata
     
     if isempty(qdata.figs[fn].lastax):
@@ -2434,21 +2039,19 @@ QMTICKS - Add more ticks to an existing axis
     if ~isempty(kv.cbar):
         kv.tick_d = qca_ctodat(kv.tick_d, kv.cbar)
     
-    qp_axis(kv)
+    qi.axis(kv)
 
 # ------------------------------------------------------
 #  function pt = qnumfmt(pt)
 def qnumfmt(pt):
-    '''
-QNUMFMT - Specifies the format of numbers as tick labels
+    '''QNUMFMT - Specifies the format of numbers as tick labels
    QNUMFMT(fmt) specifies the format of numeric axis tick labels.
    FMT may be anything that SPRINTF understands, for instance: "%.1f".
-   The default is "".
-'''
+   The default is "".'''
     nargin = 1
     
     
-    idx = qp_idx
+    idx = qi.idx
     global qdata
     
     if nargin==0:
@@ -2465,18 +2068,16 @@ QNUMFMT - Specifies the format of numbers as tick labels
 # ------------------------------------------------------
 #  function qpanel(varargin)
 def qpanel(*args):
-    '''
-QPANEL - Define a new subpanel or reenter a previous one
+    '''QPANEL - Define a new subpanel or reenter a previous one
    QPANEL(id, x, y, w, h) or QPANEL(id, xywh) defines a new panel.
    QPANEL(id) revisits a previously defined panel. ID must be a single
    capital or a dash ('-') to revert to the top level.
    Coordinates are in points from top left.
-   See also QSUBPLOT.
-'''
+   See also QSUBPLOT.'''
     nargin = 0 + len(args)
     
     
-    fd = qp_fd(1)
+    fd = qi.fd(1)
     
     ok=0
     if nargin==1:
@@ -2515,7 +2116,7 @@ QPANEL - Define a new subpanel or reenter a previous one
     
     fprintf(fd, '#s\n', str)
     
-    idx = qp_idx
+    idx = qi.idx
     global qdata
     oldidx = strmatch(id, qdata.figs[fn].panels, 'exact')
     if isempty(oldidx):
@@ -2535,18 +2136,16 @@ QPANEL - Define a new subpanel or reenter a previous one
 # ------------------------------------------------------
 #  function qplegend(str)
 def qplegend(str):
-    '''
-QPLEGEND - Render legend element for patch
+    '''QPLEGEND - Render legend element for patch
    QPLEGEND(str) renders a sample of the most recently rendered 
    patch at the location set by QLEGOPT and writes the given string
    next to it.
-   See also QLEGEND and QMLEGEND.
-'''
+   See also QLEGEND and QMLEGEND.'''
     
     
     qlegopt; # ensure that we have options
     global qdata
-    idx = qp_idx(1)
+    idx = qi.idx(1)
     opt = qdata.figs[fn].legopt
     
     qat(opt.x0, opt.y0)
@@ -2562,11 +2161,9 @@ QPLEGEND - Render legend element for patch
 # ------------------------------------------------------
 #  function qplot(xx, yy)
 def qplot(xx, yy):
-    '''
-QPLOT - Draw a line series in data space
+    '''QPLOT - Draw a line series in data space
    QPLOT(xx, yy) plots the data YY vs XX. XX and YY are given in data
-   coordinates. See also QLINE and QGLINE.
-'''
+   coordinates. See also QLINE and QGLINE.'''
     nargin = 2
     
     
@@ -2574,17 +2171,15 @@ QPLOT - Draw a line series in data space
         yy = xx
         xx = [1:length(yy)]
     
-    qp_plot(xx, yy, 'plot')
+    qi.plot(xx, yy, 'plot')
 
 # ------------------------------------------------------
 #  function qpmark(xx, yy)
 def qpmark(xx, yy):
-    '''
-QPMARK - Draw on the current graph with the current marker
+    '''QPMARK - Draw on the current graph with the current marker
   QPMARK(xx, yy) draws marks at the given location in paper space. See also
-  QMARKER and QMARK.
-'''
-    fd = qp_fd(1)
+  QMARKER and QMARK.'''
+    fd = qi.fd(1)
     
     
     if ~isnvector(xx) || ~isreal(xx):
@@ -2598,25 +2193,23 @@ QPMARK - Draw on the current graph with the current marker
     fwrite(fd, xx, 'double')
     fwrite(fd, yy, 'double')
     
-    qp_flush(fd)
+    qi.flush(fd)
     
 
 # ------------------------------------------------------
 #  function qprint(nowait)
 def qprint(nowait):
-    '''
-QPRINT - Print current QPlot figure to the default printer
+    '''QPRINT - Print current QPlot figure to the default printer
    QPRINT prints the current QPlot figure using qplotml and lpr after
    waiting for confirmation from the user.
-   QPRINT(1) does not wait.
-'''
+   QPRINT(1) does not wait.'''
     nargin = 1
     
     
     if nargin<1:
         nowait=0
     
-    qp_ensure
+    qi.ensure
     global qdata
     ifn = qdata.curfn
     if isempty(ifn):
@@ -2639,13 +2232,11 @@ QPRINT - Print current QPlot figure to the default printer
 # ------------------------------------------------------
 #  function qreftext(varargin)
 def qreftext(*args):
-    '''
-QREFTEXT - Set reference text
+    '''QREFTEXT - Set reference text
    QREFTEXT(text) sets the reference text used for vertical alignment
-   of subsequent QTEXT commands.
-'''
+   of subsequent QTEXT commands.'''
     nargin = 0 + len(args)
-    fd = qp_fd(1)
+    fd = qi.fd(1)
     
     
     if nargin<1:
@@ -2659,21 +2250,19 @@ QREFTEXT - Set reference text
 # ------------------------------------------------------
 #  function qsave(ofn, reso)
 def qsave(ofn, reso):
-    '''
-QSAVE - Saves a qplot figure
+    '''QSAVE - Saves a qplot figure
    QSAVE(ofn) saves the current qplot figure to the named file.
    QSAVE(ext), where EXT is just a filename extension (without the dot),
    uses the name of the current figure.
    QSAVE(ofn, reso) specifies bitmap resolution for png/jpeg output.
-   QSAVE without arguments saves to pdf.
-'''
+   QSAVE without arguments saves to pdf.'''
     nargin = 2
     
     
     if nargin<2:
         reso = []
     
-    qp_ensure
+    qi.ensure
     global qdata
     ifn = qdata.curfn
     if isempty(ifn):
@@ -2707,14 +2296,12 @@ QSAVE - Saves a qplot figure
 # ------------------------------------------------------
 #  function qselect(fn)
 def qselect(fn):
-    '''
-QSELECT - Select a QPlot figure by name
-   QSELECT(fn) makes the named QPlot figure current
-'''
+    '''QSELECT - Select a QPlot figure by name
+   QSELECT(fn) makes the named QPlot figure current'''
     
     
     global qdata
-    qp_ensure
+    qi.ensure
     
     dotidx = find(fn=='.')
     slashidx = find(fn=='/')
@@ -2755,15 +2342,13 @@ QSELECT - Select a QPlot figure by name
 # ------------------------------------------------------
 #  function qsharelim(varargin)
 def qsharelim(*args):
-    '''
-QSHARELIM - Share axis limits between QPlot panels
+    '''QSHARELIM - Share axis limits between QPlot panels
    QSHARELIM [x|y] ID ... shares x and/or y-axis limits with the other named
-   panels.
-'''
+   panels.'''
     nargin = 0 + len(args)
     
     
-    fd = qp_fd(1)
+    fd = qi.fd(1)
     
     if nargin<1:
         error('Usage: qsharelim [x|y] ID ...')
@@ -2782,21 +2367,19 @@ QSHARELIM - Share axis limits between QPlot panels
             error('Cannot interpret arguments');
     
     fprintf(fd, '#s\n', str)
-    qp_flush(fd)
+    qi.flush(fd)
     
 
 # ------------------------------------------------------
 #  function qshiftedline(xx, yy, dx, dy)
 def qshiftedline(xx, yy, dx, dy):
-    '''
-QSHIFTEDLINE - Renders a line displaced from data points
+    '''QSHIFTEDLINE - Renders a line displaced from data points
   QSHIFTEDLINE(xx, yy, dx, dy) is like QPLOT(xx, yy) except that the 
   plot is displaced by (dx, dy) points on the graph.
   XX, YY, DX, DY may be vectors or scalars. Any scalars are automatically
   converted to vectors of the appropriate length. All vectors must be
   the same length.
-  See also QGLINE.
-'''
+  See also QGLINE.'''
     
     
     N = max([length(xx), length(yy), length(dx), length(dy)])
@@ -2822,16 +2405,14 @@ QSHIFTEDLINE - Renders a line displaced from data points
 # ------------------------------------------------------
 #  function qshrink(varargin)
 def qshrink(*args):
-    '''
-QSHRINK - Add margin to QPlot panel
+    '''QSHRINK - Add margin to QPlot panel
    QSHRINK adds 1 point of margin to the current QPlot panel.
    QSHRINK(margin) adds the given margin (in points).
-   QSHRINK(margin, ratio) forces a given aspect ratio on the data units.
-'''
+   QSHRINK(margin, ratio) forces a given aspect ratio on the data units.'''
     nargin = 0 + len(args)
     
     
-    fd = qp_fd(1)
+    fd = qi.fd(1)
     
     if nargin>2:
         error('Usage: qshrink [margin] [ratio]')
@@ -2849,17 +2430,15 @@ QSHRINK - Add margin to QPlot panel
             error('Cannot interpret arguments')
     
     fprintf(fd, '#s\n', str)
-    qp_flush(fd)
+    qi.flush(fd)
     
 
 # ------------------------------------------------------
 #  function qskyline(xx, yy, y0)
 def qskyline(xx, yy, y0):
-    '''
-QSKYLINE - Skyline plot (bar plot)
+    '''QSKYLINE - Skyline plot (bar plot)
    QSKYLINE(xx, yy) draws a bar plot of YY vs XX with bars touching.
-   QSKYLINE(xx, yy, y0) specifies the baseline of the plot; default is 0.
-'''
+   QSKYLINE(xx, yy, y0) specifies the baseline of the plot; default is 0.'''
     nargin = 3
     
     
@@ -2887,13 +2466,11 @@ QSKYLINE - Skyline plot (bar plot)
 # ------------------------------------------------------
 #  function id = qsubplot(x, y, w, h)
 def qsubplot(x, y, w, h):
-    '''
-QSUBPLOT - Define a new subpanel in relative units
+    '''QSUBPLOT - Define a new subpanel in relative units
    QSUBPLOT(x, y, w, h) defines a new subpanel. X, Y, W, H are specified
    as fractions of the figure size.
    QSUBPLOT(rows, cols, idx) defines a new subpanel in Matlab style.
-   id = QSUBPLOT(...) returns the ID of the subpanel, for use with QPANEL.
-'''
+   id = QSUBPLOT(...) returns the ID of the subpanel, for use with QPANEL.'''
     nargin = 4
     
     
@@ -2920,7 +2497,7 @@ QSUBPLOT - Define a new subpanel in relative units
         x=w*mod(idx-1, cols)
         y=h*floor((idx-1)/cols)
     
-    idx = qp_idx(1)
+    idx = qi.idx(1)
     global qdata
     extent = qdata.figs[fn].extent
     
@@ -2931,7 +2508,7 @@ QSUBPLOT - Define a new subpanel in relative units
     
     subno = 1
     while 1:
-        id = qp_id(subno)
+        id = qi.id(subno)
         oldidx = strmatch(id, qdata.figs[fn].panels, 'exact')
         if isempty(oldidx):
             break
@@ -2949,20 +2526,17 @@ QSUBPLOT - Define a new subpanel in relative units
 # ------------------------------------------------------
 #  function qtext(x, y, varargin)
 def qtext(x, y, *args):
-    '''
-QTEXT - Render text 
+    '''QTEXT - Render text 
   QTEXT(text) renders text at the current anchor point.
-  QTEXT(dx, dy, text) renders text displaced by the given number of points.
-'''
+  QTEXT(dx, dy, text) renders text displaced by the given number of points.'''
     nargin = 2 + len(args)
     
     
-    fd = qp_fd(1)
+    fd = qi.fd(1)
     
     if nargin==1:
         txt = x
-        x = ''
-        y = ''
+        x = ''        y = ''
     else:
         if nargin<3:
             error('Usage: qtext [x y] text')
@@ -2980,12 +2554,11 @@ QTEXT - Render text
     
     fprintf(fd,'text #s #s "#s"\n',x, y, txt)
     
-    qp_flush(fd)
+    qi.flush(fd)
 
 # ------------------------------------------------------
 #  function [lbl, ttl] = qtextdist(lbl, ttl)
-def qtextdist(lbl, ttl):
-    '''
+def qtextdist(lbl, ttl):    '''
 QTEXTDIST - Specifies distance to text labels for QXAXIS and QYAXIS
    QTEXTDIST(lbldist, ttldist) specifies distance between ticks and
    tick labels and between tick labels and axis title, in points.
@@ -2997,7 +2570,7 @@ QTEXTDIST - Specifies distance to text labels for QXAXIS and QYAXIS
     nargin = 2
     
     
-    idx = qp_idx
+    idx = qi.idx
     global qdata
     
     if nargin==0:
@@ -3023,9 +2596,7 @@ QTEXTDIST - Specifies distance to text labels for QXAXIS and QYAXIS
 
 # ------------------------------------------------------
 #  function qtextoncurve(xx, yy, dy, txt)
-def qtextoncurve(xx, yy, dy, txt):
-    '''
-'''
+def qtextoncurve(xx, yy, dy, txt):    ''''''
     nargin = 4
     if nargin==3:
         txt = dy
@@ -3047,19 +2618,18 @@ def qtextoncurve(xx, yy, dy, txt):
     yy = yy(idx)
     N = length(xx)
     
-    fd = qp_fd(1)
+    fd = qi.fd(1)
     
     fprintf(fd, 'textoncurve *#i *#i #g "#s"\n', N, N, dy, txt)
     fwrite(fd, xx, 'double')
     fwrite(fd, yy, 'double')
     
-    qp_flush(fd)
+    qi.flush(fd)
 
 # ------------------------------------------------------
 #  function qtextonpath(xx, yy, dx, dy, txt)
 def qtextonpath(xx, yy, dx, dy, txt):
-    '''
-QTEXTONPATH - Place text along a path
+    '''QTEXTONPATH - Place text along a path
    QTEXTONPATH(xx, yy, text) places the TEXT along a path (XX, YY)
    defined in data coordinates.
    QTEXTONPATH(xx, yy, dy, text) shifts the text down by DY pts in its 
@@ -3069,8 +2639,7 @@ QTEXTONPATH - Place text along a path
    QTEXTONPATH does not use coordinates set by QAT, but it does respect
    alignment set by QALIGN.
    In the present version, QTEXTONPATH only accepts plain Unicode; not
-   any of the special characters sequences accepted by QTEXT.
-'''
+   any of the special characters sequences accepted by QTEXT.'''
     nargin = 5
     
     if nargin==3:
@@ -3100,19 +2669,18 @@ QTEXTONPATH - Place text along a path
     yy = yy(idx)
     N = length(xx)
     
-    fd = qp_fd(1)
+    fd = qi.fd(1)
     
     fprintf(fd, 'textonpath *#i *#i #g #g "#s"\n', N, N, dx, dy, txt)
     fwrite(fd, xx, 'double')
     fwrite(fd, yy, 'double')
     
-    qp_flush(fd)
+    qi.flush(fd)
 
 # ------------------------------------------------------
 #  function qvcbar(x0, y0, y1, w)
 def qvcbar(x0, y0, y1, w):
-    '''
-QVCBAR - Add a vertical color bar to a figure
+    '''QVCBAR - Add a vertical color bar to a figure
   QVCBAR(x0, y0, y1) adds a vertical color bar to the figure between
   (X0, Y0) and (X0, Y1), expressed in data coordinates.
   If Y1>Y0, the color bar runs up, else: down.
@@ -3123,12 +2691,11 @@ QVCBAR - Add a vertical color bar to a figure
   used by that QIMSC.
   QVCBAR uses QAXSHIFT to create distance between X0 and the color bar.
   Positive QAXSHIFT creates space, negative creates overlap.
-  QVCBAR without arguments creates a color bar to the right of the QIMSC.
-'''
+  QVCBAR without arguments creates a color bar to the right of the QIMSC.'''
     nargin = 4
     
     
-    idx = qp_idx
+    idx = qi.idx
     global qdata
     lut = qlut
     C = size(lut,1)
@@ -3166,7 +2733,7 @@ QVCBAR - Add a vertical color bar to a figure
     
     qgimage(xywh_d, xywh_p, reshape(lut,[C 1 3]))
     
-    idx = qp_idx
+    idx = qi.idx
     global qdata
     qdata.figs[fn].cbar.xywh_d = xywh_d
     qdata.figs[fn].cbar.xywh_p = xywh_p
@@ -3178,8 +2745,7 @@ QVCBAR - Add a vertical color bar to a figure
 # ------------------------------------------------------
 #  function qxaxis(y0, varargin)
 def qxaxis(y0, *args):
-    '''
-QXAXIS - Plot x-axis
+    '''QXAXIS - Plot x-axis
    QXAXIS(y0, [x0 x1], xx) plots an x-axis with ticks at XX. (XX may be
    empty.)
    QXAXIS(y0, xx) calculates X0 and X1 from XX.
@@ -3199,8 +2765,7 @@ QXAXIS - Plot x-axis
 
    Without any arguments or with just a title as an argument, QXAXIS tries
    to determine sensible defaults based on previous calls to QPLOT. Your
-   mileage may vary.
-'''
+   mileage may vary.'''
     nargin = 1 + len(args)
     
     
@@ -3212,9 +2777,8 @@ QXAXIS - Plot x-axis
         if nargin==1:
             ttl = y0
         else:
-            ttl = ''
-        global qdata
-        idx = qp_idx
+            ttl = ''        global qdata
+        idx = qi.idx
         dr = qdata.figs[fn].datarange
         if any(isnan(dr)):
             error('QXAXIS needs previous plot for automatic operation')
@@ -3237,7 +2801,7 @@ QXAXIS - Plot x-axis
     else:
         flip = 0
     
-    [xlim, xpts, lbls, ttl] = qp_axargs(err, varargin{:})
+    [xlim, xpts, lbls, ttl] = qi.axargs(err, varargin{:})
     
     ticklen = qticklen
     axshift = qaxshift
@@ -3249,15 +2813,14 @@ QXAXIS - Plot x-axis
         lbldist = -lbldist
         ttldist = -ttldist
     
-    qp_axis('orient', 'x', 'lim_d', xlim, 'tick_d', xpts, 'tick_lbl', lbls, ...
+    qi.axis('orient', 'x', 'lim_d', xlim, 'tick_d', xpts, 'tick_lbl', lbls, ...
             'ttl', ttl, ...
             'ticklen', ticklen, 'lbldist', lbldist, 'ttldist', ttldist, ...
             'coord_d', y0, 'coord_p', axshift)
 
 # ------------------------------------------------------
 #  function qxcaxis(y0, varargin)
-def qxcaxis(y0, *args):
-    '''
+def qxcaxis(y0, *args):    '''
 QXCAXIS - Plot x-axis with labels between ticks
   QXCAXIS(y0, xx, xl) places labels XL at locations XX, but places
   ticks between labels rather than at the labels. First and last ticks
@@ -3282,7 +2845,7 @@ QXCAXIS - Plot x-axis with labels between ticks
     else:
         flip = 0
     
-    [xlim, xpts, lbls, ttl] = qp_axargs(err, varargin{:})
+    [xlim, xpts, lbls, ttl] = qi.axargs(err, varargin{:})
     
     ticklen = qticklen
     axshift = qaxshift
@@ -3303,21 +2866,20 @@ QXCAXIS - Plot x-axis with labels between ticks
         inbtwn = [xl0; inbtwn(:); xl1]
     
     # First, place labels
-    qp_axis('orient', 'x', 'lim_d', [], 'tick_d', xpts, 'tick_lbl', lbls, ...
+    qi.axis('orient', 'x', 'lim_d', [], 'tick_d', xpts, 'tick_lbl', lbls, ...
             'ttl', ttl, ...
             'ticklen', 0, 'lbldist', lbldist+ticklen, 'ttldist', ttldist, ...
             'coord_d', y0, 'coord_p', axshift)
     
     # Then, place ticks
-    qp_axis('orient', 'x', 'lim_d', xlim, 'tick_d', inbtwn, 'tick_lbl', {}, ...
+    qi.axis('orient', 'x', 'lim_d', xlim, 'tick_d', inbtwn, 'tick_lbl', {}, ...
             'ticklen', ticklen, 'coord_d', y0, 'coord_p', axshift)
 
 
 # ------------------------------------------------------
 #  function qyaxis(y0, varargin)
 def qyaxis(y0, *args):
-    '''
-QYAXIS - Plot y-axis
+    '''QYAXIS - Plot y-axis
    QYAXIS(x0, [y0 y1], yy) plots an y-axis with ticks at YY. (YY may be
    empty.)
    QYAXIS(x0, yy) calculates Y0 and Y1 from YY.
@@ -3338,8 +2900,7 @@ QYAXIS - Plot y-axis
 
    Without any arguments or with just a title as an argument, QYAXIS tries
    to determine sensible defaults based on previous calls to QPLOT. Your
-   mileage may vary.
-'''
+   mileage may vary.'''
     nargin = 1 + len(args)
     
     
@@ -3354,7 +2915,7 @@ QYAXIS - Plot y-axis
         else:
             ttl = ''
         global qdata
-        idx = qp_idx
+        idx = qi.idx
         dr = qdata.figs[fn].datarange
         if any(isnan(dr)):
             error('QYAXIS needs previous plot for automatic operation')
@@ -3381,7 +2942,7 @@ QYAXIS - Plot y-axis
     else:
         flip = 0
     
-    [xlim, xpts, lbls, ttl] = qp_axargs(err, varargin{:})
+    [xlim, xpts, lbls, ttl] = qi.axargs(err, varargin{:})
     
     ticklen = qticklen
     axshift = qaxshift
@@ -3396,7 +2957,7 @@ QYAXIS - Plot y-axis
         if rot:
             lblrot = -lblrot
     
-    qp_axis('orient', 'y', 'lim_d', xlim, 'tick_d', xpts, 'tick_lbl', lbls, ...
+    qi.axis('orient', 'y', 'lim_d', xlim, 'tick_d', xpts, 'tick_lbl', lbls, ...
             'ttl', ttl, ...
             'ticklen', -ticklen, 'lbldist', -lbldist, 'ttldist', -ttldist, ...
             'coord_d', y0, 'coord_p', -axshift, 'ttlrot', lblrot)

@@ -2,45 +2,48 @@ import numpy as np
 import tempfile
 import os
 import re
-import qplot_internal as q
-
+import qplot_internal as qi
 
 def plot(xx, yy=None):
     '''PLOT - Draw a line series in data space
-   PLOT(xx, yy) plots the data YY vs XX. XX and YY are given in data
-   coordinates. See also LINE and GLINE.'''    if yy is None:
+    PLOT(xx, yy) plots the data YY vs XX. XX and YY are given in data
+    coordinates.
+    PLOT(yy) plots the data against x = 1..N.
+    See also LINE and GLINE.'''
+    if yy is None:
         yy = xx
         xx = range(len(yy))
-    q.plot(xx, yy, 'plot')
+    qi.plot(xx, yy, cmd='plot')
 
 def area(xx, yy):
     '''AREA - Draw a polygon in paper space
-   AREA(xx, yy) draws a polygon with vertices at (XX,YY). The polygon
-   is closed (i.e., it is not necessary for xx(end) to equal xx(1)).
-   The polygon is filled with the current brush.
-   XX and YY are given in postscript points. See also PATCH and GAREA.'''
-    q.plot(xx, yy, 'area')
+    AREA(xx, yy) draws a polygon with vertices at (XX,YY). The polygon
+    is closed (i.e., it is not necessary for xx(end) to equal xx(1)).
+    The polygon is filled with the current brush.
+    XX and YY are given in postscript points. See also PATCH and GAREA.'''
+    qi.plot(xx, yy, cmd='area')
 
 def patch(xx, yy):
     '''PATCH - Draw a polygonal patch in data space
-   PATCH(xx, yy) draws a polygon with vertices at (XX,YY). The polygon
-   is closed (i.e., it is not necessary for xx(end) to equal xx(1)).
-   The polygon is filled with the current brush.
-   XX and YY are given in data coordinates. See also AREA and GAREA.'''
-    q.plot(xx, yy, 'patch')
+    PATCH(xx, yy) draws a polygon with vertices at (XX,YY). The polygon
+    is closed (i.e., it is not necessary for xx(end) to equal xx(1)).
+    The polygon is filled with the current brush.
+    XX and YY are given in data coordinates. See also AREA and GAREA.'''
+    qi.plot(xx, yy, cmd='patch')
     
 def arrow(l=8, w=None, dl=0, dimple=0, dw=0):
     '''ARROW - Draw an arrowhead
-  ARROW draws an arrow head pointing to the current anchor set by AT.
-  ARROW(l, w) specifies length and (full) width of the arrow head
-  These are specified in points, and default to L=8, W=5.
-  ARROW(l, w, dl) specifies that the arrow is to be displaced from the
-  anchor by a distance DL along the arrow's axis.
-  ARROW(l, w, dl, dimple) specifies that the back of the arrow head is
-  indented by DIMPLE points.
-  ARROW(l, w, dl, dimple, dw) specifies that the arrow is to be displaced
-  from the anchor by DW points in the orthogonal direction of the arrow's
-  axis.'''
+    ARROW draws an arrow head pointing to the current anchor set by AT.
+    ARROW(l, w) specifies length and (full) width of the arrow head
+    These are specified in points, and default to L=8, W=5.
+    Optional arguments:
+      DL - specifies that the arrow is to be displaced from the
+           anchor by a distance DL along the arrow's axis.
+      DIMPLE - specifies that the back of the arrow head is
+           indented by DIMPLE points.
+      DW - specifies that the arrow is to be displaced from the anchor 
+           by DW points in the orthogonal direction of the arrow's
+           axis.'''
     if w is None:
         w = .6 * l
     area(np.array([0, -l, dimple-l, -l]) - dl,
@@ -69,96 +72,87 @@ class AxisInfo:
 
 def xlim(x0=None, x1=None):
     '''XLIM - Set x-axis limits
-  XLIM(x0, x1) sets x-axis limits in the current panel.'''
+    XLIM(x0, x1) or XLIM([x0, x1]) sets x-axis limits in the current panel.'''
     if x0 is None:
-        q.error('Usage: xlim x0 x1')    
+        qi.error('Usage: xlim x0 x1')    
     if x1 is None:
         x1 = x0[1]
         x0 = x0[0]
 
-    write('xlim %g %g\n' % (x0, x1))
-    flush()
+    qi.write('xlim %g %g\n' % (x0, x1))
+    qi.flush()
 
 def ylim(y0=None, y1=None):
     '''YLIM - Set y-axis limits
-  YLIM(y0, y1) sets y-axis limits in the current panel.'''
+    YLIM(y0, y1) or YLIM([y0, y1]) sets y-axis limits in the current panel.'''
     if y0 is None:
-        q.error('Usage: ylim y0 y1')    
+        qi.error('Usage: ylim y0 y1')    
     if y1 is None:
         y1 = y0[1]
         y0 = y0[0]
 
-    write('ylim %g %g\n' % (y0, y1))
-    flush()
+    qi.write('ylim %g %g\n' % (y0, y1))
+    qi.flush()
 
-def at(*args):
+def at(x=None, y=None, phi=None, along=None, id=None):
     '''AT - Specify location for future text
-   AT(x, y) specifies that future text will be placed at data location (x,y)
-   AT(x, y, phi) specifies that the text will be rotated by phi radians
-   AT(x, y, dx, dy) specifies that the text will be rotated s.t. the baseline
-   points in the data direction (dx,dy).
-   AT(id, x, y) specifies coordinates in a specific subplots
-   AT(id, x, y, phi) specifies coordinates in a specific subplots
-   AT without arguments reverts to absolute placement relative to topleft.
-   Either X or Y may also be nan (or '-') to have absolute placement in
-   one dimension'''
-    nargin = len(args)
-    q.ensure()
-    if nargin==0:
-        write('at -\n')
-    
-    if nargin<1 or nargin>4:
-        q.error('Cannot interpret arguments to AT')
-    
-    s = 'at'
-    atcoord = np.zeros((nargin,)) + np.nan
-    if type(args[0])==str and args[0]>='A' and args[0]<='Z':
-        s += ' ' + args[0]
-        if nargin>3:
-            q.error('Cannot interpret AT arguments following ID')
-        for k in range(1,nargin):
-            a = args[k]
-            if isnscalar(a):
-                s += ' %g' % a
-            else:
-                q.error('Cannot interpret arguments following ID')
+    AT(x, y) specifies that future text will be placed at data location (x,y)
+    Optional arguments:
+      PHI - specifies that the text will be rotated by phi radians.
+      ALONG - must be a tuple (dx,dy), meaning that the text will be
+            rotated s.t. the baseline points in the data direction (dx,dy).
+      ID - coordinates are specified relative to a subplot
+    X may also be one of 'left,' 'right,' 'center,' 'abs,' 'absolute.'
+    Y may also be one of 'top,' 'bottom,' 'middle,' 'abs,' 'absolute.'
+    If X and/or Y is omitted, placements reverts to absolute in those
+    dimensions.
+    '''
+    qi.ensure()
+    qi.curfig.atx = None
+    qi.curfig.aty = None
+    if x is None and y is None:
+        qi.write('at -\n')
+        return
+    cmd = ['at']
+    if id is not None:
+        cmd.append(id)
+    if type(x)==str:
+        if x in at.xtype:
+            cmd.append(x)
+        else:
+            qi.error('Bad specification for x')
     else:
-        if nargin<2:
-            q.error('Cannot interpret arguments to AT')
-        # at x y [dx dy]|[angle]|[ID]
-        xtype = 'left right center abs absolute'.split()
-        ytype = 'top bottom middle abs absolute'.split()
-        for k in range(nargin):
-            a = args[k]
-            if nargin==3 and k==2 and type(a)==str and len(a)==1:
-                s += ' ' + a
-            elif isnscalar(a):
-                s += ' %g' % a
-                atcoord[k] = a
-            elif k==0 and type(a)==str and a in xtype:
-                s += ' ' + a
-            elif k==1 and type(a)==str and a in type:
-                s += ' ' + a
-            elif k<2 and ((type(a)==str and a=='-')
-                          or isnscalar(a) and np.isnan(a)):
-                s += ' -'
-            else:
-                q.error('Cannot interpret arguments')
-    write(s)
-    q.figs[q.curfn].atcoord = atcoord
+        cmd.append('%g' % x)
+        qi.curfig.atx = x
+    if type(y)==str:
+        if y in at.ytype:
+            cmd.append(y)
+        else:
+            qi.error('Bad specification for y')
+    else:
+        cmd.append('%g' % y)
+        qi.curfig.aty = y
+    if phi is not None:
+        cmd.append('%g' % phi)
+    elif along is not None:
+        cmd.append('%g %g' % (along[0], along[1]))
+    qi.write(' '.join(cmd))
+    
+at.xtype = qi.wordset('left right center abs absolute')
+at.ytype = qi.wordset('top bottom middle abs absolute')
 
 def axshift(pt=None):
     '''AXSHIFT - Specifies shift of drawn axis for XAXIS and YAXIS
    AXSHIFT(len) specifies shift (in points) for XAXIS and
    YAXIS. Positive means down or left, negative means up or right.
    pt = AXSHIFT returns current setting.'''
-    fn = q.ensure()
-    if q.isempty(pt):
-        pt = q.figs[fn].axshift
+    qi.ensure()
+    if qi.isempty(pt):
+        pt = qi.curfig.axshift
     elif isnscalar(pt):
-        q.figs[fn].axshift = pt
+        qi.curfig.axshift = pt
     else:
-        q.error('AXSHIFT needs real number')
+        qi.error('AXSHIFT needs real number')
     return pt
     
 def align(*args):
@@ -167,18 +161,18 @@ def align(*args):
   subsequent TEXT commands.'''
     allowed = 'left right center top bottom middle base'.split()
     usage = 'Usage: align ' + str.join('|', allowed) + ' ...'
-    if q.isempty(args):
-        q.error(usage)
+    if qi.isempty(args):
+        qi.error(usage)
     
     txt = 'align'
     for a in args:
         if a in allowed:
             txt += ' ' + a
         else:
-            q.error(usage)
+            qi.error(usage)
 
-    write(txt + '\n')
-    flush()
+    qi.write(txt + '\n')
+    qi.flush()
 
 def bars(xx, yy, w, y0=0):
     '''BARS - Bar plot with bar width specified in data coordinates
@@ -196,116 +190,74 @@ def bars(xx, yy, w, y0=0):
         patch(np.array([-.5, .5, .5, -.5])*w + xx[k],
                np.array([0, 0, 1, 1])*yy[k] + y0[k])
 
-def brush(*args):
+def brush(color=None, alpha=None, id=None):
     '''BRUSH - Set brush for QPlot
-   BRUSH id | color | 'none' | opacity  chooses or changes a brush for
-   Plot. ID must be a single capital letter. COLOR may be a named color
-   (i.e., one of krgbcmyw), or a 3-digit or a 6-digit string. 
-   OPACITY must be a number between 0 and 1.'''
+    All arguments are optional.
+      COLOR may be a named color (i.e., one of krgbcmyw), or a 3-digit or
+        a 6-digit string, or 'none' or '' for none.
+      ALPHA must be a number between 0 and 1.
+      ID specifies an ID.'''
     first = True
     out = ['brush']
-    for a in args:
-        if type(a)==str:
-            if len(a)==1 and a>='A' and a<='Z' and first:
-                out.append(a) # This is ID, so good
-            elif a=='none':
-                out.append(a) # This is a known keyword, so good
-            elif not q.isempty(q.mapcolor(a)):
-                # This is a good color
-                out.append(q.mapcolor(a))
-            elif q.allnumeric(a):
-                # This is a number
-                if len(a)==3:
-                    out.append('#%02x%02x%02x' % 
-    	                       (int(255.999*int(a[0])/9),
-    	                        int(255.999*int(a[1])/9), 
-    	                        int(255.999*int(a[2])/9)))
-                elif len(a)==6:
-                    out.append('#%02x%02x%02x' % 
-    	                       (int(255.999*int(a[0:2])/99), 
-    	                        int(255.999*int(a[2:4])/99), 
-    	                        int(255.999*int(a[4:6])/99)))
-                else:
-                    q.error('Cannot interpret argument for brush')
-            else:
-                q.error('Cannot interpret argument for brush')
-        elif isnscalar(a):
-            # This is opacity
-            out.append('%g' % a)
-        elif isnvector(a) and len(a)==3:
-            out.append('##02x#02x#02x' %
-    	               (int(255.999*a[0]),
-    	                int(255.999*a[1]),
-    	                int(255.999*a[2])))
-        else:
-            q.error('Cannot interpret argument for brush')
-        first = False
-    write(str.join(' ', out) + '\n')
+    if id is not None:
+        out.append(id)
+    color = qi.interpretcolor(color)
+    if color is not None:
+        out.append(color)
+    if alpha is not None:
+        out.append('%g' % alpha)
+    qi.write(str.join(' ', out) + '\n')
 
-def pen(*args):
-    '''PEN - Selects a new pen for Plot
-   PEN id | join | cap | pattern | color | width | -alpha | 'none'
-   selects a new pen.
-   ID must be a single capital letter
-   JOIN must be one of: miterjoin beveljoin roundjoin
-   CAP must be one of: flatcap squarecap roundcap
-   PATTERN must be one of: solid dash dot none
-      dash may optionally be followed by a vector of stroke and space lengths
-      dot may optionally be followed by a vector of space lengths
-   COLOR may be a single character matlab color, or a 3- or 6-digit RGB
-   specification. 
-   WIDTH is linewidth in points, or 0 for hairline.
-   ALPHA specifies transparency between 0 and 1.'''
+def pen(color=None, width=None, join=None, cap=None, pattern=None, \
+        alpha=None, id=None):
+    '''PEN - Selects a new pen for QPlot
+    All arguments are optional.
+      COLOR may be a single character matlab color, or a 3- or 6-digit RGB
+      specification or an [r, g, b] triplet, or 'none'. 
+      WIDTH is linewidth in points, or 0 for hairline.
+      JOIN must be one of: 'miterjoin', 'beveljoin', 'roundjoin'.
+      CAP must be one of: 'flatcap', 'squarecap', 'roundcap'.
+      PATTERN must be one of: 'solid', 'dash', 'dot', 'none'.
+      PATTERN may also be a tuple ('dash', vec) where VEC is a vector of 
+        stroke and space lengths, or it may be a tuple ('dot', vec) where
+        VEC is a vector of space lengths.
+      ALPHA specifies transparency between 0 and 1.
+      ID must be a single capital letter'''
     out = [ 'pen' ]
-    while args:
-        a = args.pop(0);
-        if type(a)==str:
-            if len(a)==1 and a>='A' and a<='Z' and First:
-                out.append(a)
-            elif a in pen.joins or a in pen.caps or a in pen.style:
-                out.append(a)
-            elif a in pen.dashdot.split():
-                out.append(a)
-                vec = [ 3 ]
-                if args and q.isnvector(a[0]):
-                    vec = a.pop(0)
-                out.append('[')
-                for v in vec:
-                    out.append('%g' % v)
-                out.append(']')
-            elif a in q.colormap:
-                out.append(q.colormap[a])
-            elif q.alldigits(a):
-                # This is a number
-                if len(a)==3:
-                    out.append('#%02x%02%02x' % (int(255.999*int(a[0])/9),
-                                                 int(255.999*int(a[1])/9),
-                                                 int(255.999*int(a[2])/9)))
-                elif len(a)==6:
-    	            out.append('#%02x%02x%02x' % (int(255.999*int(a[0:2])/99),
-                                                  int(255.999*int(a[2:4])/99),
-                                                  int(255.999*int(a[4:6])/99)))
-                else:
-                    out.append(a) # This is pen width
-            else:
-                q.error([ 'Cannot interpret ' a ' as an argument for pen' ])
-        elif q.isnscalar(a) && q.isreal(a):
-            # This is a pen width
-            out.append('%g' % a)
-        elif q.isnvector(a) && q.isreal(a) && len(a)==3:
-            # I AM WORKING HERE
-            # This is a color
-            cmd = [ cmd ' ' sprintf('##02x#02x#02x', ...
-    	    floor(255.999*a))]
+    if id is not None:
+        out.append(id)
+    color = qi.interpretcolor(color)
+    if color is not None:
+        out.append(color)
+    if alpha is not None:
+        out.append('%g' % -alpha)
+    if width is not None:
+        out.append('%g' % width)
+    if join is not None:
+        if join in pens.joins:
+            out.append(join)
         else:
-            q.error([ 'Cannot interpret ' disp(a) ' as an argument for pen' ])
-        n=n+1
-    
-    fprintf(fd, '#s\n', cmd)
-pen.joins = q.wordset('miterjoin beveljoin roundjoin')
-pen.caps = q.wordset('flatcap squarecap roundcap')
-pen.style = q.wordset('solid none')
-pen.dashdot = q.wordset('dash dot')
+            qi.error('Join type not understood')
+    if cap is not None:
+        if cap in pens.caps:
+            out.append(cap)
+        else:
+            qi.error('Cap type not understood')
+    if pattern is not None:
+        if type(pattern)==tuple and (pattern[0]=='dash' or pattern[0]=='dot'):
+            out.append(pattern[0])
+            out.append('[')
+            for a in pattern[1]:
+                out.append('%g' % a)
+            out.append(']')
+        elif pattern in pens.patterns:
+            out.append(pattern)
+        else:
+            qi.error('Pattern type not understood')
+    qi.write(' '.join(out))
+pen.joins = qi.wordset('miterjoin beveljoin roundjoin')
+pen.caps = qi.wordset('flatcap squarecap roundcap')
+pen.patterns = qi.wordset('solid none dash dot')
 
 def ytitlerot(pt=None):
     '''YTITLEROT - Specifies the rotation of y-axis titles.
@@ -313,14 +265,14 @@ def ytitlerot(pt=None):
    phi=0 means upright,
    phi>0 means rotated 90 degrees to the left,
    phi<0 means rotated 90 degrees to the right.'''
-    fn = q.ensure()
+    qi.ensure()
     if pt is None:
-        pt = q.figs[fn].ytitlerot
+        pt = qi.curfig.ytitlerot
     else:
         if not isnscalar(pt):
-            q.error('ytitlerot must be a real scalar')
+            qi.error('ytitlerot must be a real scalar')
     
-    q.figs[fn].ytitlerot = np.sign(pt)*np.pi/2
+    qi.curfig.ytitlerot = np.sign(pt)*np.pi/2
     
 def title(ttl):
     '''TITLE - Render a title on the current QPlot
@@ -328,33 +280,123 @@ def title(ttl):
    current QPlot figure.
    For more control over placement, use TEXT and friends.'''
     at()
-    pid = q.figs[q.curfn].panel
+    pid = qi.curfig.panel
     if pid=='-':
-        xywh = q.figs[q.curfn].extent
+        xywh = qi.curfig.extent
     else:
-        xywh = q.figs[q.curfn].panelextent[pid]
-    
-    align top center
+        xywh = qi.curfig.panelextent[pid]
+    align('top', 'center')
     text(xywh(1) + xywh(3)/2, xywh(2) + 5, ttl)
 
+def textdist(lbl=None, ttl=None):
+    '''TEXTDIST - Specifies distance to text labels for XAXIS and YAXIS
+    QTEXTDIST(lbldist, ttldist) specifies distance between ticks and
+    tick labels and between tick labels and axis title, in points.
+    QTEXTDIST(dist) uses DIST for both distances.
+    Positive numbers are to the left and down; negative numbers are to the
+    right and up.
+    (lbl, ttl) = TEXTDIST returns current settings.'''
+
+    qi.ensure()
+    
+    if lbl is None:
+        lbl = qi.curfig.textdist[0]
+        ttl = qi.curfig.textdist[1]
+    elif ttl is None:
+        ttl = lbl
+    qi.curfig.textdist = (lbl, ttl)
+    return (lbl, ttl)
+    
 def ticklen(pt=None):
     '''TICKLEN - Specifies length of ticks for XAXIS and YAXIS
    TICKLEN(len) specifies length of ticks (in points) for XAXIS and
    YAXIS. Positive means down or left, negative means up or right.
    pt = TICKLEN returns current setting.'''
-    fn = q.ensure()
+    qi.ensure()
     if pt is None:
-        pt = q.figs[fn].ticklen
+        pt = qi.curfig.ticklen
     else:
         if not isnscalar(pt):
-            q.error('ticklen must be a real scalar')
-        q.figs[fn].ticklen = pt
+            qi.error('ticklen must be a real scalar')
+        qi.curfig.ticklen = pt
     return pt
+
+def figure(fn=None, w=5, h=None):
+    '''FIGURE - Open a QPlot figure
+    FIGURE(fn, w, h) opens a new QPLOT figure with given filename and size
+    in inches. If H is omitted, H defaults to 3/4 W. If W is also omitted,
+    W defaults to 5 inches.
+    fn = FIGURE('', w, h) opens a new QPlot figure of given size (in inches)
+    with a temporary filename.'''
+    if h is None:
+        h = .75 * w
+    MAXALLOWED = 36
+    if w>MAXALLOWED or h>MAXALLOWED:
+        qi.error('Unreasonable size passed to qfigure. Units are inches!')
+
+    if fn in qi.figs:
+        qi.curfig = qi.figs[fn]
+        return fn
+
+    fig = qi.Figure()
+    if qi.isempty(fn):
+        (fig.fd, fig.fn) = tempfile.mkstemp(suffix='.qpt')
+        fig.istmp = True
+    else:
+        if not fn.endswith('.qpt'):
+            fn = fn + '.qpt'
+        fig.fn = fn
+        fig.fd = open(fn, 'wb')
+        fig.istmp = False
+
+    w *= 72
+    h *= 72
+    fig.extent = [0, 0, w, h]
+    qi.figs[fn] = fig
+    qi.curfig = fig
+    qi.write('figsize %g %g\n' % (w,h))
+    qi.unix('qpclient %s' % fn)
+    fig.flush()
+
+def xaxis(y0=None, lim=None, ticks=None, labels=None, title='', flip=False):
+    '''XAXIS - Draw x-axis
+    All arguments are optional.
+      Y0 specifies intersect with y-axis.
+      LIM specifies left and right edges as a tuple or list. If None,
+        LIM is determined from TICKS. If [], no line is drawn.
+      TICKS specifies positions of ticks along axis.
+      LABELS specifies labels to put by ticks. If None, tick coordinates
+        are used. If [], no labels are drawn.
+      TITLE specifies title for axis.
+      FLIP, if True, specifies that labels and ticks go in opposite direction.'''
+    if y0 is None:
+        yy = qi.sensibleticks(qi.curfig.datarange[2:4], 1)
+        y0 = yy[0]
+    if ticks is None:
+        ticks = qi.sensibleticks(qi.curfig.datarange[0:2], inc=True)
+    if lim is None:
+        lim = [ticks[0], ticks[-1]]
+    if labels is None:
+        labels = qi.format(ticks) 
+    ticklen = ticklen()
+    axshift = axshift()
+    [lbldist, ttldist] = textdist()
     
+    if flip:
+        ticklen = -ticklen
+        axshift = -axshift
+        lbldist = -lbldist
+        ttldist = -ttldist
+    
+    qi.axis(orient='x', lim_d=lim, tick_d=ticks, tick_lbl=labels, ttl=title, \
+            ticklen=ticklen, lbldist=lbldist, ttldist=ttldist, \
+            coord_d=y0, coord_p=axshift)
+
 #======================================================================
 if __name__ == '__main__':
     print('qplot test')
     figure('hello', 4, 3)
+    pen('r')
     plot([1,2,3,4], [1,3,2,4])
     
     brush('555')
