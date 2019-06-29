@@ -1,42 +1,11 @@
+# Everything in Graphics styling and also QFONT
+
+# brush
+# pen
+
+import utils
+import qi
 import numpy as np
-import qplot_internal as qi
-import fig
-
-def figure(fn=None, w=5, h=None):
-    '''FIGURE - Open a QPlot figure
-    FIGURE(fn, w, h) opens a new QPLOT figure with given filename and size
-    in inches. If H is omitted, H defaults to 3/4 W. If W is also omitted,
-    W defaults to 5 inches.
-    fn = FIGURE('', w, h) opens a new QPlot figure of given size (in inches)
-    with a temporary filename.'''
-    if fn in qi.figs:
-        qi.curfig = qi.figs[fn]
-        return fn
-    f = fig.Figure(fn, w, h)
-    qi.figs[fn] = f
-    qi.curfig = f
-    
-def xlim(x0=None, x1=None):
-    '''XLIM - Set x-axis limits
-    XLIM(x0, x1) or XLIM([x0, x1]) sets x-axis limits in the current panel.'''
-    if x0 is None:
-        qi.error('Usage: xlim x0 x1')    
-    if x1 is None:
-        x1 = x0[1]
-        x0 = x0[0]
-
-    qi.write('xlim %g %g\n' % (x0, x1))
-
-def ylim(y0=None, y1=None):
-    '''YLIM - Set y-axis limits
-    YLIM(y0, y1) or YLIM([y0, y1]) sets y-axis limits in the current panel.'''
-    if y0 is None:
-        qi.error('Usage: ylim y0 y1')    
-    if y1 is None:
-        y1 = y0[1]
-        y0 = y0[0]
-
-    qi.write('ylim %g %g\n' % (y0, y1))
 
 def brush(color=None, alpha=None, id=None):
     '''BRUSH - Set brush for QPlot
@@ -54,7 +23,8 @@ def brush(color=None, alpha=None, id=None):
         out.append(color)
     if alpha is not None:
         out.append('%g' % alpha)
-    qi.write(str.join(' ', out) + '\n')
+    qi.ensure()
+    qi.f.write(str.join(' ', out) + '\n')
 
 def pen(color=None, width=None, join=None, cap=None, pattern=None, \
         alpha=None, id=None):
@@ -92,6 +62,7 @@ def pen(color=None, width=None, join=None, cap=None, pattern=None, \
         else:
             qi.error('Cap type not understood')
     if pattern is not None:
+        qi.f.pattern = pattern
         if type(pattern)==tuple and (pattern[0]=='dash' or pattern[0]=='dot'):
             out.append(pattern[0])
             out.append('[')
@@ -102,15 +73,9 @@ def pen(color=None, width=None, join=None, cap=None, pattern=None, \
             out.append(pattern)
         else:
             qi.error('Pattern type not understood')
-    qi.write(' '.join(out))
-pen.joins = qi.wordset('miterjoin beveljoin roundjoin')
-pen.caps = qi.wordset('flatcap squarecap roundcap')
-pen.patterns = qi.wordset('solid none dash dot')
-
-def startgroup():
     qi.ensure()
-    qi.write('group')
-
-def endgroup():
-    qi.ensure()
-    qi.write('endgroup')
+    qi.f.write(' '.join(out))
+pen.joins = utils.wordset('miterjoin beveljoin roundjoin')
+pen.caps = utils.wordset('flatcap squarecap roundcap')
+pen.patterns = utils.wordset('solid none dash dot')
+    
