@@ -2,13 +2,14 @@ import numpy as np
 import tempfile
 import os
 import re
-import qplot_internal as qi
-from core import *
-from annotate import *
+
+from fig import *
+from style import *
+from data import *
+from img import *
+from paper import *
+from markup import *
 from axes import *
-from plots import *
-
-
 
 #======================================================================
 if __name__ == '__main__':
