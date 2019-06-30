@@ -1,5 +1,6 @@
 import numpy as np
 import os
+import re
 
 def alldigits(x):
     '''ALLDIGITS - True if a string contains only digits'''
@@ -137,4 +138,18 @@ def sensibleticks(xxx, cnt=5, inc=False):
         scl = scl*1.5
     return tx
 
+def sampleminmax(xx, ii):
+    '''SAMPLEMINMAX - Find minima and maxima in bins of sampled data
+   y_min, y_max = SAMPLEMINMAX(xx,ii) finds the minima and the maxima
+   of the data XX in the intervals [ii_0,ii_1), [ii_1,ii_2), ...,
+   [ii_n-1,ii_n).
+   Usage note: This is useful for plotting an electrode trace at just
+   the resolution of the screen, without losing spikes.'''
+    N=len(ii)-1
+    y_min=np.zeros(N)
+    y_max=np.zeros(N)
     
+    for n in range N:
+        y_min[n] = np.min(xx[ii[n]:ii[n+1]])
+        y_max[n] = np.max(xx[ii[n]:ii(n+1]])
+    return y_min, y_max

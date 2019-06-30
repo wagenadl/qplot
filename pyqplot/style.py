@@ -24,7 +24,7 @@ def brush(color=None, alpha=None, id=None):
     if alpha is not None:
         out.append('%g' % alpha)
     qi.ensure()
-    qi.f.write(str.join(' ', out) + '\n')
+    qi.f.write(out)
 
 def pen(color=None, width=None, join=None, cap=None, pattern=None, \
         alpha=None, id=None):
@@ -74,7 +74,7 @@ def pen(color=None, width=None, join=None, cap=None, pattern=None, \
         else:
             qi.error('Pattern type not understood')
     qi.ensure()
-    qi.f.write(' '.join(out))
+    qi.f.write(out)
 pen.joins = utils.wordset('miterjoin beveljoin roundjoin')
 pen.caps = utils.wordset('flatcap squarecap roundcap')
 pen.patterns = utils.wordset('solid none dash dot')
