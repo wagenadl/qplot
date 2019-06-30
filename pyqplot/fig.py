@@ -14,11 +14,14 @@
 # subplot
 # not qprint
 # select
-# NEXT UP: save
+# save
+# shrink
+# sharelim
 
 import numpy as np
 import qi
 import style
+import os
 
 def figure(fn=None, w=5, h=None):
     '''FIGURE - Open a QPlot figure
@@ -68,7 +71,7 @@ def close(fn=None):
         del qi.figs[fn]
         if current:
             for f in qi.figs:
-                if f.fd not is None:
+                if f.fd is not None:
                     qi.f = f
                     return
     else:
@@ -76,7 +79,7 @@ def close(fn=None):
 
 def closeall():
     '''CLOSEALL - Close all QPlot windows'''
-    fns = [ f.fn for f in qi.figs ]
+    fns = [ f for f in qi.figs ]
     for fn in fns:
         close(fn)
             
@@ -104,11 +107,11 @@ def ylim(y0=None, y1=None):
 
 def startgroup():
     qi.ensure()
-    qi.f.write('group')
+    qi.f.write('group\n')
 
 def endgroup():
     qi.ensure()
-    qi.f.write('endgroup')
+    qi.f.write('endgroup\n')
 
 def panel(id, rect=None):
     '''PANEL - Define a new subpanel or reenter a previous one
@@ -134,7 +137,7 @@ def panel(id, rect=None):
         if id is not None:
             qi.panels[id] = rect
 
-    qi.f.write(' '.join(out))
+    qi.f.write(out)
 
 def relpanel(id, rect):
     '''RELPANEL - Define  a new subpanel
@@ -168,3 +171,57 @@ def subplot(row, cols, idx):
             return
     qi.error('Too many panels')
     
+def save(ofn=None, reso=None):
+    '''QSAVE - Saves a qplot figure
+    QSAVE(ofn) saves the current qplot figure to the named file.
+    QSAVE(ext), where EXT is just a filename extension (without the dot),
+    uses the name of the current figure.
+    QSAVE(ofn, reso) specifies bitmap resolution for png/jpeg output.
+    QSAVE without arguments saves to pdf.'''
+    if qi.f is None:
+        error('No window')
+    
+    if ofn is None:
+        ofn='pdf'
+    pth, ext = os.path.splitext(ofn)
+    if ext=='' and pth.find('/')<0:
+        # Just an extension given
+        ext = pth
+        pth, oldext = os.path.splitext(qi.f.fn)
+        ofn = pth + '.' + ext
+    qi.f.save(ofn, reso)
+
+def shrink(margin=1, ratio=None):
+    '''SHRINK - Add margin to QPlot panel
+    SHRINK() adds 1 point of margin to the current QPlot panel.
+    SHRINK(margin) adds the given margin (in points).
+    SHRINK(margin, ratio) forces a given aspect ratio on the data units.
+    SHRINK(None, ratio) only enforces aspect ratio.'''
+    qi.ensure()
+    out = ['shrink']
+    if margin is None:
+        out.append('-')
+    else:
+        out.append('%g' % margin]
+    if ratio not is None:
+        out.append('%g' % ratio)
+    qi.f.write(out)
+
+def sharelim(axes='all', ids=[]):
+    '''SHARELIM - Share axis limits between QPlot panels
+    SHARELIM(ids) shares x and y-axis limits with the other named panels.
+    SHARELIM('x', ids) only shares x-axis limits.
+    SHARELIM('y', ids) only shares y-axis limits.
+    IDS must be a list of single-letter panel IDs or a string.'''
+    if type(ids)==str:
+        ids = [id for id in ids]
+    out = ['sharelim']
+    if axes=='x':
+        out.append('x')
+    elif axes=='y':
+        out.append('y')
+    elif axes!='all':
+        qi.error('Bad axes specification')
+    out += ids
+    qi.ensure()
+    qi.f.write(out)

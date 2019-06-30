@@ -20,10 +20,10 @@ def q__gline(cmd='gline', ptspecs=[]):
             if len(glc)>=3:
                 out.append('%g' % glc[2])
         out.append(')')
-    qi.write(' '.join(out))
+    qi.write(out)
 
 # A VGLC is a GLC where each arg may be a vector
-def q__gline2(cmd='gline', vglcs):
+def q__gline2(cmd='gline', vglcs=[]):
     N = None
     for vgl in vglcs:
         a1 = aslist(vgl[1])

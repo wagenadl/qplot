@@ -25,9 +25,11 @@ class Figure:
         self.aty = None
 
     def write(self, s):
+        # Can take either a string or a list of strings.
+        # In the latter case, spaces are interpolated and newline is added.
+        if type(s)==list:
+            s = ' '.join(s) + '\n'
         self.fd.write(bytes(s, 'utf8'))
-        if not s.endswith('\n'):
-            self.fd.write(b'\n')
             
     def writedbl(self, v):
         v.astype('float64').tofile(self.fd)
@@ -54,19 +56,20 @@ class Figure:
         list of strings using the current numfmt for the figure.'''
         return [ self.numfmt % x for x in xx ]
 
-    def __init__(fn=None, w=5, h):
+    def __init__(self, fn=None, w=5, h=None):
         if h is None:
             h = .75 * w
         MAXALLOWED = 36
         if w>MAXALLOWED or h>MAXALLOWED:
-            qi.error('Unreasonable size passed to qfigure. Units are inches!')
+            error('Unreasonable size passed to qfigure. Units are inches!')
         w *= 72
         h *= 72
         self.extent = (0, 0, w, h)
         self.reset()
     
-        if qi.isempty(fn):
-            (self.fd, self.fn) = tempfile.mkstemp(suffix='.qpt')
+        if utils.isempty(fn):
+            (fd, self.fn) = tempfile.mkstemp(suffix='.qpt')
+            self.fd = open(fd, 'wb')
             self.istmp = True
         else:
             if not fn.endswith('.qpt'):
@@ -76,21 +79,32 @@ class Figure:
             self.istmp = False
     
         self.write('figsize %g %g\n' % (w,h))
-        utils.unix('qpclient %s' % fn)
+        utils.unix('qpclient %s' % self.fn)
 
     def clf(self):
         self.fd.close()
         self.reset()
-        self.fd = open(fn, 'wb')
-        self.write('figsize %g %g\n' % (w,h))
+        self.fd = open(self.fn, 'wb')
+        self.write('figsize %g %g\n' % (self.extent[2], self.extent[3]))
 
     def close(self):
         self.fd.close()
         self.fd = None
-        utils.unix('qpclose %s' % fn)
+        utils.unix('qpclose %s' % self.fn)
 
     def tofront(self):
         utils.unix('touch %s' % fn) # This supposedly signals qplot to raise it
+
+    def save(self, ofn, reso=None): 
+        cmd = ['qplotml']
+        if reso is not None:
+            cmd.append('-r')
+            cmd.append('%i' % reso)
+        cmd.append(self.fn)
+        cmd.append(ofn)
+        s = utils.unix(' '.join(cmd))
+        if s:
+            error('qplot failed')
         
 figs = {} # map from filename to Figure
 f = None
@@ -99,6 +113,7 @@ def error(msg):
     raise ValueError(msg)
 
 def ensure():
+    global f, figs
     if f is None:
         f = Figure()
         figs[f.fn] = f
@@ -126,8 +141,8 @@ def interpretcolor(color):
     translate to 'none', or None, which is returned unchanged.'''
     if color is None:
         return None
-    elif color in utils.colormap:
-        return utils.colormap[color]
+    elif color in colormap:
+        return colormap[color]
     elif type(color)==str:
         if color=='' or color=='none':
             return 'none'
