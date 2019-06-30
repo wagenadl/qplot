@@ -68,6 +68,7 @@ SOURCES += Axis.cpp \
            CmdGroup.cpp \
            CmdHairline.cpp \
            CmdImage.cpp \
+           CmdImageG.cpp \
            CmdMark.cpp \
            CmdMarker.cpp \
            CmdPanel.cpp \
