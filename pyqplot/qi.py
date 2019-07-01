@@ -15,7 +15,9 @@ class Figure:
         self.ytitlerot = np.pi/2
         self.textdist = (3, 3)
         self.lastax = None
-        self.lut_nan = [1, 1, 1]
+        self.lut_nan = [255, 255, 255]
+        self.lut = np.repeat(np.reshape(np.arange(0,256),(256,1)),3,1)
+        self.clim = (0, 1)
         self.panels = {} # Map from id to extent
         self.panel = None
         self.numfmt = '%g'
@@ -23,6 +25,7 @@ class Figure:
         self.datarange = None
         self.atx = None
         self.aty = None
+        self.legopt = None
 
     def write(self, s):
         # Can take either a string or a list of strings.
@@ -33,6 +36,8 @@ class Figure:
             
     def writedbl(self, v):
         v.astype('float64').tofile(self.fd)
+    def writeuc(self, v):
+        v.astype('uint8').tofile(self.fd)
         
     def updaterange(self, xx, yy):
         mx = np.min(xx)

@@ -2,6 +2,7 @@
 
 # brush
 # pen
+# font
 
 import utils
 import qi
@@ -78,4 +79,22 @@ def pen(color=None, width=None, join=None, cap=None, pattern=None, \
 pen.joins = utils.wordset('miterjoin beveljoin roundjoin')
 pen.caps = utils.wordset('flatcap squarecap roundcap')
 pen.patterns = utils.wordset('solid none dash dot')
+    
+def font(family, size=10, bold=False, italic=False):
+    '''FONT - Select font 
+    FONT(family) selects a new font for QPlot.
+    The default font is Helvetica at 10 points.
+    Optional arguments:
+      SIZE - Set size in points (default: 10)
+      BOLD - Select bold face if true
+      ITALIC - Select italic (or slanted) if true'''
+    out = ['font' family]
+    if bold:
+        out.append('bold')
+    if italic:
+        out.append('italic')
+    if size:
+        out.append('%g' % size)
+    qi.ensure()
+    qi.f.write(out)
     
