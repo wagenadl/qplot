@@ -55,25 +55,24 @@ each word to 1.'''
 def unix(s):
     os.system(s)
 
-def schmitt(xx):
+def nonanstretch(xx):
     N = len(xx)
+    isn = np.isnan(xx)
     iup = []
     idn = []
     state = False
     for n in range(N):
         if state:
-            if not(xx[n]):
+            if isn[n]:
                 idn.append(n)
                 state = False
         else:
-             if xx[n]:
+             if ~isn[n]:
                  iup.append(n)
                  state = True
     if state:
         idn.append(N)
     return (iup, idn)
-    
-
     
 def aslist(x):
     '''ASLIST - Convert almost anything to a list.
@@ -153,8 +152,3 @@ def sampleminmax(xx, ii):
         y_min[n] = np.min(xx[ii[n]:ii[n+1]])
         y_max[n] = np.max(xx[ii[n]:ii[n+1]])
     return y_min, y_max
-
-def mm(f=1):
-    '''MM - Convert postscript points to millimeters
-    Use as in 5*mm() or as in mm(5).'''
-    return 72 * f / 25.4

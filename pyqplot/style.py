@@ -1,9 +1,10 @@
-# Everything in Graphics styling and also QFONT
+# Everything in Graphics styling and also QFONT, but not QLUT (see img)
 
 # brush
-# pen
 # font
 # marker
+# pen
+# hairline
 
 import utils
 import qi
@@ -136,3 +137,13 @@ def marker(shape=None, size=None, fill=None):
     qi.ensure()
     qi.write(out)
 marker.fills = utils.wordset('open solid brush spine')
+
+def hairline(width):
+    '''HAIRLINE - Specify hairline width
+    HAIRLINE(width) specifies the width of hairlines (lines with 
+    nominal width 0) as rendered to screen or pdf.
+    The default is 0.25 pt when rendering to pdf. When rendering to
+    screen, the default is 0, which implies "one pixel wide".'''
+    qi.ensure()
+    qi.f.write('hairline %g\n', width)
+    

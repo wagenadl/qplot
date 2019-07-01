@@ -3,16 +3,18 @@
 # Also the Legends category.
 
 # align
-# reftext
-# at
-# text
-# title
 # arrow
+# at
 # darrow
-# legopt
 # legend
+# legopt
 # mlegend
 # plegend
+# reftext
+# text
+# title
+# ctext
+# textonpath
 
 import utils
 import qi
@@ -277,3 +279,31 @@ def plegend(s):
     fig.endgroup()
     qi.f.legopt.n += 1
         
+def ctext(text, dx=0, dy=0):
+    '''CTEXT - Render text after previous text
+    CTEXT(text) renders text where previous text plotting left off.
+    Optional arguments DX and DY modify placement by the given number
+    of points.'''
+    qi.ensure()
+    qi.f.write('ctext %g %g "%s"\n' % (dx, dy, q__safetext(text)))
+
+def textonpath(xx, yy, text, dx=0, dy=0):
+    '''TEXTONPATH - Place text along a path
+    TEXTONPATH(xx, yy, text) places the TEXT along a path (XX, YY)
+    defined in data coordinates.
+    Optional arguments DX and DY shift the text right by DX and down
+    by DY pts in its local vertical direction.
+    TEXTONPATH does not use coordinates set by AT, but it does respect
+    alignment set by ALIGN.
+    In the present version, TEXTONPATH only accepts plain Unicode; not
+    any of the special characters sequences accepted by TEXT.'''
+
+    N = len(xx)
+    if len(yy) != N:
+        qi.error('xx and yy must match')
+    qi.ensure()
+    qi.f.write('textonpath *%i *%i %g %g "%s"\n'
+               % (N, N, dx, dx, q__safetext(text)))
+    qi.f.writedbl(xx)
+    qi.f.writedbl(yy)
+    

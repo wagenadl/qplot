@@ -28,6 +28,8 @@ class Figure:
         self.legopt = None
         self.imrect = None
         self.cbar = None
+        self.overlinedist = -7
+        self.overlinemin = 3
 
     def write(self, s):
         # Can take either a string or a list of strings.
@@ -122,6 +124,9 @@ def error(msg):
 def ensure():
     global f, figs
     if f is None:
+        for fn in figs:
+            f = figs[fn]
+            return
         f = Figure()
         figs[f.fn] = f
 
@@ -204,7 +209,7 @@ def plot(xx, yy, cmd='plot'):
     if utils.isempty(xx):
         return
     
-    [iup, idn] = utils.schmitt(np.isnan(xx+yy)==False)
+    [iup, idn] = utils.nonanstretch(xx+yy)
     
     ensure()
     for k in range(len(iup)):
