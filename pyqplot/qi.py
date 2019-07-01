@@ -26,6 +26,8 @@ class Figure:
         self.atx = None
         self.aty = None
         self.legopt = None
+        self.imrect = None
+        self.cbar = None
 
     def write(self, s):
         # Can take either a string or a list of strings.
@@ -137,6 +139,28 @@ def mapcolor(s):
     '''MAPCOLOR - Map a matlab style color to qplot internal'''
     if s in colormap:
         return colormap[s]
+    else:
+        return None
+
+markermap = { 'o': 'circle',
+            's': 'square',
+            'd': 'diamond',
+            '<': 'left',
+            '>': 'right',
+            '^': 'up',
+            'v': 'down',
+            'p': 'penta',
+            'h': 'hexa',
+            '+': 'plus',
+            'x': 'cross',
+            '-': 'hbar',
+            '|': 'vbar'
+}
+
+def mapmarker(s):
+    '''MAPMARKER - Map a matlab style marker to qplot internal'''
+    if s in markermap:
+        return markermap[s]
     else:
         return None
 
