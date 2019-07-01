@@ -25,7 +25,6 @@ class AxisInfo:
     ttlrot=0
     cbar=None
 
-
 def axshift(pt=None):
     '''AXSHIFT - Specifies shift of drawn axis for XAXIS and YAXIS
    AXSHIFT(len) specifies shift (in points) for XAXIS and

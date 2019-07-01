@@ -2,6 +2,11 @@
 
 # line
 # area
+# pmark
+# gline
+# gline2
+# garea
+# garea2
 
 import qi
 
@@ -20,7 +25,8 @@ def q__gline(cmd='gline', ptspecs=[]):
             if len(glc)>=3:
                 out.append('%g' % glc[2])
         out.append(')')
-    qi.write(out)
+    qi.ensure()
+    qi.f.write(out)
 
 # A VGLC is a GLC where each arg may be a vector
 def q__gline2(cmd='gline', vglcs=[]):
@@ -39,14 +45,12 @@ def q__gline2(cmd='gline', vglcs=[]):
         pts.append([])
     for vgl in vglcs:
         a1 = aslist(vgl[1])
-        n = len(a1)
-        if len(vgl)>=3:
+        K = len(vgl)
+        if K>=3:
             a2 = aslist(vgl[2])
-        else:
-            a2 = None
-        if n==1:
+        if N==1:
             a1 = a1[0]
-            if a2 is None:
+            if K==2:
                 for n in range(N):
                     pts[n].append((vgl[0], a1))
             else:
@@ -54,7 +58,7 @@ def q__gline2(cmd='gline', vglcs=[]):
                 for n in range(N):
                     pts[n].append((vgl[0], a1, a2))
         else:
-            if a2 is None:
+            if K==2:
                 for n in range(N):
                     pts[n].append((vgl[0], a1[n]))
             else:
@@ -75,3 +79,114 @@ def area(xx, yy):
     The polygon is filled with the current brush.
     XX and YY are given in postscript points. See also PATCH and GAREA.'''
     qi.plot(xx, yy, cmd='area')
+
+def pmark(xx, yy):
+    '''PMARK - Draw on the current graph with the current marker
+    PMARK(xx, yy) draws marks at the given location in paper space. See also
+    MARKER and MARK.'''
+
+    xx = utils.aslist(xx)
+    yy = uyils.aslist(yy)
+    if len(xx) != len(yy):
+        error('xx and yy must be equally long')
+    qi.ensure()
+    qi.f.write('pmark *%i *%i\n' % (len(xx), len(yy)))
+    qi.f.writedbl(xx)
+    qi.f.writedbl(yy)
+
+def AbsData(x, y):
+    return ('absdata', x, y)
+
+def RelData(x, y):
+    return ('reldata', x, y)
+
+def AbsPaper(x, y):
+    return ('abspaper', x, y)
+
+def RelPaper(x, y):
+    return ('relpaper', x, y)
+
+def RotData(xi, eta):
+    return ('rotdata', xi, eta)
+
+def RotPaper(phi):
+    return ('rotpaper', phi)
+
+def Retract(l1, l2=None):
+    if l2 is None:
+        l2 = l1
+    return ('retract', l1, l2)
+
+def At(id):
+    return ('at', id)
+
+def AtX(id):
+    return ('atx', id)
+
+def AtY(id):
+    return ('aty', id)
+
+def gline(ptspecs):
+    '''GLINE - Generalized line drawing
+    GLINE([ptspec1, ptspec2, ...]).
+    A PTSPEC is a list containing commands from the following list:
+
+     AbsData(x, y)    - Absolute data coordinates 
+     RelData(dx, dy)  - Relative data coordinates 
+     AbsPaper(x, y)   - Absolute paper coordinates (in pt)
+     RelPaper(dx, dy) - Relative data coordinates (in pt)
+     RotData(xi, eta) - Rotate by atan2(eta, xi) in data space.
+                        (This affects subsequent relative positioning.) 
+     RotPaper(phi)    - Rotate by phi radians. (This affects subsequent 
+                        relative positioning.) 
+     Retract(l)       - Retract preceding and following segments by L pt.
+     Retract(l1, l2)  - Retract preceding and following segments by L1 and 
+                        L2 pt respectively.
+     At(id)           - Absolute paper coordinates of location set by AT.
+     AtX(id)          - Absolute paper x-coordinate of location set by AT.
+     AtY(id)          - Absolute paper y-coordinate of location set by AT.
+
+    For instance,
+
+      gline([[AbsData(0, 1), RelPaper(5,0)],
+             [AbsData(2, 3), RelPaper(0, 7)]])
+
+    draws a line from 5 pt to the right of the point (0, 1) in the graph to
+    7 pt below the point (2, 3) in the graph. (Note that paper y-coordinates
+    increase toward the bottom of the graph while data y-coordinates increase
+    toward the top.)
+    
+    Note: The rather cumbersome syntax of GLINE makes LINE and PLOT more
+    attractive for general usage. The same applies to GAREA versus AREA 
+    and PATCH. See also SHIFTEDLINE and GLINE2.'''
+    q__gline('gline', ptspecs)
+
+def gline2(vglcs):
+    '''GLINE2 - Generalized line drawing
+    QGLINE([cmd1, cmd2, ...]) specifies a line in mixed data and paper 
+    coordinates. Commands are as in GLINE, but in this case their arguments
+    are vectors. GLINE2 does not support the AT, ATX, and ATY commands.
+
+    For instance,
+
+       gline2([AbsData([0, 2], [1, 3]), RelPaper([5, 0], [0, 7])])
+
+    Draws a line from 5 pt to the right of the point (0, 1) in the graph
+    to 7 pt below the point (2, 3) in the graph. (Note that paper 
+    y-coordinates increase toward the bottom of the graph while data
+    y-coordinates increase toward the top.)'''
+    q__gline2('gline', ptspecs)
+
+def garea(ptspecs):
+    '''GAREA - Generalized area drawing
+    GAREA is to PATCH and AREA as GLINE is to PLOT and LINE.
+    All the same commands are supported.'''
+
+    q__gline('garea', ptspecs)
+
+def garea2(vglcs):
+    '''GAREA2 - Generalized area drawing
+    GAREA2 is to PATCH and AREA as GLINE2 is to PLOT and LINE.
+    All the same commands are supported.'''
+    q__gline2('garea', ptspecs)
+    
