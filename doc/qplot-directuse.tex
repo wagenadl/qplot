@@ -196,6 +196,13 @@ they designate optional parameters. For instance:\medskip\\
   the number of pixels per row. The length of \emph{cdata} must be an
   even multiple of 3\emph{K}. Values must be between 0 and 1.}
 
+\cmd{imageg}{\emph{x y w h K} [ \emph{cdata} ]}
+\expl{Renders a gray-scale image at given data location. \emph{cdata} is
+  stored as gray pixels in row order (unlike matlab's convention); 
+   \emph{K} specifies
+  the number of pixels per row. The length of \emph{cdata} must be an
+  even multiple of \emph{K}. Values must be between 0 and 1.}
+
 \cmd{line}{[ \emph{dx$_1$ dx$_2$ \ldots} ] [ \emph{dy$_1$ dy$_2$ \ldots} ]}
 \expl{Draws a polyline. \emph{dx$_i$} and \emph{dy$_i$} are specified in
   points and are relative to the position set by \cref{at}. See also

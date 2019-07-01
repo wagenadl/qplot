@@ -1191,42 +1191,6 @@ def qerrorpatch(xx, yy, dy, dir):
     qpatch([xx; flipud(xx)], [yy+dy_dn; flipud(yy+dy_up)])
 
 
-def qfont(*args):
-    '''QFONT - Select font 
-   QFONT family [bold] [italic] size  selects a new font for QPlot.
-   The default font is Helvetica at 10 points.'''
-    nargin = 0 + len(args)
-    
-    
-    fd = qi.fd(1)
-    
-    if nargin<2 || nargin>4:
-        qfont_usage
-    if isnscalar(varargin{end}):
-        varargin{end} = sprintf('#g', varargin{end})
-    for k=1:nargin:
-        if ~ischar(varargin{k}):
-            qfont_usage
-    for k=2:nargin-1:
-        if isempty(strmatch(tolower(varargin{k}),strtoks('bold italic'), 'exact')):
-            qfont_usage
-    
-    str = 'font'
-    for k=1:nargin:
-        str = [ str ' ' varargin{k} ]
-    fprintf(fd, '#s\n', str)
-    
-    
-    ######################################################################
-    function str = tolower(str)
-    for l=1:length(str):
-        if str(l)>='A' && str(l)<='Z':
-            str(l) = str(l) + 32
-    
-    
-    function qfont_usage()
-        error('Usage: qfont family [bold] [italic] size')
-    
     
 
 # ------------------------------------------------------

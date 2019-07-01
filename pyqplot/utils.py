@@ -149,7 +149,12 @@ def sampleminmax(xx, ii):
     y_min=np.zeros(N)
     y_max=np.zeros(N)
     
-    for n in range N:
+    for n in range(N):
         y_min[n] = np.min(xx[ii[n]:ii[n+1]])
-        y_max[n] = np.max(xx[ii[n]:ii(n+1]])
+        y_max[n] = np.max(xx[ii[n]:ii[n+1]])
     return y_min, y_max
+
+def mm(f=1):
+    '''MM - Convert postscript points to millimeters
+    Use as in 5*mm() or as in mm(5).'''
+    return 72 * f / 25.4
