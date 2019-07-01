@@ -5,9 +5,8 @@ function qxcaxis(y0, varargin)
 %   are extrapolated.
 %   QXCAXIS(y0, [x0 x1], xx, xl) specifies those end ticks explicitly.
 %   QXCAXIS(..., ttl) adds a title to the axis.
-% 
-%    QXAXIS obeys settings from QTICKLEN, QTEXTDIST, and QAXSHIFT.
-%    QXAXIS('t', ...) inverts the sign of these settings.
+%   QXCAXIS obeys settings from QTICKLEN, QTEXTDIST, and QAXSHIFT.
+%   QXCAXIS('t', ...) inverts the sign of these settings.
 
 % QPlot - Publication quality 2D graphs with dual coordinate systems
 % Copyright (C) 2014-2016  Daniel Wagenaar
