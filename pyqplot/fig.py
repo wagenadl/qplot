@@ -1,22 +1,23 @@
 # Everything in the Figures category and also the Scale to fit category
 # Also the Grouping category
 
-# figure
 # clf
 # close
 # closeall
-# xlim
-# ylim
-# startgroup
+# current
 # endgroup
+# figure
+# (not qprint)
 # panel
 # relpanel
-# subplot
-# not qprint
-# select
 # save
-# shrink
+# select
 # sharelim
+# shrink
+# startgroup
+# subplot
+# xlim
+# ylim
 
 import numpy as np
 import qi
@@ -225,3 +226,12 @@ def sharelim(axes='all', ids=[]):
     out += ids
     qi.ensure()
     qi.f.write(out)
+
+def current():
+    '''CURRENT - Filename of current figure
+    fn = CURRENT() returns the filename of the current figure or None
+    if none are open.'''
+    if utils.isempty(qi.figs):
+        return None
+    qi.ensure()
+    return q.f.fn

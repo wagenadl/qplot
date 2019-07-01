@@ -1,11 +1,14 @@
 # Everything in the Images category
 
-<<<<<<< HEAD
 # image
 # imsc
 # lut
+# gimage
+# cbar (vcbar)
+# hcbar
 
 import qi
+import axes
 import utils
 
 def image(data, rect=None, xx=None, yy=None):
@@ -42,32 +45,12 @@ def image(data, rect=None, xx=None, yy=None):
         rect = (rect[0], rect[1] + rect[3], rect[2], -rect[3])
 
     S = data.shape
-=======
-# gimage
-# cbar (vcbar)
-# hcbar
-
-import axes
-
-def gimage(img, drect=None, prect=None):
-    '''GIMAGE - Place an image with data and paper coordinates
-    GIMAGE(img, drect, prect) places an image on a location in
-    the graph specified by both data coordinates and image coordinates.
-    For example: GIMAGE(img, [5, 5, 0, 0], [0, 0, 36, 72]) creates an 
-    image of 0.5x1" at data location (5,5). 
-    GIMAGE(img, [5, np.nan, 0, 5], [0, 36, 72, 0]) creates an 
-    image 1" wide, 5 data units high, at x=5, 1" below the top of the graph.
-    Etc.'''
-    
-    S = img.shape
->>>>>>> a0b21f128b2cafe8897db14234a2bb4fa97e1588
     Y = S[0]
     X = S[1]
     if len(S)==2:
         C = 1
     else:
         C = S[2]
-<<<<<<< HEAD
     if data.size != Y*X*C:
         qi.error('Data has inconsistent size')
     qi.ensure()
@@ -125,7 +108,24 @@ def lut(cc=None, nanc=None):
     if nanc is not None:
         qi.f.lut_nan = nanc
     return (qi.f.lut, qi.f.lut_nan)
-=======
+
+def gimage(img, drect=None, prect=None):
+    '''GIMAGE - Place an image with data and paper coordinates
+    GIMAGE(img, drect, prect) places an image on a location in
+    the graph specified by both data coordinates and image coordinates.
+    For example: GIMAGE(img, [5, 5, 0, 0], [0, 0, 36, 72]) creates an 
+    image of 0.5x1" at data location (5,5). 
+    GIMAGE(img, [5, np.nan, 0, 5], [0, 36, 72, 0]) creates an 
+    image 1" wide, 5 data units high, at x=5, 1" below the top of the graph.
+    Etc.'''
+    
+    S = img.shape
+    Y = S[0]
+    X = S[1]
+    if len(S)==2:
+        C = 1
+    else:
+        C = S[2]
     if C==1 or C==3 or C==4:
         pass
     else:
@@ -182,20 +182,20 @@ class CBarInfo:
                 dw = -dw
             return d0 + dw*crel
 
-def cbar(x0=None, y0=None, y1=None, width=5):
+def cbar(x0=None, y0=None, y1=None, width=5, dist=10):
     '''CBAR - Add a vertical color bar to a figure
+    CBAR() without arguments creates a color bar to the right of the
+    latest IMSC.
     CBAR(x0, y0, y1) adds a vertical color bar to the figure between
     (X0, Y0) and (X0, Y1), expressed in data coordinates.
     If Y1>Y0, the color bar runs up, otherwise it runs down.
     Optional argument WIDTH specifies the width of the color bar in points 
     (default: 5 points). If WIDTH is positive, the bar extends to the right
     of X0, otherwise to the left.
+    Optional argument DIST creates distance between X0 and the color bar by
+    shifting the color bar to the right. (Negative DIST shifts it to the left.)
     This only works after a preceding IMSC and uses the lookup table (LUT)
     used by that IMSC.
-    CBAR uses AXSHIFT to create distance between X0 and the color bar.
-    Positive AXSHIFT creates space, negative creates overlap.
-    CBAR() without arguments creates a color bar to the right of the
-    latest IMSC.
     Use CAXIS to place an axis along the bar.
     See also HCBAR.'''
     
@@ -214,11 +214,10 @@ def cbar(x0=None, y0=None, y1=None, width=5):
     else:
         drect = [x0, y1, 0, y0-y1]
 
-    dx = axes.axshift()
-    if w<0:
-        prect = [dx+w, 0, -w, 0]
+    if width<0:
+        prect = [dist+width, 0, -width, 0]
     else:
-        prect = [dx, 0, w, 0]
+        prect = [dist, 0, width, 0]
 
     lut = qi.f.lut
     if isup:
@@ -227,19 +226,21 @@ def cbar(x0=None, y0=None, y1=None, width=5):
     gimage(np.reshape(lut, (C,1,3)), drect, prect)
     qi.f.cbar = CBarInfo(qi.f.clim, 'y', drect, prect, !isup)
 
-def hcbar(y0=None, x0=None, x1=None, width=5):
+def hcbar(y0=None, x0=None, x1=None, width=5, dist=10):
     '''HCBAR - Add a horizontal color bar to a figure
+    HCBAR without arguments creates a color bar below the latest IMSC.
     HCBAR(y0, x0, x1) adds a horizontal color bar to the figure between
     (X0, Y0) and (X1, Y0), expressed in data coordinates.
     If X1>X0, the color bar to the right; otherwise it runs to the left.
     Optional argument WIDTH specifies the width of the color bar in 
     points (default: 5 pt). If WIDTH is positive, the bar extends down 
     below Y0, otherwise above.
-    This only works after a preceding IMSC and uses the lookup table (QLUT)
+    Optional argument DIST creates distance between Y0 and the color bar by
+    shifting the color bar down. (Negative DIST shifts it up.)
+    This only works after a preceding IMSC and uses the lookup table (LUT)
     used by that IMSC.
-    HCBAR uses AXSHIFT to create distance between Y0 and the color bar.
-    Positive AXSHIFT creates space, negative creates overlap.
-    HCBAR without arguments creates a color bar below the latest IMSC.
+    HCBAR only works after a preceding IMSC and uses the lookup table (QLUT)
+    used by that IMSC.
     Use CAXIS to place an axis along the bar.'''
 
     qi.ensure()
@@ -257,14 +258,12 @@ def hcbar(y0=None, x0=None, x1=None, width=5):
     else:
         drect = [x1, y0, x0-x1, 0]
         
-    dy = qi.f.axshift
     if width<0:
-        prect = [0, dy-width, 0, -width]
+        prect = [0, dist-width, 0, -width]
     else:
-        prect = [0, dy, 0, width]
+        prect = [0, dist, 0, width]
 
     C = lut.shape[0]
     gimage(np.reshape(lut, (1,C,3)), drect, prect)
     qi.f.cbar = CBarInfo(qi.f.clim, 'x', drect, prect, !isright)
     
->>>>>>> a0b21f128b2cafe8897db14234a2bb4fa97e1588

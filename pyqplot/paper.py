@@ -1,12 +1,15 @@
-# Everything in the Paper coordinate plotting
+# Everything in the Paper coordinate plotting and Mixed coordinate plotting
+# QGIMAGE is in img
 
-# line
 # area
+# line
+# mm
 # pmark
-# gline
-# gline2
 # garea
 # garea2
+# gline
+# gline2
+# shiftedline
 
 import qi
 
@@ -190,3 +193,17 @@ def garea2(vglcs):
     All the same commands are supported.'''
     q__gline2('garea', ptspecs)
     
+def mm(f=1):
+    '''MM - Convert postscript points to millimeters
+    Use as in 5*mm() or as in mm(5).'''
+    return 72 * f / 25.4
+
+def shiftedline(xx, yy, dx, dy):
+    '''SHIFTEDLINE - Renders a line displaced from data points
+    SHIFTEDLINE(xx, yy, dx, dy) is like PLOT(xx, yy) except that the 
+    plot is displaced by (DX, DY) points on the graph.
+    XX, YY, DX, DY may be vectors or scalars. Any scalars are automatically
+    converted to vectors of the appropriate length. All vectors must be
+    the same length.
+    See also GLINE and GLINE2.'''
+    gline2(AbsData(xx, yy), RelPaper(dx, dy))

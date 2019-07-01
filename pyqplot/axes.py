@@ -1,15 +1,18 @@
 # Everything in the Tick axes and Tick axis styling categories.
 # Also the Color bars category.
 
-# ytitlerot
 # axshift
 # textdist
 # ticklen
-# q__axis
-# qpa__align
 # xaxis
 # yaxis
-# (caxis)
+# ytitlerot
+# caxis
+# overline
+# xcaxis
+# numformat
+# overlinedist
+# overlinemin
 
 import qi
 import style
@@ -95,7 +98,8 @@ def qpa__align(hori, dx, dy=None):
             xa = 'right';
     return (xa, ya)
 
-def q__axis(orient='x', lim_d=None, tick_d=None, tick_p=None,
+def q__axis(orient='x', lim_d=None,
+            tick_d=None, tick_p=None,
             tick_lbl=None, ttl='',
             ticklen=3, lbldist=3, ttldist=3,
             coord_d=None, coord_p=0,
@@ -106,7 +110,6 @@ def q__axis(orient='x', lim_d=None, tick_d=None, tick_p=None,
       orient: 'x' or 'y'
       lim_d (2) limits of the axis in data coordinates (in the direction
                 of ORIENT)
-      lim_p (2) shift of those limits in paper coordinates
       tick_d (N) data coordinates (in the direction of ORIENT) of ticks
       tick_p (N) shift of those coords in paper coordinates
       tick_lbl (N strings) labels to be placed at those ticks
@@ -144,11 +147,6 @@ def q__axis(orient='x', lim_d=None, tick_d=None, tick_p=None,
     else:
         qi.error("orient must be 'x' or 'y'")    
 
-    if lim_d is None:
-        lim_d = np.zeros(lim_p.shape) + np.nan
-    elif lim_p is None:
-        lim_p = np.zeros(lim_d.shape)
-
     if type(tick_d)==function:
         tick_d = np.array([ tick_d(lbl) for lbl in tick_lbl])
     if tick_d is None:
@@ -173,20 +171,18 @@ def q__axis(orient='x', lim_d=None, tick_d=None, tick_p=None,
     # Axis line position (x and y may be flipped later!)
     limdx = lim_d
     limdy = coord_d + np.zeros((2))
-    limpx = lim_p
+    limpx = np.zeros((2))
     limpy = coord_p + np.zeros((2))
     
-    if lim_d not is None and not np.isnan(lim_d[0]):
+    if lim_d not is None:
         ttldx = np.mean(limdx)
-    elif tick_d not is None and not isnan(tick_d[0]):
+    elif tick_d not is None:
         ttldx = np.mean([tickdx[0], tickdx[-1]])
     else:
         ttldx = np.nan
         ttldy = coord_d
         
-    if lim_p not is None:
-        ttlpx = np.mean(limpx)
-    elif tick_p not is None:
+    if tick_p not is None:
         ttlpx = np.mean([tickpx[0], tickpx[-1]])
     else:
         ttlpx = 0
@@ -197,8 +193,8 @@ def q__axis(orient='x', lim_d=None, tick_d=None, tick_p=None,
         if isvert:
             (limdx, limdy) = (limdy, limdx)
             (limpx, limpy) = (limpy, limpx)
-            paper.gline2([paper.AbsData(limdx, limdy),
-                        paper.RelPaper(limpx, limpy)])
+        paper.gline2([paper.AbsData(limdx, limdy),
+                      paper.RelPaper(limpx, limpy)])
             
     # Draw ticks if desired
     if isvert:
@@ -223,6 +219,8 @@ def q__axis(orient='x', lim_d=None, tick_d=None, tick_p=None,
         if ishori:
             reftxt=''
             for lbl in tick_lbl:
+                if type(lbl)!=str:
+                    lbl = qi.f.numfmt % lbl
                 reftxt += lbl
                 try:
                     v = float(lbl)
@@ -234,7 +232,10 @@ def q__axis(orient='x', lim_d=None, tick_d=None, tick_p=None,
                     
         for k in range(len(tick_lbl)):
             markup.at(tickdx[k], tickdy[k])
-            markup.text(tick_lbl[k], dx=tickpx[k] + lbllx, dy=tickpy[k] + lblly)
+            lbl = tick_lbl[k]
+            if type(lbl)!=str:
+                lbl = qi.f.numfmt % lbl
+            markup.text(lbl, dx=tickpx[k] + lbllx, dy=tickpy[k] + lblly)
             
         markup.reftext('')
         fig.endgroup()
@@ -372,7 +373,7 @@ def yaxis(x0=None, lim=None, ticks=None, labels=None, title='', flip=False):
     
     qi.axis(orient='y', lim_d=lim, tick_d=ticks, tick_lbl=labels, ttl=title, 
             ticklen=ticklen, lbldist=lbldist, ttldist=ttldist, 
-            coord_d=y0, coord_p=axshift, ttlrot=lblrot)
+            coord_d=x0, coord_p=axshift, ttlrot=lblrot)
 
 def minorticks(xx, ticklen=None):
     '''MINORTICKS - Add more ticks to an existing axis
@@ -395,7 +396,7 @@ def minorticks(xx, ticklen=None):
     q__axis(orient=kv['orient'], tick_d=xx, tick_lbl=[], ticklen=ticklen,
             coord_d=kv['coord_d'], coord_p=kv['coord_p'])
 
-def caxis(ticks=None, labels=None, title=None, lim=None, side=None):
+def caxis(ticks=None, labels=None, title=None, lim=None, flip=False):
     '''CAXIS - Plot colorbar axis
     CAXIS plots a colorbar axis alongside the most recent CBAR or HCBAR.
     All arguments are optional.
@@ -406,16 +407,173 @@ def caxis(ticks=None, labels=None, title=None, lim=None, side=None):
       TITLE specifies a title for the axis.
       LIM specifies the ends of the axis, again in terms of the data
         represented in the IMSC.
-      SIDE specifies the relative position of the axis to the bar. XXX
+      FLIP specifies that the axis is rendered to the left or above the
+        bar rather than to the right or below.
 
     CAXIS interprets settings from TICKLEN, TEXTDIST, and AXSHIFT
-    differently from QXAXIS and QYAXIS: positive values are away from the
-    colorbar.
-    Note that currently MINORTICKS doesn't understand about this convention,
-    so MINORTICKS will produce unexpected results when used with CAXIS.'''
+    differently from XAXIS and YAXIS: positive values are away from
+    the colorbar.  Note that MINORTICKS currently doesn't understand
+    about this convention, so MINORTICKS may produce unexpected
+    results when used with CAXIS.'''
 
     qi.ensure()
     cb = qi.f.cbar
     if cb is None:
         qi.error('CAXIS needs a previous CBAR or HCBAR')
-# More to be done
+    if lim is None:
+        lim = cb.lim
+    if ticks is None:
+        ticks = utils.sensibleticks(clim)
+    if labels is None:
+        labels = ticks
+
+    ticklen = qi.f.ticklen
+    (lbldist, ttldist) = textdist()
+
+    if cb.orient=='y':
+        ttlrot = ytitlerot()
+        coord_d = cb.drect[0]
+        coord_p = cb.prect[0]
+        if flip:
+            ticklen = -ticklen
+            ttlrot = -ttlrot
+            coord_p -= axshift()
+        else:
+            coord_p += cb.prect[2] + axshift()
+    elif cb.orient=='x':
+        ttlrot = 0
+        coord_d = cb.drect[1]
+        coord_p = cb.prect[1]
+        if flip:
+            ticklen = -ticklen
+            coord_p -= axshift()
+        else:
+            coord_p += cb.prect[3] + axshift()
+    else:
+        qi.error('Orientation not understood')
+
+    qi.axis(orient=cb.orient, lim_d=lim, tick_d=ticks, tick_lbl=labels,
+            ttl=title, 
+            ticklen=ticklen, lbldist=lbldist, ttldist=ttldist, 
+            coord_d=coord_d, coord_p=coordp, ttlrot=ttlrot)
+        
+def numformat(fmt=None):
+    '''NUMFORMAT - Specifies the format of numbers as tick labels
+    NUMFORMAT(fmt) specifies the format of numeric axis tick labels.
+    FMT may be anything that python's "%" operator understands,
+    for instance: "%.1f". The default is "%g".
+    fmt = NUMFORMAT() returns current setting.'''
+    qi.ensure()
+    if fmt not is None:
+        qi.f.numfmt = fmt
+    return qi.f.numfmt
+
+def overlinedist(x=None):
+    '''OVERLINEDIST - Specifies distance between OVERLINEs and data
+    OVERLINEDIST(dist) specifies the distance between OVERLINEs and 
+    the data, in points.
+    dist = OVERLINEDIST() returns current settings.'''
+    qi.ensure()
+    if x not is None:
+        qi.f.overlinedist = np.abs(x)
+    return qi.f.overlinedist
+    
+def overlinemin(x=None):
+    '''OVERLINEMIN - Specifies minimum vertical length of OVERLINEs
+    OVERLINEMIN(h) specifies the minimum vertical length of OVERLINEs,
+    in points.
+    h = OVERLINEMIN() returns current settings.'''
+    qi.ensure()
+    if x not is None:
+        qi.f.overlinemin = x
+    return qi.f.overlinemin
+
+def overline(xx, yy, txt=None, datadist=None, textdist=None, minlen=None):
+    '''OVERLINE - Draw a line above data with a text above it
+    OVERLINE(xx, y, text), where XX is a 2-vector and Y a scalar, draws
+    a horizontal line just above (XX(1), Y) to (XX(2), Y) and places the
+    given TEXT over it.
+    OVERLINE(xx, yy, text), where both XX and YY are 2-vectors, draws the
+    line just above the larger YY value and extends a vertical line down 
+    to the smaller YY value.
+    The whole thing is displaced by a distance OVERLINEDIST from the data,
+    and the text placement uses the absolute value of TEXTDIST.
+    If OVERLINEMIN is non-zero, a vertical line is drawn on both ends.
+    OVERLINE(xx, y) or QOVERLINE(xx, yy) is permitted: no text is drawn.
+    Optional arguments DATADIST, TEXTDIST, and MINLEN override global
+    settings.'''
+    qi.ensure()
+    if datadist is None:
+        datadist = qi.f.overlinedist
+    if textdist is None:
+        textdist = qi.f.textdist[0]
+    if minlen is None:
+        minlen = qi.f.overlinemin
+    yy = np.array(utils.aslist(yy))
+    ymax = np.max(yy)
+    if len(yy)==2:
+        paper.shiftedline(np.array([xx[0], xx[0], xx[1], xx[1]]),
+                          np.array([yy[0], ymax, ymax, yy[1]]),
+                          np.array([0,0,0,0]),
+                          -np.array([datadist,
+                                    datadist + minlen,
+                                    datadist + minlen,
+                                    datadist]))
+    elif minlen>0:
+        paper.shiftedline(np.array([xx[0], xx[0], xx[1], xx[1]]),
+                          np.array([ymax, ymax, ymax, ymax]),
+                          np.array([0,0,0,0]),
+                          -np.array([datadist,
+                                    datadist + minlen,
+                                    datadist + minlen,
+                                    datadist]))
+    else:
+        paper.shiftedline(np.array([xx[0], xx[1]]),
+                          np.array([ymax, ymax]),
+                          np.array([0,0]),
+                          -np.array([datadist + minlen,
+                                    datadist + minlen]))
+    
+    if txt is not None:
+        markup.at((xx[0]+xx[1])/2, ymax)
+        td = np.abs(textdist)
+        markup.align('center', 'bottom')
+        markup.text(txt, dy=-(datadist + minlen + td))
+
+def xcaxis(y0=None, xx=None, labels=None, title='', lim=None, flip=False):
+    '''XCAXIS - Plot x-axis with labels between ticks
+    XCAXIS(y0, xx, labels) places labels XL at locations XX, but places
+    ticks between labels rather than at the labels. First and last ticks
+    are extrapolated.
+    Optional argument TITLE specifies title to the axis.
+    Optional argument LIM specifies those end ticks explicitly as a 2-ple.
+    XCAXIS obeys settings from TICKLEN, TEXTDIST, and AXSHIFT.'''
+    qi.ensure()
+    if y0 is None:
+        yy = qi.sensibleticks(qi.f.datarange[2:4], 1)
+        y0 = yy[0]
+    ticklen = qi.f.ticklen
+    axshift = qi.f.axshift
+    [lbldist, ttldist] = textdist()
+    
+    if flip:
+        ticklen = -ticklen
+        axshift = -axshift
+        lbldist = -lbldist
+        ttldist = -ttldist
+    
+    btwnx = (xx[0:-1] + xx[1:])/2
+    if lim is None:
+        avg = np.mean(np.diff(btwnx))
+        lim = (btwnx[0]-avg, btwnx[-1]+avg)
+    tickx = np.concatenate(([lim[0]], btwnx, [lim[1]]))
+
+    # Place labels, do not draw bar
+    q__axis(orient='x', tick_d=xx, tick_lbl=labels, ttl=title,
+            ticklen=0, lbldisl=lbldist+ticklen, ttldist=ttldist,
+            coord_d=y0, coord_p=axshift)
+    # Place ticks, draw bar
+    q__axis(orient='x', tick_d=tickx, tick_lbl='',
+            ticklen=ticklen,
+            coord_d=y0, coord_p=axshift)
+    

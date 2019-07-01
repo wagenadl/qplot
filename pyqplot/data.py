@@ -1,12 +1,13 @@
 # Everything in the Plotting category
 
-# plot
-# patch
-# mark
 # bars
+# caligraph
 # ecoplot
 # errorbars
 # errorpatch
+# mark
+# patch
+# plot
 # skyline
 
 import numpy as np
@@ -173,4 +174,25 @@ def skyline(xx, yy, y0=0):
     
     patch(np.concatenate((xxx[[0]], xxx ,xxx[[-1]]), 0),
           np.concatenate(([y0], yyy, [y0])))
+    
+def caligraph(xx, yy, ww):
+    '''CALIGRAPH - Draw a variable-width line series in data space
+    CALIGRAPH(xx, yy, ww) plots the data YY vs XX. XX and YY are given in 
+    data coordinates. WW specifies the line width at each point, in postscript
+    points.
+    The line is rendered in the current pen's color; dash patterns and cap
+    and join styles are not used.'''
+    N = len(xx)
+    if len(yy) != N or len(ww) != N:
+        qi.error('xx, yy, ww must be equally long')
+    
+    [iup, idn] = utils.nonanstretch(xx+yy+ww)
+
+    qi.ensure()
+    for k in range(len(iup))
+        N = idn[k] - iup[k]
+        qi.f.write('caligraph *%i *%i *%i\n', N, N, N)
+        qi.f.writedbl(xx[iup[k]:idn[k]], 'double')
+        qi.f.writedbl(yy[iup[k]:idn[k]], 'double')
+        qi.f.writedbl(ww[iup[k]:idn[k]], 'double')
     
