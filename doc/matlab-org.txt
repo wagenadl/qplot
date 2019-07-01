@@ -71,8 +71,8 @@ qoverlinemin
 Paper coordinate plotting:
 qarea
 qline
-qpmark
 qmm
+qpmark
 
 Mixed coordinate plotting:
 qshiftedline

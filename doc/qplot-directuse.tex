@@ -316,17 +316,29 @@ specifies the desired aspect ratio of y:x data units.}
   previous text rendering ended (rather than at the anchor set by
   \cref{at}). This ignores alignment options set by \cref{align}.}
 
+\cmd{textonpath}{[ \emph{x$_1$ x$_2$ \ldots} ] [ \emph{y$_1$ y$_2$
+      \ldots} ] \emph{dx} \emph{dy}
+  \emph{string}}
+\expl{Places the given text \emph{string} along the
+  curve defined by \emph{x$_i$} and \emph{y$_i$} in data space, displaced by
+  (\emph{dx}, \emph{dy}) points. \cref{textonpath} respects alignment
+  set by \cref{align} but not placement directives set by \cref{at}. The
+  present version does not interpret any of the special character
+  sequences understood by \cref{text}. (So no bold, italic, or
+  super-/subscripting yet.)}
+
 \cmd{xlim}{\emph{x$_0$} \emph{x$_1$}}
 \expl{Fixes the limits of the x-axis. (If no xlim is given for a panel, tight
   automatic axis limits apply.)}
 
 \cmd{ylim}{\emph{y$_0$} \emph{y$_1$}}
-\expl{Fixes the limits of the y-axis.}
+\expl{Fixes the limits of the y-axis. (If no ylim is given for a panel, tight
+  automatic axis limits apply.)}
 
 \section{Specifying data}
 
 For specifying long vectors or image data, the text-based ``[ a b
-  c ... ]'' syntax may be cumbersome. Instead, you can write
+  c ... ]'' syntax may be slow. Instead, you can write
 ``*\emph{n}'' and place \emph{n} binary doubles directly after the
 command. Or you can write ``*uc\emph{n}'' and place \emph{n} binary
 unsigned 8-bit integers directly after the command. The matlab
