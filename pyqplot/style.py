@@ -2,6 +2,7 @@
 
 # brush
 # pen
+# marker
 
 import utils
 import qi
@@ -79,3 +80,40 @@ pen.joins = utils.wordset('miterjoin beveljoin roundjoin')
 pen.caps = utils.wordset('flatcap squarecap roundcap')
 pen.patterns = utils.wordset('solid none dash dot')
     
+def marker(shape=None, size=None, fill=None):
+    '''MARKER - Select a new marker for MARK and PMARK
+    MARKER(shape, size, fill) selects a marker.
+    All arguments are optional.
+    SHAPE must be one of + x - | o s d < > ^ v p h; see below.
+    SIZE is specified in points.
+    FILL is one of open|solid|brush|spine:
+      OPEN - The mark is filled with white
+      SOLID - The mark is filled with the current pen's color
+      BRUSH - The mark is filled with the current brush's color
+      SPINE - Draws lines from the center to the vertices of the chosen shape
+        instead of drawing the shape.
+    The mark is always outlined with the current pen (which may be 'none',
+    of course).
+    Marks are: o: circle/disk
+               + x: horizontal+vertical or diagonal crosses
+               - |: horizontal or vertical lines
+               s d p h: square, diamond, pentagon, or hexagon
+               < > ^ v: left / right / up / down pointing triangles
+    The fill style has no effect on +|x|-|| marks; SPINE is like BRUSH 
+    for circle.'''
+    out = [ 'marker' ]
+    if shape not is None:
+        if shape in qi.markermap:
+            out.append(qi.markermap[shape])
+        else:
+            qi.error('Marker shape not understood')
+    if size not is None:
+        out.append('%g' % size)
+    if fill not is None:
+        if fill in marker.fills:
+            out.append(fill)
+        else:
+            qi.error('Marker fill not understood')
+    qi.ensure()
+    qi.write(out)
+marker.fills = utils.wordset('open solid brush spine')
