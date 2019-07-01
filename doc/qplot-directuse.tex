@@ -196,6 +196,21 @@ they designate optional parameters. For instance:\medskip\\
   the number of pixels per row. The length of \emph{cdata} must be an
   even multiple of 3\emph{K}. Values must be between 0 and 1.}
 
+\cmd{image}{[ \emph{x y w h} ] [ \emph{$\delta$x $\delta$y $\delta$w $\delta$h} ] [ \emph{W H C} ] [
+    \emph{cdata} ]}
+ \expl{The first \emph{x y w h} quad specifies displacement from the origin
+in data coordinates, the second  \emph{$\delta$x $\delta$y $\delta$w
+  $\delta$h} quad specifies additional shift in points. Finally,
+\emph{W H C} specifies the width, height, and color depth of the
+image. \emph{C} must be either 1 or 3.}
+
+\cmd{imageg}{\emph{x y w h K} [ \emph{cdata} ]}
+\expl{Renders a grayscale image at given data location. \emph{cdata} is
+  stored as pixels in row order (unlike matlab's convention); 
+   \emph{K} specifies
+  the number of pixels per row. The length of \emph{cdata} must be an
+  even multiple of \emph{K}. Values must be between 0 and 1.}
+
 \cmd{line}{[ \emph{dx$_1$ dx$_2$ \ldots} ] [ \emph{dy$_1$ dy$_2$ \ldots} ]}
 \expl{Draws a polyline. \emph{dx$_i$} and \emph{dy$_i$} are specified in
   points and are relative to the position set by \cref{at}. See also
