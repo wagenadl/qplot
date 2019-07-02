@@ -33,6 +33,7 @@ function qgline2(varargin)
 %   attractive for general usage. The same applies to QGAREA versus QAREA 
 %   and QPATCH. See also QSHIFTEDLINE and QGLINE.
 
+
 % QPlot - Publication quality 2D graphs with dual coordinate systems
 % Copyright (C) 2014  Daniel Wagenaar
 %

@@ -3,18 +3,18 @@ import numpy as np
 
 qp.figure('legend', 3, 3)
 
-qp.legopt('x', 2*pi, 'y', 1, 'dx', 10)
+qp.legopt(x0=2*np.pi, y0=1, dx=10)
 
-xx=[0:.1:2*pi]
+xx = np.arange(0, 2*np.pi, .1)
 
-qp.pen b
-qp.plot(xx, cos(xx))
+qp.pen('b')
+qp.plot(xx, np.cos(xx))
 
 qp.legend('Cosine')
 
-qp.pen r
-qp.plot(xx, sin(xx))
+qp.pen('r')
+qp.plot(xx, np.sin(xx))
 
 qp.legend('Sine')
 
-qp.shrink
+qp.shrink()

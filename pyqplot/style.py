@@ -144,7 +144,10 @@ def hairline(width):
     HAIRLINE(width) specifies the width of hairlines (lines with 
     nominal width 0) as rendered to screen or pdf.
     The default is 0.25 pt when rendering to pdf. When rendering to
-    screen, the default is 0, which implies "one pixel wide".'''
+    screen, the default is 0, which implies "one pixel wide".
+    Unlike all other QPlot commands, this one is effective retroactively
+    as well as proactively: It affects every single object in the current
+    figure that is plotted with nominal width 0.'''
     qi.ensure()
-    qi.f.write('hairline %g\n', width)
+    qi.f.write('hairline %g\n' % width)
     
