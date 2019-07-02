@@ -19,6 +19,8 @@ from . import style
 from . import paper
 from . import markup
 from . import fig
+from . import utils
+import numpy as np
 
 def ytitlerot(pt=None):
     '''YTITLEROT - Specifies the rotation of y-axis titles.
@@ -147,7 +149,7 @@ def q__axis(orient='x', lim_d=None,
     else:
         qi.error("orient must be 'x' or 'y'")    
 
-    if type(tick_d)==function:
+    if callable(tick_d):
         tick_d = np.array([ tick_d(lbl) for lbl in tick_lbl])
     if tick_d is None:
         tick_d = np.zeros(tick_p.shape) + np.nan
@@ -204,15 +206,15 @@ def q__axis(orient='x', lim_d=None,
         (lbllx, lblly)   = (lblly, lbllx)
     if ticklen!=0:
         for k in range(len(tickdx)):
-            paper.gline([paper.AbsData(tickdx(k), tickdy(k)),
-    	                 paper.RelPaper(tickpx(k), tickpy(k))],
-                        [paper.AbsData(tickdx(k), tickdy(k)),
-    	                 paper.RelPaper(tickpx(k)+ticklx, tickpy(k)+tickly)])
+            paper.gline([[paper.AbsData(tickdx[k], tickdy[k]),
+    	                 paper.RelPaper(tickpx[k], tickpy[k])],
+                        [paper.AbsData(tickdx[k], tickdy[k]),
+    	                 paper.RelPaper(tickpx[k]+ticklx, tickpy[k]+tickly)]])
             
     # Draw labels if desired
-    if type(tick_lbl)==function:
+    if callable(tick_lbl):
         tick_lbl = [ tick_lbl(x) for x in tick_d ]
-    if not utils.isEmpty(tick_lbl):
+    if not utils.isempty(tick_lbl):
         fig.startgroup()
         [xa, ya] = qpa__align(ishori, lbllx, lblly)
         markup.align(xa, ya)
@@ -241,7 +243,7 @@ def q__axis(orient='x', lim_d=None,
         fig.endgroup()
         
     # Draw title if desired
-    if not isempty(ttl):
+    if not utils.isempty(ttl):
         ttllx = 0
         ttlly = ttldist
         if isvert:
@@ -303,14 +305,14 @@ def xaxis(y0=None, ticks=None, labels=None, title='', lim=None, flip=False):
     friends. Your mileage may vary.'''
     qi.ensure()
     if y0 is None:
-        yy = qi.sensibleticks(qi.f.datarange[2:4], 1)
+        yy = utils.sensibleticks(qi.f.datarange[2:4], 1)
         y0 = yy[0]
     if ticks is None:
-        ticks = qi.sensibleticks(qi.f.datarange[0:2], inc=True)
+        ticks = utils.sensibleticks(qi.f.datarange[0:2], inc=True)
     if lim is None:
         lim = [ticks[0], ticks[-1]]
     if labels is None:
-        labels = qi.format(ticks) 
+        labels = qi.f.format(ticks) 
     ticklen = qi.f.ticklen
     axshift = qi.f.axshift
     [lbldist, ttldist] = textdist()
@@ -325,7 +327,7 @@ def xaxis(y0=None, ticks=None, labels=None, title='', lim=None, flip=False):
             ticklen=ticklen, lbldist=lbldist, ttldist=ttldist, 
             coord_d=y0, coord_p=axshift)
 
-def yaxis(x0=None, lim=None, ticks=None, labels=None, title='', flip=False):
+def yaxis(x0=None, ticks=None, labels=None, title='', lim=None, flip=False):
     '''YAXIS - Draw y-axis
     All arguments are optional.
       X0 specifies intersect with x-axis. If None, defaults to a reasonable
@@ -350,16 +352,16 @@ def yaxis(x0=None, lim=None, ticks=None, labels=None, title='', flip=False):
     friends. Your mileage may vary.'''
     qi.ensure()
     if x0 is None:
-        xx = qi.sensibleticks(qi.f.datarange[0:2], 1)
+        xx = utils.sensibleticks(qi.f.datarange[0:2], 1)
         x0 = xx[0]
     if ticks is None:
-        ticks = qi.sensibleticks(qi.f.datarange[2:4], inc=True)
+        ticks = utils.sensibleticks(qi.f.datarange[2:4], inc=True)
     if lim is None:
         lim = [ticks[0], ticks[-1]]
     if labels is None:
-        labels = qi.format(ticks) 
-    ticklen = ticklen()
-    axshift = axshift()
+        labels = qi.f.format(ticks) 
+    ticklen = qi.f.ticklen
+    axshift = qi.f.axshift
     [lbldist, ttldist] = textdist()
     lblrot = ytitlerot()
     
@@ -371,7 +373,7 @@ def yaxis(x0=None, lim=None, ticks=None, labels=None, title='', flip=False):
         if flip==2:
             lblrot = -lblrot
     
-    qi.axis(orient='y', lim_d=lim, tick_d=ticks, tick_lbl=labels, ttl=title, 
+    q__axis(orient='y', lim_d=lim, tick_d=ticks, tick_lbl=labels, ttl=title, 
             ticklen=ticklen, lbldist=lbldist, ttldist=ttldist, 
             coord_d=x0, coord_p=axshift, ttlrot=lblrot)
 
@@ -550,7 +552,7 @@ def xcaxis(y0=None, xx=None, labels=None, title='', lim=None, flip=False):
     XCAXIS obeys settings from TICKLEN, TEXTDIST, and AXSHIFT.'''
     qi.ensure()
     if y0 is None:
-        yy = qi.sensibleticks(qi.f.datarange[2:4], 1)
+        yy = utils.sensibleticks(qi.f.datarange[2:4], 1)
         y0 = yy[0]
     ticklen = qi.f.ticklen
     axshift = qi.f.axshift

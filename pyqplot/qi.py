@@ -36,13 +36,26 @@ class Figure:
         # In the latter case, spaces are interpolated and newline is added.
         if type(s)==list:
             s = ' '.join(s) + '\n'
+        self.flushcounter = len(self.floatre.findall(s))
+        self.flushcounter += len(self.intre.findall(s))
         self.fd.write(bytes(s, 'utf8'))
-            
+        if self.flushcounter==0:
+            self.fd.flush()
+    flushcounter=0
+    floatre = re.compile(r' \*\d')
+    intre = re.compile(r' uc*\d')
+
     def writedbl(self, v):
         v.astype('float64').tofile(self.fd)
+        self.flushcounter -= 1
+        if self.flushcounter<=0:
+            self.fd.flush()
     def writeuc(self, v):
         v.astype('uint8').tofile(self.fd)
-        
+        self.flushcounter -= 1
+        if self.flushcounter<=0:
+            self.fd.flush()
+            
     def updaterange(self, xx, yy):
         mx = np.min(xx)
         Mx = np.max(xx)
