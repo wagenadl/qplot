@@ -15,7 +15,7 @@ def readoctave(ifn):
 
 
 def writepython(fd, codelines):
-    fd.write('import pyqplot.all as qp\n')
+    fd.write('import pyqplot as qp\n')
     fd.write('import numpy as np\n\n')
     for l in codelines:
         l = l[:-1] # Remove newline

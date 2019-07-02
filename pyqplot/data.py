@@ -11,8 +11,8 @@
 # skyline
 
 import numpy as np
-import qi
-import utils
+from . import qi
+from . import utils
 
 
 def plot(xx, yy=None):
@@ -41,12 +41,12 @@ def mark(xx, yy):
     qi.ensure()
     if utils.isempty(xx):
         return
-    xx = p.array(utils.aslist(xx))
+    xx = np.array(utils.aslist(xx))
     yy = np.array(utils.aslist(yy))
-    ok = !np.isnan(xx+yy)
+    ok = ~np.isnan(xx+yy)
     xx = xx[ok]
     yy = yy[ok]
-    qi.f.write('mark *%i *%i\n', len(xx), len(yy))
+    qi.f.write('mark *%i *%i\n' % (len(xx), len(yy)))
     qi.f.writedbl(xx)
     qi.f.writedbl(yy)
     qi.f.updaterange(xx, yy)
@@ -189,7 +189,7 @@ def caligraph(xx, yy, ww):
     [iup, idn] = utils.nonanstretch(xx+yy+ww)
 
     qi.ensure()
-    for k in range(len(iup))
+    for k in range(len(iup)):
         N = idn[k] - iup[k]
         qi.f.write('caligraph *%i *%i *%i\n', N, N, N)
         qi.f.writedbl(xx[iup[k]:idn[k]], 'double')

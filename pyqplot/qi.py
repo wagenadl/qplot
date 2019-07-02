@@ -2,7 +2,7 @@ import numpy as np
 import tempfile
 import os
 import re
-import utils
+from . import utils
 
 class Figure:
     fd = None
@@ -175,9 +175,9 @@ def interpretcolor(color):
     translate to 'none', or None, which is returned unchanged.'''
     if color is None:
         return None
-    elif color in colormap:
-        return colormap[color]
     elif type(color)==str:
+        if color in colormap:
+            return colormap[color]        
         if color=='' or color=='none':
             return 'none'
         elif utils.alldigits(color) and len(color)==3:

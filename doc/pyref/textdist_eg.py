@@ -1,4 +1,5 @@
-import pyqplot.all as qp
+import pyqplot as qp
+import numpy as np
 
 qp.figure('textdist', 3, 3)
 

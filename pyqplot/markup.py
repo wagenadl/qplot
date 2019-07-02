@@ -16,11 +16,12 @@
 # ctext
 # textonpath
 
-import utils
-import qi
-import paper
-import fig
-import style
+from . import utils
+from . import qi
+from . import paper
+from . import fig
+from . import style
+import numpy as np
 
 def align(*args):
     '''ALIGN - Set text alignment
@@ -89,9 +90,9 @@ def darrow(x, y, phi=None, along=None, l=8, w=5, dist=0, dimple=0):
       DIST - Arrow is to be retracted a given distance from the point (X, Y).
       DIMPLE - The back of the arrow head is indented by DIMPLE points.'''
 
-    if phi not is None:
+    if phi is not None:
         at(x, y, phi=phi)
-    elif along not is None:
+    elif along is not None:
         at(x, y, along=along)
     else:
         at(x, y)
@@ -111,8 +112,8 @@ def at(x=None, y=None, phi=None, along=None, id=None):
     dimensions.
     '''
     qi.ensure()
-    qi.curfig.atx = None
-    qi.curfig.aty = None
+    qi.f.atx = None
+    qi.f.aty = None
     if x is None and y is None:
         qi.f.write('at -\n')
         return
@@ -126,7 +127,7 @@ def at(x=None, y=None, phi=None, along=None, id=None):
             qi.error('Bad specification for x')
     else:
         cmd.append('%g' % x)
-        qi.curfig.atx = x
+        qi.f.atx = x
     if type(y)==str:
         if y in at.ytype:
             cmd.append(y)
@@ -134,7 +135,7 @@ def at(x=None, y=None, phi=None, along=None, id=None):
             qi.error('Bad specification for y')
     else:
         cmd.append('%g' % y)
-        qi.curfig.aty = y
+        qi.f.aty = y
     if phi is not None:
         cmd.append('%g' % phi)
     elif along is not None:
@@ -151,7 +152,7 @@ def title(ttl):
     qi.ensure()
     at()
     pid = qi.f.panel
-    if pid is None
+    if pid is None:
         xywh = qi.f.extent
     else:
         xywh = qi.f.panels[pid]

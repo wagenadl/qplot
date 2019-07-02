@@ -1,4 +1,5 @@
-import pyqplot.all as qp
+import pyqplot as qp
+import numpy as np
 
 qp.figure('lut', 3, 3)
 

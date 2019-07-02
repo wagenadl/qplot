@@ -14,11 +14,11 @@
 # overlinedist
 # overlinemin
 
-import qi
-import style
-import paper
-import markup
-import fig
+from . import qi
+from . import style
+from . import paper
+from . import markup
+from . import fig
 
 def ytitlerot(pt=None):
     '''YTITLEROT - Specifies the rotation of y-axis titles.
@@ -151,7 +151,7 @@ def q__axis(orient='x', lim_d=None,
         tick_d = np.array([ tick_d(lbl) for lbl in tick_lbl])
     if tick_d is None:
         tick_d = np.zeros(tick_p.shape) + np.nan
-    elif tick_p = None
+    elif tick_p is None:
         tick_p = np.zeros(tick_d.shape)
         
     fig.startgroup()
@@ -174,22 +174,22 @@ def q__axis(orient='x', lim_d=None,
     limpx = np.zeros((2))
     limpy = coord_p + np.zeros((2))
     
-    if lim_d not is None:
+    if lim_d is not None:
         ttldx = np.mean(limdx)
-    elif tick_d not is None:
+    elif tick_d is not None:
         ttldx = np.mean([tickdx[0], tickdx[-1]])
     else:
         ttldx = np.nan
         ttldy = coord_d
         
-    if tick_p not is None:
+    if tick_p is not None:
         ttlpx = np.mean([tickpx[0], tickpx[-1]])
     else:
         ttlpx = 0
         ttlpy = coord_p
         
     # Draw an axis line if desired
-    if lim_d not is None:
+    if lim_d is not None:
         if isvert:
             (limdx, limdy) = (limdy, limdx)
             (limpx, limpy) = (limpy, limpx)
@@ -391,7 +391,7 @@ def minorticks(xx, ticklen=None):
         ticklen = qi.f.ticklen * 2./3
     #if strcmp(kv.orient,'y'):
     #    kv.ticklen = -kv.ticklen # What is this about??
-    if kv['cbar'] not is None:
+    if kv['cbar'] is not None:
         kv['cbar'].ctodat(kv['tick_d'])
     q__axis(orient=kv['orient'], tick_d=xx, tick_lbl=[], ticklen=ticklen,
             coord_d=kv['coord_d'], coord_p=kv['coord_p'])
@@ -464,7 +464,7 @@ def numformat(fmt=None):
     for instance: "%.1f". The default is "%g".
     fmt = NUMFORMAT() returns current setting.'''
     qi.ensure()
-    if fmt not is None:
+    if fmt is not None:
         qi.f.numfmt = fmt
     return qi.f.numfmt
 
@@ -474,7 +474,7 @@ def overlinedist(x=None):
     the data, in points.
     dist = OVERLINEDIST() returns current settings.'''
     qi.ensure()
-    if x not is None:
+    if x is not None:
         qi.f.overlinedist = np.abs(x)
     return qi.f.overlinedist
     
@@ -484,7 +484,7 @@ def overlinemin(x=None):
     in points.
     h = OVERLINEMIN() returns current settings.'''
     qi.ensure()
-    if x not is None:
+    if x is not None:
         qi.f.overlinemin = x
     return qi.f.overlinemin
 

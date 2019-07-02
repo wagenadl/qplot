@@ -7,9 +7,9 @@
 # cbar (vcbar)
 # hcbar
 
-import qi
-import axes
-import utils
+from . import qi
+from . import axes
+from . import utils
 
 def image(data, rect=None, xx=None, yy=None):
     '''IMAGE - Plot an image
@@ -136,7 +136,7 @@ def gimage(img, drect=None, prect=None):
     if prect is None:
         prect = [ 0, 0, 0, 0 ]
     
-    if len(drect)!=4 || len(prect)!=4:
+    if len(drect)!=4 or len(prect)!=4:
         error('Position must given as [x y w h]')
 
     out = [ 'image', '[' ]
@@ -157,8 +157,8 @@ def gimage(img, drect=None, prect=None):
     qi.f.write(out)
     if img.dtype!='uint8':
         img = 255*img+.5
-        img(img<0) = 0
-        img(img>255) = 255
+        img[img<0] = 0
+        img[img>255] = 255
         img = img.astype('uint8')
     qi.f.writeuc(img)
 
@@ -224,7 +224,7 @@ def cbar(x0=None, y0=None, y1=None, width=5, dist=10):
         lut = np.flip(lut, 0)
     C = lut.shape[0]
     gimage(np.reshape(lut, (C,1,3)), drect, prect)
-    qi.f.cbar = CBarInfo(qi.f.clim, 'y', drect, prect, !isup)
+    qi.f.cbar = CBarInfo(qi.f.clim, 'y', drect, prect, not isup)
 
 def hcbar(y0=None, x0=None, x1=None, width=5, dist=10):
     '''HCBAR - Add a horizontal color bar to a figure
@@ -265,5 +265,5 @@ def hcbar(y0=None, x0=None, x1=None, width=5, dist=10):
 
     C = lut.shape[0]
     gimage(np.reshape(lut, (1,C,3)), drect, prect)
-    qi.f.cbar = CBarInfo(qi.f.clim, 'x', drect, prect, !isright)
+    qi.f.cbar = CBarInfo(qi.f.clim, 'x', drect, prect, not isright)
     

@@ -1,4 +1,5 @@
-import pyqplot.all as qp
+import pyqplot as qp
+import numpy as np
 
 qp.figure('bars', 3, 3)
 qp.brush 777

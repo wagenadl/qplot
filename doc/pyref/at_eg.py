@@ -1,4 +1,5 @@
-import pyqplot.all as qp
+import pyqplot as qp
+import numpy as np
 
 qp.figure('at', 3, 3)
 qp.plot([0 1 2 3 4], [0 1 4 2 5])
