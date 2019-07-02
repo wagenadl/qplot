@@ -1,13 +1,14 @@
-import pyqplot.all as qp
+import pyqplot as qp
+import numpy as np
 
 qp.figure('gline', 3, 3)
 
-xx=[-1.5*pi:1.5*pi]
-yy=cos(xx)
-qp.marker o solid
+xx = np.arange(-1.5*np.pi, 1.5*np.pi)
+yy = np.cos(xx)
+qp.marker('o', fill='solid')
 qp.mark(xx, yy)
 
-N=length(xx)-1
-for n=1:N:
-    qp.gline({'absdata',xx(n),yy(n), 'retract', 10}, ...
-            {'absdata',xx(n+1),yy(n+1), 'retract', 10})
+N=len(xx)
+for n in range(N-1):
+    qp.gline([[qp.AbsData(xx[n], yy[n]), qp.Retract(10)],
+              [qp.AbsData(xx[n+1],yy[n+1]), qp.Retract(10)]])

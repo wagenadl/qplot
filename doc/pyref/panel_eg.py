@@ -1,4 +1,5 @@
-import pyqplot.all as qp
+import pyqplot as qp
+import numpy as np
 
 qp.figure('panel', 3, 3)
 xx=[0:.01:3*pi]

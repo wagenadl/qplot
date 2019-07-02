@@ -1,4 +1,5 @@
-import pyqplot.all as qp
+import pyqplot as qp
+import numpy as np
 
 qp.figure('axshift', 3, 3)
 qp.plot([-pi:.1:pi], sin([-pi:.1:pi]))

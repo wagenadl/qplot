@@ -84,7 +84,7 @@ def aslist(x):
         return x
     elif type(x)==tuple:
         return x
-    elif type(x)==np.array:
+    elif type(x)==np.ndarray:
         return np.reshape(x, x.size)
     else:
         return [x]

@@ -11,7 +11,8 @@
 # gline2
 # shiftedline
 
-import qi
+from . import qi
+from . import utils
 
 # A GLC is a tuple (cmd, arg) or (cmd, arg, arg2).
 # A PTSPEC is a list of GLCS.
@@ -35,9 +36,9 @@ def q__gline(cmd='gline', ptspecs=[]):
 def q__gline2(cmd='gline', vglcs=[]):
     N = None
     for vgl in vglcs:
-        a1 = aslist(vgl[1])
+        a1 = utils.aslist(vgl[1])
         n = len(a1)
-        if N is None:
+        if N is None or n>N:
             N = n
         elif n>1 and n!=N:
             error('Mismatching point count')
@@ -47,11 +48,12 @@ def q__gline2(cmd='gline', vglcs=[]):
     for n in range(N):
         pts.append([])
     for vgl in vglcs:
-        a1 = aslist(vgl[1])
+        a1 = utils.aslist(vgl[1])
+        L = len(a1)
         K = len(vgl)
         if K>=3:
-            a2 = aslist(vgl[2])
-        if N==1:
+            a2 = utils.aslist(vgl[2])
+        if L==1:
             a1 = a1[0]
             if K==2:
                 for n in range(N):
@@ -178,7 +180,7 @@ def gline2(vglcs):
     to 7 pt below the point (2, 3) in the graph. (Note that paper 
     y-coordinates increase toward the bottom of the graph while data
     y-coordinates increase toward the top.)'''
-    q__gline2('gline', ptspecs)
+    q__gline2('gline', vglcs)
 
 def garea(ptspecs):
     '''GAREA - Generalized area drawing
@@ -191,7 +193,7 @@ def garea2(vglcs):
     '''GAREA2 - Generalized area drawing
     GAREA2 is to PATCH and AREA as GLINE2 is to PLOT and LINE.
     All the same commands are supported.'''
-    q__gline2('garea', ptspecs)
+    q__gline2('garea', vglcs)
     
 def mm(f=1):
     '''MM - Convert postscript points to millimeters

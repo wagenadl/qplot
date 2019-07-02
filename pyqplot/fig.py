@@ -20,8 +20,8 @@
 # ylim
 
 import numpy as np
-import qi
-import style
+from . import qi
+from . import style
 import os
 
 def figure(fn=None, w=5, h=None):
@@ -35,7 +35,7 @@ def figure(fn=None, w=5, h=None):
         qi.f = qi.figs[fn]
         return fn
     qi.f = qi.Figure(fn, w, h)
-    qi.figs[fn] = qi.f
+    qi.figs[qi.f.fn] = qi.f
     return qi.f
 
 def select(fn):
@@ -203,8 +203,8 @@ def shrink(margin=1, ratio=None):
     if margin is None:
         out.append('-')
     else:
-        out.append('%g' % margin]
-    if ratio not is None:
+        out.append('%g' % margin)
+    if ratio is not None:
         out.append('%g' % ratio)
     qi.f.write(out)
 
