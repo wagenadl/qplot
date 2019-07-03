@@ -168,7 +168,6 @@ QTransform Figure::xform() const {
   QTransform xf(xax.maprel(1).x(), 0, 0,
                 0, yax.maprel(1).y(), 0,
                 xax.map(0).x()+yax.map(0).x(), yax.map(0).y()+xax.map(0).y(), 1);
-  qDebug() << "figure xform" << xf;
   return xf;
 }
 

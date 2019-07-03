@@ -3,6 +3,6 @@ import numpy as np
 
 qp.figure('mark', 3, 3)
 
-qp.marker o solid
+qp.marker('o', fill='solid')
 
-qp.mark([1:5],cos([1:5]))
+qp.mark(np.arange(1,6), np.cos(np.arange(1,6)))

@@ -14,7 +14,7 @@
 # select
 # sharelim
 # shrink
-# startgroup
+# group
 # subplot
 # xlim
 # ylim
@@ -106,7 +106,7 @@ def ylim(y0=None, y1=None):
     qi.ensure()
     qi.f.write('ylim %g %g\n' % (y0, y1))
 
-def startgroup():
+def group():
     qi.ensure()
     qi.f.write('group\n')
 
