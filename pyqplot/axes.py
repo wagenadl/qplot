@@ -151,7 +151,7 @@ def q__axis(orient='x', lim_d=None,
         qi.error("orient must be 'x' or 'y'")    
 
     if callable(tick_d):
-        tick_d = np.array([ tick_d(lbl) for lbl in tick_lbl])
+        tick_d = np.array([tick_d(lbl) for lbl in tick_lbl])
     if tick_d is None:
         tick_d = np.zeros(tick_p.shape) + np.nan
     else:
@@ -284,16 +284,16 @@ def q__axis(orient='x', lim_d=None,
             markup.text(ttl, dx=ttlpx + ttllx, dy=ttlpy + ttlly)
     fig.endgroup()
 
-def xaxis(y0=None, ticks=None, labels=None, title='', lim=None, flip=False):
+def xaxis(title='', ticks=None, labels=None, y=0, lim=None, flip=False):
     '''XAXIS - Draw x-axis
     All arguments are optional.
-      Y0 specifies intersect with y-axis. If None, defaults to a reasonable
-        position below the data.
+      TITLE specifies title for axis.
       TICKS specifies positions of ticks along axis. If None, ticks are 
         inferred using SENSIBLETICKS. If [], no ticks are drawn.
       LABELS specifies labels to put by ticks. If None, tick coordinates
         are used. If [], no labels are drawn.
-      TITLE specifies title for axis.
+      Y specifies intersect with y-axis. If None, defaults to a reasonable
+        position below the data.
       LIM specifies left and right edges as a tuple or list. If None,
         LIM is determined from TICKS. If [], no line is drawn.
       FLIP, if True, inverts the sign of the settings from TICKLEN, TEXTDIST,
@@ -308,9 +308,9 @@ def xaxis(y0=None, ticks=None, labels=None, title='', lim=None, flip=False):
     to determine sensible defaults based on previous calls to PLOT and
     friends. Your mileage may vary.'''
     qi.ensure()
-    if y0 is None:
+    if y is None:
         yy = utils.sensibleticks(qi.f.datarange[2:4], 1)
-        y0 = yy[0]
+        y = yy[0]
     if ticks is None:
         ticks = utils.sensibleticks(qi.f.datarange[0:2], inc=True)
     if lim is None:
@@ -329,18 +329,18 @@ def xaxis(y0=None, ticks=None, labels=None, title='', lim=None, flip=False):
     
     q__axis(orient='x', lim_d=lim, tick_d=ticks, tick_lbl=labels, ttl=title, 
             ticklen=ticklen, lbldist=lbldist, ttldist=ttldist, 
-            coord_d=y0, coord_p=axshift)
+            coord_d=y, coord_p=axshift)
 
-def yaxis(x0=None, ticks=None, labels=None, title='', lim=None, flip=False):
+def yaxis(title='', ticks=None, labels=None, x=0, lim=None, flip=False):
     '''YAXIS - Draw y-axis
     All arguments are optional.
-      X0 specifies intersect with x-axis. If None, defaults to a reasonable
-        position to the left of the data.
+      TITLE specifies title for axis.
       TICKS specifies positions of ticks along axis. If None, ticks are 
         inferred using SENSIBLETICKS. If [], no ticks are drawn.
       LABELS specifies labels to put by ticks. If None, tick coordinates
         are used. If [], no labels are drawn.
-      TITLE specifies title for axis.
+      X specifies intersect with x-axis. If None, defaults to a reasonable
+        position to the left of the data.
       LIM specifies bottom and top edges as a tuple or list. If None,
         LIM is determined from TICKS. If [], no line is drawn.
       FLIP, if nonzero, inverts the sign of the settings from TICKLEN, TEXTDIST,
@@ -355,9 +355,9 @@ def yaxis(x0=None, ticks=None, labels=None, title='', lim=None, flip=False):
     to determine sensible defaults based on previous calls to PLOT and
     friends. Your mileage may vary.'''
     qi.ensure()
-    if x0 is None:
+    if x is None:
         xx = utils.sensibleticks(qi.f.datarange[0:2], 1)
-        x0 = xx[0]
+        x = xx[0]
     if ticks is None:
         ticks = utils.sensibleticks(qi.f.datarange[2:4], inc=True)
     if lim is None:
@@ -379,7 +379,7 @@ def yaxis(x0=None, ticks=None, labels=None, title='', lim=None, flip=False):
     
     q__axis(orient='y', lim_d=lim, tick_d=ticks, tick_lbl=labels, ttl=title, 
             ticklen=ticklen, lbldist=lbldist, ttldist=ttldist, 
-            coord_d=x0, coord_p=axshift, ttlrot=lblrot)
+            coord_d=x, coord_p=axshift, ttlrot=lblrot)
 
 def minorticks(xx, ticklen=None):
     '''MINORTICKS - Add more ticks to an existing axis
@@ -583,12 +583,14 @@ def xcaxis(y0=None, xx=None, labels=None, title='', lim=None, flip=False):
             ticklen=ticklen,
             coord_d=y0, coord_p=axshift)
     
-def zaxis(xy0, proj, ticks, labels=None, title='', lim=None, below=False):
+def zaxis(proj, title, ticks, labels=None, x=0, y=0, lim=None, below=False):
     '''ZAXIS - Draw a z-axis.
-    ZAXIS((x0,y0), (xz, yz), ticks) draws a z-axis projected onto the x-y
-    plane by x = xz*z, y = yz*z.
+    ZAXIS(proj, title, ticks) where PROJ=(x_z, y_z), draws a z-axis projected
+    onto the paper plane by
+      x' = x + x_z * z
+      y' = y + y_z * z.
     Optional argument LABELS specifies axis labels.
-    Optional argument TITLE specifies a title for the axis.
+    Optional arguments X and Y specify the X and Y intercept of the axis.
     Optional argument LIM specifies limits for the axis.
     Optional argument BELOW specifies ticks and labels go below rather than
     to the left.
@@ -599,7 +601,7 @@ def zaxis(xy0, proj, ticks, labels=None, title='', lim=None, below=False):
 
     qi.ensure()
     if callable(ticks):
-        ticks = [ ticks(lbl) for lbl in labels ]
+        ticks = np.array([ ticks(lbl) for lbl in labels ])
     if callable(labels):
         labels = [ labels(z) for z in ticks ]
     elif labels is None:
@@ -608,14 +610,15 @@ def zaxis(xy0, proj, ticks, labels=None, title='', lim=None, below=False):
         lim = (ticks[0], ticks[-1])
     if not utils.isempty(lim):
         # Draw the line
-        data.plot(proj[0]*np.array(lim), proj[1]*np.array(lim))
+        data.plot(x + proj[0]*np.array(lim), y + proj[1]*np.array(lim))
     if below:
         relp = paper.RelPaper([0, 0], [0, qi.f.ticklen])
     else:
         relp = paper.RelPaper([0, -qi.f.ticklen], [0, 0])
-    for z in ticks:
-        paper.gline2([paper.AbsData([proj[0]*z, proj[0]*z],
-                                    [proj[1]*z, proj[1]*z]), relp])
+    if not utils.isempty(ticks):
+        for z in ticks:
+            paper.gline2([paper.AbsData([x + proj[0]*z, x + proj[0]*z],
+                                        [y + proj[1]*z, y + proj[1]*z]), relp])
                               
     if not utils.isempty(labels):
         (lbld, ttld) = textdist()
@@ -628,13 +631,15 @@ def zaxis(xy0, proj, ticks, labels=None, title='', lim=None, below=False):
             dx = -(lbld + qi.f.ticklen)
             dy = 0
         for k in range(len(ticks)):
-            markup.at(proj[0]*ticks[k], proj[1]*ticks[k])
+            markup.at(x + proj[0]*ticks[k], y + proj[1]*ticks[k])
             markup.text(labels[k], dx=dx, dy=dy)
     if not utils.isempty(title):
         if utils.isempty(lim):
             z = ticks[-1] + (ticks[-1] - ticks[-2])
+        elif utils.isempty(ticks):
+            z = lim[1] # Deeply suboptimal...
         else:
             z = lim[1] + (ticks[-1] - ticks[-2])
-        markup.at(proj[0]*z, proj[1]*z)
+        markup.at(x + proj[0]*z, y + proj[1]*z)
         markup.align('center', 'middle')
         markup.text(title)

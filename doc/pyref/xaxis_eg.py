@@ -3,16 +3,16 @@ import numpy as np
 
 qp.figure('xaxis', 3, 3)
 
-qp.xaxis(0, np.arange(6))
+qp.xaxis('x-axis', np.arange(6))
 
-qp.xaxis(1, np.arange(6), ['zero', 'one', 'two', 'three', 'four', 'five'])
+qp.xaxis('', np.arange(6), ['zero', 'one', 'two', 'three', 'four', 'five'], y=1)
 
-qp.xaxis(2, np.arange(6), title='x-axis')
+qp.xaxis('', np.arange(6), lambda x: '%g%%' % (10*x), y=2)
 
-qp.xaxis(3, np.arange(1,5), lim=[0, 5])
+qp.xaxis('', np.arange(1,5), lim=[0, 5], y=3)
 
-qp.xaxis(4, np.arange(6), [])
+qp.xaxis('', np.arange(6), [], y=4)
 
-qp.xaxis(5, np.arange(6), title='top orientation', flip=True)
+qp.xaxis('top orientation', np.arange(6), y=5, flip=True)
 
 qp.shrink()

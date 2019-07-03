@@ -308,7 +308,7 @@ def xzimage(data, rect, proj, y=0):
                       y, proj[0], proj[1], X, Z, X*Z*C))
     qi.f.writeuc(data)
 
-def zyimage(data, rect, proj):
+def zyimage(data, rect, proj, x=0):
     '''ZYIMAGE - Plot an image in projected zy-plane.
     ZYIMAGE(data, (z0, y0, d, h), (xz, yz)) plots an image in the 
     zy-plane projected to the paper plane by x' = x + xz*z, y' = y + yz*z.
@@ -316,6 +316,7 @@ def zyimage(data, rect, proj):
     C=3 for RGB, C=4 for RGB+alpha. The image may be either UINT8 or FLOAT.
     If D is negative, the image is flipped in the z-dimension.
     If H is negative, the image is flipped vertically.
+    Optional argument X specifies x-axis intersect of the image plane.
     If None is given as a second argument, the pixel size of the image is 
     used.'''
     S = data.shape
@@ -342,7 +343,7 @@ def zyimage(data, rect, proj):
     qi.ensure()
     if data.dtype!='uint8':
         data = (255*data+.5).astype('uint8')
-    qi.f.write('zyimage %g %g %g %g %g %g %i %i *uc%i\n'
+    qi.f.write('zyimage %g %g %g %g %g %g %g %i %i *uc%i\n'
                    % (rect[0], rect[1], rect[2], rect[3],
-                      proj[0], proj[1], Z, Y, Z*Y*C))
+                      x, proj[0], proj[1], Z, Y, Z*Y*C))
     qi.f.writeuc(data)
