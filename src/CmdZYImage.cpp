@@ -50,7 +50,7 @@ bool CmdZYImage::parse(Statement const &s) {
   for (int k=Argz; k<=ArgY; k++)
     if (s[k].typ!=Token::NUMBER)
       return usage();
-  int id1 = s.nextIndex(9);
+  int id1 = s.nextIndex(Argcdata);
   if (id1 != s.length() || !s.isNumeric(Argcdata))
     return usage();
   int Z = s[ArgZ].num;

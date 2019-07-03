@@ -118,8 +118,6 @@ def at(x=None, y=None, phi=None, along=None, id=None):
         qi.f.write('at -\n')
         return
     cmd = ['at']
-    if id is not None:
-        cmd.append(id)
     if type(x)==str:
         if x in at.xtype:
             cmd.append(x)
@@ -140,6 +138,8 @@ def at(x=None, y=None, phi=None, along=None, id=None):
         cmd.append('%g' % phi)
     elif along is not None:
         cmd.append('%g %g' % (along[0], along[1]))
+    if id is not None:
+        cmd.append(id)
     qi.f.write(cmd)
 at.xtype = utils.wordset('left right center abs absolute')
 at.ytype = utils.wordset('top bottom middle abs absolute')

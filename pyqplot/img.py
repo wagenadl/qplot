@@ -10,6 +10,7 @@
 from . import qi
 from . import axes
 from . import utils
+import numpy as np
 
 def image(data, rect=None, xx=None, yy=None):
     '''IMAGE - Plot an image

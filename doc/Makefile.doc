@@ -3,11 +3,11 @@
 
 ALL: qplot-directuse.pdf HTML
 
-HTML: REF TUT CSS HOME
+HTML: REF TUT CSS HOME PYREF
 
 OCTAVE=../tools/octavex
 
-# Reference material
+# Octave Reference material
 REFEGMS=$(subst ../doc/ref,html/ref,$(wildcard ../doc/ref/*_eg.m))
 REFEGPDFS=$(patsubst %_eg.m,%.pdf,$(REFEGMS))
 REFEGPNGS=$(patsubst %_eg.m,%.png,$(REFEGMS))
@@ -22,14 +22,39 @@ html/ref/alpha.html: ../tools/mkalpha.pl
 html/ref/catg.html: ../tools/mkcatg.pl ../doc/matlab-org.txt
 	$< ../doc/matlab-org.txt $@
 
-$(REFEGPDFS) $(REFEGPNGS): $(REFEGMS) ../tools/alleg.m
-	(cd html/ref; ../../$(OCTAVE) ../../../tools/alleg.m ) && touch $@
-
 html/ref/%_eg.m: ../doc/ref/%_eg.m
 	mkdir -p html/ref
 	cp $^ $@
 
 $(REFEGHTMLS): ../tools/m2html.pl $(REFEGMS) $(REFEGPNGS)
+	$<
+
+# Python Reference material
+PYREFEGMS=$(subst ../doc/pyref,html/pyref,$(wildcard ../doc/pyref/*_eg.py))
+PYREFEGPDFS=$(patsubst %_eg.py,%.pdf,$(PYREFEGMS))
+PYREFEGPNGS=$(patsubst %_eg.py,%.png,$(PYREFEGMS))
+PYREFEGHTMLS=$(patsubst %_eg.py,%.html,$(PYREFEGMS))
+
+PYREF: $(PYREFEGMS) $(PYREFEGPDFS) $(PYREFEGPNGS) $(PYREFEGHTMLS) \
+	html/pyref/alpha.html html/pyref/catg.html
+
+html/pyref/alpha.html: ../tools/mkpyalpha.py
+	$< ../pyqplot $@
+
+html/pyref/catg.html: ../tools/mkpycatg.py ../doc/python-org.txt
+	$< ../doc/python-org.txt $@
+
+html/pyref/%_eg.py: ../doc/pyref/%_eg.py
+	mkdir -p html/pyref
+	cp $^ $@
+
+html/pyref/%.pdf: html/pyref/%_eg.py ../tools/runpyeg.py
+	../tools/runpyeg.py $< $@
+
+html/pyref/%.png: html/pyref/%_eg.py ../tools/runpyeg.py
+	../tools/runpyeg.py $< $@
+
+$(PYREFEGHTMLS): ../tools/py2html.py $(PYREFEGMS) $(PYREFEGPNGS)
 	$<
 
 # Tutorial material

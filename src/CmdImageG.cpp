@@ -27,8 +27,8 @@
 static CBuilder<CmdImageG> cbImageG("imageg");
 
 bool CmdImageG::usage() {
-  return error("Usage: imageG x y w h K cdata\n"
-	       "       imageG [ dataxywh ] [ paperxywh ] [ W H C ] cdata");
+  return error("Usage: imageg x y w h K cdata\n"
+	       "       imageg [ dataxywh ] [ paperxywh ] [ W H C ] cdata");
 }
 
 static bool hasComplexSyntax(Statement const &s) {
@@ -68,7 +68,7 @@ bool CmdImageG::parse_simple(Statement const &s) {
     return usage();
   int K = s[5].num;
   int N = s.data(6).size();
-  if (N % (3*K) != 0)
+  if (N % K != 0)
     return usage();
   return true;
 }
