@@ -4,15 +4,15 @@ import numpy as np
 qp.figure('ytitlerot', 3, 3)
 
 qp.ytitlerot(1)
-qp.yaxis(0, np.arange(6), title='Normal')
+qp.yaxis('Normal', np.arange(6))
 
 qp.ytitlerot(0)
-qp.yaxis(1, np.arange(6), title='Upright')
+qp.yaxis('Upright', np.arange(6), x=1)
 
 qp.ytitlerot(-1)
-qp.yaxis(2, np.arange(6), title='Reverse')
+qp.yaxis('Reverse', np.arange(6), x=2)
 
-qp.yaxis(3, np.arange(6))
+qp.yaxis('', np.arange(6), x=3)
 qp.at('left', 5)
 qp.align('right', 'middle')
 qp.reftext('5')

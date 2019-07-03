@@ -211,6 +211,26 @@ image. \emph{C} must be either 1 or 3.}
   the number of pixels per row. The length of \emph{cdata} must be an
   even multiple of \emph{K}. Values must be between 0 and 1.}
 
+\cmd{xzimage}{\emph{x z w d y x$_z$ y$_z$ X Z} [ \emph{cdata} ]}
+\expl{Renders an RGB image on a plane projected to the plane of
+  the paper by $x' = x + x_z z$ and $y' = y + y_z z$. The image is
+  placed in 3D space at the given y-intercept in a rectangular area
+  parallel to the x-z plane defined by \emph{x, z, w, d}. \emph{X} and
+  \emph{Z} specify the pixel size of the data. \emph{cdata} is stored
+  as pixels in row order (unlike matlab's convention). The length of
+  \emph{cdata} must be an even multiple of \emph{X Z}. Values must be
+  between 0 and 1. One channel data is interpreted as grayscale, two
+  channel as grayscale plus alpha, three channel as RGB, four channel
+  as RGB plus alpha.}
+
+\cmd{zyimage}{\emph{z y d h x x$_z$ y$_z$ Z Y} [ \emph{cdata} ]}
+\expl{Renders an RGB image on a plane projected to the plane of
+  the paper by $x' = x + x_z z$ and $y' = y + y_z z$. The image is
+  placed in 3D space at the given x-intercept in a rectangular area
+  parallel to the z-y plane defined by \emph{z, y, d, h}. \emph{Z} and
+  \emph{Y} specify the pixel size of the data.} 
+
+
 \cmd{line}{[ \emph{dx$_1$ dx$_2$ \ldots} ] [ \emph{dy$_1$ dy$_2$ \ldots} ]}
 \expl{Draws a polyline. \emph{dx$_i$} and \emph{dy$_i$} are specified in
   points and are relative to the position set by \cref{at}. See also
