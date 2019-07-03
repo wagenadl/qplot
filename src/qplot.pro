@@ -52,7 +52,8 @@ HEADERS += Align.H \
            Text.H \
            TextShiftAccum.H \
            Token.H \
-           Watcher.H
+           Watcher.H \
+           Image.H
 
 SOURCES += Axis.cpp \
            CmdAlign.cpp \
@@ -79,6 +80,8 @@ SOURCES += Axis.cpp \
            CmdTextOnPath.cpp \
            CmdXLim.cpp \
            CmdYLim.cpp \
+           CmdXZImage.cpp \
+           CmdZYImage.cpp \
            Command.cpp \
            Error.cpp \
            Factor.cpp \
@@ -94,4 +97,5 @@ SOURCES += Axis.cpp \
            Text.cpp \
            TextShiftAccum.cpp \
            Token.cpp \
-           Watcher.cpp
+           Watcher.cpp \
+           Image.cpp

@@ -22,6 +22,7 @@
 #include "Figure.H"
 #include "Error.H"
 #include <math.h>
+#include <QDebug>
 
 #define DEFAULTHAIR 0.25
 
@@ -164,10 +165,11 @@ QPointF Figure::maprel(double dx, double dy) const {
 }
 
 QTransform Figure::xform() const {
-  return QTransform(xax.maprel(1).x(), 0,
-		    0, yax.maprel(1).y(),
-		    xax.map(0).x(),
-		    yax.map(0).y());
+  QTransform xf(xax.maprel(1).x(), 0, 0,
+                0, yax.maprel(1).y(), 0,
+                xax.map(0).x()+yax.map(0).x(), yax.map(0).y()+xax.map(0).y(), 1);
+  qDebug() << "figure xform" << xf;
+  return xf;
 }
 
 void Figure::clearBBox(bool full) {

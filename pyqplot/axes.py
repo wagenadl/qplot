@@ -20,6 +20,7 @@ from . import paper
 from . import markup
 from . import fig
 from . import utils
+from . import data
 import numpy as np
 
 def ytitlerot(pt=None):
@@ -153,8 +154,10 @@ def q__axis(orient='x', lim_d=None,
         tick_d = np.array([ tick_d(lbl) for lbl in tick_lbl])
     if tick_d is None:
         tick_d = np.zeros(tick_p.shape) + np.nan
-    elif tick_p is None:
-        tick_p = np.zeros(tick_d.shape)
+    else:
+        tick_d = np.array(tick_d)
+        if tick_p is None:
+            tick_p = np.zeros(tick_d.shape)
         
     fig.startgroup()
     
@@ -182,13 +185,14 @@ def q__axis(orient='x', lim_d=None,
         ttldx = np.mean([tickdx[0], tickdx[-1]])
     else:
         ttldx = np.nan
-        ttldy = coord_d
+    ttldy = coord_d
         
     if tick_p is not None:
         ttlpx = np.mean([tickpx[0], tickpx[-1]])
     else:
         ttlpx = 0
-        ttlpy = coord_p
+    ttlpy = coord_p
+        
         
     # Draw an axis line if desired
     if lim_d is not None:
@@ -262,22 +266,22 @@ def q__axis(orient='x', lim_d=None,
                 ttlpy = 0
             else:
                 ttlpx = 0
-                [xa, ya] = qpa__align(ishori, -ttldist)
+            [xa, ya] = qpa__align(ishori, -ttldist)
             if ishori:
-                markup.at(ttldx, ya, phi=-pi/2*sign(ttlrot))
+                markup.at(ttldx, ya, phi=-np.pi/2*np.sign(ttlrot))
             else:
-                markup.at(xa, ttldy, phi=-pi/2*sign(ttlrot))
+                markup.at(xa, ttldy, phi=-np.pi/2*np.sign(ttlrot))
         if ttlrot==0:
             xa, ya = qpa__align(ishori, ttldist)
         else:
-            xa, ya = qpa__align(isvert, ttldist*sign(ttlrot))
-            align(xa, ya)
+            xa, ya = qpa__align(isvert, ttldist*np.sign(ttlrot))
+        markup.align(xa, ya)
         if ttlrot:
-            text(ttl,
+            markup.text(ttl,
                  dx=-np.sign(ttlrot)*(ttlpy+ttlly), 
     	         dy=np.sign(ttlrot)*(ttlpx+ttllx))
         else:
-            text(txt, dx=ttlpx + ttllx, dy=ttlpy + ttlly)
+            markup.text(ttl, dx=ttlpx + ttllx, dy=ttlpy + ttlly)
     fig.endgroup()
 
 def xaxis(y0=None, ticks=None, labels=None, title='', lim=None, flip=False):
@@ -332,13 +336,13 @@ def yaxis(x0=None, ticks=None, labels=None, title='', lim=None, flip=False):
     All arguments are optional.
       X0 specifies intersect with x-axis. If None, defaults to a reasonable
         position to the left of the data.
-      LIM specifies bottom and top edges as a tuple or list. If None,
-        LIM is determined from TICKS. If [], no line is drawn.
       TICKS specifies positions of ticks along axis. If None, ticks are 
         inferred using SENSIBLETICKS. If [], no ticks are drawn.
       LABELS specifies labels to put by ticks. If None, tick coordinates
         are used. If [], no labels are drawn.
       TITLE specifies title for axis.
+      LIM specifies bottom and top edges as a tuple or list. If None,
+        LIM is determined from TICKS. If [], no line is drawn.
       FLIP, if nonzero, inverts the sign of the settings from TICKLEN, TEXTDIST,
         and AXSHIFT. If FLIP=2, the title is flipped as well.
     Either TICKS or LABELS (but not both) may be a function, in which case
@@ -365,13 +369,13 @@ def yaxis(x0=None, ticks=None, labels=None, title='', lim=None, flip=False):
     [lbldist, ttldist] = textdist()
     lblrot = ytitlerot()
     
-    if flip:
+    if flip==False:
         ticklen = -ticklen
         axshift = -axshift
         lbldist = -lbldist
         ttldist = -ttldist
-        if flip==2:
-            lblrot = -lblrot
+    elif flip==2:
+        lblrot = -lblrot
     
     q__axis(orient='y', lim_d=lim, tick_d=ticks, tick_lbl=labels, ttl=title, 
             ticklen=ticklen, lbldist=lbldist, ttldist=ttldist, 
@@ -579,3 +583,58 @@ def xcaxis(y0=None, xx=None, labels=None, title='', lim=None, flip=False):
             ticklen=ticklen,
             coord_d=y0, coord_p=axshift)
     
+def zaxis(xy0, proj, ticks, labels=None, title='', lim=None, below=False):
+    '''ZAXIS - Draw a z-axis.
+    ZAXIS((x0,y0), (xz, yz), ticks) draws a z-axis projected onto the x-y
+    plane by x = xz*z, y = yz*z.
+    Optional argument LABELS specifies axis labels.
+    Optional argument TITLE specifies a title for the axis.
+    Optional argument LIM specifies limits for the axis.
+    Optional argument BELOW specifies ticks and labels go below rather than
+    to the left.
+    Unlike XAXIS and YAXIS, ZAXIS cannot by itself find reasonable defaults
+    for its main arguments.
+    ZAXIS supports TEXTDIST and TICKLEN, but not AXSHIFT.
+    Caution: positioning of zaxis titles may well change in a future version.'''
+
+    qi.ensure()
+    if callable(ticks):
+        ticks = [ ticks(lbl) for lbl in labels ]
+    if callable(labels):
+        labels = [ labels(z) for z in ticks ]
+    elif labels is None:
+        labels = [ qi.f.numfmt % z for z in ticks ]
+    if lim is None:
+        lim = (ticks[0], ticks[-1])
+    if not utils.isempty(lim):
+        # Draw the line
+        data.plot(proj[0]*np.array(lim), proj[1]*np.array(lim))
+    if below:
+        relp = paper.RelPaper([0, 0], [0, qi.f.ticklen])
+    else:
+        relp = paper.RelPaper([0, -qi.f.ticklen], [0, 0])
+    for z in ticks:
+        paper.gline2([paper.AbsData([proj[0]*z, proj[0]*z],
+                                    [proj[1]*z, proj[1]*z]), relp])
+                              
+    if not utils.isempty(labels):
+        (lbld, ttld) = textdist()
+        if below:
+            markup.align('center', 'top')
+            dx = 0
+            dy = lbld + qi.f.ticklen
+        else:
+            markup.align('right', 'middle')
+            dx = -(lbld + qi.f.ticklen)
+            dy = 0
+        for k in range(len(ticks)):
+            markup.at(proj[0]*ticks[k], proj[1]*ticks[k])
+            markup.text(labels[k], dx=dx, dy=dy)
+    if not utils.isempty(title):
+        if utils.isempty(lim):
+            z = ticks[-1] + (ticks[-1] - ticks[-2])
+        else:
+            z = lim[1] + (ticks[-1] - ticks[-2])
+        markup.at(proj[0]*z, proj[1]*z)
+        markup.align('center', 'middle')
+        markup.text(title)

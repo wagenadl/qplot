@@ -22,7 +22,7 @@
 #include "CmdImage.H"
 #include <QDebug>
 #include <math.h>
-
+#include "Image.H"
 
 static CBuilder<CmdImage> cbImage("image");
 
@@ -102,47 +102,6 @@ QRectF CmdImage::dataRange(Statement const &s) {
     return dataRange_simple(s);
 }
 
-static void build_image(int X, int Y, int C,
-			QVector<double> const &cdata,
-			QImage &img) {
-  // QImage img(X, Y, QImage::Format_ARGB32);
-  uchar *dst = img.bits();
-  QVector<double>::const_iterator src = cdata.begin();
-  if (C==1) {
-    for (int y=0; y<Y; y++) {
-      for (int x=0; x<X; x++) {
-	double v = *src++;
-	int d = (v<0) ? 0 : (v>1) ? 255 : int(v * 255.999);
-	for (int c=0; c<3; c++)
-	  *dst++ = d;
-        *dst++ = 255;
-      }
-    }
-  } else if (C==3) {
-    for (int y=0; y<Y; y++) {
-      for (int x=0; x<X; x++) {
-  	double const *s1 = src+2;
-        for (int c=0; c<3; c++) {
-	  double v = *s1--;
-	  *dst++ = (v<0) ? 0 : (v>1) ? 255 : int(v * 255.999);
-        }
-        *dst++ = 255;
-        src+=3;
-      }
-    }
-  } else if (C==4) {
-    for (int y=0; y<Y; y++) {
-      for (int x=0; x<X; x++) {
-	double const *s1 = src+3;
-	for (int c=0; c<3; c++) {
-	  double v = *s1--;
-	  *dst++ = (v<0) ? 0 : (v>1) ? 255 : int(v * 255.999);
-	}
-	src+=4;
-      }
-    }
-  }
-}
 
 void CmdImage::render_complex(Statement const &s, Figure &f, bool dryrun) {
   int idataxywh = 1;
@@ -189,8 +148,7 @@ void CmdImage::render_complex(Statement const &s, Figure &f, bool dryrun) {
   if (dryrun)
     return;
 
-  QImage img(X, Y, QImage::Format_ARGB32);
-  build_image(X, Y, C, s.data(idata), img);
+  QImage img = Image::build(X, Y, C, s.data(idata));
   f.painter().drawImage(bbox, img);
 }
 
@@ -209,8 +167,7 @@ void CmdImage::render_simple(Statement const &s, Figure &f, bool dryrun) {
   if (dryrun)
     return;
 
-  QImage img(X, Y, QImage::Format_ARGB32);
-  build_image(X, Y, C, cdata, img);
+  QImage img = Image::build(X, Y, C, cdata);
   f.painter().drawImage(bbox, img);
 }
 

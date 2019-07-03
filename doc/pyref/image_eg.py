@@ -3,9 +3,9 @@ import numpy as np
 
 qp.figure('image', 3, 3)
 
-xx = repmat([1:10], 10, 1)
-yy = xx'
-img = cat(3, xx/10, yy/10, .5+0*xx)
+xx = np.repeat(np.reshape(np.arange(10), (1,10,1)), 10, 0)
+yy = np.transpose(xx, (1,0,2))
+img = np.concatenate((xx/10,yy/10,.5+0*xx), 2)
 
-qp.image([0, 0, 1, 1], img)
+qp.image(img, [0, 0, 1, 1])
 

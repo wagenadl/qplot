@@ -22,6 +22,7 @@ def image(data, rect=None, xx=None, yy=None):
     Instead of RECT, optional arguments XX and YY may be used to specify
     bin centers. Only the first and last elements of the vectors are
     actually used.'''
+    S = data.shape
     if rect is None:
         X = S[1]
         Y = S[0]
@@ -267,3 +268,80 @@ def hcbar(y0=None, x0=None, x1=None, width=5, dist=10):
     gimage(np.reshape(lut, (1,C,3)), drect, prect)
     qi.f.cbar = CBarInfo(qi.f.clim, 'x', drect, prect, not isright)
     
+def xzimage(data, rect, proj):
+    '''XZIMAGE - Plot an image in projected xz-plane.
+    XZIMAGE(data, (x0, z0, w, d), (xz, yz)) plots an image in the 
+    xz-plane projected to the paper plane by x' = x + xz*z, y' = y + yz*z.
+    The image must be YxXxC, where C=1 for grayscale, C=2 for grayscale+alpha,
+    C=3 for RGB, C=4 for RGB+alpha. The image may be either UINT8 or FLOAT.
+    If W is negative, the image is flipped right to left.
+    If D is negative, the image is flipped in the z-dimension.
+    If None is given as a second argument, the pixel size of the image is 
+    used.'''
+    S = data.shape
+    if rect is None:
+        X = S[1]
+        Z = S[0]
+        rect = (0, 0, X, Z)
+    if rect[2] < 0:
+        data = np.flip(data, 1)
+        rect = (rect[0] + rect[2], rect[1], -rect[2], rect[3])
+    if rect[3] < 0:
+        data = np.flip(data, 0)
+        rect = (rect[0], rect[1] + rect[3], rect[2], -rect[3])
+
+    S = data.shape
+    Z = S[0]
+    X = S[1]
+    if len(S)==2:
+        C = 1
+    else:
+        C = S[2]
+    if data.size != Z*X*C:
+        qi.error('Data has inconsistent size')
+    qi.ensure()
+    if data.dtype!='uint8':
+        data = (255*data+.5).astype('uint8')
+    qi.f.write('xzimage %g %g %g %g %g %g %i %i *uc%i\n'
+                   % (rect[0], rect[1], rect[2], rect[3],
+                      proj[0], proj[1], X, Z, X*Z*C))
+    qi.f.writeuc(data)
+
+def zyimage(data, rect, proj):
+    '''ZYIMAGE - Plot an image in projected zy-plane.
+    ZYIMAGE(data, (z0, y0, d, h), (xz, yz)) plots an image in the 
+    zy-plane projected to the paper plane by x' = x + xz*z, y' = y + yz*z.
+    The image must be YxXxC, where C=1 for grayscale, C=2 for grayscale+alpha,
+    C=3 for RGB, C=4 for RGB+alpha. The image may be either UINT8 or FLOAT.
+    If D is negative, the image is flipped in the z-dimension.
+    If H is negative, the image is flipped vertically.
+    If None is given as a second argument, the pixel size of the image is 
+    used.'''
+    S = data.shape
+    if rect is None:
+        Z = S[1]
+        Y = S[0]
+        rect = (0, 0, Z, Y)
+    if rect[2] < 0:
+        data = np.flip(data, 1)
+        rect = (rect[0] + rect[2], rect[1], -rect[2], rect[3])
+    if rect[3] < 0:
+        data = np.flip(data, 0)
+        rect = (rect[0], rect[1] + rect[3], rect[2], -rect[3])
+
+    S = data.shape
+    Y = S[0]
+    Z = S[1]
+    if len(S)==2:
+        C = 1
+    else:
+        C = S[2]
+    if data.size != Y*Z*C:
+        qi.error('Data has inconsistent size')
+    qi.ensure()
+    if data.dtype!='uint8':
+        data = (255*data+.5).astype('uint8')
+    qi.f.write('zyimage %g %g %g %g %g %g %i %i *uc%i\n'
+                   % (rect[0], rect[1], rect[2], rect[3],
+                      proj[0], proj[1], Z, Y, Z*Y*C))
+    qi.f.writeuc(data)
