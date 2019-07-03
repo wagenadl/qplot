@@ -268,7 +268,7 @@ def hcbar(y0=None, x0=None, x1=None, width=5, dist=10):
     gimage(np.reshape(lut, (1,C,3)), drect, prect)
     qi.f.cbar = CBarInfo(qi.f.clim, 'x', drect, prect, not isright)
     
-def xzimage(data, rect, proj):
+def xzimage(data, rect, proj, y=0):
     '''XZIMAGE - Plot an image in projected xz-plane.
     XZIMAGE(data, (x0, z0, w, d), (xz, yz)) plots an image in the 
     xz-plane projected to the paper plane by x' = x + xz*z, y' = y + yz*z.
@@ -276,6 +276,7 @@ def xzimage(data, rect, proj):
     C=3 for RGB, C=4 for RGB+alpha. The image may be either UINT8 or FLOAT.
     If W is negative, the image is flipped right to left.
     If D is negative, the image is flipped in the z-dimension.
+    Optional argument Y specifies y-axis intersect of the image plane.
     If None is given as a second argument, the pixel size of the image is 
     used.'''
     S = data.shape
@@ -302,9 +303,9 @@ def xzimage(data, rect, proj):
     qi.ensure()
     if data.dtype!='uint8':
         data = (255*data+.5).astype('uint8')
-    qi.f.write('xzimage %g %g %g %g %g %g %i %i *uc%i\n'
+    qi.f.write('xzimage %g %g %g %g %g %g %g %i %i *uc%i\n'
                    % (rect[0], rect[1], rect[2], rect[3],
-                      proj[0], proj[1], X, Z, X*Z*C))
+                      y, proj[0], proj[1], X, Z, X*Z*C))
     qi.f.writeuc(data)
 
 def zyimage(data, rect, proj):

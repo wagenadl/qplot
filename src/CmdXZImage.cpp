@@ -27,21 +27,35 @@
 static CBuilder<CmdXZImage> cbXZImage("xzimage");
 
 bool CmdXZImage::usage() {
-  return error("Usage: xzimage x z w d xz yz X Z cdata\n");
+  return error("Usage: xzimage x z w d y xz yz X Z cdata\n");
 }
 
+enum Arg {
+  Argx=1,
+  Argz,
+  Argw,
+  Argd,
+  Argy,
+  Argxz,
+  Argyz,
+  ArgX,
+  ArgZ,
+  Argcdata
+};
+  
+
 bool CmdXZImage::parse(Statement const &s) {
-  if (s.length()<10)
+  if (s.length()<Argcdata+1)
     return usage();
-  for (int k=1; k<9; k++)
+  for (int k=Argx; k<=ArgZ; k++)
     if (s[k].typ!=Token::NUMBER)
       return usage();
-  int id1 = s.nextIndex(9);
-  if (id1 != s.length() || !s.isNumeric(9))
+  int id1 = s.nextIndex(Argcdata);
+  if (id1 != s.length() || !s.isNumeric(Argcdata))
     return usage();
-  int X = s[7].num;
-  int Z = s[8].num;
-  int N = s.data(9).size();
+  int X = s[ArgX].num;
+  int Z = s[ArgZ].num;
+  int N = s.data(Argcdata).size();
   if (N % (X*Z) != 0)
     return usage();
   if (N / (X*Z) < 1 || N / (X*Z) > 4)
@@ -50,23 +64,24 @@ bool CmdXZImage::parse(Statement const &s) {
 }
 
 QRectF CmdXZImage::dataRange(Statement const &s) {
-  double minx = s[1].num;
-  double maxx = s[1].num + s[3].num;
-  double minz = s[2].num;
-  double maxz = s[2].num + s[4].num;
-  double xz = s[5].num;
-  double yz = s[5].num;
-  QRectF r1(QPointF(minx + xz*minz, yz*minz),
-            QPointF(maxx + xz*maxz, yz*maxz));
-  QRectF r2(QPointF(maxx + xz*minz, yz*minz),
-            QPointF(minx + xz*maxz, yz*maxz));
+  double minx = s[Argx].num;
+  double maxx = s[Argx].num + s[Argw].num;
+  double minz = s[Argz].num;
+  double maxz = s[Argz].num + s[Argd].num;
+  double y = s[Argy].num;
+  double xz = s[Argxz].num;
+  double yz = s[Argyz].num;
+  QRectF r1(QPointF(minx + xz*minz, y + yz*minz),
+            QPointF(maxx + xz*maxz, y + yz*maxz));
+  QRectF r2(QPointF(maxx + xz*minz, y + yz*minz),
+            QPointF(minx + xz*maxz, y + yz*maxz));
   return (r1 | r2).normalized();
 }
 
 void CmdXZImage::render(Statement const &s, Figure &f, bool dryrun) {
-  int X = s[7].num;
-  int Z = s[8].num;
-  QVector<double> const &cdata = s.data(9);
+  int X = s[ArgX].num;
+  int Z = s[ArgZ].num;
+  QVector<double> const &cdata = s.data(Argcdata);
   int C = cdata.size()/X/Z;
   QRectF extent = dataRange(s);
   QPointF p1 = f.map(extent.left(), extent.top());
@@ -77,19 +92,20 @@ void CmdXZImage::render(Statement const &s, Figure &f, bool dryrun) {
   if (dryrun)
     return;
 
-  double x0 = s[1].num;
-  double z0 = s[2].num;
-  double w = s[3].num;
-  double d = s[4].num;
-  double xz = s[5].num;
-  double yz = s[6].num;
+  double x0 = s[Argx].num;
+  double z0 = s[Argz].num;
+  double w = s[Argw].num;
+  double d = s[Argd].num;
+  double y = s[Argy].num;
+  double xz = s[Argxz].num;
+  double yz = s[Argyz].num;
   
   QImage img = Image::build(X, Z, C, cdata);
   f.painter().save();
   QTransform data2paper(f.xform());
   QTransform img2data(w/X,      0,      0,
                       xz*d/Z,   yz*d/Z, 0,
-                      x0+xz*z0, yz*z0,  1);
+                      x0+xz*z0, y+yz*z0,  1);
   f.painter().setTransform(data2paper, true);
   f.painter().setTransform(img2data, true);
   f.painter().drawImage(QPointF(0,0), img);
