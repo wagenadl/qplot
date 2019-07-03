@@ -36,14 +36,12 @@ class Figure:
         # In the latter case, spaces are interpolated and newline is added.
         if type(s)==list:
             s = ' '.join(s) + '\n'
-        self.flushcounter = len(self.floatre.findall(s))
-        self.flushcounter += len(self.intre.findall(s))
+        self.flushcounter = len(self.flushwaitre.findall(s))
         self.fd.write(bytes(s, 'utf8'))
         if self.flushcounter==0:
             self.fd.flush()
     flushcounter=0
-    floatre = re.compile(r' \*\d')
-    intre = re.compile(r' uc*\d')
+    flushwaitre = re.compile(r' \*(uc)?\d')
 
     def writedbl(self, v):
         v.astype('float64').tofile(self.fd)
