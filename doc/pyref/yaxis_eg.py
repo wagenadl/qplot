@@ -3,14 +3,13 @@ import numpy as np
 
 qp.figure('yaxis', 3, 3)
 
-qp.yaxis(0, [0:5])
+qp.yaxis('', np.arange(6))
 
-qp.yaxis(1, [0:5], {'zero', 'one', 'two', 'three', 'four', 'five'})
+qp.yaxis('', np.arange(6), ['zero', 'one', 'two', 'three', 'four', 'five'], x=1)
 
-qp.yaxis(2, [0:5], [])
+qp.yaxis('', np.arange(6), [], x=2)
 
-qp.yaxis('r', 3, [0:5], 'right orientation')
+qp.yaxis('right orientation', np.arange(6), flip=True, x=3)
 
-qp.yaxis('R', 4, [0 5], [1:4], 'flipped title')
+qp.yaxis('flipped title', np.arange(1,5), lim=[0,5], flip=2, x=4)
 
-qp.shrink

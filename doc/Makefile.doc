@@ -26,6 +26,9 @@ html/ref/%_eg.m: ../doc/ref/%_eg.m
 	mkdir -p html/ref
 	cp $^ $@
 
+$(REFEGPDFS) $(REFEGPNGS): $(REFEGMS) ../tools/alleg.m
+	(cd html/ref; ../../$(OCTAVE) ../../../tools/alleg.m ) && touch $@
+
 $(REFEGHTMLS): ../tools/m2html.pl $(REFEGMS) $(REFEGPNGS)
 	$<
 

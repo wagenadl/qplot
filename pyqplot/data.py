@@ -59,6 +59,8 @@ def bars(xx, yy, w, y0=0):
     default for Y0 is 0. Y0 may also be a vector (which must
     then be the same size as XX and YY). This is useful for
     creating stacked bar graphs.'''
+    xx = np.array(xx)
+    yy = np.array(yy)
     if utils.isnscalar(y0):
         y0=np.zeros(yy.shape) + y0
         
@@ -114,7 +116,7 @@ def errorbar(xx, yy, dy, w=None, dir='both'):
     for n in range(N):
         plot(xx[n]+np.zeros(2), yy[n] + np.array([dy_dn[n], dy_up[n]]))
     
-    if w>0:
+    if w is not None:
         if dir!='down':
             # Draw top ticks
             for n in range(N):

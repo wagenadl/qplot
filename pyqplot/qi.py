@@ -44,12 +44,12 @@ class Figure:
     flushwaitre = re.compile(r' \*(uc)?\d')
 
     def writedbl(self, v):
-        v.astype('float64').tofile(self.fd)
+        np.array(v).astype('float64').tofile(self.fd)
         self.flushcounter -= 1
         if self.flushcounter<=0:
             self.fd.flush()
     def writeuc(self, v):
-        v.astype('uint8').tofile(self.fd)
+        np.array(v).astype('uint8').tofile(self.fd)
         self.flushcounter -= 1
         if self.flushcounter<=0:
             self.fd.flush()
@@ -113,7 +113,8 @@ class Figure:
         utils.unix('qpclose %s' % self.fn)
 
     def tofront(self):
-        utils.unix('touch %s' % fn) # This supposedly signals qplot to raise it
+        utils.unix('touch %s' % self.fn)
+        # This supposedly signals qplot to raise it
 
     def save(self, ofn, reso=None): 
         cmd = ['qplotml']

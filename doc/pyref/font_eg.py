@@ -3,21 +3,21 @@ import numpy as np
 
 qp.figure('font', 3, 3)
 
-qp.patch([0 1 1 0], [0 0 1 1])
+qp.patch([0, 1, 1, 0], [0, 0, 1, 1])
 
-qp.font Helvetica 10
+qp.font('Helvetica', 10)
 
-qp.at .2 .2
-qp.text 0 0 Helvetica Roman
+qp.at(.2, .2)
+qp.text('Helvetica Roman')
 
-qp.font Times bold 12
+qp.font('Times', 12, bold=True)
 
-qp.at .8 .8
-qp.text 0 0 Times Bold
+qp.at(.8, .8)
+qp.text('Times Bold')
 
-qp.font BitstreamCharter italic 12
-qp.at .2 .8
-qp.text 0 0 Charter Italic
+qp.font('BitstreamCharter', 12, italic=True)
+qp.at(.2, .8)
+qp.text('Charter Italic')
 
-qp.font Times italic 12
-qp.text 0 14 Times Itali
+qp.font('Times', 12, italic=True)
+qp.text('Times Italic', dy=14)

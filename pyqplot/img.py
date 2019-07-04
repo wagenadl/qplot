@@ -78,17 +78,22 @@ def imsc(data, rect=None, xx=None, yy=None, c0=None, c1=None):
     as for IMAGE. Alternatively, XX and YY arguments can be used.'''
     lut = qi.f.lut
     nanc = qi.f.lut_nan
-    if np.isnan(c0):
+    if c0 is None:
         c0 = np.min(data)
-    if np.isnan(c1):
+    if c1 is None:
         c1 = np.max(data)
     qi.f.clim = (c0, c1)
     N = lut.shape[0]
+    print(lut[0,:])
+    print(lut[1,:])
+    print(lut[2,:])
+    print(lut[-1,:])
+    print(N)
     data = np.floor((N-.0001)*(data-c0)/(c1-c0))
     isn = np.isnan(data).nonzero()[0]
     data[isn] = 0
-    data[data<0] = 0
-    data[data>=N] = N-1
+    data[data<=1] = 1
+    data[data>=N-1] = N-1
     data = data.astype('int')
     data = lut[data[:], :]
     K = isn.size
@@ -106,7 +111,7 @@ def lut(cc=None, nanc=None):
 
     qi.ensure()
     if cc is not None:
-        qi.f.lut = cc
+        qi.f.lut = cc[:,0:2]
     if nanc is not None:
         qi.f.lut_nan = nanc
     return (qi.f.lut, qi.f.lut_nan)
@@ -154,7 +159,7 @@ def gimage(img, drect=None, prect=None):
     out.append('%i' % Y)
     out.append('%i' % C)
     out.append(']')
-    out.append('%uc%i' % X*Y*C)
+    out.append('*uc%i' % (X*Y*C))
     qi.ensure()
     qi.f.write(out)
     if img.dtype!='uint8':
@@ -208,7 +213,7 @@ def cbar(x0=None, y0=None, y1=None, width=5, dist=10):
         x0 = qi.f.imrect[0] + qi.f.imrect[2]
         y0 = qi.f.imrect[1]
         y1 = qi.f.imrect[1] + qi.f.imrect[3]
-        print('vcbar(%g, %g, %g, %g)\n' % (x0, y0, y1, w))
+        print('vcbar(%g, %g, %g, %g)\n' % (x0, y0, y1, width))
 
     isup = y1>y0
     if isup:
