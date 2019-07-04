@@ -84,21 +84,16 @@ def imsc(data, rect=None, xx=None, yy=None, c0=None, c1=None):
         c1 = np.max(data)
     qi.f.clim = (c0, c1)
     N = lut.shape[0]
-    print(lut[0,:])
-    print(lut[1,:])
-    print(lut[2,:])
-    print(lut[-1,:])
-    print(N)
     data = np.floor((N-.0001)*(data-c0)/(c1-c0))
     isn = np.isnan(data).nonzero()[0]
     data[isn] = 0
-    data[data<=1] = 1
+    data[data<=0] = 0
     data[data>=N-1] = N-1
     data = data.astype('int')
     data = lut[data[:], :]
     K = isn.size
     if K>0:
-        nanc = np.repeat(np.reshape(np.array(nanc),(1,3)),K,0)
+        nanc = np.repeat(nanc, K, 0)
         data[isn,:] = nanc
     image(data, rect, xx, yy)
 
@@ -107,13 +102,28 @@ def lut(cc=None, nanc=None):
     LUT(cc) where CC is Nx3 sets a new lookup table for IMSC.
     LUT(cc, nanc) where NANC is a 3-tuple sets a special color to use
     for NaN values. (The default is white.)
+    CC must contain RGB values in the range 0 to 1, or, if of type uint8,
+    in the range 0 to 255.
     lut, nanc = LUT returns current values.'''
 
     qi.ensure()
     if cc is not None:
-        qi.f.lut = cc[:,0:2]
+        cc = cc[:,0:3]
+        if cc.dtype!='uint8':
+            cc = 255.999*cc
+            cc[cc<0]=0
+            cc[cc>255]=255
+            cc = cc.astype('uint8')
+        qi.f.lut = cc
     if nanc is not None:
-        qi.f.lut_nan = nanc
+        nanc = np.reshape(np.array(nanc),(1,3))
+        nanc = nanc[:,0:3]
+        if nanc.dtype!='uint8':
+            nanc = 255.999*nanc
+            nanc[nanc<0]=0
+            nanc[nanc>255]=255
+            nanc = nanc.astype('uint8')
+        qi.f.lut_nan = nanc.astype('uint8')
     return (qi.f.lut, qi.f.lut_nan)
 
 def gimage(img, drect=None, prect=None):

@@ -16,7 +16,7 @@ class Figure:
         self.textdist = (3, 3)
         self.lastax = None
         self.lut_nan = [255, 255, 255]
-        self.lut = np.repeat(np.reshape(np.arange(0,256),(256,1)),3,1)
+        self.lut = np.transpose(np.tile(np.arange(0,256),(3,1))).astype('uint8')
         self.clim = (0, 1)
         self.panels = {} # Map from id to extent
         self.panel = None
