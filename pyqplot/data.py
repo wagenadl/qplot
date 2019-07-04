@@ -3,7 +3,7 @@
 # bars
 # caligraph
 # ecoplot
-# errorbars
+# errorbar
 # errorpatch
 # mark
 # patch
@@ -13,7 +13,8 @@
 import numpy as np
 from . import qi
 from . import utils
-
+from . import paper
+from . import markup
 
 def plot(xx, yy=None):
     '''PLOT - Draw a line series in data space
@@ -91,20 +92,23 @@ def errorbar(xx, yy, dy, w=None, dir='both'):
     '''QERRORBAR - Draw error bars
     ERRORBAR(xx, yy, dy) plots error bars at (XX,YY+-DY).
     Normally, XX, YY, and DY have the same shape. However, it is permissible
-    for DY to be shaped Nx2, in which case lower and upper error bounds
-    are different. (DY should always be positive).
+    for DY to be shaped Nx2, or for DY to be a 2-tuple, in which case
+    lower and upper error bounds are different. (DY should always be positive).
     QERRORBAR(xx, yy, dy, w) adorns the error bars with horizontal lines of
     given width (W in points).
     QERRORBAR(..., 'up') only plots upward; QERRORBAR(..., 'down') only plots
     downward.'''
 
     N = len(xx)
-    if np.prod(dy.shape)==2*N:
+    if type(dy)==tuple:
+        dy_dn = -dy[0]
+        dy_up = dy[1]
+    elif np.prod(dy.shape)==2*N:
         dy_dn = -dy[:,0]
         dy_up = dy[:,1]
     else:
-        dy_up = dy
         dy_dn = -dy
+        dy_up = dy
 
     if dir=='up':
         dy_dn = 0*dy_dn
@@ -120,15 +124,15 @@ def errorbar(xx, yy, dy, w=None, dir='both'):
         if dir!='down':
             # Draw top ticks
             for n in range(N):
-                qat(xx[n], yy[n] + dy_up[n])
-                line(np.array([-1, 1])*w/2,np.array([0, 0]))
+                markup.at(xx[n], yy[n] + dy_up[n])
+                paper.line(np.array([-1, 1])*w/2, np.array([0, 0]))
         if dir!='up':
             # Draw down ticks
             for n in range(N):
-                qat(xx[n], yy[n] + dy_dn[n])
-                line(np.array([-1, 1])*w/2,np.array([0, 0]))
+                markup.at(xx[n], yy[n] + dy_dn[n])
+                paper.line(np.array([-1, 1])*w/2, np.array([0, 0]))
 
-def qerrorpatch(xx, yy, dy, dir='both'):
+def errorpatch(xx, yy, dy, dir='both'):
     '''ERRORPATCH - Draw error patch
     ERRORPATCH(xx, yy, dy) plots an error patch at (XX,YY+-DY).
     Normally, XX, YY, and DY have the same shape. However, it is permissible
@@ -193,8 +197,8 @@ def caligraph(xx, yy, ww):
     qi.ensure()
     for k in range(len(iup)):
         N = idn[k] - iup[k]
-        qi.f.write('caligraph *%i *%i *%i\n', N, N, N)
-        qi.f.writedbl(xx[iup[k]:idn[k]], 'double')
-        qi.f.writedbl(yy[iup[k]:idn[k]], 'double')
-        qi.f.writedbl(ww[iup[k]:idn[k]], 'double')
+        qi.f.write('caligraph *%i *%i *%i\n' %  (N, N, N))
+        qi.f.writedbl(xx[iup[k]:idn[k]])
+        qi.f.writedbl(yy[iup[k]:idn[k]])
+        qi.f.writedbl(ww[iup[k]:idn[k]])
     

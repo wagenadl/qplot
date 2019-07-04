@@ -3,8 +3,8 @@ import numpy as np
 
 qp.figure('title', 3, 3)
 
-qp.plot(0:.1:2*pi, sin(0:.1:2*pi))
+xx = np.linspace(0, 2*np.pi, 50)
+qp.plot(xx, np.sin(xx))
 
-qp.title 'Sine wave'
+qp.title('Sine wave')
 
-qp.shrink

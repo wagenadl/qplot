@@ -3,17 +3,19 @@ import numpy as np
 
 qp.figure('sharelim', 3, 3)
 
-id=qp.subplot(0, 0, 1, .5)
-qp.plot(1:100, sqp.rt(1:100))
-qp.xaxis(0,[0:50:100])
-qp.yaxis(0,[0:2:10])
-qp.shrink
+qp.relpanel('A', (0, 0, 1, .5))
+xx = np.arange(100)
+qp.plot(xx, np.sqrt(xx))
+qp.xaxis(ticks=[0,50,100])
+qp.yaxis(ticks=[0,2,4,6,8,10])
+qp.shrink()
 
-qp.subplot(0, .5, 1, .5)
-qp.plot(51:150, 20+2*cos([51:150]/10))
-qp.axshift 5
-qp.xaxis(18,[50:50:150])
-qp.yaxis(50,[18:2:22])
-qp.shrink
+qp.relpanel('B', (0, .5, 1, .5))
+xx = np.arange(50,150)
+qp.plot(xx, 20+2*np.cos(xx/10))
+qp.axshift(5)
+qp.xaxis(ticks=[50,100,150], y=18)
+qp.yaxis(ticks=[18,20,22],x=50)
+qp.shrink()
 
-qp.sharelim(id)
+qp.sharelim(ids='A')
