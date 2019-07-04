@@ -91,7 +91,7 @@ def pmark(xx, yy):
     MARKER and MARK.'''
 
     xx = utils.aslist(xx)
-    yy = uyils.aslist(yy)
+    yy = utils.aslist(yy)
     if len(xx) != len(yy):
         error('xx and yy must be equally long')
     qi.ensure()
@@ -208,4 +208,4 @@ def shiftedline(xx, yy, dx, dy):
     converted to vectors of the appropriate length. All vectors must be
     the same length.
     See also GLINE and GLINE2.'''
-    gline2(AbsData(xx, yy), RelPaper(dx, dy))
+    gline2([AbsData(xx, yy), RelPaper(dx, dy)])

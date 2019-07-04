@@ -71,7 +71,7 @@ def close(fn=None):
         qi.figs[fn].close()
         del qi.figs[fn]
         if current:
-            for f in qi.figs:
+            for (fn, f) in qi.figs.items():
                 if f.fd is not None:
                     qi.f = f
                     return

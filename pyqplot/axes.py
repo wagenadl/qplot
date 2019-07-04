@@ -159,7 +159,7 @@ def q__axis(orient='x', lim_d=None,
         if tick_p is None:
             tick_p = np.zeros(tick_d.shape)
         
-    fig.startgroup()
+    fig.group()
     
     tickdx = tick_d
     tickdy = np.zeros(tickdx.shape) + coord_d
@@ -219,7 +219,7 @@ def q__axis(orient='x', lim_d=None,
     if callable(tick_lbl):
         tick_lbl = [ tick_lbl(x) for x in tick_d ]
     if not utils.isempty(tick_lbl):
-        fig.startgroup()
+        fig.group()
         [xa, ya] = qpa__align(ishori, lbllx, lblly)
         markup.align(xa, ya)
         if ishori:

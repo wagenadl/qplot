@@ -227,7 +227,7 @@ def legend(s):
     at(opt.x0, opt.y0)
     paper.line(np.array([0, 1])*opt.width + opt.dx,
                opt.n*opt.skip + np.array([0, 0]) + opt.dy)
-    fig.startgroup()
+    fig.group()
     style.pen(opt.color)
     align('left', 'base')
     text(s, dx=opt.width + opt.indent + opt.dx,
@@ -250,7 +250,7 @@ def mlegend(s=None):
         paper.pmark(.5*opt.width+opt.dx, (opt.n-1)*opt.skip+opt.dy)
     else:
         paper.pmark(.5*opt.width+opt.dx, opt.n*opt.skip+opt.dy)
-        fig.startgroup()
+        fig.group()
         style.pen(opt.color)
         align('left', 'base')
         text(s, dx=opt.width + opt.indent + opt.dx,
@@ -272,7 +272,7 @@ def plegend(s):
     at(opt.x0, opt.y0)
     paper.area(np.array([0, 1, 1, 0])*opt.width + opt.dx,
                opt.n*opt.skip + np.array([-.5, -.5, .5, .5])*opt.height + opt.dy)
-    fig.startgroup()
+    fig.group()
     style.pen(opt.color)
     align('left', 'base')
     text(s, dx=opt.width + opt.indent + opt.dx,
