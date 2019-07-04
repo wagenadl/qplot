@@ -46,10 +46,8 @@ def axshift(pt=None):
     qi.ensure()
     if pt is None:
         pt = qi.f.axshift
-    elif utils.isnscalar(pt):
-        qi.f.axshift = pt
     else:
-        qi.error('AXSHIFT needs real number')
+        qi.f.axshift = pt
     return pt
 
 def textdist(lbl=None, ttl=None):
@@ -79,8 +77,6 @@ def ticklen(pt=None):
     if pt is None:
         pt = qi.f.ticklen
     else:
-        if not isnscalar(pt):
-            qi.error('ticklen must be a real scalar')
         qi.f.ticklen = pt
     return pt
 
@@ -392,25 +388,25 @@ def minorticks(xx, ticklen=None):
     if qi.f.lastax is None:
         qi.error('No previous axis')
     
-    kv = qdata.figs[fn].lastax
+    kv = qi.f.lastax
     if ticklen is None:
         ticklen = qi.f.ticklen * 2./3
     #if strcmp(kv.orient,'y'):
     #    kv.ticklen = -kv.ticklen # What is this about??
     if kv['cbar'] is not None:
-        kv['cbar'].ctodat(kv['tick_d'])
+        xx = kv['cbar'].ctodat(xx)
     q__axis(orient=kv['orient'], tick_d=xx, tick_lbl=[], ticklen=ticklen,
             coord_d=kv['coord_d'], coord_p=kv['coord_p'])
 
-def caxis(ticks=None, labels=None, title=None, lim=None, flip=False):
+def caxis(title=None, ticks=None, labels=None, lim=None, flip=False):
     '''CAXIS - Plot colorbar axis
     CAXIS plots a colorbar axis alongside the most recent CBAR or HCBAR.
     All arguments are optional.
+      TITLE specifies a title for the axis.
       TICKS specifies the locations of the ticks in terms of the data
         represented in the IMSC for which the colorbar was drawn.
       LABELS specifies labels to be written by those ticks. If None, 
         labels are derived from TICKS. If [], no labels are written.
-      TITLE specifies a title for the axis.
       LIM specifies the ends of the axis, again in terms of the data
         represented in the IMSC.
       FLIP specifies that the axis is rendered to the left or above the
@@ -427,9 +423,9 @@ def caxis(ticks=None, labels=None, title=None, lim=None, flip=False):
     if cb is None:
         qi.error('CAXIS needs a previous CBAR or HCBAR')
     if lim is None:
-        lim = cb.lim
+        lim = cb.clim
     if ticks is None:
-        ticks = utils.sensibleticks(clim)
+        ticks = utils.sensibleticks(lim)
     if labels is None:
         labels = ticks
 
@@ -458,10 +454,14 @@ def caxis(ticks=None, labels=None, title=None, lim=None, flip=False):
     else:
         qi.error('Orientation not understood')
 
-    qi.axis(orient=cb.orient, lim_d=lim, tick_d=ticks, tick_lbl=labels,
+    lim = cb.ctodat(lim)
+    ticks = cb.ctodat(ticks)
+    
+    q__axis(orient=cb.orient, lim_d=lim, tick_d=ticks, tick_lbl=labels,
             ttl=title, 
             ticklen=ticklen, lbldist=lbldist, ttldist=ttldist, 
-            coord_d=coord_d, coord_p=coordp, ttlrot=ttlrot)
+            coord_d=coord_d, coord_p=coord_p, ttlrot=ttlrot)
+    qi.f.lastax['cbar'] = cb
         
 def numformat(fmt=None):
     '''NUMFORMAT - Specifies the format of numbers as tick labels
@@ -471,6 +471,8 @@ def numformat(fmt=None):
     fmt = NUMFORMAT() returns current setting.'''
     qi.ensure()
     if fmt is not None:
+        if utils.isempty(fmt):
+            fmt = '%g'
         qi.f.numfmt = fmt
     return qi.f.numfmt
 
@@ -583,9 +585,9 @@ def xcaxis(y0=None, xx=None, labels=None, title='', lim=None, flip=False):
             ticklen=ticklen,
             coord_d=y0, coord_p=axshift)
     
-def zaxis(proj, title, ticks, labels=None, x=0, y=0, lim=None, below=False):
+def zaxis(title, ticks, proj, labels=None, x=0, y=0, lim=None, below=False):
     '''ZAXIS - Draw a z-axis.
-    ZAXIS(proj, title, ticks) where PROJ=(x_z, y_z), draws a z-axis projected
+    ZAXIS(title, ticks, proj) where PROJ=(x_z, y_z), draws a z-axis projected
     onto the paper plane by
       x' = x + x_z * z
       y' = y + y_z * z.

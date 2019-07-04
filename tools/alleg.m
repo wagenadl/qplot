@@ -2,6 +2,7 @@
 
 1; % So the next local fuction won't be treated as a function
 
+fprintf(1, 'ALLEG\n')
 
 function runone(fn)
 [s,o] = system(sprintf('grep shrink %s_eg.m', fn));
@@ -21,9 +22,11 @@ for f=1:F
     fn = fn(1:end-5);
   end
   ofn = [fn '.png'];
+  fprintf(1, 'looking for %s -> %s\n', ifn, ofn) 
   if exist(ofn)
     ms = stat(ifn);
     ps = stat(ofn);
+    fprintf(1, 'time: %g %g -> %g\n', ms.mtime, ps.mtime, ps.mtime - ms.mtime)
     if ps.mtime>ms.mtime
       continue;
     end
@@ -38,7 +41,7 @@ for f=1:F
     continue;
   end
   
-  fprintf(1, ': %s\n',fn);
+  fprintf(1, 'RUNNING : %s\n', fn);
   fflush(1);
   runone(fn);
   qselect([ fn '.qpt' ]);

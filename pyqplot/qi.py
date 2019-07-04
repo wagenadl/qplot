@@ -15,8 +15,8 @@ class Figure:
         self.ytitlerot = np.pi/2
         self.textdist = (3, 3)
         self.lastax = None
-        self.lut_nan = [255, 255, 255]
-        self.lut = np.repeat(np.reshape(np.arange(0,256),(256,1)),3,1)
+        self.lut_nan = np.array([255, 255, 255], dtype='uint8')
+        self.lut = np.transpose(np.tile(np.arange(0,256,dtype='uint8'), (3,1)))
         self.clim = (0, 1)
         self.panels = {} # Map from id to extent
         self.panel = None
