@@ -62,8 +62,8 @@ html/pyref/%.pdf: html/pyref/%_eg.py ../tools/runpyeg.py
 html/pyref/%.png: html/pyref/%_eg.py ../tools/runpyeg.py
 	../tools/runpyeg.py $< $@
 
-$(PYREFEGHTMLS): ../tools/py2html.py $(PYREFEGMS) $(PYREFEGPNGS)
-	$<
+html/pyref/%.html: html/pyref/%_eg.py ../tools/py2html.py 
+	../tools/py2html.py $@
 
 # Tutorial material
 TUTHTMLS=$(subst ../doc/tut,html/tut,$(wildcard ../doc/tut/tut-*.html))

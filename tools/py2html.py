@@ -17,7 +17,154 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys
-print('py2html.py', sys.argv)
+import os
+import re
+import pyqplot as qp
+
+ofn = sys.argv[1]
+dr, fn = os.path.split(sys.argv[1])
+func, xt = os.path.splitext(fn)
+
+def writeheader(f, func):
+    f.write('''<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="../css/doc.css" type="text/css">
+<title>QPlot: %s</title>
+</head>
+<body class="mloct"><div class="main">
+''' % func)
+
+def writetrailer(f):
+    f.write('''</div>
+<div class="tail">
+QPlot Documentation — (C) <a href="http://www.danielwagenaar.net">Daniel Wagenaar</a>, 2019
+</div>
+</body>
+</html>
+''')
+
+def indextext(f):
+    f.write('''<div class="toindex">
+<span class="toidx"><a href="alpha.html">Alphabetical list</a></span>
+<span class="toidx"><a href="catg.html">Categories</a></span>
+</div>
+''')
+
+
+def extracttitle(func, doc):
+    lines = doc.split('\n')
+    title = lines[0]
+    if title.startswith(func.upper()):
+        title = title[len(func):]
+        if title.startswith(' - '):
+            title = title[3:]
+    else:
+        print('Unexpected title line for %s: %s', func, title)
+        os.exit(1)
+    return title
+
+def extractbody(doc):
+    lines = doc.split('\n')
+    lines.pop(0)
+    return '\n'.join(lines)
+
+def pydoc(doc, func, funcs):
+    r = re.compile(r'(\W+)')
+    wrd = re.compile(r'\w+')
+    nl = re.compile(r'\n')
+    paren = re.compile(r'\(')
+    parenc = re.compile(r'\)')
+    bits = r.split(doc)
+    out = ['<p>']
+    gotfunc = False
+    depth = 0
+    inargs = False
+    for bit in bits:
+        if wrd.match(bit):
+            if bit==bit.upper() and bit.lower() in funcs:
+                if bit.lower()==func:
+                    out.append('<b>%s</b>' % bit.lower())
+                else:
+                    out.append('<a class="tmlink" href="%s.html">%s</a>'
+                               % (bit.lower(), bit.lower()))
+                gotfunc = True
+            else:
+                gotfunc = False
+                if bit==bit.upper() or inargs:
+                    out.append('<i>%s</i>' % bit.lower())
+                else:
+                    out.append(bit)
+        else:
+            if bit.startswith('(') and gotfunc:
+                inargs = True
+            depth += len(paren.findall(bit)) - len(parenc.findall(bit))
+            if depth==0:
+                inargs = False
+                
+            sub = nl.split(bit)
+            lst = sub.pop(0)
+            out.append(lst)
+            for sbit in sub:
+                if sbit=='':
+                    out.append('\n<p>')
+                else:
+                    if lst.endswith('.') or lst.endswith(':') \
+                       or sbit.startswith('     '):
+                        out.append('<br>\n')
+                    else:
+                        out.append(' ')
+                    if not sbit.startswith('    '):
+                        print('Expected spaces at start of line, not: %s', sbit)
+                    sbit = sbit[4:]
+                    while sbit.startswith(' '):
+                        out.append('&nbsp;')
+                        sbit = sbit[1:]
+                    out.append(sbit)
+    return ''.join(out)
+
+def splitout(line, funcs):
+    return line
+
+def titletext(f, func, tagline, funcs):
+    f.write('''<div class="titlehead">
+<span class="title">%s</span>
+<span class="tagline">%s</span>
+</div>''' % (func, splitout(tagline, funcs)))
+
+def bodytext(f, body, func, funcs):
+    f.write('''<div class="dochead">
+Help text:
+</div>
+<div class="doc">''')
+    f.write(pydoc(body, func, funcs))
+    f.write('''</div>
+''')
+
+def egimage(f, func):
+    pass
+
+def egtext(f, func, example):
+    pass
+
+doc = qp.__dict__[func].__doc__
+funcs = {k for k,v in qp.__dict__.items() if callable(v)}
+title = extracttitle(func, doc)
+body = extractbody(doc)
+example = None
+    
+with open(ofn, 'w') as f:
+    writeheader(f, func)
+    indextext(f)
+    titletext(f, func, title, funcs)
+    bodytext(f, body, func, funcs)
+    if os.path.exists('html/pyref/%s.png' % func):
+        egimage(f, func)
+    if example is not None:
+        egtext(f, func, example)
+    writetrailer(f)
+
 sys.exit(1)
 '''
 use strict;
