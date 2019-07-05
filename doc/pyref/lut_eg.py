@@ -13,6 +13,7 @@ zz = np.cos(xx)+np.sin(yy)
 qp.imsc(zz, [0, 0, 1, 1])
 qp.cbar()
 
+# See also https://matplotlib.org/3.1.0/gallery/color/colormap_reference.html
 c = plt.cm.get_cmap('rainbow')
 qp.lut(c(range(c.N)))
 qp.imsc(zz, [0, 1.1, 1, 1])

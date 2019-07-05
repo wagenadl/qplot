@@ -3,13 +3,12 @@ import numpy as np
 
 qp.figure('hcbar', 3, 3)
 
-xx = repmat([1:10], 10, 1)
-yy = xx'
-zz = cos(xx).*sin(yy)
-qp.imsc([0 0 1 1], zz, -1, 1)
-qp.axshift 5
-qp.hcbar(0, 0, 1)
-qp.axshift 0
-qp.caxis([-1:1:1], {'negative', '0', 'positive'})
+xx = np.tile(np.linspace(0,3*np.pi,101), (101,1))
+yy = np.transpose(xx)
+zz = np.cos(xx) * np.sin(yy)
+qp.imsc(zz, [0, 0, 1, 1], c0=-1, c1=1)
 
-qp.shrink(1, 1)
+qp.hcbar()
+
+qp.caxis('', [-1, 0, 1], ['negative', '0', 'positive'])
+qp.minorticks(np.arange(-.75, 1, .25))

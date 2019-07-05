@@ -2,11 +2,12 @@ import pyqplot as qp
 import numpy as np
 
 qp.figure('patch', 3, 3)
-qp.brush g
+qp.brush('g')
 
-qp.patch(cos(0:pi/3:2*pi), sin(0:pi/3:2*pi))
+xx = np.linspace(0, 2*np.pi, 7)
+qp.patch(np.cos(xx), np.sin(xx))
 
-qp.brush r .5
+qp.brush('r', .5)
 
-qp.patch(sin(0:pi/3:2*pi),    cos(0:pi/3:2*pi))
+qp.patch(np.sin(xx), np.cos(xx))
 

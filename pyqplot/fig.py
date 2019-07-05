@@ -136,7 +136,7 @@ def panel(id, rect=None):
         for k in range(4):
             out.append('%g' % rect[k])
         if id is not None:
-            qi.panels[id] = rect
+            qi.f.panels[id] = rect
 
     qi.f.write(out)
 
@@ -152,21 +152,21 @@ def relpanel(id, rect):
                rect[2]*qi.f.extent[2],
                rect[3]*qi.f.extent[3]))
 
-def subplot(row, cols, idx):
+def subplot(rows, cols, idx):
     '''SUBPLOT - Define a new subpanel in Matlab/Octave style
     SUBPLOT(rows, cols, idx) defines a new subpanel in Matlab/Octave style.
     id = SUBPLOT(...) returns the ID of the subpanel, for use with PANEL.'''
     h = 1./rows
     w = 1./cols
-    x = w * (idx-1 % cols)
+    x = w * ((idx-1) % cols)
     y = h * ((idx-1) // cols)
     qi.ensure()
     for k in range(26):
         id = '%c' % (65 + k)
         if id not in qi.f.panels:
             # Gotcha
-            style.pen(None)
-            style.brush(None)
+            style.pen('none')
+            style.brush('none')
             relpanel(id, (x,y,w,h))
             style.pen('k')
             return
