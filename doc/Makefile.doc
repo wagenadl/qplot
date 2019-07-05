@@ -26,8 +26,13 @@ html/ref/%_eg.m: ../doc/ref/%_eg.m
 	mkdir -p html/ref
 	cp $^ $@
 
-$(REFEGPDFS) $(REFEGPNGS): $(REFEGMS) ../tools/alleg.m
-	(cd html/ref; ../../$(OCTAVE) ../../../tools/alleg.m ) && touch $@
+html/ref/%.pdf: html/ref/%_eg.m ../tools/runmeg.m
+	( cd html/ref; ../../../tools/octavee "runmeg('$<')" )
+html/ref/%.png: html/ref/%_eg.m ../tools/runmeg.m
+	( cd html/ref; ../../../tools/octavee "runmeg('$<')" )
+
+#$(REFEGPDFS) $(REFEGPNGS): $(REFEGMS) ../tools/alleg.m
+#	(cd html/ref; ../../$(OCTAVE) ../../../tools/alleg.m ) && touch $@
 
 $(REFEGHTMLS): ../tools/m2html.pl $(REFEGMS) $(REFEGPNGS)
 	$<

@@ -3,9 +3,11 @@ import numpy as np
 
 qp.figure('gimage', 3, 3)
 
-xx = repmat([1:10], 10, 1)
-yy = xx'
-img = cat(3, xx/10, yy/10, .5+0*xx)
-
-qp.gimage([nan nan 0 0], [.5 .5 2 2]*72, img)
+xx = np.tile(np.arange(10), (10,1))
+yy = np.transpose(xx)
+r = xx/10
+g = yy/10
+b = .5+0*xx
+img = np.dstack((r,g,b))
+qp.gimage(img, [np.nan, np.nan, 0, 0], np.array([.5, .5, 2, 2])*72)
 

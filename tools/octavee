@@ -12,10 +12,10 @@
 # Copyright (C) XXXX - 2005 Debian
 
 HERE=`dirname $0`
-MNAME=$1
+CODE="$*"
 
 export DISPLAY=`$HERE/ensurexvfb`
 
-PATH=$HERE/../build:$HERE/../scripts:$PATH /usr/bin/octave --no-gui --path $HERE/../octave/qplot-0.2 $MNAME
+PATH=$HERE/../build:$HERE/../scripts:$PATH /usr/bin/octave --no-gui --path $HERE/../octave/qplot-0.2 --path $HERE --eval "$CODE"
 
 exit $?

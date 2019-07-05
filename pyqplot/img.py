@@ -33,12 +33,13 @@ def image(data, rect=None, xx=None, yy=None):
             if X==1:
                 dx = 1
             else:
-                dx = (xx[-1] - xx[0]) / (X-1)
+                dx = (xx.flat[-1] - xx.flat[0]) / (X-1)
             if Y==1:
                 dy = 1
             else:
-                dy = (yy[-1] - yy[0]) / (Y-1)
-            rect = (xx[0]-dx/2, yy[0]-dy/2, X*dx, Y*dy)
+                dy = (yy.flat[-1] - yy.flat[0]) / (Y-1)
+            rect = (xx.flat[0]-dx/2, yy.flat[0]-dy/2, X*dx, Y*dy)
+
     if rect[2] < 0:
         data = np.flip(data, 1)
         rect = (rect[0] + rect[2], rect[1], -rect[2], rect[3])
@@ -68,8 +69,10 @@ def image(data, rect=None, xx=None, yy=None):
         qi.error('Image data must be YxX or YxXx3')
     qi.f.writeuc(data)
     qi.f.imrect = rect
+    qi.f.updaterange([rect[0], rect[0]+rect[2]],
+                     [rect[1], rect[1]+rect[3]])
 
-def imsc(data, rect=None, xx=None, yy=None, c0=None, c1=None):
+def imsc(data, rect=None, c0=None, c1=None, xx=None, yy=None):
     '''IMSC - Plot 2D data as an image using lookup table
     IMSC(data) plots the DATA as an image using a lookup previously
     set by QLUT. The color axis limits default to the min and max of the data.
@@ -92,6 +95,7 @@ def imsc(data, rect=None, xx=None, yy=None, c0=None, c1=None):
     data = data.astype('int')
     data = lut[data[:], :]
     K = isn.size
+    print('K = ', K)
     if K>0:
         nanc = np.repeat(nanc, K, 0)
         data[isn,:] = nanc
@@ -186,18 +190,19 @@ class CBarInfo:
         self.drect = drect
         self.prect = prect
         self.rev = rev
-        def ctodat(self, cc):
-            crel = (cc - self.clim[0]) / (self.clim[1] - self.clim[0])
-            if self.orient=='y':
-                d0 = self.drect[1]
-                dw = self.drect[3]
-            else:
-                d0 = self.drect[0]
-                dw = self.drect[2]
-            if self.rec:
-                d0 += dw
-                dw = -dw
-            return d0 + dw*crel
+    def ctodat(self, cc):
+        cc = np.array(cc)
+        crel = (cc - self.clim[0]) / (self.clim[1] - self.clim[0])
+        if self.orient=='y':
+            d0 = self.drect[1]
+            dw = self.drect[3]
+        else:
+            d0 = self.drect[0]
+            dw = self.drect[2]
+        if self.rev:
+            d0 += dw
+            dw = -dw
+        return d0 + dw*crel
 
 def cbar(x0=None, y0=None, y1=None, width=5, dist=10):
     '''CBAR - Add a vertical color bar to a figure
@@ -218,12 +223,12 @@ def cbar(x0=None, y0=None, y1=None, width=5, dist=10):
     
     qi.ensure()
     if qi.f.imrect is None or qi.f.lut is None or qi.f.clim is None:
-        qi.error('VCBAR must have a previous imsc')    
+        qi.error('CBAR must have a previous imsc')    
     if x0 is None or y0 is None or y1 is None:
         x0 = qi.f.imrect[0] + qi.f.imrect[2]
         y0 = qi.f.imrect[1]
         y1 = qi.f.imrect[1] + qi.f.imrect[3]
-        print('vcbar(%g, %g, %g, %g)\n' % (x0, y0, y1, width))
+        print('cbar(%g, %g, %g, %g)\n' % (x0, y0, y1, width))
 
     isup = y1>y0
     if isup:
@@ -279,6 +284,10 @@ def hcbar(y0=None, x0=None, x1=None, width=5, dist=10):
         prect = [0, dist-width, 0, -width]
     else:
         prect = [0, dist, 0, width]
+
+    lut = qi.f.lut
+    if not isright:
+        lut = np.flip(lut, 0)
 
     C = lut.shape[0]
     gimage(np.reshape(lut, (1,C,3)), drect, prect)
@@ -363,3 +372,22 @@ def zyimage(data, rect, proj, x=0):
                    % (rect[0], rect[1], rect[2], rect[3],
                       x, proj[0], proj[1], Z, Y, Z*Y*C))
     qi.f.writeuc(data)
+
+def jetlut(N=256):
+    '''JETLUT - Color lookup table akin to Matlab's JET
+    JETLUT(N) returns a Color lookup table akin to Matlab's JET,
+    but with better sampling of color space, especially for small N.
+    N defaults to 256.'''
+    phi = np.linspace(0, 1, N)
+    B0 = .2
+    G0 = .5
+    R0 = .8
+    SB = .2
+    SG = .25
+    SR = .2
+    P=4
+    
+    blue = np.exp(-.5*(phi-B0)**P / SB**P)
+    red = np.exp(-.5*(phi-R0)**P / SR**P)
+    green = np.exp(-.5*(phi-G0)**P / SG**P)
+    return np.column_stack((red, green, blue))
