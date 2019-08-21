@@ -182,7 +182,7 @@ def bodytext(f, body, func):
 def egimage(f, func):
     f.write('''<div class="egimage">
 <image class="egimg" src="%s.png">
-<div class="eglink">"Download <a href="%s.pdf">pdf</a></div>
+<div class="eglink">Download <a href="%s.pdf">pdf</a></div>
 </div>
 ''' % (func, func))
 

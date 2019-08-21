@@ -16,7 +16,7 @@ if ($FN =~ /\.m$/) {
   }
   print OUT <<"EOF";
 % QPlot - Publication quality 2D graphs with dual coordinate systems
-% Copyright (C) 2014  Daniel Wagenaar
+% Copyright (C) 2014–2019  Daniel Wagenaar
 %
 % This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by

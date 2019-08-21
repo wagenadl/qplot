@@ -53,6 +53,12 @@ def q__gline2(cmd='gline', vglcs=[]):
         K = len(vgl)
         if K>=3:
             a2 = utils.aslist(vgl[2])
+            L1 = len(a2)
+            if L1==1:
+                a2 = 0*a1 + a2
+            elif L==1:
+                a1 = 0*a2 + a1
+                L = L1
         if L==1:
             a1 = a1[0]
             if K==2:
@@ -195,10 +201,11 @@ def garea2(vglcs):
     All the same commands are supported.'''
     q__gline2('garea', vglcs)
     
-def mm(f=1):
-    '''MM - Convert postscript points to millimeters
-    Use as in 5*mm() or as in mm(5).'''
-    return 72 * f / 25.4
+def mm(x=1):
+    '''MM - Convert millimeters to postscript points
+    MM(x) converts a length specified in millimeters to postscript points.
+    MM() returns the number of postscript points in a millimeter.'''
+    return 72 * x / 25.4
 
 def shiftedline(xx, yy, dx, dy):
     '''SHIFTEDLINE - Renders a line displaced from data points
