@@ -18,7 +18,7 @@
 
 import glob
 import sys
-
+sys.path.append('..')
 import pyqplot as qp
 
 def header(f, title):
