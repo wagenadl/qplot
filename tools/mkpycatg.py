@@ -19,6 +19,7 @@
 
 import sys
 import os
+sys.path.append('..')
 import pyqplot as qp
 
 def header(f, title):

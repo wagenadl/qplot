@@ -20,7 +20,7 @@ import sys
 import os
 import re
 import inspect
-
+sys.path.append('..')
 import pyqplot as qp
 
 ofn = sys.argv[1]
