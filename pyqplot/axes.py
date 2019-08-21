@@ -289,7 +289,7 @@ def xaxis(title='', ticks=None, labels=None, y=0, lim=None, flip=False):
       LABELS specifies labels to put by ticks. If None, tick coordinates
         are used. If [], no labels are drawn.
       Y specifies intersect with y-axis. If None, defaults to a reasonable
-        position below the data.
+        position below the data. (Default is 0.)
       LIM specifies left and right edges as a tuple or list. If None,
         LIM is determined from TICKS. If [], no line is drawn.
       FLIP, if True, inverts the sign of the settings from TICKLEN, TEXTDIST,
@@ -548,18 +548,25 @@ def overline(xx, yy, txt=None, datadist=None, textdist=None, minlen=None):
         markup.align('center', 'bottom')
         markup.text(txt, dy=-(datadist + minlen + td))
 
-def xcaxis(y0=None, xx=None, labels=None, title='', lim=None, flip=False):
+def xcaxis(title='', xx=None, labels=None, y=None, lim=None, flip=False):
     '''XCAXIS - Plot x-axis with labels between ticks
-    XCAXIS(y0, xx, labels) places labels XL at locations XX, but places
-    ticks between labels rather than at the labels. First and last ticks
-    are extrapolated.
-    Optional argument TITLE specifies title to the axis.
-    Optional argument LIM specifies those end ticks explicitly as a 2-ple.
+    XCAXIS plots an x-axis with labels at specfied positions but ticks
+    between the labels rather than at the label positions. First and
+    last tick positions are extrapolated.
+    All arguments are optional.
+      TITLE specifies title for axis.
+      XX specifies locations for the labels.
+      LABELS specifies the label texts.
+      Y specifies intersect with y-axis. If None, defaults to a reasonable
+        position below the data. (Default is 0.)
+      LIM overrides the default positions of the first and last ticks.
+      FLIP, if True, inverts the sign of the settings from TICKLEN, TEXTDIST,
+        and AXSHIFT.
     XCAXIS obeys settings from TICKLEN, TEXTDIST, and AXSHIFT.'''
     qi.ensure()
-    if y0 is None:
+    if y is None:
         yy = utils.sensibleticks(qi.f.datarange[2:4], 1)
-        y0 = yy[0]
+        y = yy[0]
     ticklen = qi.f.ticklen
     axshift = qi.f.axshift
     [lbldist, ttldist] = textdist()
@@ -574,16 +581,17 @@ def xcaxis(y0=None, xx=None, labels=None, title='', lim=None, flip=False):
     if lim is None:
         avg = np.mean(np.diff(btwnx))
         lim = (btwnx[0]-avg, btwnx[-1]+avg)
+
     tickx = np.concatenate(([lim[0]], btwnx, [lim[1]]))
 
     # Place labels, do not draw bar
     q__axis(orient='x', tick_d=xx, tick_lbl=labels, ttl=title,
-            ticklen=0, lbldisl=lbldist+ticklen, ttldist=ttldist,
-            coord_d=y0, coord_p=axshift)
+            ticklen=0, lbldist=lbldist+ticklen, ttldist=ttldist,
+            coord_d=y, coord_p=axshift)
     # Place ticks, draw bar
-    q__axis(orient='x', tick_d=tickx, tick_lbl='',
+    q__axis(orient='x', lim_d=lim, tick_d=tickx, tick_lbl='',
             ticklen=ticklen,
-            coord_d=y0, coord_p=axshift)
+            coord_d=y, coord_p=axshift)
     
 def zaxis(title, ticks, proj, labels=None, x=0, y=0, lim=None, below=False):
     '''ZAXIS - Draw a z-axis.

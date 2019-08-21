@@ -22,6 +22,7 @@
 import numpy as np
 from . import qi
 from . import style
+from . import utils
 import os
 
 def figure(fn=None, w=5, h=None):
@@ -240,4 +241,4 @@ def current():
     if utils.isempty(qi.figs):
         return None
     qi.ensure()
-    return q.f.fn
+    return qi.f.fn

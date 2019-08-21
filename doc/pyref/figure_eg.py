@@ -1,4 +1,4 @@
 import pyqplot as qp
 import numpy as np
 
-qp.figure('figure', 6)
+qp.figure('figure', 3, 3)

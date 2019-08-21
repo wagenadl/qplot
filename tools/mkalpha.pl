@@ -85,7 +85,7 @@ sub trailer {
   print OUT <<'EOF';
 </div>
 <div class="tail">
-(C) <a href="http://www.danielwagenaar.net">Daniel Wagenaar</a>, 2014.  This web page is licensed under the <a href="http://www.gnu.org/copyleft/fdl.html">GNU Free Documentation License</a>.
+(C) <a href="http://www.danielwagenaar.net">Daniel Wagenaar</a>, 2014–2019.  This web page is licensed under the <a href="http://www.gnu.org/copyleft/fdl.html">GNU Free Documentation License</a>.
 </div>
 </body>
 </html>

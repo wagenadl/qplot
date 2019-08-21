@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <link rel="stylesheet" href="../css/doc.css" type="text/css">
+    <link rel="stylesheet" href="../css/catg.css" type="text/css">
+    <title>
+      QPlot Tutorial — Adorning your graph
+    </title>
+  </head>
+  <body>
+    <div class="main">
+
+<h1>Adorning your graph</h1>
+
+<p>In the <a href="pytut-01.html">first page of the tutorial</a>, we created a very basic graph:
+
+<div class="example">
+<p class="eg">  import numpy as np</p>
+<p class="eg">  import pyqplot as qp</p>
+<p class="eg">  x = np.arange(-10, 10, 0.1)</p>
+<p class="eg">  <a href="../pyref/plot.html">qp.plot</a>(x, np.sin(x))  </p>
+</div>
+
+<div class="qpt"><img src="tut-02-01.png"></div>
+
+<p>Compared with vanilla Matplotlib, the result was very sparse: the data
+are plotted, but there are no labeled axes or anything. The reason for
+this is QPlot’s design philosophy: you, the user, know what you want
+your graph to look like; automatic defaults are almost certain to be
+wrong.</p>
+
+<p>Fortunately, adding axes is quite easy. Here are a few
+suggestions for adding x-axes:</p>
+
+<div class="example">
+<p class="eg">  <a href="../pyref/xaxis.html">qp.xaxis</a>(ticks=np.arange(-10, 10, 5), y=-1.1)</p>
+<p class="eg">  <a href="../pyref/xaxis.html">qp.xaxis</a>('Time', lim=[-10, 10], y=-1.4)</p>
+<p class="eg">  <a href="../pyref/xaxis.html">qp.xaxis</a>('Angle', ticks=[-2*np.pi, 0, 2*np.pi], labels=['-2π', '0', '2π'], lim=[-10, 10], y=-1.7)</p>
+</div>
+
+<div class="qpt"><img src="pytut-02-02.png"></div>
+
+<p>As you can tell, you need to specify not just what you want your
+axis to look like, but also <i>where</i> you would like it to appear:
+You can specify the range the
+axis should space (<span class="inlineeg">range=[-10, 10]</span>), where to
+place ticks (<span class="inlineeg">ticks=np.arange(-10,10,5)</span>), what to print
+by those ticks (<span class="inlineeg">labels=['-2π', '0', '2π']</span>), 
+  what to name the axis (<span class="inlineeg">title='Time'</span>), and
+  at what y-coordinate to draw the axis <span class="inlineeg">y=-1.1</span>.
+  Any or all
+of these elements may be specified or omitted as required.</p>
+
+<p>By the way, does your text look cut off?
+Type <span class="inlineeg"><a href="../pyref/shrink.html">qp.shrink()</a></span>
+to invoke QPlot’s shrink-to-fit algorithm.</p>
+
+<p>Naturally, there is an
+equivalent <span class="inlineeg"><a href="../pyref/yaxis.html">qyaxis</a></span>
+command. And the appearance of the axis may be further customized. For
+instance:</p>
+
+<div class="example">
+<p class="eg">  <a href="../pyref/font.html">qp.font</a>('Times', 15, bold=True)
+<p class="eg">  <a href="../pyref/axshift.html">qp.axshift</a>(5)
+<p class="eg">  <a href="../pyref/ticklen.html">qp.ticklen</a>(10)
+<p class="eg">  <a href="../pyref/textdist.html">qp.textdist</a>(5)
+
+<p class="eg">  <a href="../ref/qp.yaxis.html">qp.yaxis('Height', ticks=[-1,0,1], x=-10)
+</div>
+
+<div class="qpt"><img src="pytut-02-03.png"></div>
+
+<p>(<span class="inlineeg"><a href="../pyref/font.html">font</a></span>
+specifies font
+properties; <span class="inlineeg"><a href="../pyref/axshift.html">axshift</a></span>
+causes the y-axis to be rendered some number of points to the left of
+the location
+specified; <span class="inlineeg"><a href="../pyref/ticklen.html">ticklen</a></span>
+specifies how long the axis ticks are (in
+points); and <span class="inlineeg"><a href="../pyref/textdist.html">textdist</a></span>
+specifies how far from the ticks the text should be rendered. Note that all
+of these customizations are specified <i>before</i> the plot command
+(<span class="inlineeg"><a href="../pyref/yaxis.html">qyaxis</a>(...)</span>)
+that they modify. (Unlike in Octave or Matlab, where
+the <span class="inlineeg">set</span> command is applied <i>after</i>
+the graphical element to be modified has been created.)</p>
+
+<p>Having learned how to label our axes, let’s return to plotting of data on the <a href="pytut-03.html">next page</a>.
+
+    </div>
+
+    <div class="tail">
+(C) <a href="http://www.danielwagenaar.net">Daniel Wagenaar</a>, 2019.  This web page is licensed under the <a href="http://www.gnu.org/copyleft/fdl.html">GNU Free Documentation License</a>.
+    </div>
+
+  </body>
+</html>

@@ -3,7 +3,7 @@
 
 ALL: qplot-directuse.pdf HTML
 
-HTML: REF TUT CSS HOME PYREF
+HTML: REF TUT CSS HOME PYREF PYTUT
 
 OCTAVE=../tools/octavex
 
@@ -71,7 +71,7 @@ html/pyref/%.png: html/pyref/%_eg.py ../tools/runpyeg.py
 html/pyref/%.html: html/pyref/%_eg.py html/pyref/%.png ../tools/py2html.py 
 	../tools/py2html.py $@
 
-# Tutorial material
+# Octave Tutorial material
 TUTHTMLS=$(subst ../doc/tut,html/tut,$(wildcard ../doc/tut/tut-*.html))
 TUTMS=$(subst ../doc/tut,html/tut,$(wildcard ../doc/tut/tut-*.m))
 TUTPNGS=$(subst tut,html/tut/tut,tut-01-01.png tut-02-01.png tut-02-02.png tut-02-03.png tut-03-01.png tut-03-02.png tut-03-03.png)
@@ -95,6 +95,31 @@ html/tut/tut-02-01.png html/tut/tut-02-02.png html/tut/tut-02-03.png: html/tut/t
 
 html/tut/tut-03-01.png html/tut/tut-03-02.png html/tut/tut-03-03.png: html/tut/tut-03.m
 	(cd html/tut; ../../$(OCTAVE) ../../$< )
+
+# Python Tutorial material
+PYTUTHTMLS=$(subst ../doc/pytut,html/pytut,$(wildcard ../doc/pytut/pytut-*.html))
+PYTUTMS=$(subst ../doc/pytut,html/pytut,$(wildcard ../doc/pytut/pytut-*.py))
+PYTUTPNGS=$(subst pytut,html/pytut/pytut,pytut-01-01.png pytut-02-01.png pytut-02-02.png pytut-02-03.png pytut-03-01.png pytut-03-02.png pytut-03-03.png)
+
+PYTUT: $(PYTUTHTMLS) $(PYTUTMS) $(PYTUTPNGS)
+
+html/pytut/%.html: ../doc/pytut/%.html
+	mkdir -p html/pytut
+	cp $^ $@
+
+html/pytut/%.py: ../doc/pytut/%.py
+	mkdir -p html/pytut
+	cp $^ $@
+
+html/pytut/pytut-01-01.png: ../doc/pytut/pytut-01-01.png
+	mkdir -p html/pytut
+	cp $^ $@
+
+html/pytut/pytut-02-01.png html/pytut/pytut-02-02.png html/pytut/pytut-02-03.png: html/pytut/pytut-01.py
+	(cd html/pytut; python3 ../../$< )
+
+html/pytut/pytut-03-01.png html/pytut/pytut-03-02.png html/pytut/pytut-03-03.png: html/pytut/pytut-03.py
+	(cd html/pytut; python3 ../../$< )
 
 # Style files
 CSSS=$(subst ../doc/css,html/css,$(wildcard ../doc/css/*.css))
