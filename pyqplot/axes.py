@@ -40,9 +40,9 @@ def ytitlerot(pt=None):
 
 def axshift(pt=None):
     '''AXSHIFT - Specifies shift of drawn axis for XAXIS and YAXIS
-   AXSHIFT(len) specifies shift (in points) for XAXIS and
-   YAXIS. Positive means down or left, negative means up or right.
-   pt = AXSHIFT returns current setting.'''
+    AXSHIFT(len) specifies shift (in points) for XAXIS and
+    YAXIS. Positive means down or left, negative means up or right.
+    pt = AXSHIFT returns current setting.'''
     qi.ensure()
     if pt is None:
         pt = qi.f.axshift
@@ -70,9 +70,9 @@ def textdist(lbl=None, ttl=None):
     
 def ticklen(pt=None):
     '''TICKLEN - Specifies length of ticks for XAXIS and YAXIS
-   TICKLEN(len) specifies length of ticks (in points) for XAXIS and
-   YAXIS. Positive means down or left, negative means up or right.
-   pt = TICKLEN returns current setting.'''
+    TICKLEN(len) specifies length of ticks (in points) for XAXIS and
+    YAXIS. Positive means down or left, negative means up or right.
+    pt = TICKLEN returns current setting.'''
     qi.ensure()
     if pt is None:
         pt = qi.f.ticklen

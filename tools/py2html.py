@@ -19,11 +19,15 @@
 import sys
 import os
 import re
+import inspect
+
 import pyqplot as qp
 
 ofn = sys.argv[1]
 dr, fn = os.path.split(sys.argv[1])
 func, xt = os.path.splitext(fn)
+
+funcs = {k for k,v in qp.__dict__.items() if callable(v)}
 
 def writeheader(f, func):
     f.write('''<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -61,8 +65,8 @@ def extracttitle(func, doc):
         if title.startswith(' - '):
             title = title[3:]
     else:
-        print('Unexpected title line for %s: %s', func, title)
-        os.exit(1)
+        print('Unexpected title line for %s: %s' % (func, title))
+        sys.exit(1)
     return title
 
 def extractbody(doc):
@@ -70,7 +74,22 @@ def extractbody(doc):
     lines.pop(0)
     return '\n'.join(lines)
 
-def pydoc(doc, func, funcs):
+def pyeg(doc, func):
+    r = re.compile(r'(qp\.\w+)')
+    bits = r.split(doc)
+    out = []
+    for k in range(len(bits)):
+        bit = bits[k]
+        if k % 2:
+            if bit=='qp.'+func:
+                out.append('qp.<b>%s</b>' % func)
+            else:
+                out.append('qp.<a href="%s.html">%s</a>' % (bit[3:],bit[3:]))
+        else:
+            out.append(bit)
+    return ''.join(out)
+
+def pydoc(doc, func):
     r = re.compile(r'(\W+)')
     wrd = re.compile(r'\w+')
     nl = re.compile(r'\n')
@@ -116,258 +135,95 @@ def pydoc(doc, func, funcs):
                     else:
                         out.append(' ')
                     if not sbit.startswith('    '):
-                        print('Expected spaces at start of line, not: %s', sbit)
+                        print('Expected at least spaces at start of line.')
+                        print('Got: "%s"' % sbit)
+                        sys.exit(1)
                     sbit = sbit[4:]
                     while sbit.startswith(' '):
                         out.append('&nbsp;')
                         sbit = sbit[1:]
                     out.append(sbit)
-    return ''.join(out)
+    return ''.join(out) + '\n'
 
-def splitout(line, funcs):
-    return line
-
-def titletext(f, func, tagline, funcs):
+def titletext(f, func, tagline):
     f.write('''<div class="titlehead">
 <span class="title">%s</span>
 <span class="tagline">%s</span>
-</div>''' % (func, splitout(tagline, funcs)))
-
-def bodytext(f, body, func, funcs):
-    f.write('''<div class="dochead">
-Help text:
 </div>
-<div class="doc">''')
-    f.write(pydoc(body, func, funcs))
+''' % (func, tagline))
+
+def sigline(f, func):
+    # This should be improved to print annotations in the future,
+    # but for now, we don't use them, so it's OK.
+    f.write('''<div class="pysighead">Call signature:</div>
+<div class="pysig"><p><b>%s</b>(''' % func)
+    first = True
+    sig = inspect.signature(qp.__dict__[func])
+    pp = sig.parameters
+    for k in pp.keys():
+        if not first:
+            f.write(', ')
+        first = False
+        kv = str(pp[k]).split('=', 1)
+        f.write('<i>%s</i>' % kv[0])
+        if len(kv)>1:
+            f.write('=%s' % kv[1])
+    f.write(''')</p></div>
+''')
+    
+def bodytext(f, body, func):
+    f.write('''<div class="pyhelphead">Help text:</div>
+<div class="pyhelp">
+''')
+    f.write(pydoc(body, func))
     f.write('''</div>
 ''')
 
 def egimage(f, func):
-    pass
+    f.write('''<div class="egimage">
+<image class="egimg" src="%s.png">
+<div class="eglink">"Download <a href="%s.pdf">pdf</a></div>
+</div>
+''' % (func, func))
 
 def egtext(f, func, example):
-    pass
+    f.write('''<div class="egcontainer">
+<div class="eghead">Example:</div>
+<div class="example">
+''')
+    
+    for line in example:
+        line = line.strip()
+        if line=='':
+            f.write('''<p class="empty"></p>
+''')
+        else:
+            f.write('''<p class="eg">%s</p>
+''' % pyeg(line, func))
+    f.write('''</div>
+<div class="eglink">
+Download <a href="%s_eg.py">source</a>.
+</div>
+</div>
+''' % func)
 
 doc = qp.__dict__[func].__doc__
-funcs = {k for k,v in qp.__dict__.items() if callable(v)}
 title = extracttitle(func, doc)
 body = extractbody(doc)
-example = None
-    
+with open('html/pyref/%s_eg.py' % func) as f:
+    example = f.read().split('\n')
+
 with open(ofn, 'w') as f:
     writeheader(f, func)
     indextext(f)
-    titletext(f, func, title, funcs)
-    bodytext(f, body, func, funcs)
+    titletext(f, func, title)
+    sigline(f, func)
+    bodytext(f, body, func)
     if os.path.exists('html/pyref/%s.png' % func):
-        egimage(f, func)
+        s = os.stat('html/pyref/%s.png' % func)
+        if s.st_size>0:
+            egimage(f, func)
     if example is not None:
         egtext(f, func, example)
     writetrailer(f)
 
-sys.exit(1)
-'''
-use strict;
-
-my $here = $0;
-$here =~ s{/[^/]+$}{};
-
-system("$here/matlabdoc -f $here/../octave/qplot-0.2 /tmp/qplotml 'QPlot' .") and die;
-
-my @files = ();
-my %files = ();
-opendir DIR, "/tmp/qplotml";
-for (sort readdir DIR) {
-  /index.html/ and next;
-  s/.html// or next;
-  push @files, $_;
-  $files{$_} = 1;
-}
-closedir DIR;
-
-for my $f (@files) {
-  print ": $f\n";
-  my $title;
-  my @body;
-  open IN, "/tmp/qplotml/$f.html" or die;
-  while (<IN>) {
-    /<\/h1>/ and last;
-  }
-  $title = <IN>;
-  while (<IN>) {
-    /<hr>/ and last;
-    push @body, $_;
-  }
-  close IN;
-
-  my @example;
-  if (open IN, "html/ref/${f}_eg.m") {
-    while (<IN>) {
-      s/^\s+$//;
-      if (s/^( +)//) {
-	$_ = "&nbsp;" x (2*length($1)) . $_;
-      }
-      push @example, $_;
-    }
-    close IN;
-  }
-  while ($#example>0 && $example[$#example] =~ /^$/) {
-    pop @example;
-  }
-
-  output($f, $title, \@body, \@example);
-}
-
-######################################################################
-
-sub output {
-  my ($fn, $title, $body, $example) = @_;
-  open OUT, ">html/ref/$fn.html" or die;
-  header($fn);
-
-  print OUT "<body class=\"mloct\"><div class=\"main\">\n";
-  indextext();
-  ttltext($fn, $title);
-  bodytext($fn, $body);
-  egimage($fn) if -f "html/ref/$fn.png";
-  egtext($fn, $example) if @$example;
-
-  trailer();
-}
-
-sub header {
-  my $fn = shift;
-  print OUT <<'EOF';
-  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <link rel="stylesheet" href="../css/doc.css" type="text/css">
-EOF
-  print OUT "    <title>QPlot: $fn</title>\n";
-  print OUT "  </head>\n";
-}
-
-sub trailer {
-  print OUT <<'EOF';
-</div>
-<div class="tail">
-QPlot Documentation — (C) <a href="http://www.danielwagenaar.net">Daniel Wagenaar</a>, 2014
-</div>
-</body>
-</html>
-EOF
-}
-
-sub ttltext {
-  my $fn = shift;
-  my $title = shift;
-  print OUT "<div class=\"titlehead\">\n";
-  print OUT "<span class=\"title\">$fn</span>\n";
-  if ($title =~ s/^.*?:\s*//) {
-    chomp $title;
-    $title =~ s/\.$//;
-    print OUT "<span class=\"tagline\">";
-    splitout($fn, $title, 0);
-    print OUT "</span>\n";
-  }
-  print OUT "</div>\n";
-}  
-
-sub egtext {
-  my $fn = shift;
-  my $example = shift;
-  print OUT "<div class=\"egcontainer\">\n";
-  print OUT "<div class=\"eghead\">\n";
-  print OUT "Example:\n";
-  print OUT "</div>\n";
-  print OUT "<div class=\"example\">\n";
-    
-  for my $line (@$example) {
-    if ($line =~ /^\s*$/) {
-      print OUT "<p class=\"empty\"></p>\n";
-    } else {
-      print OUT "<p class=\"eg\">";
-      splitout($fn, $line, 0);
-      print OUT "</p>\n";
-    }
-  }
-  print OUT "</div>\n";
-  print OUT "<div class=\"eglink\">\n";
-  print OUT "Download <a href=\"${fn}_eg.m\">source</a>.\n";
-  print OUT "</div>\n";
-  print OUT "</div>\n";
-}
-
-sub egimage {
-  my $fn = shift;
-  print OUT "<div class=\"egimage\">\n";
-  print OUT "<image class=\"egimg\" src=\"$fn.png\">\n";
-  print OUT "<div class=\"eglink\">\n";
-  print OUT "Download <a href=\"${fn}.pdf\">pdf</a>.\n";
-  print OUT "</div>\n";
-  print OUT "</div>\n";
-}
-
-sub bodytext {
-  my $fn = shift;
-  my $body = shift;
-  print OUT "<div class=\"dochead\">\n";
-  print OUT "Help text:\n";
-  print OUT "</div>\n";
-  print OUT "<div class=\"doc\">\n";
-  for my $line (@$body) {
-    splitout($fn, $line, 1);
-  }
-
-  print OUT "</div>\n";
-}
-
-sub splitout {
-  my $fn = shift;
-  my $line = shift;
-  my $useit = shift;
-  
-  my @bits = split(/(\W+)/, $line);
-  while (@bits) {
-    my $word = shift @bits;
-    my $sep = shift @bits;
-    if ($word =~ /^[A-Z]+$/) {
-      if (exists $files{lc($word)}) {
-	$word = lc $word;
-	if ($word eq $fn) {
-	  print OUT "<b>$word</b>";
-	} else {
-	  print OUT "<a class=\"tmlink\" href=\"$word.html\">$word</a>";
-	}
-      } else {
-	if ($useit) {
-	  print OUT "<i>$word</i>";
-	} else {
-	  print OUT "$word";
-	}
-      }
-    } else {
-      if (exists($files{$word}) && !(defined $sep && $sep =~ /^'/)) {
-	if ($word eq $fn) {
-	  print OUT "<b>$word</b>";
-	} else {
-	  print OUT "<a class=\"mlink\" href=\"$word.html\">$word</a>";
-	}
-      } else {
-	print OUT $word;
-      }
-    }
-    print OUT $sep if defined $sep;
-  }
-}
-
-sub indextext {
-  print OUT <<'EOF';
-<div class="toindex">
-<span class="toidx"><a href="alpha.html">Alphabetical list</a></span>
-<span class="toidx"><a href="catg.html">Categories</a></span>
-</div>
-EOF
-}
-'''

@@ -39,6 +39,9 @@ def figure(fn=None, w=5, h=None):
     return qi.f
 
 def select(fn):
+    '''SELECT - Select a previously created QPlot figure for more work
+    SELECT(fn), where FN is the name of a previously created QPlot figure,
+    directs subsequent QPlot commands to that figure.'''
     if not fn.endswith('.qpt'):
         fn += '.qpt'
     if fn in qi.figs:
@@ -56,7 +59,7 @@ def clf():
         qi.f.clf()
 
 def close(fn=None):
-    '''QCLOSE - Close a QPlot window
+    '''CLOSE - Close a QPlot window
     CLOSE closes the current window.
     CLOSE(filename) closes the named window.
     See also CLOSEALL.'''
@@ -83,6 +86,7 @@ def closeall():
     fns = [ f for f in qi.figs ]
     for fn in fns:
         close(fn)
+    qi.f = None
             
 def xlim(x0=None, x1=None):
     '''XLIM - Set x-axis limits
@@ -107,10 +111,12 @@ def ylim(y0=None, y1=None):
     qi.f.write('ylim %g %g\n' % (y0, y1))
 
 def group():
+    '''GROUP - Start a group for bounding box collection'''
     qi.ensure()
     qi.f.write('group\n')
 
 def endgroup():
+    '''ENDGROUP - End a group for bounding box collection'''
     qi.ensure()
     qi.f.write('endgroup\n')
 
@@ -173,12 +179,12 @@ def subplot(rows, cols, idx):
     qi.error('Too many panels')
     
 def save(ofn=None, reso=None):
-    '''QSAVE - Saves a qplot figure
-    QSAVE(ofn) saves the current qplot figure to the named file.
-    QSAVE(ext), where EXT is just a filename extension (without the dot),
+    '''SAVE - Saves a qplot figure
+    SAVE(ofn) saves the current qplot figure to the named file.
+    SAVE(ext), where EXT is just a filename extension (without the dot),
     uses the name of the current figure.
-    QSAVE(ofn, reso) specifies bitmap resolution for png/jpeg output.
-    QSAVE without arguments saves to pdf.'''
+    SAVE(ofn, reso) specifies bitmap resolution for png/jpeg output.
+    SAVE without arguments saves to pdf.'''
     if qi.f is None:
         error('No window')
     
