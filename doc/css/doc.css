@@ -44,7 +44,31 @@ iframe {
 .doc {
     padding-left: 30px;
 }
-    
+
+.pyhelp {
+    padding-left: 30px;
+}
+
+.pysig {
+    padding-left: 30px;
+}
+
+.pysighead {
+    padding-left: 15px;
+    padding-top: 25px;
+    margin-bottom: -10px;
+    font-size: 120%;
+    font-weight: bold;
+}
+
+.pyhelphead {
+    padding-left: 15px;
+    padding-top: 0px;
+    margin-bottom: -10px;
+    font-size: 120%;
+    font-weight: bold;
+}
+
 .dochead {
     padding-left: 15px;
     padding-top: 25px;

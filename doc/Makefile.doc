@@ -43,8 +43,14 @@ PYREFEGPDFS=$(patsubst %_eg.py,%.pdf,$(PYREFEGMS))
 PYREFEGPNGS=$(patsubst %_eg.py,%.png,$(PYREFEGMS))
 PYREFEGHTMLS=$(patsubst %_eg.py,%.html,$(PYREFEGMS))
 
-PYREF: $(PYREFEGMS) $(PYREFEGPDFS) $(PYREFEGPNGS) $(PYREFEGHTMLS) \
-	html/pyref/alpha.html html/pyref/catg.html
+PYREF: $(PYREFEGHTMLS) $(PYREFEGPDFS) $(PYREFEGPNGS) $(PYREFEGMS) \
+	html/pyref/alpha.html html/pyref/catg.html \
+	PYREFCHECK
+
+$(PYREFEGHTMLS): html/pyref/%.html: html/pyref/%.pdf html/pyref/%.png
+
+PYREFCHECK: ../tools/checkpyeg.py $(PYREFEGHTMLS) 
+	../tools/checkpyeg.py
 
 html/pyref/alpha.html: ../tools/mkpyalpha.py
 	$< ../pyqplot $@
@@ -62,7 +68,7 @@ html/pyref/%.pdf: html/pyref/%_eg.py ../tools/runpyeg.py
 html/pyref/%.png: html/pyref/%_eg.py ../tools/runpyeg.py
 	../tools/runpyeg.py $< $@
 
-html/pyref/%.html: html/pyref/%_eg.py ../tools/py2html.py 
+html/pyref/%.html: html/pyref/%_eg.py html/pyref/%.png ../tools/py2html.py 
 	../tools/py2html.py $@
 
 # Tutorial material

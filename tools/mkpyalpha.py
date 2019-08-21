@@ -19,92 +19,64 @@
 import glob
 import sys
 
-srcdir = sys.argv[1]
-ofn = sys.argv[2]
-print(srcdir, ofn)
+import pyqplot as qp
 
-'''
-use strict;
-
-my $src = shift;
-my $dst = shift;
-
-my @files = ();
-my %files = ();
-opendir DIR, "$src";
-
-for (sort { cfnoq($a,$b) } readdir DIR) {
-  s/.m$// or next;
-  push @files, $_;
-  $files{$_} = 1;
-}
-closedir DIR;
-
-open OUT, ">$dst" or die;
-header("QPlot: Alphabetical list of functions");
-
-print OUT <<'EOF';
-<body>
-<div class="main">
-<div class="index">
-<span class="toidx"><a href="catg.html">Categories</a></span>
-</div>
-<h1 class="tight">QPlot: Alphabetical list of functions</h1>
-EOF
-
-
-my $letter = "";
-print OUT "<div class=\"list\">\n";
-for my $fn (@files) {
-  $fn =~ /^q?(.)/;
-  my $let = $1;
-  if ($let ne $letter) {
-    if ($letter ne "") {
-      print OUT "</table>\n";
-    }
-    print OUT "<table class=\"funcs\">\n";
-    print OUT "<tr><td  class=\"letter\"><span class=\"letterspan\">" . uc($let) . "</span></td>";
-    print OUT "<td class=\"regular\"><a class=\"mlink\" href=\"$fn.html\">$fn</a></td></tr>\n";
-    $letter = $let;
-  } else {
-    print OUT "<tr><td></td><td><a class=\"mlink\" href=\"$fn.html\">$fn</a></td></tr>\n";
-  }
-}
-print OUT "</table></div>\n";
-trailer();
-close OUT;
-
-
-sub header {
-  my $fn = shift;
-  print OUT <<'EOF';
-  <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+def header(f, title):
+    f.write('''<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <link rel="stylesheet" href="../css/doc.css" type="text/css">
-    <link rel="stylesheet" href="../css/alpha.css" type="text/css">
-EOF
-  print OUT "    <title>$fn</title>\n";
-  print OUT "  </head>\n";
-}
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="../css/doc.css" type="text/css">
+<link rel="stylesheet" href="../css/alpha.css" type="text/css">
+<title>%s</title>
+</head>
+''' % title)
 
-sub trailer {
-  print OUT <<'EOF';
-</div>
+def trailer(f):
+    f.write('''</div>
 <div class="tail">
 (C) <a href="http://www.danielwagenaar.net">Daniel Wagenaar</a>, 2014.  This web page is licensed under the <a href="http://www.gnu.org/copyleft/fdl.html">GNU Free Documentation License</a>.
 </div>
 </body>
 </html>
-EOF
-}
+''')
 
-sub cfnoq {
-  my $a = shift;
-  my $b = shift;
-  $a =~ s/^q//;
-  $b =~ s/^q//;
-  return $a cmp $b;
-}
-'''
+def bodystart(f):
+    f.write('''<body>
+<div class="main">
+<div class="index">
+<span class="toidx"><a href="catg.html">Categories</a></span>
+</div>
+<h1 class="tight">QPlot: Alphabetical list of functions</h1>
+''')
+
+def printlist(f, funcs):
+    f.write('''<div class="list">
+''')
+    lastletter = ''
+    funcs = [f for f in funcs if f==f.lower() and f.find('__')<0]
+    for func in sorted(funcs, key=lambda s: s.casefold()):
+        letter = func[0].upper()
+        if letter != lastletter:
+            if lastletter!='':
+                f.write('</table>\n')
+            f.write('''
+<table class="funcs">
+<tr><td class="letter"><span class="letterspan">%s</span></td>
+<td class="regular"><a class="mlink" href="%s.html">%s</a></td></tr>
+''' % (letter, func, func))
+            lastletter = letter
+        else:
+            f.write('''<tr><td></td>
+<td><a class="mlink" href="%s.html">%s</a></td></tr>
+''' % (func, func))
+    f.write('''</table>
+</div>
+''')
+
+funcs = [k for k,v in qp.__dict__.items() if callable(v)]
+with open(sys.argv[2], 'w') as f:
+    header(f, "QPlot: Alphabetical list of functions")
+    bodystart(f)
+    printlist(f, funcs)
+    trailer(f)

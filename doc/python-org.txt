@@ -1,0 +1,104 @@
+Figures:
+clf
+close
+closeall
+figure
+panel
+relpanel
+select
+subplot
+save
+current
+
+Plotting:
+bars
+ecoplot
+errorbar
+errorpatch
+mark
+patch
+plot
+skyline
+
+Images:
+image
+imsc
+xzimage
+zyimage
+
+Tick axes:
+caxis
+minorticks
+overline
+xaxis
+xcaxis
+yaxis
+zaxis
+
+Annotations:
+arrow
+at
+darrow
+text
+title
+
+Legends:
+legend
+legopt
+mlegend
+plegend
+
+Color bars:
+cbar
+hcbar
+
+Graphics styling:
+brush
+lut
+marker
+pen
+jetlut
+
+Text styling:
+align
+font
+reftext
+
+Tick axis styling:
+axshift
+numformat
+textdist
+ticklen
+ytitlerot
+overlinedist
+overlinemin
+
+Paper coordinate plotting:
+area
+line
+mm
+pmark
+
+Mixed coordinate plotting:
+shiftedline
+garea
+garea2
+gimage
+gline
+gline2
+
+Grouping:
+endgroup
+group
+
+Scale to fit:
+sharelim
+shrink
+xlim
+ylim
+
+Specialized functions:
+caligraph
+ctext
+hairline
+textonpath

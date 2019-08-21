@@ -28,7 +28,7 @@ class Figure:
         self.legopt = None
         self.imrect = None
         self.cbar = None
-        self.overlinedist = -7
+        self.overlinedist = 7
         self.overlinemin = 3
 
     def write(self, s):

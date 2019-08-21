@@ -48,6 +48,10 @@ def q__safetext(s):
     return s
 
 def reftext(s):
+    '''REFTEXT - Set reference text
+    REFTEXT(text) sets the reference text used for vertical alignment
+    of subsequent TEXT commands.'''
+
     qi.ensure()
     qi.f.write('reftext "%s"\n' % q__safetext(s))
     
@@ -146,9 +150,9 @@ at.ytype = utils.wordset('top bottom middle abs absolute')
 
 def title(ttl):
     '''TITLE - Render a title on the current QPlot
-   TITLE(text) renders the given text centered along the top of the
-   current QPlot figure.
-   For more control over placement, use TEXT and friends.'''
+    TITLE(text) renders the given text centered along the top of the
+    current QPlot figure.
+    For more control over placement, use TEXT and friends.'''
     qi.ensure()
     at()
     pid = qi.f.panel
@@ -174,7 +178,7 @@ class LegOpt:
 
 def legopt(x0=None, y0=None, skip=None, height=None, width=None,
            indent=None, color=None, drop=None, dx=None, dy=None):
-    '''QLEGOPT - Set options for LEGEND and friends
+    '''LEGOPT - Set options for LEGEND and friends
     LEGOPT specifies options for legend rendering.
     All arguments are optional:
       X0 - x position of left edge of legend, in data coordinates

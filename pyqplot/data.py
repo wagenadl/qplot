@@ -70,7 +70,7 @@ def bars(xx, yy, w, y0=0):
               np.array([0, 0, 1, 1])*yy[k] + y0[k])
 
 def ecoplot(x0, dx, yy, N=100):
-    '''QECOPLOT - Economically plot large datasets
+    '''ECOPLOT - Economically plot large datasets
     ECOPLOT(x0, dx, yy, N) plots the data (xx,yy) using SAMPLEMINMAX to
     reduce data length to the given number of points.
     The results are plotted as a PATCH.
@@ -89,7 +89,7 @@ def ecoplot(x0, dx, yy, N=100):
           np.concatenate((ym, np.flip(yM,0))))
 
 def errorbar(xx, yy, dy, w=None, dir='both'):
-    '''QERRORBAR - Draw error bars
+    '''ERRORBAR - Draw error bars
     ERRORBAR(xx, yy, dy) plots error bars at (XX,YY+-DY).
     Normally, XX, YY, and DY have the same shape. However, it is permissible
     for DY to be shaped Nx2, or for DY to be a 2-tuple, in which case
