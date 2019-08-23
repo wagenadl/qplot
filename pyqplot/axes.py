@@ -219,18 +219,18 @@ def q__axis(orient='x', lim_d=None,
         [xa, ya] = qpa__align(ishori, lbllx, lblly)
         markup.align(xa, ya)
         if ishori:
-            reftxt=''
+            reftxt=[]
             for lbl in tick_lbl:
                 if type(lbl)!=str:
                     lbl = qi.f.numfmt % lbl
-                reftxt += lbl
                 try:
                     v = float(lbl)
                     if v<0:
-                        reftxt += ' '
+                        lbl += ' '
                 except:
                     pass
-            markup.reftext(reftxt)
+            reftxt.append(lbl)
+            markup.reftext(' '.join(reftxt))
                     
         for k in range(len(tick_lbl)):
             markup.at(tickdx[k], tickdy[k])
