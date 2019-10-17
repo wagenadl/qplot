@@ -37,8 +37,8 @@ def image(data, rect=None, xx=None, yy=None):
             if Y==1:
                 dy = 1
             else:
-                dy = (yy.flat[-1] - yy.flat[0]) / (Y-1)
-            rect = (xx.flat[0]-dx/2, yy.flat[0]-dy/2, X*dx, Y*dy)
+                dy = (yy.flat[0] - yy.flat[-1]) / (Y-1)
+            rect = (xx.flat[0]-dx/2, yy.flat[-1]-dy/2, X*dx, Y*dy)
 
     if rect[2] < 0:
         data = np.flip(data, 1)
@@ -95,7 +95,6 @@ def imsc(data, rect=None, c0=None, c1=None, xx=None, yy=None):
     data = data.astype('int')
     data = lut[data[:], :]
     K = isn.size
-    print('K = ', K)
     if K>0:
         nanc = np.repeat(nanc, K, 0)
         data[isn,:] = nanc
