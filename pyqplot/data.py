@@ -52,22 +52,41 @@ def mark(xx, yy):
     qi.f.writedbl(yy)
     qi.f.updaterange(xx, yy)
 
-def bars(xx, yy, w, y0=0):
+def bars(xx, yy, w=None, y0=0):
     '''BARS - Bar plot with bar width specified in data coordinates
     BARS(xx, yy, w) draws a bar graph of YY vs XX with bars
     of width W specified in data coordinates.
     BARS(xx, yy, w, y0) specifies the baseline of the plot;
     default for Y0 is 0. Y0 may also be a vector (which must
     then be the same size as XX and YY). This is useful for
-    creating stacked bar graphs.'''
+    creating stacked bar graphs.
+    If W is not given, it defaults to mean(diff(xx)).
+    If the length of the XX vector is one greater than the length
+    of the YY vector, the XX vector is taken to represent the edges
+    of the bins.'''
     xx = np.array(xx)
     yy = np.array(yy)
     if utils.isnscalar(y0):
         y0=np.zeros(yy.shape) + y0
-        
-    for k in range(xx.size):
-        patch(np.array([-.5, .5, .5, -.5])*w + xx[k],
-              np.array([0, 0, 1, 1])*yy[k] + y0[k])
+
+    if xx.size == yy.size:
+        if w is None:
+            w = np.mean(np.diff(xx))
+        for k in range(yy.size):
+            patch(np.array([-.5, .5, .5, -.5])*w + xx[k],
+                  np.array([0, 0, 1, 1])*yy[k] + y0[k])
+    elif xx.size == yy.size + 1:
+        if w is None:
+            for k in range(yy.size):
+                patch(np.array([xx[k], xx[k+1], xx[k+1], xx[k]]),
+                      np.array([0, 0, 1, 1])*yy[k] + y0[k])
+        else:
+            for k in range(yy.size):
+                patch(np.array([-.5, .5, .5, -.5])*w + (xx[k]+xx[k+1])/2,
+                      np.array([0, 0, 1, 1])*yy[k] + y0[k])
+    else:
+        raise ValueError('Inconsistent array sizes')
+            
 
 def ecoplot(x0, dx, yy, N=100):
     '''ECOPLOT - Economically plot large datasets
