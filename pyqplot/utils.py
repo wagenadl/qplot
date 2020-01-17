@@ -132,7 +132,7 @@ def sensibleticks(xxx, cnt=5, inc=False):
             x1a = np.ceil(x1/dx)*dx
         else:
             x1a = np.floor(x1/dx)*dx
-        print(x0a, x1a, dx)
+        #print(x0a, x1a, dx)
         tx = np.arange(x0a, x1a+dx/2, dx)
         scl = scl*1.5
     return tx

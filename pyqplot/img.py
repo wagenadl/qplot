@@ -30,6 +30,8 @@ def image(data, rect=None, xx=None, yy=None):
         if xx is None and yy is None:
             rect = (0, 0, X, Y)
         else:
+            xx = np.array(xx)
+            yy = np.array(yy)
             if X==1:
                 dx = 1
             else:
@@ -227,7 +229,7 @@ def cbar(x0=None, y0=None, y1=None, width=5, dist=10):
         x0 = qi.f.imrect[0] + qi.f.imrect[2]
         y0 = qi.f.imrect[1]
         y1 = qi.f.imrect[1] + qi.f.imrect[3]
-        print('cbar(%g, %g, %g, %g)\n' % (x0, y0, y1, width))
+        #print('cbar(%g, %g, %g, %g)\n' % (x0, y0, y1, width))
 
     isup = y1>y0
     if isup:
