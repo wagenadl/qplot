@@ -298,7 +298,7 @@ def xaxis(title='', ticks=None, labels=None, y=0, lim=None, flip=False):
     the labels are calculated from the tick positions (or vice versa). For
     example:
 
-      XAXIS(0, lambda x: x/100, np.arange(0,101,25), 'Value (%)')
+      XAXIS('Value (%)', labels=np.arange(0,101,25), ticks=lambda x: x/100)
 
     Without any arguments or with just a title as an argument, XAXIS tries
     to determine sensible defaults based on previous calls to PLOT and
@@ -345,7 +345,7 @@ def yaxis(title='', ticks=None, labels=None, x=0, lim=None, flip=False):
     the labels are calculated from the tick positions (or vice versa). For
     example:
 
-      YAXIS(0, lambda y: y/100, np.arange(0,101,25), 'Value (%)')
+      YAXIS('Value (%)', labels=np.arange(0,101,25), ticks=lambda x: x/100)
 
     Without any arguments or with just a title as an argument, YAXIS tries
     to determine sensible defaults based on previous calls to PLOT and
