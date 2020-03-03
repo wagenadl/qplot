@@ -80,7 +80,7 @@ def ticklen(pt=None):
         qi.f.ticklen = pt
     return pt
 
-def qpa__align(hori, dx, dy=None):
+def _align(hori, dx, dy=None):
     if dy is None:
         dy = dx
     xa = 'center';
@@ -97,15 +97,16 @@ def qpa__align(hori, dx, dy=None):
             xa = 'right';
     return (xa, ya)
 
-def q__axis(orient='x', lim_d=None,
-            tick_d=None, tick_p=None,
-            tick_lbl=None, ttl='',
-            ticklen=3, lbldist=3, ttldist=3,
-            coord_d=None, coord_p=0,
-            ttlrot=0,
-            cbar=None):
-    '''Q__AXIS - Internal backend for axis rendering
-    Q__AXIS(...) draws an axis according to the parameters:
+def _qaxis(orient='x', lim_d=None,
+           tick_d=None, tick_p=None,
+           tick_lbl=None, ttl='',
+           ticklen=3, lbldist=3, ttldist=3,
+           coord_d=None, coord_p=0,
+           ttlrot=0,
+           cbar=None,
+           microshift=False):
+    '''_QAXIS - Internal backend for axis rendering
+    _QAXIS(...) draws an axis according to the parameters:
       orient: 'x' or 'y'
       lim_d (2) limits of the axis in data coordinates (in the direction
                 of ORIENT)
@@ -120,7 +121,9 @@ def q__axis(orient='x', lim_d=None,
                        orthogonal to ORIENT)
       coord_p (scalar) shift of that position in paper coordinates
       ttlrot (scalar) rotation of title: 0=normal +ve=CCW -ve=CW
-      cbar (struct) optional reference to colorbar'''
+      cbar (struct) optional reference to colorbar
+      microshift (boolean or tuple of two booleans) shift ticks by half 
+                       linewidth'''
 
     qi.ensure()
     qi.f.lastax = { 'orient': orient,
@@ -135,7 +138,8 @@ def q__axis(orient='x', lim_d=None,
                     'coord_d': coord_d,
                     'coord_p': coord_p,
                     'ttlrot': ttlrot,
-                    'cbar': cbar }
+                    'cbar': cbar,
+                    'microshift': microshift }
     
     if orient=='x':
         ishori=1
@@ -144,7 +148,12 @@ def q__axis(orient='x', lim_d=None,
         ishori=0
         isvert=1
     else:
-        qi.error("orient must be 'x' or 'y'")    
+        qi.error("orient must be 'x' or 'y'")
+
+    if type(microshift)==tuple or type(microshift)==list:
+        pass
+    else:
+        microshift = [microshift, microshift]
 
     if callable(tick_d):
         tick_d = np.array([tick_d(lbl) for lbl in tick_lbl])
@@ -154,7 +163,20 @@ def q__axis(orient='x', lim_d=None,
         tick_d = np.array(tick_d)
         if tick_p is None:
             tick_p = np.zeros(tick_d.shape)
-        
+            if microshift[0]:
+                shf0 = .5*qi.f.linewidth
+            else:
+                shf0 = 0
+            if microshift[1]:
+                shf1 = -.5*qi.f.linewidth
+            else:
+                shf1 = 0
+            if orient=='y':
+                shf0, shf1 = -shf0, -shf1
+            for k in range(len(tick_p)):
+                a = (tick_d[k] - tick_d[0]) / (tick_d[-1] - tick_d[0])
+                tick_p[k] += (1-a)*shf0 + a*shf1
+                
     fig.group()
     
     tickdx = tick_d
@@ -173,6 +195,10 @@ def q__axis(orient='x', lim_d=None,
     limdx = lim_d
     limdy = coord_d + np.zeros((2))
     limpx = np.zeros((2))
+    if microshift[0]:
+        limpx[0] += qi.f.linewidth/2
+    if microshift[1]:
+        limpx[1] -= qi.f.linewidth/2
     limpy = coord_p + np.zeros((2))
     
     if lim_d is not None:
@@ -194,7 +220,7 @@ def q__axis(orient='x', lim_d=None,
     if lim_d is not None:
         if isvert:
             (limdx, limdy) = (limdy, limdx)
-            (limpx, limpy) = (limpy, limpx)
+            (limpx, limpy) = (limpy, -limpx)
         paper.gline2([paper.AbsData(limdx, limdy),
                       paper.RelPaper(limpx, limpy)])
             
@@ -216,7 +242,7 @@ def q__axis(orient='x', lim_d=None,
         tick_lbl = [ tick_lbl(x) for x in tick_d ]
     if not utils.isempty(tick_lbl):
         fig.group()
-        [xa, ya] = qpa__align(ishori, lbllx, lblly)
+        [xa, ya] = _align(ishori, lbllx, lblly)
         markup.align(xa, ya)
         if ishori:
             reftxt=[]
@@ -262,15 +288,15 @@ def q__axis(orient='x', lim_d=None,
                 ttlpy = 0
             else:
                 ttlpx = 0
-            [xa, ya] = qpa__align(ishori, -ttldist)
+            [xa, ya] = _align(ishori, -ttldist)
             if ishori:
                 markup.at(ttldx, ya, phi=-np.pi/2*np.sign(ttlrot))
             else:
                 markup.at(xa, ttldy, phi=-np.pi/2*np.sign(ttlrot))
         if ttlrot==0:
-            xa, ya = qpa__align(ishori, ttldist)
+            xa, ya = _align(ishori, ttldist)
         else:
-            xa, ya = qpa__align(isvert, ttldist*np.sign(ttlrot))
+            xa, ya = _align(isvert, ttldist*np.sign(ttlrot))
         markup.align(xa, ya)
         if ttlrot:
             markup.text(ttl,
@@ -280,7 +306,9 @@ def q__axis(orient='x', lim_d=None,
             markup.text(ttl, dx=ttlpx + ttllx, dy=ttlpy + ttlly)
     fig.endgroup()
 
-def xaxis(title='', ticks=None, labels=None, y=0, lim=None, flip=False):
+def xaxis(title='', ticks=None, labels=None, y=0, lim=None, flip=False,
+          ticklen=None, axshift=None, lbldist=None, ttldist=None,
+          microshift=False):
     '''XAXIS - Draw x-axis
     All arguments are optional.
       TITLE specifies title for axis.
@@ -294,6 +322,13 @@ def xaxis(title='', ticks=None, labels=None, y=0, lim=None, flip=False):
         LIM is determined from TICKS. If [], no line is drawn.
       FLIP, if True, inverts the sign of the settings from TICKLEN, TEXTDIST,
         and AXSHIFT.
+      TICKLEN and AXSHIFT override the values from the 
+        corresponding command.
+      LBLDIST and TTLDIST override the values from TEXTDIST.
+      MICROSHIFT, if True, specifies that the ticks are to be shifted by
+        up to half a linewidth so they don't protrude horizontally past the
+        ends of an image. May also be a 2-ple specifying behavior for the
+        left and right ends separately.
     Either TICKS or LABELS (but not both) may be a function, in which case
     the labels are calculated from the tick positions (or vice versa). For
     example:
@@ -312,22 +347,28 @@ def xaxis(title='', ticks=None, labels=None, y=0, lim=None, flip=False):
     if lim is None:
         lim = [ticks[0], ticks[-1]]
     if labels is None:
-        labels = qi.f.format(ticks) 
-    ticklen = qi.f.ticklen
-    axshift = qi.f.axshift
-    [lbldist, ttldist] = textdist()
-    
+        labels = qi.f.format(ticks)
+    if ticklen is None:
+        ticklen = qi.f.ticklen
+    if axshift is None:
+        axshift = qi.f.axshift
+    if lbldist is None:
+        lbldist = qi.f.textdist[0]
+    if ttldist is None:
+        ttldist = qi.f.textdist[1]
     if flip:
         ticklen = -ticklen
         axshift = -axshift
         lbldist = -lbldist
         ttldist = -ttldist
     
-    q__axis(orient='x', lim_d=lim, tick_d=ticks, tick_lbl=labels, ttl=title, 
+    _qaxis(orient='x', lim_d=lim, tick_d=ticks, tick_lbl=labels, ttl=title, 
             ticklen=ticklen, lbldist=lbldist, ttldist=ttldist, 
-            coord_d=y, coord_p=axshift)
+            coord_d=y, coord_p=axshift, microshift=microshift)
 
-def yaxis(title='', ticks=None, labels=None, x=0, lim=None, flip=False):
+def yaxis(title='', ticks=None, labels=None, x=0, lim=None, flip=False,
+          ticklen=None, axshift=None, lbldist=None, ttldist=None, titlerot=None,
+          microshift=False):
     '''YAXIS - Draw y-axis
     All arguments are optional.
       TITLE specifies title for axis.
@@ -341,6 +382,14 @@ def yaxis(title='', ticks=None, labels=None, x=0, lim=None, flip=False):
         LIM is determined from TICKS. If [], no line is drawn.
       FLIP, if nonzero, inverts the sign of the settings from TICKLEN, TEXTDIST,
         and AXSHIFT. If FLIP=2, the title is flipped as well.
+      TICKLEN and AXSHIFT override the values from the 
+        corresponding command.
+      LBLDIST and TTLDIST override the values from TEXTDIST.
+      TITLEROT overrides the value from YTITLEROT.
+      MICROSHIFT, if True, specifies that the ticks are to be shifted by
+        up to half a linewidth so they don't protrude vertically past the
+        ends of an image. May also be a 2-ple specifying behavior for the
+        bottom and top ends separately.
     Either TICKS or LABELS (but not both) may be a function, in which case
     the labels are calculated from the tick positions (or vice versa). For
     example:
@@ -359,11 +408,19 @@ def yaxis(title='', ticks=None, labels=None, x=0, lim=None, flip=False):
     if lim is None:
         lim = [ticks[0], ticks[-1]]
     if labels is None:
-        labels = qi.f.format(ticks) 
-    ticklen = qi.f.ticklen
-    axshift = qi.f.axshift
-    [lbldist, ttldist] = textdist()
-    lblrot = ytitlerot()
+        labels = qi.f.format(ticks)
+    if titlerot is None:
+        lblrot = ytitlerot()
+    else:
+        lblrot = titlerot
+    if ticklen is None:
+        ticklen = qi.f.ticklen
+    if axshift is None:
+        axshift = qi.f.axshift
+    if lbldist is None:
+        lbldist = qi.f.textdist[0]
+    if ttldist is None:
+        ttldist = qi.f.textdist[1]
     
     if flip==False:
         ticklen = -ticklen
@@ -373,9 +430,9 @@ def yaxis(title='', ticks=None, labels=None, x=0, lim=None, flip=False):
     elif flip==2:
         lblrot = -lblrot
     
-    q__axis(orient='y', lim_d=lim, tick_d=ticks, tick_lbl=labels, ttl=title, 
+    _qaxis(orient='y', lim_d=lim, tick_d=ticks, tick_lbl=labels, ttl=title, 
             ticklen=ticklen, lbldist=lbldist, ttldist=ttldist, 
-            coord_d=x, coord_p=axshift, ttlrot=lblrot)
+            coord_d=x, coord_p=axshift, ttlrot=lblrot, microshift=microshift)
 
 def minorticks(xx, ticklen=None):
     '''MINORTICKS - Add more ticks to an existing axis
@@ -391,14 +448,16 @@ def minorticks(xx, ticklen=None):
     kv = qi.f.lastax
     if ticklen is None:
         ticklen = qi.f.ticklen * 2./3
-    #if strcmp(kv.orient,'y'):
-    #    kv.ticklen = -kv.ticklen # What is this about??
+    if kv['orient']=='y':
+        ticklen = -ticklen
     if kv['cbar'] is not None:
         xx = kv['cbar'].ctodat(xx)
-    q__axis(orient=kv['orient'], tick_d=xx, tick_lbl=[], ticklen=ticklen,
+    _qaxis(orient=kv['orient'], tick_d=xx, tick_lbl=[], ticklen=ticklen,
             coord_d=kv['coord_d'], coord_p=kv['coord_p'])
 
-def caxis(title=None, ticks=None, labels=None, lim=None, flip=False):
+def caxis(title=None, ticks=None, labels=None, lim=None, flip=False,
+          ticklen=None, axshift=None, lbldist=None, ttldist=None, titlerot=None,
+          microshift=True):
     '''CAXIS - Plot colorbar axis
     CAXIS plots a colorbar axis alongside the most recent CBAR or HCBAR.
     All arguments are optional.
@@ -411,6 +470,12 @@ def caxis(title=None, ticks=None, labels=None, lim=None, flip=False):
         represented in the IMSC.
       FLIP specifies that the axis is rendered to the left or above the
         bar rather than to the right or below.
+      TICKLEN and AXSHIFT override the values from the 
+        corresponding command.
+      LBLDIST and TTLDIST override the values from TEXTDIST.
+      TITLEROT overrides the value from YTITLEROT.
+      MICROSHIFT (default true) specifies that the ticks are to be shifted
+        by up to half a linewidth so they don't protrude past the bar's ends.
 
     CAXIS interprets settings from TICKLEN, TEXTDIST, and AXSHIFT
     differently from XAXIS and YAXIS: positive values are away from
@@ -429,38 +494,48 @@ def caxis(title=None, ticks=None, labels=None, lim=None, flip=False):
     if labels is None:
         labels = ticks
 
-    ticklen = qi.f.ticklen
-    (lbldist, ttldist) = textdist()
+    if ticklen is None:
+        ticklen = qi.f.ticklen
+    if axshift is None:
+        axshift = qi.f.axshift
+    if lbldist is None:
+        lbldist = qi.f.textdist[0]
+    if ttldist is None:
+        ttldist = qi.f.textdist[1]
 
     if cb.orient=='y':
-        ttlrot = ytitlerot()
+        if titlerot is None:
+            ttlrot = ytitlerot()
+        else:
+            ttlrot = titlerot
         coord_d = cb.drect[0]
         coord_p = cb.prect[0]
         if flip:
             ticklen = -ticklen
             ttlrot = -ttlrot
-            coord_p -= axshift()
+            coord_p -= axshift
         else:
-            coord_p += cb.prect[2] + axshift()
+            coord_p += cb.prect[2] + axshift
     elif cb.orient=='x':
         ttlrot = 0
         coord_d = cb.drect[1]
         coord_p = cb.prect[1]
         if flip:
             ticklen = -ticklen
-            coord_p -= axshift()
+            coord_p -= axshift
         else:
-            coord_p += cb.prect[3] + axshift()
+            coord_p += cb.prect[3] + axshift
     else:
         qi.error('Orientation not understood')
 
     lim = cb.ctodat(lim)
     ticks = cb.ctodat(ticks)
     
-    q__axis(orient=cb.orient, lim_d=lim, tick_d=ticks, tick_lbl=labels,
+    _qaxis(orient=cb.orient, lim_d=lim, tick_d=ticks, tick_lbl=labels,
             ttl=title, 
             ticklen=ticklen, lbldist=lbldist, ttldist=ttldist, 
-            coord_d=coord_d, coord_p=coord_p, ttlrot=ttlrot)
+            coord_d=coord_d, coord_p=coord_p, ttlrot=ttlrot,
+            microshift=microshift)
     qi.f.lastax['cbar'] = cb
         
 def numformat(fmt=None):
@@ -585,11 +660,11 @@ def xcaxis(title='', xx=None, labels=None, y=None, lim=None, flip=False):
     tickx = np.concatenate(([lim[0]], btwnx, [lim[1]]))
 
     # Place labels, do not draw bar
-    q__axis(orient='x', tick_d=xx, tick_lbl=labels, ttl=title,
+    _qaxis(orient='x', tick_d=xx, tick_lbl=labels, ttl=title,
             ticklen=0, lbldist=lbldist+ticklen, ttldist=ttldist,
             coord_d=y, coord_p=axshift)
     # Place ticks, draw bar
-    q__axis(orient='x', lim_d=lim, tick_d=tickx, tick_lbl='',
+    _qaxis(orient='x', lim_d=lim, tick_d=tickx, tick_lbl='',
             ticklen=ticklen,
             coord_d=y, coord_p=axshift)
     
