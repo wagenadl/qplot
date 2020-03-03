@@ -38,7 +38,7 @@ def align(*args):
     qi.f.write(out)
 align.words = utils.wordset('left right center top bottom middle base')
 
-def q__safetext(s):
+def _safetext(s):
     s = s.replace('"', '”')
     s = s.replace('\\', '\\\\')
     s = s.replace('\n', '\\n')
@@ -53,7 +53,7 @@ def reftext(s):
     of subsequent TEXT commands.'''
 
     qi.ensure()
-    qi.f.write('reftext "%s"\n' % q__safetext(s))
+    qi.f.write('reftext "%s"\n' % _safetext(s))
     
 def text(s, dx=0, dy=0):
     '''TEXT - Render text 
@@ -290,7 +290,7 @@ def ctext(text, dx=0, dy=0):
     Optional arguments DX and DY modify placement by the given number
     of points.'''
     qi.ensure()
-    qi.f.write('ctext %g %g "%s"\n' % (dx, dy, q__safetext(text)))
+    qi.f.write('ctext %g %g "%s"\n' % (dx, dy, _safetext(text)))
 
 def textonpath(xx, yy, text, dx=0, dy=0):
     '''TEXTONPATH - Place text along a path
@@ -308,7 +308,7 @@ def textonpath(xx, yy, text, dx=0, dy=0):
         qi.error('xx and yy must match')
     qi.ensure()
     qi.f.write('textonpath *%i *%i %g %g "%s"\n'
-               % (N, N, dx, dx, q__safetext(text)))
+               % (N, N, dx, dx, _safetext(text)))
     qi.f.writedbl(xx)
     qi.f.writedbl(yy)
     
