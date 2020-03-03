@@ -80,7 +80,7 @@ def ticklen(pt=None):
         qi.f.ticklen = pt
     return pt
 
-def qpa__align(hori, dx, dy=None):
+def _align(hori, dx, dy=None):
     if dy is None:
         dy = dx
     xa = 'center';
@@ -242,7 +242,7 @@ def _qaxis(orient='x', lim_d=None,
         tick_lbl = [ tick_lbl(x) for x in tick_d ]
     if not utils.isempty(tick_lbl):
         fig.group()
-        [xa, ya] = qpa__align(ishori, lbllx, lblly)
+        [xa, ya] = _align(ishori, lbllx, lblly)
         markup.align(xa, ya)
         if ishori:
             reftxt=''
@@ -288,15 +288,15 @@ def _qaxis(orient='x', lim_d=None,
                 ttlpy = 0
             else:
                 ttlpx = 0
-            [xa, ya] = qpa__align(ishori, -ttldist)
+            [xa, ya] = _align(ishori, -ttldist)
             if ishori:
                 markup.at(ttldx, ya, phi=-np.pi/2*np.sign(ttlrot))
             else:
                 markup.at(xa, ttldy, phi=-np.pi/2*np.sign(ttlrot))
         if ttlrot==0:
-            xa, ya = qpa__align(ishori, ttldist)
+            xa, ya = _align(ishori, ttldist)
         else:
-            xa, ya = qpa__align(isvert, ttldist*np.sign(ttlrot))
+            xa, ya = _align(isvert, ttldist*np.sign(ttlrot))
         markup.align(xa, ya)
         if ttlrot:
             markup.text(ttl,
