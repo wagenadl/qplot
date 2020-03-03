@@ -30,6 +30,7 @@ class Figure:
         self.cbar = None
         self.overlinedist = 7
         self.overlinemin = 3
+        self.linewidth = 0
 
     def write(self, s):
         # Can take either a string or a list of strings.
@@ -117,7 +118,7 @@ class Figure:
         # This supposedly signals qplot to raise it
 
     def save(self, ofn, reso=None): 
-        cmd = ['qplotml']
+        cmd = ['qplot']
         if reso is not None:
             cmd.append('-r')
             cmd.append('%i' % reso)

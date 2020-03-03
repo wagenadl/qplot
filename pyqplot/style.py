@@ -54,6 +54,7 @@ def pen(color=None, width=None, join=None, cap=None, pattern=None, \
         out.append('%g' % -alpha)
     if width is not None:
         out.append('%g' % width)
+        qi.f.linewidth = width
     if join is not None:
         if join in pen.joins:
             out.append(join + 'join')
