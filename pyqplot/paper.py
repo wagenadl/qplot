@@ -16,7 +16,7 @@ from . import utils
 
 # A GLC is a tuple (cmd, arg) or (cmd, arg, arg2).
 # A PTSPEC is a list of GLCS.
-def q__gline(cmd='gline', ptspecs=[]):
+def _gline(cmd='gline', ptspecs=[]):
     out = [cmd]
     for pt in ptspecs:
         out.append('(')
@@ -33,7 +33,7 @@ def q__gline(cmd='gline', ptspecs=[]):
     qi.f.write(out)
 
 # A VGLC is a GLC where each arg may be a vector
-def q__gline2(cmd='gline', vglcs=[]):
+def _gline2(cmd='gline', vglcs=[]):
     N = None
     for vgl in vglcs:
         a1 = utils.aslist(vgl[1])
@@ -75,7 +75,7 @@ def q__gline2(cmd='gline', vglcs=[]):
             else:
                 for n in range(N):
                     pts[n].append((vgl[0], a1[n], a2[n]))
-    q__gline(cmd, pts)
+    _gline(cmd, pts)
 
 def line(xx, yy):
     '''LINE - Draw a line series in paper space
@@ -170,7 +170,7 @@ def gline(ptspecs):
     Note: The rather cumbersome syntax of GLINE makes LINE and PLOT more
     attractive for general usage. The same applies to GAREA versus AREA 
     and PATCH. See also SHIFTEDLINE and GLINE2.'''
-    q__gline('gline', ptspecs)
+    _gline('gline', ptspecs)
 
 def gline2(vglcs):
     '''GLINE2 - Generalized line drawing
@@ -186,20 +186,20 @@ def gline2(vglcs):
     to 7 pt below the point (2, 3) in the graph. (Note that paper 
     y-coordinates increase toward the bottom of the graph while data
     y-coordinates increase toward the top.)'''
-    q__gline2('gline', vglcs)
+    _gline2('gline', vglcs)
 
 def garea(ptspecs):
     '''GAREA - Generalized area drawing
     GAREA is to PATCH and AREA as GLINE is to PLOT and LINE.
     All the same commands are supported.'''
 
-    q__gline('garea', ptspecs)
+    _gline('garea', ptspecs)
 
 def garea2(vglcs):
     '''GAREA2 - Generalized area drawing
     GAREA2 is to PATCH and AREA as GLINE2 is to PLOT and LINE.
     All the same commands are supported.'''
-    q__gline2('garea', vglcs)
+    _gline2('garea', vglcs)
     
 def mm(x=1):
     '''MM - Convert millimeters to postscript points
