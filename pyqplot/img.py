@@ -100,11 +100,7 @@ def imsc(data, rect=None, c0=None, c1=None, xx=None, yy=None):
     data = lut[data, :]
     K = isn.size
     if K>0:
-        print('isn: ', isn.shape, K)
-        print('nanc', nanc.shape)
         nanc = np.repeat(np.reshape(nanc, [1, 3]), K, 0)
-        print('nanc -> ', nanc.shape)
-        print('data', data.shape)
         data[isn,:] = nanc
     data = np.reshape(data, [Y, X, 3])
     image(data, rect, xx, yy)
