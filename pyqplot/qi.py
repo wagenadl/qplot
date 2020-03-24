@@ -31,6 +31,8 @@ class Figure:
         self.overlinedist = 7
         self.overlinemin = 3
         self.linewidth = 0
+        self.fontfamily = 'Helvetica'
+        self.fontsize = 10
 
     def write(self, s):
         # Can take either a string or a list of strings.
