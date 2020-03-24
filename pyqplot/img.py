@@ -84,22 +84,29 @@ def imsc(data, rect=None, c0=None, c1=None, xx=None, yy=None):
     lut = qi.f.lut
     nanc = qi.f.lut_nan
     if c0 is None:
-        c0 = np.min(data)
+        c0 = np.nanmin(data)
     if c1 is None:
-        c1 = np.max(data)
+        c1 = np.nanmax(data)
     qi.f.clim = (c0, c1)
     N = lut.shape[0]
     data = np.floor((N-.0001)*(data-c0)/(c1-c0))
+    Y,X = data.shape
+    data = data.flatten()
     isn = np.isnan(data).nonzero()[0]
     data[isn] = 0
     data[data<=0] = 0
     data[data>=N-1] = N-1
     data = data.astype('int')
-    data = lut[data[:], :]
+    data = lut[data, :]
     K = isn.size
     if K>0:
-        nanc = np.repeat(nanc, K, 0)
+        print('isn: ', isn.shape, K)
+        print('nanc', nanc.shape)
+        nanc = np.repeat(np.reshape(nanc, [1, 3]), K, 0)
+        print('nanc -> ', nanc.shape)
+        print('data', data.shape)
         data[isn,:] = nanc
+    data = np.reshape(data, [Y, X, 3])
     image(data, rect, xx, yy)
 
 def lut(cc=None, nanc=None):
@@ -112,6 +119,7 @@ def lut(cc=None, nanc=None):
     lut, nanc = LUT returns current values.'''
 
     qi.ensure()
+    ret = True
     if cc is not None:
         cc = cc[:,0:3]
         if cc.dtype!='uint8':
@@ -120,6 +128,7 @@ def lut(cc=None, nanc=None):
             cc[cc>255]=255
             cc = cc.astype('uint8')
         qi.f.lut = cc
+        ret = False
     if nanc is not None:
         nanc = np.reshape(np.array(nanc),(1,3))
         nanc = nanc[:,0:3]
@@ -129,7 +138,8 @@ def lut(cc=None, nanc=None):
             nanc[nanc>255]=255
             nanc = nanc.astype('uint8')
         qi.f.lut_nan = nanc.astype('uint8')
-    return (qi.f.lut, qi.f.lut_nan)
+    if ret:
+        return (qi.f.lut, qi.f.lut_nan)
 
 def gimage(img, drect=None, prect=None):
     '''GIMAGE - Place an image with data and paper coordinates
