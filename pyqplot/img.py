@@ -67,6 +67,12 @@ def image(data, rect=None, xx=None, yy=None):
     elif C==3:
         qi.f.write('image %g %g %g %g %i *uc%i\n'
                    % (rect[0], rect[1], rect[2], rect[3], X, X*Y*C))
+    elif C==2 or C==4:
+        qi.f.write('image [ %g %g %g %g ] [ 0 0 0 0 ] [ %i %i %i ] *uc%i\n'
+                   % (rect[0], rect[1], rect[2], rect[3],
+                      X, Y, C,
+                      X*Y*C))
+        
     else:
         qi.error('Image data must be YxX or YxXx3')
     qi.f.writeuc(data)
@@ -154,10 +160,10 @@ def gimage(img, drect=None, prect=None):
         C = 1
     else:
         C = S[2]
-    if C==1 or C==3 or C==4:
+    if C==1 or C==2 or C==3 or C==4:
         pass
     else:
-        error('Image must have 1, 3, or 4 planes')
+        error('Image must have 1, 2, 3, or 4 planes')
 
     if drect is None:
         drect = [ np.nan, np.nan, 0, 0]

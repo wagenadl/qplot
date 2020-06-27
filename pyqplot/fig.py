@@ -179,12 +179,15 @@ def subplot(rows, cols, idx):
             return
     qi.error('Too many panels')
     
-def save(ofn=None, reso=None):
+def save(ofn=None, reso=300, qual=95):
     '''SAVE - Saves a qplot figure
     SAVE(ofn) saves the current qplot figure to the named file.
     SAVE(ext), where EXT is just a filename extension (without the dot),
     uses the name of the current figure.
-    SAVE(ofn, reso) specifies bitmap resolution for png/jpeg output.
+    Optional argument RESO specifies bitmap resolution for png/jpeg output. 
+    (The default is 300 dpi).
+    Optional argument QUAL specifies quality for jpeg output. (The default
+    is 95.)
     SAVE without arguments saves to pdf.'''
     if qi.f is None:
         error('No window')
@@ -197,7 +200,7 @@ def save(ofn=None, reso=None):
         ext = pth
         pth, oldext = os.path.splitext(qi.f.fn)
         ofn = pth + '.' + ext
-    qi.f.save(ofn, reso)
+    qi.f.save(ofn, reso, qual)
 
 def shrink(margin=1, ratio=None):
     '''SHRINK - Add margin to QPlot panel
