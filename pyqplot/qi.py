@@ -62,6 +62,8 @@ class Figure:
         Mx = np.max(xx)
         my = np.min(yy)
         My = np.max(yy)
+        if np.isnan(mx) or np.isnan(Mx) or np.isnan(my) or np.isnan(My):
+            return
         if self.datarange is None:
             self.datarange = [mx, Mx, my, My]
         else:
@@ -119,11 +121,14 @@ class Figure:
         utils.unix('touch %s' % self.fn)
         # This supposedly signals qplot to raise it
 
-    def save(self, ofn, reso=None): 
+    def save(self, ofn, reso=None, qual=None): 
         cmd = ['qplot']
         if reso is not None:
             cmd.append('-r')
             cmd.append('%i' % reso)
+        if qual is not None:
+            cmd.append('-q')
+            cmd.append('%i' % qual)
         cmd.append(self.fn)
         cmd.append(ofn)
         s = utils.unix(' '.join(cmd))
