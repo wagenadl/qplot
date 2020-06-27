@@ -47,6 +47,7 @@
 #include "Factor.H"
 
 double BITMAPRES = 300;
+int BITMAPQUAL = 95;
 double OVERRIDEWIDTH = 0;
 double OVERRIDEHEIGHT = 0;
 
@@ -308,7 +309,7 @@ bool renderImage(Program &prog, Figure &fig, QString ofn) {
 			  -fig.extent().top());
   prog.render(fig);
   fig.painter().end();
-  return img.save(ofn);
+  return img.save(ofn, 0, BITMAPQUAL);
 }
 
 int noninteractive(QString ifn, QString ofn) {
@@ -424,6 +425,22 @@ int main(int argc, char **argv) {
       BITMAPRES = arg.mid(2).toDouble(&ok);
       if (!ok)
 	return usage();
+      argi++;
+    } else if (arg=="-q") {
+      argi++;
+      if (argi>=argc)
+        return usage();
+      arg = argv[argi];
+      bool ok;
+      BITMAPQUAL = arg.toInt(&ok);
+      if (!ok)
+        return usage();
+      argi++;
+    } else if (arg.startsWith("-q")) {
+      bool ok;
+      BITMAPQUAL = arg.mid(2).toInt(&ok);
+      if (!ok)
+        return usage();
       argi++;
     } else if (arg=="-w") {
       argi++;
