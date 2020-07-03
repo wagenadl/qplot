@@ -229,12 +229,9 @@ def plot(xx, yy, cmd='plot'):
     if utils.isempty(xx):
         return
     
-    [iup, idn] = utils.nonanstretch(xx+yy)
-    
     ensure()
-    for k in range(len(iup)):
-        N = idn[k] - iup[k]
-        f.write('%s *%i *%i\n' % (cmd, N, N))
-        f.writedbl(xx[iup[k]:idn[k]])
-        f.writedbl(yy[iup[k]:idn[k]])
+    N = len(xx)
+    f.write('%s *%i *%i\n' % (cmd, N, N))
+    f.writedbl(xx)
+    f.writedbl(yy)
     f.updaterange(xx, yy)
