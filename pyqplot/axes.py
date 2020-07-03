@@ -345,7 +345,10 @@ def xaxis(title='', ticks=None, labels=None, y=0, lim=None, flip=False,
     if ticks is None:
         ticks = utils.sensibleticks(qi.f.datarange[0:2], inc=True)
     if lim is None:
-        lim = [ticks[0], ticks[-1]]
+        if callable(ticks):
+            lim = [ticks(labels[0]), ticks(labels[-1])]
+        else:
+            lim = [ticks[0], ticks[-1]]
     if labels is None:
         labels = qi.f.format(ticks)
     if ticklen is None:
@@ -406,7 +409,10 @@ def yaxis(title='', ticks=None, labels=None, x=0, lim=None, flip=False,
     if ticks is None:
         ticks = utils.sensibleticks(qi.f.datarange[2:4], inc=True)
     if lim is None:
-        lim = [ticks[0], ticks[-1]]
+        if callable(ticks):
+            lim = [ticks(labels[0]), ticks(labels[-1])]
+        else:
+            lim = [ticks[0], ticks[-1]]
     if labels is None:
         labels = qi.f.format(ticks)
     if titlerot is None:
