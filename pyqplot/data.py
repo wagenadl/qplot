@@ -30,7 +30,8 @@ def plot(xx, yy=None):
 def patch(xx, yy):
     '''PATCH - Draw a polygonal patch in data space
     PATCH(xx, yy) draws a polygon with vertices at (XX,YY). The polygon
-    is closed (i.e., it is not necessary for xx(end) to equal xx(1)).
+    is automatically closed (i.e., it is not necessary for xx[-1] to equal
+    xx[0]).
     The polygon is filled with the current brush.
     XX and YY are given in data coordinates. See also AREA and GAREA.'''
     qi.plot(xx, yy, cmd='patch')
