@@ -23,6 +23,7 @@
 #include "Rotate.H"
 #include "Range.H"
 #include <QDebug>
+#include <cmath>
 
 static CBuilder<CmdPlot> cbPlot("plot");
 static CBuilder<CmdPlot> cbPatch("patch");
@@ -70,23 +71,44 @@ void CmdPlot::render(Statement const &s, Figure &f, bool dryrun) {
     return;
   }
 
-  QPolygonF p(xdata.size());
-
+  QPainterPath p;
+  bool lastnan = true;
+  
   if (s[0].str=="plot" || s[0].str=="patch") {
-    for (int k=0; k<xdata.size(); k++)
-      p[k] = f.map(xdata[k],ydata[k]);
+    for (int k=0; k<xdata.size(); k++) {
+      if (std::isnan(xdata[k]) || std::isnan(ydata[k])) {
+        lastnan = true;
+      } else {
+        if (lastnan)
+          p.moveTo(f.map(xdata[k],ydata[k]));
+        else
+          p.lineTo(f.map(xdata[k],ydata[k]));
+        lastnan = false;
+      }
+    }
   } else {
     double a = f.anchorAngle();
     QPointF xy0 = f.anchor();
     for (int k=0; k<xdata.size(); k++) {
-      QPointF xy(pt2iu(xdata[k]), pt2iu(ydata[k]));
-      if (a)
-	xy = ::rotate(xy, a);
-      xy += xy0;
-      p[k] = xy;
+      if (std::isnan(xdata[k]) || std::isnan(ydata[k])) {
+        lastnan = true;
+      } else {
+        QPointF xy(pt2iu(xdata[k]), pt2iu(ydata[k]));
+        if (a)
+          xy = ::rotate(xy, a);
+        xy += xy0;
+        if (lastnan)
+          p.moveTo(xy);
+        else
+          p.lineTo(xy);
+        lastnan = false;
+      }
     }
   }
 
+  if (s[0].str=="patch" || s[0].str=="area")
+    p.closeSubpath();
+  
   QRectF bbox = p.boundingRect();
   double w = f.painter().pen().widthF();
   if (w>0)
@@ -98,10 +120,5 @@ void CmdPlot::render(Statement const &s, Figure &f, bool dryrun) {
 
   if (dryrun)
     return;
-
-  if (s[0].str=="patch" || s[0].str=="area")
-    f.painter().drawPolygon(p);
-  else
-    f.painter().drawPolyline(p);
-
+  f.painter().drawPath(p);
 }
