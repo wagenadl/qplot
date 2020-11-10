@@ -201,9 +201,9 @@ def _qaxis(orient='x', lim_d=None,
         limpx[1] -= qi.f.linewidth/2
     limpy = coord_p + np.zeros((2))
     
-    if lim_d is not None:
+    if lim_d is not None and lim_d is not []:
         ttldx = np.mean(limdx)
-    elif tick_d is not None:
+    elif tick_d is not None and tickd_d is not []:
         ttldx = np.mean([tickdx[0], tickdx[-1]])
     else:
         ttldx = np.nan
@@ -217,7 +217,7 @@ def _qaxis(orient='x', lim_d=None,
         
         
     # Draw an axis line if desired
-    if lim_d is not None:
+    if lim_d is not None and len(lim_d)>0:
         if isvert:
             (limdx, limdy) = (limdy, limdx)
             (limpx, limpy) = (limpy, -limpx)
