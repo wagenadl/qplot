@@ -68,22 +68,25 @@ int error_failtosave(QString const &fn) {
     return error("Failed to save: no filename");
   QFileInfo fi(fn);
   QDir d(fi.dir());
+  QString err = QString("Failed to save as “%1”").arg(fn);
   if (!d.exists())
-    return error(QString::fromUtf8("Failed to save as “%1”: The folder “%2” does not exist.").arg(fn).arg(d.path()));
+    err += QString(": The folder “%1” does not exist.").arg(d.path());
   else if (!QFileInfo(d.path()).isWritable())
-    return error(QString::fromUtf8("Failed to save as “%1”: The folder “%2” is not writable.").arg(fn).arg(d.path()));
-  else if (fi.exists() && !fi.isWritable()) 
-    return error(QString::fromUtf8("Failed to save as “%1”: File exists and is not writable.").arg(fn));
+    err += QString(": The folder “%1” is not writable.").arg(d.path());
+  else if (fi.exists() && !fi.isWritable())
+    err += ": File exists and is not writable.";
   else
-    return error(QString::fromUtf8("Failed to save as “%1”. (Reason unknown.)"));
+    err += ". (Reason unknown.)";
+  return error(err);
 }
 
 int error_unknownextension(QString const &extn) {
+  QString err = "Failed to save";
   if (extn.isEmpty())
-    return error("Failed to save: filename without an extension.");
+    err += ": Filename without an extension.";
   else
-    return error(QString::fromUtf8("Failed to save. Unknown extension “") + extn
-		 + QString::fromUtf8("”."));
+    err += QString(": Unknown extension “%1”.").arg(extn);
+  return error(err);
 }
 
 int usage(int ex=1) {
@@ -92,7 +95,8 @@ int usage(int ex=1) {
   Error() << "       qplot [-rDPI] input.txt output.png|tif|jpg";
   Error() << "       qplot -wWIDTH -hHEIGHT ... overrides output size (pts)";
   Error() << "       qplot --maxtries N ... overrides max tries for shrink";
-  Error() << "       qplot --autoraise ... automatically raises the window on update";
+  Error() << "       qplot --autoraise ... automatically raises"
+                                                     " the window on update";
   Error() << "";
   Error() << "For noninteractive use, input.txt may be '-' for stdin, and";
   Error() << "output.EXT may be '-.EXT' for stdout.";
@@ -109,25 +113,22 @@ void prerender(Program &prog, Figure &fig) {
   QImage img(1,1,QImage::Format_ARGB32);
   fig.setSize(QSizeF(1, 1)); // this may be overridden later
   fig.painter().begin(&img);
-  //fig.painter().scale(iu2pt(), iu2pt());
   fig.reset();
   foreach (QString p, prog.panels()) {
     QRectF dataExtent = prog.dataRange(p);
-    //qDebug() << "1" << p << dataExtent;
     if (p=="-") {
-      //qDebug() << "xax";
       fig.xAxis().setDataRange(dataExtent.left(), dataExtent.right());
-      //qDebug() << "yax";
       fig.yAxis().setDataRange(dataExtent.top(), dataExtent.bottom());
     } else {
-      fig.panelRef(p).xaxis.setDataRange(dataExtent.left(), dataExtent.right());
-      fig.panelRef(p).yaxis.setDataRange(dataExtent.top(), dataExtent.bottom());
+      fig.panelRef(p).xaxis.setDataRange(dataExtent.left(),
+                                         dataExtent.right());
+      fig.panelRef(p).yaxis.setDataRange(dataExtent.top(),
+                                         dataExtent.bottom());
     }
   }
 
   int iter = 0;
   while (iter<MAXTRIES) {
-    //qDebug() << iter;
     prog.render(fig, true); // render to determine paper bbox & fudge
     if (fig.checkFudged()) {
       //qDebug() << "will reiterate";
@@ -137,13 +138,9 @@ void prerender(Program &prog, Figure &fig) {
     }
     iter++;
   } 
-  //  qDebug() << "Hello world";
-  if (MAXTRIES==MAXTRIES_DEFAULT) {
-    if (iter>=MAXTRIES)
-      Error() << "Shrink failed";
-  } else {
-    //qDebug() << "Iterations used: " << iter;
-  }
+
+  if (iter>=MAXTRIES)
+    Error() << QString("Shrink failed, even after %1 attempts").arg(iter);
 
   fig.painter().end();
 }
@@ -151,7 +148,6 @@ void prerender(Program &prog, Figure &fig) {
 int read(Program &prog, QString ifn) {
   QFile f(ifn);
   if (f.open(QIODevice::ReadOnly)) {
-    //QTextStream ts(&f);
     if (prog.read(f, ifn))
       return 0;
     Error() << "Interpretation failed";
@@ -303,7 +299,7 @@ bool renderImage(Program &prog, Figure &fig, QString ofn) {
   img.fill(0xffffffff);
   fig.painter().begin(&img);
   fig.setHairline(0);
-  //  fig.painter().scale(iu2pt(), iu2pt());
+
   fig.setDashScale(1);
   fig.painter().translate(-fig.extent().left(),
 			  -fig.extent().top());
@@ -321,7 +317,8 @@ int noninteractive(QString ifn, QString ofn) {
     return error("Output file must have an extension");
   QString extn = ofn.mid(idx+1);
 
-  bool extnIsBitmap = extn=="png" || extn=="jpg" || extn=="tif" || extn=="tiff";
+  bool extnIsBitmap = extn=="png" || extn=="jpg"
+    || extn=="tif" || extn=="tiff";
   if (extnIsBitmap)
     setFACTOR(BITMAPRES/72);
 
@@ -338,7 +335,7 @@ int noninteractive(QString ifn, QString ofn) {
 
   QTemporaryFile tmpf;
   bool usetmpf = false;
-  if (ofn == "-."+extn) {
+  if (ofn == "-." + extn) {
     // write to stdout
     if (!tmpf.open())
       return error("Cannot write to temporary file");
@@ -504,5 +501,4 @@ int main(int argc, char **argv) {
     return noninteractive(argv[argi], argv[argi+1]);
   else 
     return usage();
-  
 }
