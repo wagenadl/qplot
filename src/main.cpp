@@ -54,8 +54,6 @@ double OVERRIDEHEIGHT = 0;
 #define MAXTRIES_DEFAULT 100
 int MAXTRIES = MAXTRIES_DEFAULT;
 
-#undef QPLOT_POSTSCRIPT_SUPPORT
-
 extern void setFACTOR(double); // in Factor.C
 
 int error(QString const &s) {
@@ -240,58 +238,6 @@ bool renderPDF(Program &prog, Figure &fig, QString ofn) {
   return true;
 }
 
-#ifdef QPLOT_POSTSCRIPT_SUPPORT
-
-bool renderPS(Program &prog, Figure &fig, QString ofn, QString ttl="") {
-  QSizeF p = papersize();
-  QPrinter img(QPrinter::ScreenResolution);
-  img.setResolution(72);
-  img.setPaperSize(p, QPrinter::Point);
-  img.setPageMargins(0, 0, 0, 0, QPrinter::Point);
-  QSizeF imsize(QSizeF(iu2pt(fig.extent().width()),
-		       iu2pt(fig.extent().height())));
-  img.setOutputFileName(ofn);
-  img.setOutputFormat(QPrinter::PostScriptFormat);
-  if (!fig.painter().begin(&img))
-    return false;
-  fig.painter().translate((p.width()-imsize.width())/2,
-			  (p.height()-imsize.height())/2);
-
-  /* Draw some crop marks */
-  fig.painter().save();
-  { QPen p; p.setWidth(.5); fig.painter().setPen(p); }
-  const int MINX = 5;
-  const int MAXX = 20;
-  // tl
-  fig.painter().drawLine(-MAXX,0,-MINX,0);
-  fig.painter().drawLine(0,-MAXX,0,-MINX);
-  // bl
-  fig.painter().drawLine(-MAXX,imsize.height(),-MINX,imsize.height());
-  fig.painter().drawLine(0,imsize.height()+MINX,0,imsize.height()+MAXX);
-  // tr
-  fig.painter().drawLine(imsize.width()+MINX,0,imsize.width()+MAXX,0);
-  fig.painter().drawLine(imsize.width(),-MINX,imsize.width(),-MAXX);
-  // tr
-  fig.painter().drawLine(imsize.width()+MINX,imsize.height(),
-			 imsize.width()+MAXX,imsize.height());
-  fig.painter().drawLine(imsize.width(),imsize.height()+MINX,
-			 imsize.width(),imsize.height()+MAXX);
-  // render title
-  fig.painter().setFont(QFont("Helvetica", 10));
-  fig.painter().drawText(10, imsize.height()+18, ttl);
-  fig.painter().restore();
-  /* Done with crop marks */
-  fig.painter().scale(iu2pt(), iu2pt());
-  fig.setDashScale(iu2pt());
-  fig.painter().translate(-fig.extent().left(),
-			  -fig.extent().top());
-  prog.render(fig);
-  fig.painter().end();
-  return true;
-}
-
-#endif
-
 bool renderImage(Program &prog, Figure &fig, QString ofn) {
   QImage img(int(fig.extent().width()),
 	     int(fig.extent().height()),
@@ -352,24 +298,17 @@ int noninteractive(QString ifn, QString ofn) {
   if (extn == "svg") {
     if (!renderSVG(prog, fig, ofn))
       return error_failtosave(ofn);
-   } else if (extn == "eps") {
-    return error("Writing to .eps is not supported in this version");
   } else if (extn == "pdf") {
     if (!renderPDF(prog, fig, ofn))
       return error_failtosave(ofn);
-  } else if (extn=="ps") {
-#ifdef QPLOT_POSTSCRIPT_SUPPORT
-    renderPS(prog, fig, ofn, ifn + QString::fromUtf8(" — ")
-	     + QDateTime::currentDateTime()
-	     .toString(QString::fromUtf8("MM/dd/’yy hh:mm")));
-#else
-    return error("Writing to .ps is not supported in this version");
-#endif
   } else if (extnIsBitmap) {
     if (!renderImage(prog, fig, ofn))
       return error_failtosave(ofn);
   } else {
-    return error_unknownextension(extn);
+    if (extn=="eps" || extn=="ps") 
+      return error("PostScript output is no longer supported");
+    else
+      return error_unknownextension(extn);
   }
 
   if (usetmpf) {
