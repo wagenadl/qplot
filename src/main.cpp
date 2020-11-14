@@ -50,11 +50,7 @@ double BITMAPRES = 300;
 int BITMAPQUAL = 95;
 double OVERRIDEWIDTH = 0;
 double OVERRIDEHEIGHT = 0;
-
-#define MAXTRIES_DEFAULT 100
-int MAXTRIES = MAXTRIES_DEFAULT;
-
-extern void setFACTOR(double); // in Factor.C
+int MAXTRIES = 100;
 
 int error(QString const &s) {
   Error() << s;
@@ -138,7 +134,7 @@ void prerender(Program &prog, Figure &fig) {
   } 
 
   if (iter>=MAXTRIES)
-    Error() << QString("Shrink failed, even after %1 attempts").arg(iter);
+    Error() << QString("“Shrink” failed, even after %1 iterations.").arg(iter);
 
   fig.painter().end();
 }

@@ -29,4 +29,6 @@ extern double iu2pt(double x_iu=1);
  *:D Convert between postscript points and "internal units".
  */
 
+extern void setFACTOR(double); // *only* for use by main.cpp
+
 #endif
