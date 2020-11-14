@@ -203,7 +203,7 @@ def _qaxis(orient='x', lim_d=None,
     
     if lim_d is not None and lim_d is not []:
         ttldx = np.mean(limdx)
-    elif tick_d is not None and tickd_d is not []:
+    elif tick_d is not None and tick_d is not []:
         ttldx = np.mean([tickdx[0], tickdx[-1]])
     else:
         ttldx = np.nan
