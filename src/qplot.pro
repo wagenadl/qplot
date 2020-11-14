@@ -1,5 +1,5 @@
-# Project file for qplot                   -*- mode: shell-script; -*-
-######################################################################
+# QMake project file for qplot |            -*- mode: shell-script; -*-
+# -----------------------------'
 
 QT += gui svg
 CONFIG += debug_and_release
