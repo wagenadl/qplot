@@ -19,12 +19,12 @@
 
 // ScrollWidget.C
 
-#include "ScrollWidget.H"
+#include "ScrollWidget.h"
 #include <QMouseEvent>
 #include <QKeyEvent>
 #include <QDebug>
 #include <QCursor>
-#include "Factor.H"
+#include "Factor.h"
 
 ScrollWidget::ScrollWidget(QWidget *parent): QWidget(parent) {
   extent_world = QRectF(QPointF(0,0), QPointF(1000,1000));

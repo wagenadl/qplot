@@ -19,7 +19,7 @@
 
 // CmdXLim.C
 
-#include "CmdXLim.H"
+#include "CmdXLim.h"
 
 
 static CBuilder<CmdXLim> cbXLim("xlim");

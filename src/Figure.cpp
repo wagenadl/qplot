@@ -19,8 +19,8 @@
 
 // Figure.C
 
-#include "Figure.H"
-#include "Error.H"
+#include "Figure.h"
+#include "Error.h"
 #include <math.h>
 #include <QDebug>
 

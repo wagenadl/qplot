@@ -19,8 +19,8 @@
 
 // CmdGLine.C
 
-#include "CmdGLine.H"
-#include "Rotate.H"
+#include "CmdGLine.h"
+#include "Rotate.h"
 #include <math.h>
 #include <QDebug>
 

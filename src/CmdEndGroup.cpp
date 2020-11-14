@@ -19,7 +19,7 @@
 
 // CmdEndGroup.C
 
-#include "CmdEndGroup.H"
+#include "CmdEndGroup.h"
 #include <QDebug>
 
 static CBuilder<CmdEndGroup> cbEndGroup("endgroup");

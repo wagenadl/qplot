@@ -19,7 +19,7 @@
 
 // Error.C
 
-#include "Error.H"
+#include "Error.h"
 
 #include <stdio.h>
 #include <QDebug>

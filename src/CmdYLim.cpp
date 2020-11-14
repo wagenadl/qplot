@@ -19,7 +19,7 @@
 
 // CmdYlim.C
 
-#include "CmdYLim.H"
+#include "CmdYLim.h"
 
 
 static CBuilder<CmdYLim> cbYLim("ylim");

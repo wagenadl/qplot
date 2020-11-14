@@ -19,9 +19,9 @@
 
 // Program.C
 
-#include "Program.H"
+#include "Program.h"
 #include <QDebug>
-#include "Error.H"
+#include "Error.h"
 
 Program::Program() {
   isOK = false;

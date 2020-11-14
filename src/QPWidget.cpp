@@ -19,7 +19,7 @@
 
 // QPWidget.C
 
-#include "QPWidget.H"
+#include "QPWidget.h"
 #include <QDebug>
 #include <QKeyEvent>
 #include <QLabel>

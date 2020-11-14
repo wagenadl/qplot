@@ -19,7 +19,7 @@
 
 // CmdHairline.C
 
-#include "CmdHairline.H"
+#include "CmdHairline.h"
 
 static CBuilder<CmdHairline> cbHairline("hairline");
 
