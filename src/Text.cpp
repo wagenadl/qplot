@@ -102,10 +102,11 @@ void Text::addInterpreted(QString txt) {
 	bld="";
 	idx++;
       } else {
-	bld += x;
+	bld += txt.mid(idx+1,1);
+        idx++;
       }
     } else {
-      bld+=x;
+      bld += x;
     }
     idx++;
   }
