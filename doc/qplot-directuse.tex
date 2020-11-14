@@ -30,7 +30,7 @@ http://www.gnu.org/copyleft/fdl.html.}\bigskip
 
 
 \noindent For most users, it will be much more convenient to use QPlot from
-within Octave or Matlab. However, in certain situations, such as when
+within Python, Octave, or Matlab. However, in certain situations, such as when
 producing a large number of graphs in an automated fashion, or when
 implementing a shell around QPlot for another computation environment
 or programming language, it may be advantageous to use QPlot
@@ -43,20 +43,16 @@ QPlot can be run on the command line, like this:
 qplot \emph{source} \emph{output}
 \end{quotation}
  where \emph{source} is a file with commands and
-\emph{output} can specify either pdf, svg, png, or tiff output. Output
-can also be a postscript (.ps) file, in which case a single full page
-is produced with the graph in the middle and crop marks around
-it. Output to eps is not directly supported, but ``pdftoeps -eps -level3'' can
-be used as a postprocessor.
+\emph{output} can specify either pdf, svg, png, or tiff output.
 
 QPlot can also be run interactively, like this:
 \begin{quotation}
 qplot \emph{source}
 \end{quotation}
  In that case, graphics are rendered in a window. Keys ``+''
-and ``-'' zoom in and out, ``0'' scales to fit, ``1'' scales to
+and ``--'' zoom in and out, ``0'' scales to fit, ``1'' scales to
 100\%. ``E'' resizes the window to fit the whole scene. ``G'' toggles
-between white and gray borders. ``C'' enables or disables reporting
+between white, gray, and crop-mark borders. ``C'' enables or disables reporting
 coordinates below the mouse pointer. ``Ctrl-Q'' quits. The graphics are
 automatically rerendered if the \emph{source}
 file changes on disk.
@@ -187,16 +183,19 @@ they designate optional parameters. For instance:\medskip\\
   useful for raster output but not recommended for pdf or svg output,
   since the resulting file would become device dependent. The default
   is 0 for raster output (including interactive output), and 0.25 pt
-  for svg/pdf/postscript.}
+  for svg/pdf.}
 
-\cmd{image}{\emph{x y w h K} [ \emph{cdata} ]}
-\expl{Renders an RGB image at given data location. \emph{cdata} is
-  stored as (R,G,B) pixels in row order (unlike matlab's convention); 
-   \emph{K} specifies
-  the number of pixels per row. The length of \emph{cdata} must be an
-  even multiple of 3\emph{K}. Values must be between 0 and 1.}
+\cmd{image}{\emph{x y w h K} [ \emph{cdata} ]} \expl{Renders an RGB
+  image at given data location. \emph{cdata} is stored as (R,G,B)
+  pixels in row order (like numpy's convention and unlike matlab's
+  convention); \emph{K} specifies the number of pixels per row. The
+  length of \emph{cdata} must be an even multiple of 3\emph{K}. Values
+  must be between 0 and 1. (Images specified as ``unsigned  binary
+  char'' data must have
+  values between 0 and 255; see the section on ``Specifying data.'')}
 
-\cmd{image}{[ \emph{x y w h} ] [ \emph{$\delta$x $\delta$y $\delta$w $\delta$h} ] [ \emph{W H C} ] [
+\cmd{image}{[ \emph{x y w h} ]
+  [ \emph{$\delta$x $\delta$y $\delta$w $\delta$h} ] [ \emph{W H C} ] [
     \emph{cdata} ]}
  \expl{The first \emph{x y w h} quad specifies displacement from the origin
 in data coordinates, the second  \emph{$\delta$x $\delta$y $\delta$w
@@ -207,7 +206,7 @@ image. \emph{C} must be one of 1 (grayscale), 2 (grayscale + alpha), 3
 
 \cmd{imageg}{\emph{x y w h K} [ \emph{cdata} ]}
 \expl{Renders a grayscale image at given data location. \emph{cdata} is
-  stored as pixels in row order (unlike matlab's convention); 
+  stored as pixels in row order (again, numpy order, not Matlab order); 
    \emph{K} specifies
   the number of pixels per row. The length of \emph{cdata} must be an
   even multiple of \emph{K}. Values must be between 0 and 1.}
@@ -325,9 +324,11 @@ specifies the desired aspect ratio of y:x data units.}
 \cmd{text}{\emph{dx} \emph{dy} \emph{string}}
 \expl{Places the given text \emph{string} at the position (\emph{dx},
   \emph{dy}), specified in points relative to the anchor set by
-  \cref{at}.\\ Underscores and hats make subscripts and superscripts
-  (up to the next space). Slashes and asterisks make enclosed words
-  appear in /italics/ and *bold*. Unicode is supported. The string
+  \cref{at}. Underscores and hats make subscripts and superscripts
+  (up to the next space, which is swallowed).
+  Slashes and asterisks make enclosed words
+  appear in /italics/ and *bold*. Unicode is supported. Backslash
+  protects interpretation of special characters. The string
   must be enclosed in single or double quotes. Respects alignment
   options set by \cref{align}.}
 
@@ -335,7 +336,8 @@ specifies the desired aspect ratio of y:x data units.}
 \expl{Places the given text \emph{string} at the position (\emph{dx},
   \emph{dy}), specified in points relative to the position where the
   previous text rendering ended (rather than at the anchor set by
-  \cref{at}). This ignores alignment options set by \cref{align}.}
+  \cref{at}). (The ``c'' stands for ``continued.'')
+  This ignores alignment options set by \cref{align}.}
 
 \cmd{textonpath}{[ \emph{x$_1$ x$_2$ \ldots} ] [ \emph{y$_1$ y$_2$
       \ldots} ] \emph{dx} \emph{dy}
@@ -363,7 +365,8 @@ For specifying long vectors or image data, the text-based ``[ a b
 ``*\emph{n}'' and place \emph{n} binary doubles directly after the
 command. Or you can write ``*uc\emph{n}'' and place \emph{n} binary
 unsigned 8-bit integers directly after the command. The matlab
-functions \cref{qplot.m} and \cref{qimage.m} give examples.
+functions \cref{qplot.m} and \cref{qimage.m} give examples, as do the
+python functions \cref{plot} (in ``qi.py'') and \cref{image} (in ``img.py'').
 
 \section{Example}
 
