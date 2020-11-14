@@ -19,9 +19,9 @@
 
 // CmdPlot.C
 
-#include "CmdPlot.H"
-#include "Rotate.H"
-#include "Range.H"
+#include "CmdPlot.h"
+#include "Rotate.h"
+#include "Range.h"
 #include <QDebug>
 #include <cmath>
 

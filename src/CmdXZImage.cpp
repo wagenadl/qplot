@@ -19,10 +19,10 @@
 
 // CmdXZImage.C
 
-#include "CmdXZImage.H"
+#include "CmdXZImage.h"
 #include <QDebug>
 #include <math.h>
-#include "Image.H"
+#include "Image.h"
 
 static CBuilder<CmdXZImage> cbXZImage("xzimage");
 

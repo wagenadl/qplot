@@ -19,7 +19,7 @@
 
 // Token.C
 
-#include "Token.H"
+#include "Token.h"
 
 Token::Token() {
   typ = NONE;

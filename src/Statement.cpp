@@ -19,10 +19,10 @@
 
 // Statement.C
 
-#include "Statement.H"
+#include "Statement.h"
 #include <math.h>
 #include <QStringList>
-#include "Error.H"
+#include "Error.h"
 
 Statement::Statement() {
 }

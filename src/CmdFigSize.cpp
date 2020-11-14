@@ -19,7 +19,7 @@
 
 // CmdFigSize.C
 
-#include "CmdFigSize.H"
+#include "CmdFigSize.h"
 
 
 static CBuilder<CmdFigSize> cbFigSize("figsize");

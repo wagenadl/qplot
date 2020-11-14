@@ -19,11 +19,11 @@
 
 // CmdText.C
 
-#include "CmdText.H"
+#include "CmdText.h"
 #include <QFontMetricsF>
-#include "Rotate.H"
+#include "Rotate.h"
 #include <QDebug>
-#include "Text.H"
+#include "Text.h"
 
 static CBuilder<CmdText> cbText("text");
 static CBuilder<CmdText> cbCText("ctext");

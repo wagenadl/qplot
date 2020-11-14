@@ -19,9 +19,9 @@
 
 // CmdTextOnPath.C
 
-#include "CmdTextOnPath.H"
-#include "Rotate.H"
-#include "Range.H"
+#include "CmdTextOnPath.h"
+#include "Rotate.h"
+#include "Range.h"
 #include <QDebug>
 #include <QFontMetricsF>
 #include <math.h>

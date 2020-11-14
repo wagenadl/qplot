@@ -19,11 +19,11 @@
 
 // CmdMark.C
 
-#include "CmdMark.H"
+#include "CmdMark.h"
 #include <math.h>
 #include <QPolygonF>
-#include "Rotate.H"
-#include "Slightly.H"
+#include "Rotate.h"
+#include "Slightly.h"
 
 static CBuilder<CmdMark> cbMark("mark");
 static CBuilder<CmdMark> cbPMark("pmark");

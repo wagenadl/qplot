@@ -19,7 +19,7 @@
 
 // CmdMarker.C
 
-#include "CmdMarker.H"
+#include "CmdMarker.h"
 
 static CBuilder<CmdMarker> cbMarker("marker");
 

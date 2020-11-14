@@ -19,7 +19,7 @@
 
 // CmdGroup.C
 
-#include "CmdGroup.H"
+#include "CmdGroup.h"
 #include <QDebug>
 
 static CBuilder<CmdGroup> cbGroup("group");

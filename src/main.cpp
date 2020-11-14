@@ -38,13 +38,13 @@
 #include <unistd.h>
 #include <stdio.h>
 
-#include "Program.H"
-#include "Figure.H"
-#include "Command.H"
-#include "QPWidget.H"
-#include "Watcher.H"
-#include "Error.H"
-#include "Factor.H"
+#include "Program.h"
+#include "Figure.h"
+#include "Command.h"
+#include "QPWidget.h"
+#include "Watcher.h"
+#include "Error.h"
+#include "Factor.h"
 
 double BITMAPRES = 300;
 int BITMAPQUAL = 95;

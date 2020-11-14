@@ -19,9 +19,9 @@
 
 // Text.C
 
-#include "Text.H"
+#include "Text.h"
 #include <QRegExp>
-#include "Factor.H"
+#include "Factor.h"
 #include <QFontMetricsF>
 #include <QPainter>
 #include <QDebug>

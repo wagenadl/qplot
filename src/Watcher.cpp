@@ -19,8 +19,8 @@
 
 // Watcher.C
 
-#include "Watcher.H"
-#include "QPWidget.H"
+#include "Watcher.h"
+#include "QPWidget.h"
 #include <QFileSystemWatcher>
 #include <QFile>
 #include <QFileInfo>
@@ -30,7 +30,7 @@
 #include <QPushButton>
 #include <QTextEdit>
 
-#include "Error.H"
+#include "Error.h"
 
 extern void prerender(Program &prog, Figure &fig); // defined in main.C
 

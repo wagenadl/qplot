@@ -19,7 +19,7 @@
 
 // Rotate.C
 
-#include "Rotate.H"
+#include "Rotate.h"
 #include <math.h>
 
 QPointF rotate(QPointF const &p, double phirad) {
