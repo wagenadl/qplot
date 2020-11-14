@@ -1,9 +1,9 @@
-######################################################################
-# Project file for qplot
+# Project file for qplot                   -*- mode: shell-script; -*-
 ######################################################################
 
 QT += gui svg
 CONFIG += debug_and_release
+CONFIG += c++11
 TEMPLATE = app
 TARGET = qplot
 CONFIG(debug, debug|release) { TARGET=$${TARGET}_debug }
