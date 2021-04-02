@@ -43,7 +43,9 @@ def pen(color=None, width=None, join=None, cap=None, pattern=None, \
         stroke and space lengths, or it may be a tuple ('dot', vec) where
         VEC is a vector of space lengths.
       ALPHA specifies transparency between 0 and 1.
-      ID must be a single capital letter'''
+      ID must be a single capital letter.
+    Note that the string 'none' is different from the Python constant None,
+    the latter meaning "do not change."'''
     out = [ 'pen' ]
     if id is not None:
         out.append(id)
