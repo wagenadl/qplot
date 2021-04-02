@@ -162,11 +162,12 @@ def relpanel(id, rect):
 def subplot(rows, cols, idx):
     '''SUBPLOT - Define a new subpanel in Matlab/Octave style
     SUBPLOT(rows, cols, idx) defines a new subpanel in Matlab/Octave style.
-    id = SUBPLOT(...) returns the ID of the subpanel, for use with PANEL.'''
+    id = SUBPLOT(...) returns the ID of the subpanel, for use with PANEL.
+    Note that idx counts from 0, unlike in Matlab/Octave'''
     h = 1./rows
     w = 1./cols
-    x = w * ((idx-1) % cols)
-    y = h * ((idx-1) // cols)
+    x = w * (idx % cols)
+    y = h * (idx // cols)
     qi.ensure()
     for k in range(26):
         id = '%c' % (65 + k)
