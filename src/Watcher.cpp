@@ -31,11 +31,10 @@
 #include <QTextEdit>
 
 #include "Error.h"
+#include "Render.h"
 
-extern void prerender(Program &prog, Figure &fig); // defined in main.C
-
-Watcher::Watcher(QString fn, Program *prog, Figure *fig, QPWidget *dest):
-  fn(fn), prog(prog), fig(fig), dest(dest) {
+Watcher::Watcher(QString fn, Render *render, QPWidget *dest):
+  fn(fn), render(render), dest(dest) {
   working = false;
   //  warnlabel = new QPushButton(dest);
   warnlabel = new QTextEdit(dest);
@@ -110,12 +109,12 @@ bool Watcher::reread(bool errorbox) {
     QTextStream ts(&errors, QIODevice::WriteOnly);
     if (errorbox)
       Error::setDestination(&ts);
-    bool ok = prog->read(f, fn);
+    bool ok = render->program()->read(f, fn);
     Error::setDestination(0);
     if (ok) {
       dest->resetFeedbackFile();
-      fig->hardReset();
-      ::prerender(*prog, *fig);
+      render->figure()->hardReset();
+      render->prerender();
       emit ping();
       return true;
     } else {
