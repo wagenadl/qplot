@@ -53,7 +53,8 @@ HEADERS += Align.h \
            TextShiftAccum.h \
            Token.h \
            Watcher.h \
-           Image.h
+           Image.h \
+           Render.h
 
 SOURCES += Axis.cpp \
            CmdAlign.cpp \
@@ -98,4 +99,5 @@ SOURCES += Axis.cpp \
            TextShiftAccum.cpp \
            Token.cpp \
            Watcher.cpp \
-           Image.cpp
+           Image.cpp \
+           Render.cpp
