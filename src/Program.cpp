@@ -36,14 +36,17 @@ bool Program::error(QString const &s, int l) {
   return error(s + " at " + stmt[l].label());
 }
 
-bool Program::read(QFile &ts, QString label) {
+void Program::reset() {
   isOK = false;
   stmt.clear();
   foreach (Command *c, cmds)
     if (c)
       delete c;
   cmds.clear();
-  
+}
+
+bool Program::read(QFile &ts, QString label) {
+  reset();  
   int line = 1; // count lines in a file from 1
   while (!ts.atEnd()) {
     stmt.append(Statement());
@@ -54,10 +57,41 @@ bool Program::read(QFile &ts, QString label) {
     else
       return error("Read error");
   }
+  return parse(true);
+}
+
+bool Program::append(QFile &ts, QString label, bool all) {
+  int line = stmt.size() + 1;
+  bool hasreset = false;
+  while (all ? !ts.atEnd() : ts.canReadLine()) {
+    stmt.append(Statement());
+    QString ll = label + " line " + QString::number(line);
+    int dn = stmt.last().read(ts, ll);
+    if (dn)
+      line += dn;
+    else
+      return error("Read error");
+    if (stmt.last()[0].str=="figsize") {
+      Statement s = stmt.last();
+      reset();
+      line = 1;
+      stmt.append(s);
+      hasreset = true;
+    }
+  }
+  return parse(hasreset);
+}    
+
+bool Program::parse(bool fromscratch) {
+  if (fromscratch) {
+    foreach (Command *c, cmds)
+      delete c;
+    cmds.clear();
+  }
 
   bool ok = true;
 
-  for (int l=0; l<stmt.size(); l++) {
+  for (int l=cmds.size(); l<stmt.size(); l++) {
     if (stmt[l].length()==0) {
       cmds.append(0);
     } else if (stmt[l][0].typ == Token::BAREWORD) {
@@ -75,9 +109,7 @@ bool Program::read(QFile &ts, QString label) {
 }
 
 Program::~Program() {
-  foreach (Command *c, cmds)
-    if (c)
-      delete c;
+  reset();
 }
 
 int Program::length() const {

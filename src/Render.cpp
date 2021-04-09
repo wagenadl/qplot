@@ -3,6 +3,7 @@
 #include "Render.h"
 #include "Error.h"
 
+#include <QDebug>
 #include <QImage>
 #include <QPdfWriter>
 #include <QSvgGenerator>
@@ -13,17 +14,19 @@
 #include <QTemporaryFile>
 
 Render::Render(QString ifn): ifn(ifn) {
-  isok = false;
   if (ifn.isEmpty() || ifn=="-") {
-    QFile f; f.open(stdin,QFile::ReadOnly);
-    if (prog.read(f, "<stdin>"))
-      isok = true;
-    else
+    file.open(stdin,QFile::ReadOnly);
+    isok = prog.append(file, "<stdin>");
+    if (!isok)
       Error() << "Interpretation error";
   } else {
-    if (read(ifn))
-      isok = true;
+    isok = read(ifn);
   }
+}
+
+void Render::loadall() {
+  if (file.isOpen())
+    prog.append(file, ifn, true);
 }
 
 bool Render::read(QString ifn) {

@@ -36,7 +36,10 @@ public:
    *   Returns true if OK, false if error.
    *   Errors are reported through qDebug.
    */
+  bool append(QFile &ts, QString label, bool all=false);
   virtual ~Program();
+  void reset();
+  bool parse(bool fromscratch=false);
   int length() const;
   Statement const &operator[](int) const;
   QSet<QString> panels();

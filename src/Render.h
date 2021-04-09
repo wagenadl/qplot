@@ -27,7 +27,9 @@ public:
   void setBitmapQuality(int q);
   static bool noninteractive(QString ifn, QString ofn);
   bool valid() const { return isok; }
+  void loadall();
 private:
+  QFile file;
   QString ifn;
   bool isok;
   Program prog;

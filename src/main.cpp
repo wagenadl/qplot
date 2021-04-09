@@ -159,10 +159,12 @@ int main(int argc, char **argv) {
   render.setBitmapResolution(cli.value("r").toInt());
   render.setBitmapQuality(cli.value("q").toInt());
 
-  if (args.size()==1)
+  if (args.size()==1) {
     return interactive(&render, &app);
-  else if (render.save(args[1]))
-    return 0;
-  else
-    return 2;
+  } else {
+    render.loadall();
+    if (render.save(args[1]))
+      return 0;
+  }
+  return 2;
 }
