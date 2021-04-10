@@ -30,9 +30,13 @@ public:
   virtual bool parse(Statement const &);
   virtual void render(Statement const &, Figure &, bool) {}
   QString filename() const { return ofn; }
+  double resolution() const { return reso; }
+  int quality() const { return qual; }
 private:
   bool usage();
   QString ofn;
+  double reso=300;
+  int qual=95;
 };
 
 #endif

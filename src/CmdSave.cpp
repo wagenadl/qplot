@@ -25,12 +25,16 @@
 static CBuilder<CmdSave> cbSave("save");
 
 bool CmdSave::usage() {
-  return error("Usage: save filename");
+  return error("Usage: save filename [resolution [quality]]");
 }
 
 bool CmdSave::parse(Statement const &s) {
-  if (s.length()==2 && s[1].typ==Token::STRING) {
+  if (s.length()>=2 && s.length()<=4 && s[1].typ==Token::STRING) {
     ofn = s[1].str;
+    if (s.length()>=3 && s[2].typ==Token::NUMBER)
+      reso = s[2].num;
+    if (s.length()>=4 && s[3].typ==Token::NUMBER)
+      qual = s[3].num;
     return true;
   } else {
     return usage();

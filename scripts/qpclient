@@ -71,6 +71,7 @@ unless ($running) {
     my @args;
     my $qplotbin = $ENV{QPLOT_BINARY} || "qplot";
     push @args, $qplotbin;
+    push @args, "--autoraise";
     push @args, $ifn;
     exec(@args);
   }
