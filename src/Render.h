@@ -12,6 +12,7 @@ class Render {
 public:
   Render(QString ifn);
   QString inputFilename() { return ifn; }
+  QFile &inputFile() { return file; }
   bool read(QString ifn);
   Program *program() { return &prog; }
   Figure *figure() { return &fig; }
@@ -27,6 +28,7 @@ public:
   void setBitmapQuality(int q);
   static bool noninteractive(QString ifn, QString ofn);
   bool valid() const { return isok; }
+  void readsome();
   void loadall();
 private:
   QFile file;

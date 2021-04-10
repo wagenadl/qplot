@@ -19,6 +19,7 @@
 
 // main.C
 
+#include <QSocketNotifier>
 #include <QCommandLineParser>
 #include <QApplication>
 #include <QWidget>
@@ -71,25 +72,15 @@ static bool autoraise = false;
 
 int interactive(Render *render, QApplication *app) {
   QString ifn = render->inputFilename();
-  if (ifn=="-") {
-    Error() << "Input may not be “-” for interactive use";
-    return 1;
-  }
   render->figure()->setHairline(0);
   render->prerender();
 
   QPWidget win;
-  Watcher wtch(ifn, render, &win);
   int idx = ifn.lastIndexOf('/');
   win.setWindowTitle("qplot: " + ((idx>=0) ? ifn.mid(idx+1) : ifn));
-  if (autoraise)
-    QObject::connect(&wtch, SIGNAL(ping()), &win, SLOT(raise()));
-  QObject::connect(&wtch, SIGNAL(ping()), &win, SLOT(update()));
   win.setContents(render->figure(), render->program());
   win.setMargin(pt2iu(20));
   win.show();
-  win.autoSize();
-  wtch.reread(true);
   QFileInfo fi(ifn);
   QString path = fi.path();
   QString leaf = fi.fileName();
@@ -102,7 +93,38 @@ int interactive(Render *render, QApplication *app) {
   snprintf(pid, 100, "%i\n", getpid());
   pidfile.write(pid, strlen(pid));
   pidfile.close();
-  int r = app->exec();
+  win.autoSize();
+
+  int r;
+  if (ifn == "-") {
+    // using stdin
+    qDebug() << "connecting";
+    auto foo = [&render, &win]() {
+                       qDebug() << "readyread";
+                       render->readsome();
+                       if (autoraise)
+                         win.raise();
+                       win.update();
+               };
+    // Folllowing snippet based on
+    // https://github.com/juangburgos/QConsoleListener
+#ifdef Q_OS_WIN
+    auto m_notifier =  QWinEventNotifier(GetStdHandle(STD_INPUT_HANDLE));
+    QObject::connect(m_notifier, &QWinEventNotifier::activated, foo);
+#else
+    auto m_notifier = new QSocketNotifier(fileno(stdin),
+                                          QSocketNotifier::Read);
+    QObject::connect(m_notifier, &QSocketNotifier::activated, foo);
+#endif
+    r = app->exec();
+  } else {
+    Watcher wtch(ifn, render, &win);
+    if (autoraise)
+      QObject::connect(&wtch, SIGNAL(ping()), &win, SLOT(raise()));
+    QObject::connect(&wtch, SIGNAL(ping()), &win, SLOT(update()));
+    wtch.reread(true);
+    r = app->exec();
+  }
   pidfile.remove();
   return r;
 }
@@ -146,6 +168,8 @@ int main(int argc, char **argv) {
 
   cli.process(app);
 
+  autoraise = cli.isSet("autoraise");
+  
   QStringList args = cli.positionalArguments();
   if (args.size() < 1 || args.size() > 2)
     cli.showHelp(1);

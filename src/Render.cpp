@@ -22,6 +22,13 @@ Render::Render(QString ifn): ifn(ifn) {
   } else {
     isok = read(ifn);
   }
+  qDebug() << "Program length is " << prog.length();
+}
+
+void Render::readsome() {
+  if (file.isOpen())
+    prog.append(file, ifn, false);
+  qDebug() << "readsome. Program length is " << prog.length();
 }
 
 void Render::loadall() {
