@@ -54,9 +54,11 @@ HEADERS += Align.h \
            Token.h \
            Watcher.h \
            Image.h \
-           Render.h
+           Render.h \
+           CmdSave.h
 
 SOURCES += Axis.cpp \
+           CmdSave.cpp \
            CmdAlign.cpp \
            CmdAt.cpp \
            CmdBrush.cpp \

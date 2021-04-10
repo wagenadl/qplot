@@ -30,6 +30,7 @@ public:
   bool valid() const { return isok; }
   void readsome();
   void loadall();
+  void perhapsSave();
 private:
   QFile file;
   QString ifn;

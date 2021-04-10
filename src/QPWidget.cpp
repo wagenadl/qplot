@@ -93,6 +93,7 @@ void QPWidget::paintEvent(QPaintEvent *) {
   if (ruler)
     renderRuler(p);
 
+  fig->setHairline(0);
   prog->render(*fig);
   
   p.end();
