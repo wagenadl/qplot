@@ -63,7 +63,11 @@ bool Program::read(QFile &ts, QString label) {
 bool Program::append(QFile &ts, QString label, bool all) {
   int line = stmt.size() + 1;
   bool hasreset = false;
-  while (all ? !ts.atEnd() : ts.canReadLine()) {
+  bool first = true;
+  // actually, canReadLine does not work on stdin, so
+  // we rely on the socket notifier to call us repeatedly
+  while (first || (all ? !ts.atEnd() : ts.canReadLine())) {
+    first = false;
     stmt.append(Statement());
     QString ll = label + " line " + QString::number(line);
     int dn = stmt.last().read(ts, ll);
