@@ -5,10 +5,10 @@ import re
 from . import utils
 
 class Figure:
-    fd = None
-    fn = None
-    istmp = False
-    extent = [0,0,1,1]
+    global_interactive = True
+    def interactive(k):
+        Figure.global_interactive = k
+    
     def reset(self):
         self.ticklen = 3
         self.axshift = 0
@@ -82,6 +82,7 @@ class Figure:
         return [ self.numfmt % x for x in xx ]
 
     def __init__(self, fn=None, w=5, h=None):
+        self.is_interactive = Figure.global_interactive
         if h is None:
             h = .75 * w
         MAXALLOWED = 36
@@ -104,7 +105,8 @@ class Figure:
             self.istmp = False
     
         self.write('figsize %g %g\n' % (w,h))
-        utils.unix('qpclient %s' % self.fn)
+        if self.is_interactive:
+            utils.unix('qpclient %s' % self.fn)
 
     def clf(self):
         self.fd.close()
@@ -115,25 +117,34 @@ class Figure:
     def close(self):
         self.fd.close()
         self.fd = None
-        utils.unix('qpclose %s' % self.fn)
+        if self.is_interactive:
+            utils.unix('qpclose %s' % self.fn)
 
     def tofront(self):
         utils.unix('touch %s' % self.fn)
         # This supposedly signals qplot to raise it
 
-    def save(self, ofn, reso=None, qual=None): 
-        cmd = ['qplot']
-        if reso is not None:
-            cmd.append('-r')
-            cmd.append('%i' % reso)
-        if qual is not None:
-            cmd.append('-q')
-            cmd.append('%i' % qual)
-        cmd.append(self.fn)
-        cmd.append(ofn)
-        s = utils.unix(' '.join(cmd))
-        if s:
-            error('qplot failed')
+    def save(self, ofn, reso=None, qual=None):
+        if False: #self.is_interactive:
+            cmd = f'save "{ofn}"';
+            if reso is not None:
+                cmd += f' {reso}'
+                if qual is not None:
+                    cmd += f' {qual}'
+            self.write(cmd + '\n')
+        else:
+            cmd = ['qplot']
+            if reso is not None:
+                cmd.append('-r')
+                cmd.append('%i' % reso)
+            if qual is not None:
+                cmd.append('-q')
+                cmd.append('%i' % qual)
+            cmd.append(self.fn)
+            cmd.append(ofn)
+            s = utils.unix(' '.join(cmd))
+            if s:
+                error('qplot failed')
         
 figs = {} # map from filename to Figure
 f = None

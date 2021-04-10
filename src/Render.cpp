@@ -22,13 +22,11 @@ Render::Render(QString ifn): ifn(ifn) {
   } else {
     isok = read(ifn);
   }
-  qDebug() << "Program length is " << prog.length();
 }
 
 void Render::readsome() {
   if (file.isOpen())
     prog.append(file, ifn, false);
-  qDebug() << "readsome. Program length is " << prog.length();
 }
 
 void Render::loadall() {
@@ -275,10 +273,10 @@ void Render::setBitmapQuality(int q) {
 }
 
 void Render::perhapsSave() {
-  qDebug() << "Perhaps save";
   CmdSave *cmd = prog.nextSave();
   if (cmd) {
-    qDebug() << "saving to " << cmd->filename();
+    setBitmapResolution(cmd->resolution());
+    setBitmapQuality(cmd->quality());
     save(cmd->filename());
   }
 }
