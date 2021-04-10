@@ -96,6 +96,7 @@ bool Render::renderSVG(QString ofn) {
 			       90./72*iu2pt(fig.extent().height()))));
   if (!fig.painter().begin(&img))
     return false;
+  fig.setHairline(0.25);
   fig.painter().scale(90./72*iu2pt(), 90./72*iu2pt());
   fig.setDashScale(90./72*iu2pt());
   fig.painter().translate(fig.extent().left(),
@@ -113,6 +114,7 @@ bool Render::renderPDF(QString ofn) {
 
   if (!fig.painter().begin(&img))
     return false;
+  fig.setHairline(0.25);
 
   double dpix = img.logicalDpiX();
   double dpiy = img.logicalDpiY();
@@ -270,4 +272,13 @@ void Render::setBitmapResolution(double r) {
 
 void Render::setBitmapQuality(int q) {
   bitmapqual = q;
+}
+
+void Render::perhapsSave() {
+  qDebug() << "Perhaps save";
+  CmdSave *cmd = prog.nextSave();
+  if (cmd) {
+    qDebug() << "saving to " << cmd->filename();
+    save(cmd->filename());
+  }
 }

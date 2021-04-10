@@ -118,7 +118,8 @@ alternatives.\bigskip
 
 \cmd{figsize}{\emph{w} \emph{h}}
 \expl{Sets the size of the figure to (\emph{w} x \emph{h})
-  points. This should appear before any other commands.}
+  points. This should appear before any other commands, otherwise the
+  preceding program is cleared.}
 
 \cmd{font}{\emph{family} (bold) (italic) \emph{size}}
 \expl{Selects a new font with a given family, point size, weight
@@ -306,6 +307,11 @@ of the spaces between dots (in points). The default is
 \expl{Sets or unsets a fixed text that will be used to calculate the
   ascent and descent of text for the ``bottom'' and ``top'' alignment
   modes.}
+
+\cmd{save}{\emph{string}}
+\expl{Saves the current figure to the named file. This only works
+  during interactive use and is ignored if qplot is called with
+  ``input'' and ``output'' arguments.}
 
 \cmd{sharelim}{(x|y) \emph{ID} \ldots}
 \expl{Shrinks the x-axis and/or y-axis of the current panel and the

@@ -26,6 +26,7 @@
 #include <QFile>
 #include "Statement.h"
 #include "Command.h"
+#include "CmdSave.h"
 
 class Program {
 public:
@@ -50,6 +51,7 @@ public:
        there are none.
    */
   void render(Figure &f, bool dryrun=false);
+  CmdSave *nextSave();
 private:
   bool error(QString const &); // returns false
   bool error(QString const &, int idx); // returns false
@@ -57,6 +59,7 @@ private:
   QList<Statement> stmt;
   QList<Command *> cmds;
   bool isOK;
+  int lastsave;
 };
 
 #endif

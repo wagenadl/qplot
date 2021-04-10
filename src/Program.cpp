@@ -24,7 +24,7 @@
 #include "Error.h"
 
 Program::Program() {
-  isOK = false;
+  reset();
 }
 
 bool Program::error(QString const &s) {
@@ -43,48 +43,35 @@ void Program::reset() {
     if (c)
       delete c;
   cmds.clear();
+  lastsave = 0;
 }
 
 bool Program::read(QFile &ts, QString label) {
-  reset();  
-  int line = 1; // count lines in a file from 1
-  while (!ts.atEnd()) {
-    stmt.append(Statement());
-    QString ll = label + " line " + QString::number(line);
-    int dn = stmt.last().read(ts, ll);
-    if (dn)
-      line += dn;
-    else
-      return error("Read error");
-  }
-  return parse(true);
+  reset();
+  return append(ts, label, true);
 }
 
 bool Program::append(QFile &ts, QString label, bool all) {
   int line = stmt.size() + 1;
   bool hasreset = false;
   bool first = true;
-  // actually, canReadLine does not work on stdin, so
-  // we rely on the socket notifier to call us repeatedly
-  while (first || (all ? !ts.atEnd() : ts.canReadLine())) {
+  while (!ts.atEnd() && (all || first)) {
     first = false;
-    stmt.append(Statement());
+    Statement s;
     QString ll = label + " line " + QString::number(line);
-    int dn = stmt.last().read(ts, ll);
-    if (dn)
-      line += dn;
-    else
+    int dn = s.read(ts, ll);
+    if (!dn)
       return error("Read error");
-    if (stmt.last()[0].str=="figsize") {
-      Statement s = stmt.last();
+    if (s.length() && s[0].str=="figsize") {
       reset();
       line = 1;
-      stmt.append(s);
       hasreset = true;
     }
+    stmt.append(s);
+    line += dn;
   }
   return parse(hasreset);
-}    
+} 
 
 bool Program::parse(bool fromscratch) {
   if (fromscratch) {
@@ -169,4 +156,14 @@ void Program::render(Figure &f, bool dryrun) {
   //qDebug() << "Program: fudged? " << f.checkFudged();
   f.endGroups(); // this prevents panel change warning when file is incomplete
   f.leavePanel();
+}
+
+CmdSave *Program::nextSave() {
+  while (lastsave < cmds.size()) {
+    CmdSave *cmd = dynamic_cast<CmdSave *>(cmds[lastsave]);
+    lastsave ++;
+    if (cmd)
+      return cmd;
+  }
+  return 0;
 }

@@ -72,7 +72,6 @@ static bool autoraise = false;
 
 int interactive(Render *render, QApplication *app) {
   QString ifn = render->inputFilename();
-  render->figure()->setHairline(0);
   render->prerender();
 
   QPWidget win;
@@ -99,21 +98,27 @@ int interactive(Render *render, QApplication *app) {
   if (ifn == "-") {
     // using stdin
     qDebug() << "connecting";
-    auto foo = [&render, &win]() {
+    // Folllowing snippet based on
+    // https://github.com/juangburgos/QConsoleListener
+#ifdef Q_OS_WIN
+    auto m_notifier =  QWinEventNotifier(GetStdHandle(STD_INPUT_HANDLE));
+#else
+    auto m_notifier = new QSocketNotifier(fileno(stdin),
+                                          QSocketNotifier::Read);
+#endif
+    auto foo = [&render, &win, m_notifier]() {
                        qDebug() << "readyread";
                        render->readsome();
                        if (autoraise)
                          win.raise();
                        win.update();
+                       render->perhapsSave();
+                       if (feof(stdin))
+                         delete m_notifier;
                };
-    // Folllowing snippet based on
-    // https://github.com/juangburgos/QConsoleListener
 #ifdef Q_OS_WIN
-    auto m_notifier =  QWinEventNotifier(GetStdHandle(STD_INPUT_HANDLE));
     QObject::connect(m_notifier, &QWinEventNotifier::activated, foo);
 #else
-    auto m_notifier = new QSocketNotifier(fileno(stdin),
-                                          QSocketNotifier::Read);
     QObject::connect(m_notifier, &QSocketNotifier::activated, foo);
 #endif
     r = app->exec();
