@@ -26,6 +26,7 @@
 #include <math.h>
 #include <QApplication>
 #include <QClipboard>
+#include <iostream>
 
 #define MARGPIX 15
 
@@ -341,7 +342,6 @@ void QPWidget::mouseDoubleClickEvent(QMouseEvent *e) {
 
 void QPWidget::closeEvent(QCloseEvent *e) {
   ScrollWidget::closeEvent(e);
-  deleteFeedbackFile();
 }
 
 Axis *QPWidget::findXAxis() {
@@ -382,31 +382,7 @@ void QPWidget::reportTrack(QPointF xy, int button, QString what) {
 	     arg(what).arg(trackpanel).arg(x).arg(y).arg(button));
 }
 
-void QPWidget::setFeedbackFile(QString f) {
-  if (fbfile.isOpen())
-    fbfile.close();
-  fbfile.setFileName(f);
-  resetFeedbackFile();
-}
-
-void QPWidget::resetFeedbackFile() {
-  if (fbfile.isOpen())
-    fbfile.close();
-  if (fbfile.exists())
-    fbfile.open(QIODevice::WriteOnly | QIODevice::Append);
-}
-
 void QPWidget::feedback(QString s) {
-  if (fbfile.isOpen()) {
-    fbfile.write((s+"\n").toUtf8());
-    fbfile.flush();
-  }
+  std::cout << s.toUtf8().data() << "\n";
+  std::cout.flush();
 }
-
-void QPWidget::deleteFeedbackFile() {
-  if (fbfile.isOpen()) {
-    fbfile.close();
-    fbfile.remove();
-  }
-}
-

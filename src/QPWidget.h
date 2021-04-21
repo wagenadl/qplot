@@ -38,8 +38,6 @@ public:
   virtual void setWindowTitle(QString s);
   void setRuler(bool);
   bool hasRuler() const;
-  void setFeedbackFile(QString);
-  void resetFeedbackFile();
   void takeScreenShot();
 protected:
   virtual void keyPressEvent(QKeyEvent *);
@@ -57,9 +55,7 @@ private:
   Axis *findXAxis();
   Axis *findYAxis();
   void feedback(QString);
-  void deleteFeedbackFile();
 private:
-  QFile fbfile;
   Figure *fig;
   Program *prog;
   double marg;

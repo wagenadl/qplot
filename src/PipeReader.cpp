@@ -28,7 +28,8 @@ void PipeReader::run() {
       mutex.unlock();
       emit ready();
     } else {
-      Error() << QString("Read error at line %1 of stdin").arg(line);
+      if (!f.atEnd())
+        Error() << QString("Read error at line %1 of stdin").arg(line);
     }
     line += s.lineCount();
   }
