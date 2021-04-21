@@ -97,9 +97,12 @@ int interactive(QString ifn, Renderer *renderer, QApplication *app) {
                      &win, [&pipereader, &win, &renderer]() {
                        QList<Statement> ss = pipereader->readQueue();
                        if (ss.size()) {
+                         int n0 = renderer->program()->length();
                          for (auto s: ss) 
                            renderer->program()->append(s);
                          renderer->prerender();
+                         int n1 = renderer->program()->length();
+                         renderer->dosaves(n0, n1);
                          win.update();
                        }
                      },
@@ -124,6 +127,8 @@ int interactive(QString ifn, Renderer *renderer, QApplication *app) {
                        else
                          Error() << c.error;
                        renderer->prerender();
+                       if (c.valid)
+                         renderer->dosaves();
                        win.update();
                      },
                      Qt::QueuedConnection);

@@ -13,16 +13,17 @@ public:
   Renderer();
   Program *program() { return &prog; }
   Figure *figure() { return &fig; }
-  void prerender();
-  bool renderSVG(QString ofn);
-  bool renderPDF(QString ofn);
-  bool renderImage(QString ofn);
-  bool save(QString ofn);
+  void prerender(int upto=-1);
+  bool renderSVG(QString ofn, int upto=-1);
+  bool renderPDF(QString ofn, int upto=-1);
+  bool renderImage(QString ofn, int upto=-1);
+  bool save(QString ofn, int upto=-1);
   void setMaxTries(int);
   void overrideWidth(double w);
   void overrideHeight(double h);
   void setBitmapResolution(double r);
   void setBitmapQuality(int q);
+  void dosaves(int start=0, int end=-1); // in terms of command indices
 private:
   Program prog;
   Figure fig;

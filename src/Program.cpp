@@ -55,10 +55,9 @@ void Program::append(Statement const &s) {
   if (s.length() && s[0].str=="figsize") 
     reset();
   stmt.append(s);
-  if (parse(s, line)) 
-    line += s.lineCount();
-  else 
+  if (!parse(s, line))
     isOK = false;
+  line += s.lineCount();
 }
 
 bool Program::parse(Statement const &s, int line1) {
@@ -70,6 +69,7 @@ bool Program::parse(Statement const &s, int line1) {
   if (s[0].typ != Token::BAREWORD) {
     Error() << QString("Missing keyword at “%2” line %3")
       .arg(label).arg(line1);
+    cmds.append(0);  // maintain 1:1 b/w statemnts and commands
     return false;
   }
       
@@ -77,12 +77,14 @@ bool Program::parse(Statement const &s, int line1) {
   if (!c) {
     Error() << QString("Unknown keyword “%1” at “%2” line %3")
       .arg(s[0].str).arg(label).arg(line1);
+    cmds.append(0);  // maintain 1:1 b/w statemnts and commands
     return false;
   }
   
   if (!c->parse(s)) {
     Error() << QString("Syntax error at “%2” line %3")
       .arg(label).arg(line1);
+    cmds.append(0);  // maintain 1:1 b/w statemnts and commands
     return false;
   }
   
@@ -95,7 +97,7 @@ Program::~Program() {
 }
 
 int Program::length() const {
-  return stmt.size();
+  return cmds.size();
 }
 
 static Statement nullStatement;
@@ -107,34 +109,51 @@ Statement const &Program::operator[](int idx) const {
     return nullStatement;
 }
 
-QSet<QString> Program::panels() {
+Command const *Program::command(int idx) const {
+  if (idx>=0 && idx<cmds.size())
+    return cmds[idx];
+  else
+    return 0;
+}
+
+QSet<QString> Program::panels(int upto) {
   QSet<QString> pp;
   pp.insert("-");
-  for (Statement const &s: stmt) 
+  if (upto<0)
+    upto = cmds.size();
+  for (int k=0; k<upto; k++) {
+    Statement const &s(stmt[k]); 
     if (s.length()>=2 && s[0].str=="panel")
       pp.insert(s[1].str);
+  }
   return pp;
 }
 
-QRectF Program::dataRange(QString p) {
+QRectF Program::dataRange(QString p, int upto) {
   QRectF r;
   bool in = p=="-";
-  for (int l=0; l<stmt.size(); l++) {
-    if (stmt[l].length()>=2 && stmt[l][0].str=="panel")
-      in = stmt[l][1].str==p;
-    if (in && cmds[l])
-      r |= cmds[l]->dataRange(stmt[l]);
+  if (upto<0)
+    upto = cmds.size();
+  for (int k=0; k<upto; k++) {
+    Statement const &s(stmt[k]); 
+    if (s.length()>=2 && s[0].str=="panel")
+      in = s[1].str==p;
+    if (in && cmds[k])
+      r |= cmds[k]->dataRange(s);
   }
   return r;
 }
 
-void Program::render(Figure &f, bool dryrun) {
+void Program::render(Figure &f, bool dryrun, int upto) {
   f.reset();
 
   if (!isOK)
     return; // won't render if not ok
 
-  for (int l=0; l<stmt.size(); l++) {
+  if (upto<0) 
+    upto = cmds.size();
+
+  for (int l=0; l<upto; l++) {
     if (cmds[l]) {
       cmds[l]->render(stmt[l], f, dryrun);
       if (dryrun && f.checkFudged()) {
