@@ -26,22 +26,17 @@
 #include <QFile>
 #include "Statement.h"
 #include "Command.h"
-#include "CmdSave.h"
 
 class Program {
 public:
-  Program();
-  bool read(QFile &ts, QString label);
-  /*:F read
-   *:D Reads and parses a program.
-   *   Returns true if OK, false if error.
-   *   Errors are reported through qDebug.
-   */
-  bool append(QFile &ts, QString label, bool all=false);
+  Program(QString label="");
   virtual ~Program();
   void reset();
-  bool parse(bool fromscratch=false);
-  int length() const;
+  void setLabel(QString);
+  void read(QList<Statement> const &); // Updates isOK.
+  void append(Statement const &); // Updates isOK.
+  bool isValid() const { return isOK; }
+  int length() const; // number of statements
   Statement const &operator[](int) const;
   QSet<QString> panels();
   QRectF dataRange(QString panel="-");
@@ -51,15 +46,14 @@ public:
        there are none.
    */
   void render(Figure &f, bool dryrun=false);
-  CmdSave *nextSave();
 private:
-  bool error(QString const &); // returns false
-  bool error(QString const &, int idx); // returns false
+  bool parse(Statement const &s, int lineno); // true if ok. errors are reported through Error()
 private:
   QList<Statement> stmt;
   QList<Command *> cmds;
   bool isOK;
-  int lastsave;
+  QString label;
+  int line;
 };
 
 #endif
