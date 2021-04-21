@@ -87,7 +87,6 @@ def _rankle(x, gamma, x0):
     return 1 - _ankle(1-x, gamma, x0)
 
 def _cosinebump(x, mu, sigma):
-    #return np.exp(-.5*(x-mu)**2/sigma**2)
     t = (x - mu)/sigma*np.pi/2
     y = np.zeros(x.shape)
     use = np.logical_and(t>-np.pi, t<np.pi)
@@ -97,22 +96,22 @@ def _cosinebump(x, mu, sigma):
 def _hot(n=300):
     xx = np.arange(0,1,1/n)
     yy = 0*xx
-    zz = 1+yy
     red = _rankle(xx,5,.6)
     grn = _rankle(_ankle(xx,4,.4),3,.7)
     blu = _rankle(_ankle(xx,8,.7),1,.2)
-    return np.stack((red,grn,blu), 1)
+    res = np.stack((red,grn,blu), 1)
+    return np.clip(res, 0, 1)
 
 def _cold(n=300):
     xx = np.arange(0,1,1/n)
     yy = 0*xx
-    zz = 1+yy
     blu = _rankle(_ankle(xx,.6,.2),4,.5)
     grn = _rankle(_ankle(xx,2,.2),1.8,.7)
     red = _rankle(_ankle(xx,3,.6),1.2,.5)
     blu -= .35*_cosinebump(xx, .66,.17)
     blu = _rankle(blu, .7, .1)
-    return np.stack((red,grn,blu), 1)
+    res = np.stack((red,grn,blu), 1)
+    return np.clip(res, 0, 1)
 
 def _native(name, N, reverse):
     from . import img
