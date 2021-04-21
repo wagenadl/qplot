@@ -2,6 +2,7 @@ import numpy as np
 import tempfile
 import os
 import re
+import subprocess
 from . import utils
 
 class Figure:
@@ -47,12 +48,14 @@ class Figure:
     flushwaitre = re.compile(r' \*(uc)?\d')
 
     def writedbl(self, v):
-        np.array(v).astype('float64').tofile(self.fd)
+        buf = np.array(v).astype('float64').tobytes(order='C')
+        self.fd.write(buf)
         self.flushcounter -= 1
         if self.flushcounter<=0:
             self.fd.flush()
     def writeuc(self, v):
-        np.array(v).astype('uint8').tofile(self.fd)
+        buf = np.array(v).astype('uint8').tobytes(order='C')
+        self.fd.write(buf)
         self.flushcounter -= 1
         if self.flushcounter<=0:
             self.fd.flush()
@@ -83,6 +86,8 @@ class Figure:
 
     def __init__(self, fn=None, w=5, h=None):
         self.is_interactive = Figure.global_interactive
+        self.is_pipe = False
+        self.is_tempfile = False
         if h is None:
             h = .75 * w
         MAXALLOWED = 36
@@ -92,40 +97,45 @@ class Figure:
         h *= 72
         self.extent = (0, 0, w, h)
         self.reset()
-    
-        if utils.isempty(fn):
-            (fd, self.fn) = tempfile.mkstemp(suffix='.qpt')
-            self.fd = open(fd, 'wb')
-            self.istmp = True
-        else:
-            if not fn.endswith('.qpt'):
-                fn = fn + '.qpt'
+
+        if self.is_interactive:
+            # Create a pipe
+            if utils.isempty(fn):
+                fn = tempfile.mktemp(dir='')
             self.fn = fn
+            self.pipe = subprocess.Popen(["qplot", "-title", fn, "-"],
+                                        stdin=subprocess.PIPE)
+            self.fd = self.pipe.stdin
+            self.is_pipe = True
+        else:
+            if utils.isempty(fn):
+                (fd, self.fn) = tempfile.mkstemp(suffix='.qpt')
+                self.is_tempfile = True
+            else:
+                if not fn.endswith('.qpt'):
+                    fn = fn + '.qpt'
+                self.fn = fn
             self.fd = open(fn, 'wb')
-            self.istmp = False
     
         self.write('figsize %g %g\n' % (w,h))
-        if self.is_interactive:
-            utils.unix('qpclient %s' % self.fn)
+
 
     def clf(self):
-        self.fd.close()
+        if not self.is_pipe:
+            self.fd.close()
+            self.fd = open(self.fn, 'wb')
         self.reset()
-        self.fd = open(self.fn, 'wb')
         self.write('figsize %g %g\n' % (self.extent[2], self.extent[3]))
 
     def close(self):
         self.fd.close()
         self.fd = None
-        if self.is_interactive:
-            utils.unix('qpclose %s' % self.fn)
 
     def tofront(self):
-        utils.unix('touch %s' % self.fn)
-        # This supposedly signals qplot to raise it
+        pass
 
     def save(self, ofn, reso=None, qual=None):
-        if False: #self.is_interactive:
+        if self.is_pipe:
             cmd = f'save "{ofn}"';
             if reso is not None:
                 cmd += f' {reso}'

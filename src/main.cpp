@@ -72,18 +72,6 @@ int interactive(QString ifn, Renderer *renderer, QApplication *app) {
   win.setContents(renderer->figure(), renderer->program());
   win.setMargin(pt2iu(20));
   win.show();
-  QFileInfo fi(ifn);
-  QString path = fi.path();
-  QString leaf = fi.fileName();
-  QFile pidfile(path + "/.qp-" + leaf + ".pid");
-  QFile fbfile(path + "/.qp-" + leaf + ".fb");
-  if (fbfile.exists())
-    win.setFeedbackFile(fbfile.fileName());
-  pidfile.open(QIODevice::WriteOnly);
-  char pid[100];
-  snprintf(pid, 100, "%i\n", getpid());
-  pidfile.write(pid, strlen(pid));
-  pidfile.close();
   win.autoSize();
 
   bool isstdin = ifn=="-" || ifn=="";
@@ -107,6 +95,8 @@ int interactive(QString ifn, Renderer *renderer, QApplication *app) {
                        }
                      },
                      Qt::QueuedConnection);
+    QObject::connect(pipereader, &PipeReader::finished,
+                     app, &QApplication::quit);
     pipereader->start();
   } else {
     filereader = new FileReader(ifn);
@@ -138,9 +128,7 @@ int interactive(QString ifn, Renderer *renderer, QApplication *app) {
   
   renderer->prerender();
 
-  int r = app->exec();
-  pidfile.remove();
-  return r;
+  return app->exec();
 }
 
 int noninteractive(QString ifn, QString ofn, Renderer *renderer) {
@@ -180,6 +168,7 @@ int main(int argc, char **argv) {
   QCommandLineOption cli_maxtries("maxtries",
                                   "Override max tries for shrink",
                                   "N", "100");
+  QCommandLineOption cli_title("title", "Override window title", "title");
   QProcessEnvironment env(QProcessEnvironment::systemEnvironment());
   if (env.contains("QPLOT_MAXITER"))
     cli_maxtries.setDefaultValue(env.value("QPLOT_MAXITER"));
@@ -195,6 +184,7 @@ int main(int argc, char **argv) {
   cli.addOption(cli_height);
   cli.addOption(cli_autoraise);
   cli.addOption(cli_maxtries);
+  cli.addOption(cli_title);
 
   cli.process(app);
 
@@ -213,8 +203,12 @@ int main(int argc, char **argv) {
   renderer.setBitmapResolution(cli.value("r").toInt());
   renderer.setBitmapQuality(cli.value("q").toInt());
 
+  QString ttl = args[0];
+  if (cli.isSet("title"))
+    ttl = cli.value("title");
+  
   if (args.size()==1) 
-    return interactive(args[0], &renderer, &app);
+    return interactive(ttl, &renderer, &app);
   else 
     return noninteractive(args[0], args[1], &renderer);
 }
