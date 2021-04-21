@@ -2,6 +2,7 @@
 
 #include "Renderer.h"
 #include "Error.h"
+#include "CmdSave.h"
 
 #include <QDebug>
 #include <QImage>
@@ -16,13 +17,13 @@
 Renderer::Renderer() {
 }
 
-void Renderer::prerender() {
+void Renderer::prerender(int upto) {
   QImage img(1,1,QImage::Format_ARGB32);
   fig.setSize(QSizeF(1, 1)); // this may be overridden later
   fig.painter().begin(&img);
   fig.reset();
-  foreach (QString p, prog.panels()) {
-    QRectF dataExtent = prog.dataRange(p);
+  foreach (QString p, prog.panels(upto)) {
+    QRectF dataExtent = prog.dataRange(p, upto);
     if (p=="-") {
       fig.xAxis().setDataRange(dataExtent.left(), dataExtent.right());
       fig.yAxis().setDataRange(dataExtent.top(), dataExtent.bottom());
@@ -36,7 +37,7 @@ void Renderer::prerender() {
 
   int iter = 0;
   while (iter<maxtries) {
-    prog.render(fig, true); // renderer to determine paper bbox & fudge
+    prog.render(fig, true, upto); // renderer to determine paper bbox & fudge
     if (fig.checkFudged()) {
       //qDebug() << "will reiterate";
     } else {
@@ -53,7 +54,7 @@ void Renderer::prerender() {
 }
 
 
-bool Renderer::renderSVG(QString ofn) {
+bool Renderer::renderSVG(QString ofn, int upto) {
   QSvgGenerator img;
   img.setFileName(ofn);
   img.setResolution(90); // anything else seems to be poorly supported
@@ -67,13 +68,13 @@ bool Renderer::renderSVG(QString ofn) {
   fig.setDashScale(90./72*iu2pt());
   fig.painter().translate(fig.extent().left(),
 			  fig.extent().top());
-  prog.render(fig);
+  prog.render(fig, false, upto);
   fig.painter().end();
   return true;
 }
 
 
-bool Renderer::renderPDF(QString ofn) {
+bool Renderer::renderPDF(QString ofn, int upto) {
   QPdfWriter img(ofn);
   img.setPageSizeMM(QSizeF(iu2pt(fig.extent().width())*25.4/72,
 			   iu2pt(fig.extent().height())*25.4/72));
@@ -93,14 +94,14 @@ bool Renderer::renderPDF(QString ofn) {
   fig.setDashScale(iu2pt()*std::sqrt(dpix*dpiy)/72.0);
   fig.painter().translate(-fig.extent().left(),
 			  -fig.extent().top());
-  prog.render(fig);
+  prog.render(fig, false, upto);
   fig.painter().end();
   return true;
 }
 
 
 
-bool Renderer::renderImage(QString ofn) {
+bool Renderer::renderImage(QString ofn, int upto) {
   QImage img(int(fig.extent().width()),
 	     int(fig.extent().height()),
 	     QImage::Format_ARGB32);
@@ -111,7 +112,7 @@ bool Renderer::renderImage(QString ofn) {
   fig.setDashScale(1);
   fig.painter().translate(-fig.extent().left(),
 			  -fig.extent().top());
-  prog.render(fig);
+  prog.render(fig, false, upto); 
   fig.painter().end();
   return img.save(ofn, 0, bitmapqual);
 }
@@ -149,7 +150,7 @@ static bool error_unknownextension(QString const &extn) {
 }
 
 
-bool Renderer::save(QString ofn) {
+bool Renderer::save(QString ofn, int upto) {
   if (ofn=="-")
     ofn = "-.pdf";
   
@@ -177,16 +178,16 @@ bool Renderer::save(QString ofn) {
   Figure fig;
   fig.overrideSize(QSizeF(pt2iu(overridewidth),
 			  pt2iu(overrideheight)));
-  prerender();
+  prerender(upto);
 
   if (extn == "svg") {
-    if (!renderSVG(ofn))
+    if (!renderSVG(ofn, upto))
       return error_failtosave(ofn);
   } else if (extn == "pdf") {
-    if (!renderPDF(ofn))
+    if (!renderPDF(ofn, upto))
       return error_failtosave(ofn);
   } else if (extnIsBitmap) {
-    if (!renderImage(ofn))
+    if (!renderImage(ofn, upto))
       return error_failtosave(ofn);
   } else {
     if (extn=="eps" || extn=="ps") 
@@ -243,3 +244,16 @@ void Renderer::setBitmapQuality(int q) {
 //    save(cmd->filename());
 //  }
 //}
+
+void Renderer::dosaves(int start, int end) {
+  if (end<0)
+    end = prog.length();
+  for (int k=start; k<end; k++) {
+    CmdSave const *cmd = dynamic_cast<CmdSave const *>(prog.command(k));
+    if (cmd) {
+      setBitmapResolution(cmd->resolution());
+      setBitmapQuality(cmd->quality());
+      save(cmd->filename(), k);
+    }
+  }
+}

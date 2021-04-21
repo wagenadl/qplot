@@ -38,14 +38,15 @@ public:
   bool isValid() const { return isOK; }
   int length() const; // number of statements
   Statement const &operator[](int) const;
-  QSet<QString> panels();
-  QRectF dataRange(QString panel="-");
+  QSet<QString> panels(int upto=-1);
+  QRectF dataRange(QString panel="-", int upto=-1);
   /*:F dataRange
    *:D Returns the full (x0-x1 x y0-y1) range of data in this program.
    *:N This ignores "panels", and will therefore work as expected only if
        there are none.
    */
-  void render(Figure &f, bool dryrun=false);
+  void render(Figure &f, bool dryrun=false, int upto=-1);
+  Command const *command(int k) const; // 0 if not a save command
 private:
   bool parse(Statement const &s, int lineno); // true if ok. errors are reported through Error()
 private:
