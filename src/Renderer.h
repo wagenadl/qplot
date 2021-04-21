@@ -8,12 +8,9 @@
 #include "Figure.h"
 #include <QString>
 
-class Render {
+class Renderer {
 public:
-  Render(QString ifn);
-  QString inputFilename() { return ifn; }
-  QFile &inputFile() { return file; }
-  bool read(QString ifn);
+  Renderer();
   Program *program() { return &prog; }
   Figure *figure() { return &fig; }
   void prerender();
@@ -26,15 +23,7 @@ public:
   void overrideHeight(double h);
   void setBitmapResolution(double r);
   void setBitmapQuality(int q);
-  static bool noninteractive(QString ifn, QString ofn);
-  bool valid() const { return isok; }
-  void readsome();
-  void loadall();
-  void perhapsSave();
 private:
-  QFile file;
-  QString ifn;
-  bool isok;
   Program prog;
   Figure fig;
   int maxtries = 100;

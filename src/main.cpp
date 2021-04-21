@@ -19,7 +19,6 @@
 
 // main.C
 
-#include <QSocketNotifier>
 #include <QCommandLineParser>
 #include <QApplication>
 #include <QWidget>
@@ -27,10 +26,7 @@
 #include <QImage>
 #include <QFile>
 #include <QDir>
-#include <QPdfWriter>
-#include <QSvgGenerator>
 #include <QFileInfo>
-#include <QTemporaryFile>
 #include <QDateTime>
 #include <QProcessEnvironment>
 #include <QDebug>
@@ -44,14 +40,15 @@
 #include "Figure.h"
 #include "Command.h"
 #include "QPWidget.h"
-#include "Watcher.h"
+#include "FileReader.h"
+#include "PipeReader.h"
 #include "Error.h"
 #include "Factor.h"
-#include "Render.h"
+#include "Renderer.h"
 
 
 
-int usage(int ex=1) {
+int usage(int exitcode=1) {
   Error() << "Usage: qplot input.txt";
   Error() << "       qplot input.txt output.pdf|svg|ps";
   Error() << "       qplot [-rDPI] input.txt output.png|tif|jpg";
@@ -60,24 +57,19 @@ int usage(int ex=1) {
   Error() << "       qplot --autoraise ... automatically raises"
                                                      " the window on update";
   Error() << "";
-  Error() << "For noninteractive use, input.txt may be '-' for stdin, and";
-  Error() << "output.EXT may be '-.EXT' for stdout.";
+  Error() << "INPUT.TXT may be '-' for stdin, and";
+  Error() << "OUTPUT.EXT may be '-.EXT' for stdout.";
 
-  return ex;
+  return exitcode;
 }
-
-
 
 static bool autoraise = false;
 
-int interactive(Render *render, QApplication *app) {
-  QString ifn = render->inputFilename();
-  render->prerender();
-
+int interactive(QString ifn, Renderer *renderer, QApplication *app) {
   QPWidget win;
   int idx = ifn.lastIndexOf('/');
   win.setWindowTitle("qplot: " + ((idx>=0) ? ifn.mid(idx+1) : ifn));
-  win.setContents(render->figure(), render->program());
+  win.setContents(renderer->figure(), renderer->program());
   win.setMargin(pt2iu(20));
   win.show();
   QFileInfo fi(ifn);
@@ -94,44 +86,72 @@ int interactive(Render *render, QApplication *app) {
   pidfile.close();
   win.autoSize();
 
-  int r;
-  if (ifn == "-") {
-    // using stdin
-    qDebug() << "connecting";
-    // Folllowing snippet based on
-    // https://github.com/juangburgos/QConsoleListener
-#ifdef Q_OS_WIN
-    auto m_notifier =  QWinEventNotifier(GetStdHandle(STD_INPUT_HANDLE));
-#else
-    auto m_notifier = new QSocketNotifier(fileno(stdin),
-                                          QSocketNotifier::Read);
-#endif
-    auto foo = [&render, &win, m_notifier]() {
-                       qDebug() << "readyread";
-                       render->readsome();
-                       if (autoraise)
-                         win.raise();
-                       win.update();
-                       render->perhapsSave();
-                       if (feof(stdin))
-                         delete m_notifier;
-               };
-#ifdef Q_OS_WIN
-    QObject::connect(m_notifier, &QWinEventNotifier::activated, foo);
-#else
-    QObject::connect(m_notifier, &QSocketNotifier::activated, foo);
-#endif
-    r = app->exec();
+  bool isstdin = ifn=="-" || ifn=="";
+
+  FileReader *filereader = 0;
+  PipeReader *pipereader = 0;
+
+  if (isstdin) {
+    pipereader = new PipeReader();
+    QObject::connect(pipereader, &PipeReader::ready,
+                     &win, [&pipereader, &win, &renderer]() {
+                       QList<Statement> ss = pipereader->readQueue();
+                       if (ss.size()) {
+                         for (auto s: ss) 
+                           renderer->program()->append(s);
+                         renderer->prerender();
+                         win.update();
+                       }
+                     },
+                     Qt::QueuedConnection);
+    pipereader->start();
   } else {
-    Watcher wtch(ifn, render, &win);
+    filereader = new FileReader(ifn);
+    if (filereader->contents().valid) 
+      renderer->program()->read(filereader->contents().contents);
+    else
+      Error() << filereader->contents().error;
+
     if (autoraise)
-      QObject::connect(&wtch, SIGNAL(ping()), &win, SLOT(raise()));
-    QObject::connect(&wtch, SIGNAL(ping()), &win, SLOT(update()));
-    wtch.reread(true);
-    r = app->exec();
+      QObject::connect(filereader, &FileReader::ready,
+                       &win, &QWidget::raise);
+
+    QObject::connect(filereader, &FileReader::ready,
+                     &win, [filereader, &win, &renderer]() {
+                       FileReader::Contents c(filereader->contents());
+                       if (c.valid)
+                         renderer->program()->read(c.contents);
+                       else
+                         Error() << c.error;
+                       renderer->prerender();
+                       win.update();
+                     },
+                     Qt::QueuedConnection);
+
+    filereader->start(); // starts the thread
   }
+  
+  renderer->prerender();
+
+  int r = app->exec();
   pidfile.remove();
   return r;
+}
+
+int noninteractive(QString ifn, QString ofn, Renderer *renderer) {
+  FileReader reader(ifn);
+  FileReader::Contents contents = reader.contents();
+  if (contents.valid) {
+    renderer->program()->setLabel(ifn);
+    renderer->program()->read(contents.contents);
+    if (renderer->save(ofn))
+      return 0;
+    else
+      return 2;
+  } else {
+    Error() << contents.error;
+    return 2;
+  }
 }
 
 
@@ -179,21 +199,17 @@ int main(int argc, char **argv) {
   if (args.size() < 1 || args.size() > 2)
     cli.showHelp(1);
 
-  Render render(args[0]);
+  Renderer renderer;
   if (cli.isSet("w"))
-    render.overrideWidth(cli.value("w").toDouble());
+    renderer.overrideWidth(cli.value("w").toDouble());
   if (cli.isSet("h"))
-    render.overrideWidth(cli.value("h").toDouble());
-  render.setMaxTries(cli.value("maxtries").toInt());
-  render.setBitmapResolution(cli.value("r").toInt());
-  render.setBitmapQuality(cli.value("q").toInt());
+    renderer.overrideWidth(cli.value("h").toDouble());
+  renderer.setMaxTries(cli.value("maxtries").toInt());
+  renderer.setBitmapResolution(cli.value("r").toInt());
+  renderer.setBitmapQuality(cli.value("q").toInt());
 
-  if (args.size()==1) {
-    return interactive(&render, &app);
-  } else {
-    render.loadall();
-    if (render.save(args[1]))
-      return 0;
-  }
-  return 2;
+  if (args.size()==1) 
+    return interactive(args[0], &renderer, &app);
+  else 
+    return noninteractive(args[0], args[1], &renderer);
 }

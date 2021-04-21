@@ -33,23 +33,25 @@
 class Statement {
 public:
   Statement();
-  int read(QFile &source, QString label); // returns number of lines processed
-  void reset();
-  int length() const;
-  Token const &operator[](int idx) const;
-  bool isNumeric(int idx) const;
-  int nextIndex(int idx) const;
+  int read(QFile &source, QString label=QString()); // returns number of lines processed
+  void clear();
+  int lineCount() const; // number of lines processed
+  int length() const; // number of tokens
+  Token const &operator[](int idx) const; // returns null token if out-of-range
+  bool isNumeric(int idx) const; // true if token is number, numeric vector or "-"
+  int nextIndex(int idx) const; // skips over multitoken vectors
   
   QVector<double> const &data(int idx) const; // only valid if isNumeric says so
-  QString const &label() const;
+  QString const &label() const; // label passed to read(), if any
 private:
   void process(QString);
   bool cacheVector(int idx) const; // true if ok
 private:
   QString lbl;
   QList<Token> toks;
-  mutable QMap<int, QVector<double> > dat;
-  mutable QMap<int, int> nextIdx;
+  mutable QMap<int, QVector<double> > dat; // cachevector changes this
+  mutable QMap<int, int> nextIdx; // cacheVector changes this
+  int nlines;
 private:
   // while processing:
   bool inString;

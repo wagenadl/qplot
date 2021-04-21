@@ -52,9 +52,10 @@ HEADERS += Align.h \
            Text.h \
            TextShiftAccum.h \
            Token.h \
-           Watcher.h \
+           FileReader.h \
+           PipeReader.h \
            Image.h \
-           Render.h \
+           Renderer.h \
            CmdSave.h
 
 SOURCES += Axis.cpp \
@@ -100,6 +101,7 @@ SOURCES += Axis.cpp \
            Text.cpp \
            TextShiftAccum.cpp \
            Token.cpp \
-           Watcher.cpp \
+           FileReader.cpp \
+           PipeReader.cpp \
            Image.cpp \
-           Render.cpp
+           Renderer.cpp

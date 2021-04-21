@@ -1,6 +1,6 @@
-// render.cpp
+// renderer.cpp
 
-#include "Render.h"
+#include "Renderer.h"
 #include "Error.h"
 
 #include <QDebug>
@@ -13,42 +13,10 @@
 #include <QDir>
 #include <QTemporaryFile>
 
-Render::Render(QString ifn): ifn(ifn) {
-  if (ifn.isEmpty() || ifn=="-") {
-    file.open(stdin,QFile::ReadOnly);
-    isok = prog.append(file, "<stdin>");
-    if (!isok)
-      Error() << "Interpretation error";
-  } else {
-    isok = read(ifn);
-  }
+Renderer::Renderer() {
 }
 
-void Render::readsome() {
-  if (file.isOpen())
-    prog.append(file, ifn, false);
-}
-
-void Render::loadall() {
-  if (file.isOpen())
-    prog.append(file, ifn, true);
-}
-
-bool Render::read(QString ifn) {
-  QFile f(ifn);
-  if (f.open(QIODevice::ReadOnly)) {
-    if (prog.read(f, ifn))
-      return true;
-    else
-      Error() << "Interpretation failed";
-  } else {
-    Error() << "Cannot open file";
-  }
-  return false;
-}  
-
-
-void Render::prerender() {
+void Renderer::prerender() {
   QImage img(1,1,QImage::Format_ARGB32);
   fig.setSize(QSizeF(1, 1)); // this may be overridden later
   fig.painter().begin(&img);
@@ -68,7 +36,7 @@ void Render::prerender() {
 
   int iter = 0;
   while (iter<maxtries) {
-    prog.render(fig, true); // render to determine paper bbox & fudge
+    prog.render(fig, true); // renderer to determine paper bbox & fudge
     if (fig.checkFudged()) {
       //qDebug() << "will reiterate";
     } else {
@@ -85,7 +53,7 @@ void Render::prerender() {
 }
 
 
-bool Render::renderSVG(QString ofn) {
+bool Renderer::renderSVG(QString ofn) {
   QSvgGenerator img;
   img.setFileName(ofn);
   img.setResolution(90); // anything else seems to be poorly supported
@@ -105,7 +73,7 @@ bool Render::renderSVG(QString ofn) {
 }
 
 
-bool Render::renderPDF(QString ofn) {
+bool Renderer::renderPDF(QString ofn) {
   QPdfWriter img(ofn);
   img.setPageSizeMM(QSizeF(iu2pt(fig.extent().width())*25.4/72,
 			   iu2pt(fig.extent().height())*25.4/72));
@@ -132,7 +100,7 @@ bool Render::renderPDF(QString ofn) {
 
 
 
-bool Render::renderImage(QString ofn) {
+bool Renderer::renderImage(QString ofn) {
   QImage img(int(fig.extent().width()),
 	     int(fig.extent().height()),
 	     QImage::Format_ARGB32);
@@ -181,12 +149,7 @@ static bool error_unknownextension(QString const &extn) {
 }
 
 
-bool Render::noninteractive(QString ifn, QString ofn) {
-  Render render(ifn);
-  return render.save(ofn);
-}
-
-bool Render::save(QString ofn) {
+bool Renderer::save(QString ofn) {
   if (ofn=="-")
     ofn = "-.pdf";
   
@@ -236,7 +199,7 @@ bool Render::save(QString ofn) {
     if (!tmpf.open())
       error("Cannot re-read temporary file");
     QFile f;
-    if (!f.open(stdout,QFile::WriteOnly))
+    if (!f.open(stdout, QFile::WriteOnly))
       error("Cannot write to stdout");
     while (1) {
       QByteArray ba = tmpf.read(1024*1024);
@@ -252,31 +215,31 @@ bool Render::save(QString ofn) {
 }  
 
 
-void Render::setMaxTries(int n) {
+void Renderer::setMaxTries(int n) {
   maxtries = n;
 }
 
-void Render::overrideWidth(double w) {
+void Renderer::overrideWidth(double w) {
   overridewidth = w;
 }
 
-void Render::overrideHeight(double h) {
+void Renderer::overrideHeight(double h) {
   overrideheight =h;
 }
 
-void Render::setBitmapResolution(double r) {
+void Renderer::setBitmapResolution(double r) {
   bitmapres = r;
 }
 
-void Render::setBitmapQuality(int q) {
+void Renderer::setBitmapQuality(int q) {
   bitmapqual = q;
 }
 
-void Render::perhapsSave() {
-  CmdSave *cmd = prog.nextSave();
-  if (cmd) {
-    setBitmapResolution(cmd->resolution());
-    setBitmapQuality(cmd->quality());
-    save(cmd->filename());
-  }
-}
+//void Renderer::perhapsSave() {
+//  CmdSave *cmd = prog.nextSave();
+//  if (cmd) {
+//    setBitmapResolution(cmd->resolution());
+//    setBitmapQuality(cmd->quality());
+//    save(cmd->filename());
+//  }
+//}

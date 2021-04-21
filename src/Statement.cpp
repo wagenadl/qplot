@@ -25,16 +25,18 @@
 #include "Error.h"
 
 Statement::Statement() {
+  clear();
 }
 
-void Statement::reset() {
+void Statement::clear() {
   toks.clear();
   dat.clear();
+  nlines = 0;
 }
 
 int Statement::read(QFile &source, QString label) {
   lbl = label;
-  reset();
+  clear();
 
   inString = false;
   lev = 0;
@@ -43,7 +45,8 @@ int Statement::read(QFile &source, QString label) {
   QString line(QString::fromUtf8(source.readLine()));
   if (line.isNull() || !line.endsWith('\n'))
     return 0;
-  int nlines = 1;
+
+  nlines = 1;
   
   QStringList words = line.split(QRegExp("[ \t\n\r]+"));
   foreach (QString w, words) 
@@ -254,4 +257,8 @@ QVector<double> const &Statement::data(int idx) const {
 
 QString const &Statement::label() const {
   return lbl;
+}
+
+int Statement::lineCount() const {
+  return nlines;
 }
