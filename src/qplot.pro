@@ -56,7 +56,8 @@ HEADERS += Align.h \
            PipeReader.h \
            Image.h \
            Renderer.h \
-           CmdSave.h
+           CmdSave.h \
+           pi.h
 
 SOURCES += Axis.cpp \
            CmdSave.cpp \

@@ -5,6 +5,11 @@ import re
 import subprocess
 from . import utils
 
+here = "/".join(__file__.replace("\\", "/").split("/")[:-2])
+exe = f"{here}/bin/qplot.exe"
+if not os.path.exists(exe):
+    exe = "qplot"
+
 class Figure:
     global_interactive = True
     def interactive(k):
@@ -42,13 +47,14 @@ class Figure:
             s = ' '.join(s) + '\n'
         self.flushcounter = len(self.flushwaitre.findall(s))
         self.fd.write(bytes(s, 'utf8'))
-        if self.flushcounter==0:
+        if True or self.flushcounter==0:
             self.fd.flush()
     flushcounter=0
     flushwaitre = re.compile(r' \*(uc)?\d')
 
     def writedbl(self, v):
         buf = np.array(v).astype('float64').tobytes(order='C')
+        print('writedbl writing', len(buf))
         self.fd.write(buf)
         self.flushcounter -= 1
         if self.flushcounter<=0:
@@ -103,7 +109,7 @@ class Figure:
             if utils.isempty(fn):
                 fn = tempfile.mktemp(dir='')
             self.fn = fn
-            self.pipe = subprocess.Popen(["qplot", "-title", fn, "-"],
+            self.pipe = subprocess.Popen([exe, "--title", fn, "-"],
                                         stdin=subprocess.PIPE)
             self.fd = self.pipe.stdin
             self.is_pipe = True

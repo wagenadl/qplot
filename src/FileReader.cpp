@@ -98,7 +98,7 @@ FileReader::Contents FileReader::read() {
     opened = f.open(QFile::ReadOnly);
   
   if (!opened) {
-    c.error = QString("Could not open “%2”").arg(filename);
+    c.error = QString("Could not open '%2'").arg(filename);
     return c;
   }
 

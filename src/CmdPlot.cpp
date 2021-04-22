@@ -122,11 +122,11 @@ void CmdPlot::render(Statement const &s, Figure &f, bool dryrun) {
     return;
 
   QBrush b = f.painter().brush();
-  if (s[0].str=="plot" or s[0].str=="line")
+  if (s[0].str=="plot" || s[0].str=="line")
     f.painter().setBrush(QBrush(Qt::NoBrush));
 
   f.painter().drawPath(p);
 
-  if (s[0].str=="plot" or s[0].str=="line")
+  if (s[0].str=="plot" || s[0].str=="line")
     f.painter().setBrush(b);
 }

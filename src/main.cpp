@@ -19,6 +19,9 @@
 
 // main.C
 
+#include <iostream>
+#include <string>
+
 #include <QCommandLineParser>
 #include <QApplication>
 #include <QWidget>
@@ -33,7 +36,6 @@
 
 #include <math.h>
 #include <sys/types.h>
-#include <unistd.h>
 #include <stdio.h>
 
 #include "Program.h"
@@ -63,12 +65,29 @@ int usage(int exitcode=1) {
   return exitcode;
 }
 
+void testme() {
+    QFile f;
+    Error() << "testme";
+    f.open(stdin, QFile::ReadOnly);
+    std::string x;
+    while (!std::cin.eof()) {
+      std::getline(std::cin, x);
+      QString y(QString::fromUtf8(x.data()));
+      Error() << "got " << y;
+      char buffer[4];
+      std::cin.read(buffer, 4);
+      Error() << "got*";
+    }
+    Error() << "EOF";
+
+}
+
 static bool autoraise = false;
 
-int interactive(QString ifn, Renderer *renderer, QApplication *app) {
+int interactive(QString ifn, QString ttl, Renderer *renderer, QApplication *app) {
   QPWidget win;
-  int idx = ifn.lastIndexOf('/');
-  win.setWindowTitle("qplot: " + ((idx>=0) ? ifn.mid(idx+1) : ifn));
+  int idx = ttl.lastIndexOf('/');
+  win.setWindowTitle("qplot: " + ((idx>=0) ? ttl.mid(idx+1) : ttl));
   win.setContents(renderer->figure(), renderer->program());
   win.setMargin(pt2iu(20));
   win.show();
@@ -208,7 +227,7 @@ int main(int argc, char **argv) {
     ttl = cli.value("title");
   
   if (args.size()==1) 
-    return interactive(ttl, &renderer, &app);
+    return interactive(args[0], ttl, &renderer, &app);
   else 
     return noninteractive(args[0], args[1], &renderer);
 }
