@@ -3,6 +3,7 @@
 #include "PipeReader.h"
 #include "Error.h"
 #include <QDebug>
+#include <iostream>
 
 PipeReader::PipeReader() {
 }
@@ -13,22 +14,21 @@ PipeReader::~PipeReader() {
 }
 
 void PipeReader::run() {
-  QFile f;
-  if (!f.open(stdin, QFile::ReadOnly)) {
-    Error() << "Could not open stdin";
-    return;
-  }
+  Error() << "pipereader running";
 
   int line = 1;
-  while (!f.atEnd()) {
+  while (!std::cin.eof()) {
     Statement s;
-    if (s.read(f)) {
+    Error() << "pipereader about to read";
+    if (s.read(std::cin)) {
+        Error() << "pipereader got input at line " << line;
       mutex.lock();
       queue.append(s);
       mutex.unlock();
+      Error() << "pipereader signaling";
       emit ready();
     } else {
-      if (!f.atEnd())
+      if (!std::cin.eof())
         Error() << QString("Read error at line %1 of stdin").arg(line);
     }
     line += s.lineCount();

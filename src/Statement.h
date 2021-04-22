@@ -34,6 +34,8 @@ class Statement {
 public:
   Statement();
   int read(QFile &source, QString label=QString()); // returns number of lines processed
+  int read(std::istream &source, QString label=QString()); // returns number of lines processed
+  int read(class Reader &source, QString label=QString()); // returns number of lines processed
   void clear();
   int lineCount() const; // number of lines processed
   int length() const; // number of tokens
