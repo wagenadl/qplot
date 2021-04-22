@@ -14,18 +14,13 @@ PipeReader::~PipeReader() {
 }
 
 void PipeReader::run() {
-  Error() << "pipereader running";
-
   int line = 1;
   while (!std::cin.eof()) {
     Statement s;
-    Error() << "pipereader about to read";
     if (s.read(std::cin)) {
-        Error() << "pipereader got input at line " << line;
       mutex.lock();
       queue.append(s);
       mutex.unlock();
-      Error() << "pipereader signaling";
       emit ready();
     } else {
       if (!std::cin.eof())

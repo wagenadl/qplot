@@ -19,8 +19,6 @@
 
 // Statement.C
 
-#include <windows.h> // for Sleep
-
 #include "Statement.h"
 #include <math.h>
 #include <QStringList>
@@ -52,7 +50,6 @@ public:
     }
     QVector<unsigned char> readbytes(int N) {
         QVector<unsigned char> v(N);
-        Error() << "statement read bytes" << N;
         if (q)
             qfile->read((char*)v.data(), N);
         else
@@ -61,7 +58,6 @@ public:
     }
     QVector<double> readdoubles(int N) {
         QVector<double> v(N);
-        Error() << "statement read doubles" << N;
         if (q)
             qfile->read((char*)v.data(), N*sizeof(double));
         else
@@ -93,7 +89,6 @@ int Statement::read(Reader &source, QString label) {
   dataRefs.clear();
 
   QString line(source.readline());
-  Error() << "statement read line: " << line;
 
   if (line.isNull() || !line.endsWith('\n'))
     return 0;
@@ -116,7 +111,6 @@ int Statement::read(Reader &source, QString label) {
 
   QPair<int, QString> x;
   foreach (x, dataRefs) {
-      Error() << "statement starting to read data";
     int idx = x.first;
     QString desc = x.second;
     nextIdx[idx] = idx+1;
@@ -125,10 +119,10 @@ int Statement::read(Reader &source, QString label) {
       // unsigned characters
       int N = desc.mid(2).toInt(&ok);
       if (ok) {
-    QVector<unsigned char> uc = source.readbytes(N);
-    if (uc.size()<N) {
-	  Error() << "End-of-file while reading data";
-	  return 0;
+        QVector<unsigned char> uc = source.readbytes(N);
+        if (uc.size()<N) {
+          Error() << "End-of-file while reading data";
+          return 0;
 	}
 	QVector<double> data(N);
 	for (int n=0; n<N; n++)
@@ -140,8 +134,8 @@ int Statement::read(Reader &source, QString label) {
     } else {
       int N = desc.toInt(&ok);
       if (ok) {
-    QVector<double> data = source.readdoubles(N);
-    if (data.size()<N) {
+        QVector<double> data = source.readdoubles(N);
+        if (data.size()<N) {
 	  Error() << "End-of-file while reading data";
 	  return 0;
 	}
