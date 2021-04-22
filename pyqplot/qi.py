@@ -54,7 +54,6 @@ class Figure:
 
     def writedbl(self, v):
         buf = np.array(v).astype('float64').tobytes(order='C')
-        print('writedbl writing', len(buf))
         self.fd.write(buf)
         self.flushcounter -= 1
         if self.flushcounter<=0:
