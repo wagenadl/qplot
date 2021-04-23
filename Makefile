@@ -28,6 +28,7 @@ endif
 OCTPKGVSN=0.3
 OCTPKG=qplot-$(OCTPKGVSN)
 OCTPATH=$(SHAREPATH)/octave/packages/$(OCTPKG)
+PYPATH=$(INSTALLPATH)/lib/python3/dist-packages/pyqplot
 
 QMAKE=qmake
 SELECTQT="-qt=qt5"
@@ -90,6 +91,9 @@ install-qplot: ALL
 	install -m644 $(wildcard octave/$(OCTPKG)/private/*.m) $(OCTPATH)/private
 	install -d $(OCTPATH)/packinfo
 	install -m644 octave/$(OCTPKG)/packinfo/DESCRIPTION $(OCTPATH)/packinfo
+# Install PYTHON
+	install -d $(PYPATH)
+	install -m644 $(wildcard pyqplot/*.py) $(PYPATH)
 # Install PLACEQPT:
 	install -d $(SHAREPATH)/qplot
 	install placeqpt/placeqpt.pl $(SHAREPATH)/qplot
