@@ -49,42 +49,10 @@
 #include "Renderer.h"
 
 
-
-int usage(int exitcode=1) {
-  Error() << "Usage: qplot input.txt";
-  Error() << "       qplot input.txt output.pdf|svg|ps";
-  Error() << "       qplot [-rDPI] input.txt output.png|tif|jpg";
-  Error() << "       qplot -wWIDTH -hHEIGHT ... overrides output size (pts)";
-  Error() << "       qplot --maxtries N ... overrides max tries for shrink";
-  Error() << "       qplot --autoraise ... automatically raises"
-                                                     " the window on update";
-  Error() << "";
-  Error() << "INPUT.TXT may be '-' for stdin, and";
-  Error() << "OUTPUT.EXT may be '-.EXT' for stdout.";
-
-  return exitcode;
-}
-
-void testme() {
-    QFile f;
-    Error() << "testme";
-    f.open(stdin, QFile::ReadOnly);
-    std::string x;
-    while (!std::cin.eof()) {
-      std::getline(std::cin, x);
-      QString y(QString::fromUtf8(x.data()));
-      Error() << "got " << y;
-      char buffer[4];
-      std::cin.read(buffer, 4);
-      Error() << "got*";
-    }
-    Error() << "EOF";
-
-}
-
 static bool autoraise = false;
 
-int interactive(QString ifn, QString ttl, Renderer *renderer, QApplication *app) {
+int interactive(QString ifn, QString ttl, Renderer *renderer,
+                QApplication *app) {
   QPWidget win;
   int idx = ttl.lastIndexOf('/');
   win.setWindowTitle("qplot: " + ((idx>=0) ? ttl.mid(idx+1) : ttl));
@@ -166,11 +134,21 @@ int noninteractive(QString ifn, QString ofn, Renderer *renderer) {
   }
 }
 
+int showVersion() {
+  std::cerr << "QPlot 0.3.0\n";
+  std::cerr << "Copyright (C) 2014-2021 Daniel A. Wagenaar\n";
+  std::cerr << "License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>\n";
+  std::cerr << "This is free software: you are free to change and redistribute it.\n";
+  std::cerr << "There is NO WARRANTY, to the extent permitted by law.\n";
+  return 0;
+};
+
+
 
 int main(int argc, char **argv) {
   QApplication app(argc, argv);
-  app.setApplicationName("qplot");
-  app.setApplicationVersion("1.0");
+  app.setApplicationName("QPlot");
+  app.setApplicationVersion("0.3.0");
   
   QCommandLineOption cli_autoraise("autoraise",
                              "Automatically raise the window on update");
@@ -187,12 +165,15 @@ int main(int argc, char **argv) {
   QCommandLineOption cli_maxtries("maxtries",
                                   "Override max tries for shrink",
                                   "N", "100");
+  QCommandLineOption cli_version(QStringList() << "v" << "version",
+                                 "Show version information");
   QCommandLineOption cli_title("title", "Override window title", "title");
   QProcessEnvironment env(QProcessEnvironment::systemEnvironment());
   if (env.contains("QPLOT_MAXITER"))
     cli_maxtries.setDefaultValue(env.value("QPLOT_MAXITER"));
 
   QCommandLineParser cli;
+
   cli.addHelpOption();
   cli.addPositionalArgument("input", "Input filename (“-” for stdin)");
   cli.addPositionalArgument("output", "Output filename (“-.ext” for stdout)",
@@ -204,8 +185,16 @@ int main(int argc, char **argv) {
   cli.addOption(cli_autoraise);
   cli.addOption(cli_maxtries);
   cli.addOption(cli_title);
+  cli.addOption(cli_version);
 
+  cli.setApplicationDescription("\n"
+                                "QPlot is Publication-quality plotting for Python, Octave, or Matlab.\n"
+                                "More information is at https://danielwagenaar.net/qplot.");
+                                    
   cli.process(app);
+
+  if (cli.isSet("version")) 
+    return showVersion();
 
   autoraise = cli.isSet("autoraise");
   
