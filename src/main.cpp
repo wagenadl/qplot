@@ -137,9 +137,10 @@ int noninteractive(QString ifn, QString ofn, Renderer *renderer) {
 int showVersion() {
   std::cerr << "QPlot 0.3.0\n";
   std::cerr << "Copyright (C) 2014-2021 Daniel A. Wagenaar\n";
-  std::cerr << "License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>\n";
-  std::cerr << "This is free software: you are free to change and redistribute it.\n";
-  std::cerr << "There is NO WARRANTY, to the extent permitted by law.\n";
+  std::cerr << "\n";
+  std::cerr << "QPlot is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.\n\n";
+  std::cerr << "QPlot is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.\n\n";
+  std::cerr << "You should have received a copy of the GNU General Public License along with this program. If not, see www.gnu.org/licenses/gpl.html.\n";
   return 0;
 };
 

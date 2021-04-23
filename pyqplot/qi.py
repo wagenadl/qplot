@@ -133,8 +133,13 @@ class Figure:
         self.write('figsize %g %g\n' % (self.extent[2], self.extent[3]))
 
     def close(self):
-        self.fd.close()
-        self.fd = None
+        if self.is_pipe:
+            self.pipe.terminate()
+            self.is_pipe = False
+            self.fd = None
+        elif self.fd is not None:
+            self.fd.close()
+            self.fd = None
 
     def tofront(self):
         pass
@@ -261,3 +266,43 @@ def plot(xx, yy, cmd='plot'):
     f.writedbl(xx)
     f.writedbl(yy)
     f.updaterange(xx, yy)
+
+def figisopen(fn):
+    f1 = None
+    if fn in figs:
+        f1 = figs[fn]
+    elif not fn.endswith('.qpt'):
+        fn = fn + '.qpt'
+        if fn in figs:
+            f1 = figs[fn]
+    if f1 is None:
+        return False
+    try:
+        f1.pipe.wait(0)
+    except subprocess.TimeoutExpired:
+        return True # Still open
+    # We're here, so evidently, the figure got closed externally
+    f1.close()
+    del figs[fn]
+    return False
+
+def refigure(fn, w, h):
+    f1 = None
+    if fn in figs:
+        f1 = figs[fn]
+    elif not fn.endswith('.qpt'):
+        fn = fn + '.qpt'
+        if fn in figs:
+            f1 = figs[fn]
+    if f1 is None:
+        f1 = qi.Figure(fn, w, h)
+        figs[f1.fn] = f1
+        return f1
+
+    if h is None:
+        h = .75 * w
+    w = w*72
+    h = h*72
+    f1.extent = (0, 0, w, h)
+    f1.clf()
+    return f1
