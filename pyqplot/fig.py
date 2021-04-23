@@ -43,7 +43,7 @@ def select(fn):
     '''SELECT - Select a previously created QPlot figure for more work
     SELECT(fn), where FN is the name of a previously created QPlot figure,
     directs subsequent QPlot commands to that figure.'''
-    if not fn.endswith('.qpt'):
+    if fn not in qi.figs and not fn.endswith('.qpt'):
         fn += '.qpt'
     if fn in qi.figs:
         qi.f = qi.figs[fn]

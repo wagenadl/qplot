@@ -25,7 +25,7 @@ else
   SHAREPATH = /usr/local/share
 endif
 
-OCTPKGVSN=0.2
+OCTPKGVSN=0.3
 OCTPKG=qplot-$(OCTPKGVSN)
 OCTPATH=$(SHAREPATH)/octave/packages/$(OCTPKG)
 

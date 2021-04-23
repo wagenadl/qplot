@@ -22,7 +22,7 @@ with open('CMakeLists.txt', 'w') as ofd:
     ofd.write("set(SOURCES\n")
     for src in srcs:
         ofd.write(f'  "{src}"\n')
-    ofd.write(")\n")
+    ofd.write(")\n\n")
 
     ofd.write("set(HEADERS\n")
     for hdr in hdrs:
