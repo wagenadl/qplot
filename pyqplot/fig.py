@@ -32,12 +32,14 @@ def figure(fn=None, w=5, h=None):
     W defaults to 5 inches.
     fn = FIGURE('', w, h) opens a new QPlot figure of given size (in inches)
     with a temporary filename.'''
-    if fn in qi.figs:
-        qi.f = qi.figs[fn]
-        return fn
-    qi.f = qi.Figure(fn, w, h)
-    qi.figs[qi.f.fn] = qi.f
-    return qi.f
+    if qi.figisopen(fn):
+        qi.f = qi.refigure(fn, w, h)
+    else:
+        qi.f = qi.Figure(fn, w, h)
+        qi.figs[qi.f.fn] = qi.f
+    if utils.isempty(fn):
+        return qi.f.fn
+    # Default: return nothing
 
 def select(fn):
     '''SELECT - Select a previously created QPlot figure for more work
