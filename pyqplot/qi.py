@@ -268,6 +268,8 @@ def plot(xx, yy, cmd='plot'):
     f.updaterange(xx, yy)
 
 def figisopen(fn):
+    if fn is None:
+        return False
     f1 = None
     if fn in figs:
         f1 = figs[fn]
