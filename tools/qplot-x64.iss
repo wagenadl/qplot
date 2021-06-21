@@ -91,4 +91,4 @@ begin
 end;
 
 [Tasks]
-Name: envPath; Description: "Add to PATH variable (recommended)" 
+Name: envPath; Description: "Add to PATH variable" 
