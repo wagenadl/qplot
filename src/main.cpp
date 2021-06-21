@@ -48,11 +48,19 @@
 #include "Factor.h"
 #include "Renderer.h"
 
+#ifdef _WIN32
+#include <io.h>
+#include <fcntl.h>
+#endif
 
 static bool autoraise = false;
 
 int interactive(QString ifn, QString ttl, Renderer *renderer,
                 QApplication *app) {
+#ifdef _WIN32
+  _setmode(_fileno(stdin), _O_BINARY);
+#endif
+  
   QPWidget win;
   int idx = ttl.lastIndexOf('/');
   win.setWindowTitle("qplot: " + ((idx>=0) ? ttl.mid(idx+1) : ttl));
