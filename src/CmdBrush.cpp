@@ -19,7 +19,7 @@
 
 // CmdBrush.C
 
-#include "CmdBrush.H"
+#include "CmdBrush.h"
 #include <QDebug>
 
 static CBuilder<CmdBrush> cbBrush("brush");

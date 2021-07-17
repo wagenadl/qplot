@@ -19,10 +19,10 @@
 
 // CmdImage.C
 
-#include "CmdImage.H"
+#include "CmdImage.h"
 #include <QDebug>
 #include <math.h>
-#include "Image.H"
+#include "Image.h"
 
 static CBuilder<CmdImage> cbImage("image");
 

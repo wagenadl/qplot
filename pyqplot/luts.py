@@ -3,7 +3,7 @@ from collections import OrderedDict
 
 _cmaps = OrderedDict()
 
-_cmaps['native'] = [ 'qpjet' ]
+_cmaps['native'] = [ 'qpjet', 'qphot', 'qpcold', 'qpcoldhot' ]
 
 _cmaps['sequential.perceptuallyuniform'] = [
     'viridis', 'plasma', 'inferno', 'magma' ]
@@ -64,12 +64,69 @@ def family(name):
         _load_plotly_cmaps()
     return _cmaps[name]
 
+def _ankle(x, gamma, x0):
+    '''
+    Let's say that 0 ≤ x ≤ 1.
+    Take a linear function f(x) = A*x + 1-A that passes through (1,1).
+    Take a power function g(x) = B*x^gamma that passes through (0,0).
+    We want these to join at x = x0, so we must have:
+      f(x0) = g(x0)
+      f'(x0) = g'(x0)
+    Thus:
+      A*x0 + 1 - A = B x0^gamma
+      A               = B gamma x0^(gamma-1)
+    Thus:
+     1 = (x0^gamma + gamma x0^(gamma-1) - gamma x0^gamma) B'''
+    B = 1 / (x0**gamma + gamma * x0**(gamma-1) - gamma * x0**gamma)
+    A = B * gamma * x0**(gamma-1)
+    y = A*x + 1-A
+    y[x<x0] = B*x[x<x0]**gamma
+    return y
+
+def _rankle(x, gamma, x0):
+    return 1 - _ankle(1-x, gamma, x0)
+
+def _cosinebump(x, mu, sigma):
+    t = (x - mu)/sigma*np.pi/2
+    y = np.zeros(x.shape)
+    use = np.logical_and(t>-np.pi, t<np.pi)
+    y[use] = .5 + .5*np.cos(t[use])
+    return y
+
+def _hot(n=300):
+    xx = np.arange(0,1,1/n)
+    yy = 0*xx
+    red = _rankle(xx,5,.6)
+    grn = _rankle(_ankle(xx,4,.4),3,.7)
+    blu = _rankle(_ankle(xx,8,.7),1,.2)
+    res = np.stack((red,grn,blu), 1)
+    return np.clip(res, 0, 1)
+
+def _cold(n=300):
+    xx = np.arange(0,1,1/n)
+    yy = 0*xx
+    blu = _rankle(_ankle(xx,.6,.2),4,.5)
+    grn = _rankle(_ankle(xx,2,.2),1.8,.7)
+    red = _rankle(_ankle(xx,3,.6),1.2,.5)
+    blu -= .35*_cosinebump(xx, .66,.17)
+    blu = _rankle(blu, .7, .1)
+    res = np.stack((red,grn,blu), 1)
+    return np.clip(res, 0, 1)
+
 def _native(name, N, reverse):
     from . import img
     if N is None:
-        rgb = img.jetlut()
-    else:
+        N = 256
+    if name=='qpjet':
         rgb = img.jetlut(N)
+    elif name=='qphot':
+        rgb = _hot(N)
+    elif name=='qpcold':
+        rgb = _cold(N)
+    elif name=='qpcoldhot':
+        rgb = np.vstack((np.flipud(_cold(N//2)), _hot(N//2)))
+    else:
+        raise ValueError('Unknown colormap')
     if reverse:
         rgb = np.flipud(rgb)
     return rgb
@@ -126,7 +183,7 @@ def get(name, N=None, reverse=False):
     Optional argument REVERSE specifies that the order of the colors should
     be reversed.
     See also SET.'''
-    if name=='qpjet':
+    if name in _cmaps['native']:
         return _native(name, N, reverse)
     cmap = _get_mpl_cmap(name, N, reverse)
     if cmap is None:

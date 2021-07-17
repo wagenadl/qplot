@@ -19,9 +19,9 @@
 
 // CmdReftext.C
 
-#include "CmdRefText.H"
+#include "CmdRefText.h"
 #include <QFontMetricsF>
-#include "Rotate.H"
+#include "Rotate.h"
 #include <QDebug>
 
 static CBuilder<CmdRefText> cbRefText("reftext");

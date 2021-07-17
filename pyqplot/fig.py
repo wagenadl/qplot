@@ -32,18 +32,20 @@ def figure(fn=None, w=5, h=None):
     W defaults to 5 inches.
     fn = FIGURE('', w, h) opens a new QPlot figure of given size (in inches)
     with a temporary filename.'''
-    if fn in qi.figs:
-        qi.f = qi.figs[fn]
-        return fn
-    qi.f = qi.Figure(fn, w, h)
-    qi.figs[qi.f.fn] = qi.f
-    return qi.f
+    if qi.figisopen(fn):
+        qi.f = qi.refigure(fn, w, h)
+    else:
+        qi.f = qi.Figure(fn, w, h)
+        qi.figs[qi.f.fn] = qi.f
+    if utils.isempty(fn):
+        return qi.f.fn
+    # Default: return nothing
 
 def select(fn):
     '''SELECT - Select a previously created QPlot figure for more work
     SELECT(fn), where FN is the name of a previously created QPlot figure,
     directs subsequent QPlot commands to that figure.'''
-    if not fn.endswith('.qpt'):
+    if fn not in qi.figs and not fn.endswith('.qpt'):
         fn += '.qpt'
     if fn in qi.figs:
         qi.f = qi.figs[fn]
@@ -162,11 +164,12 @@ def relpanel(id, rect):
 def subplot(rows, cols, idx):
     '''SUBPLOT - Define a new subpanel in Matlab/Octave style
     SUBPLOT(rows, cols, idx) defines a new subpanel in Matlab/Octave style.
-    id = SUBPLOT(...) returns the ID of the subpanel, for use with PANEL.'''
+    id = SUBPLOT(...) returns the ID of the subpanel, for use with PANEL.
+    Note that idx counts from 0, unlike in Matlab/Octave'''
     h = 1./rows
     w = 1./cols
-    x = w * ((idx-1) % cols)
-    y = h * ((idx-1) // cols)
+    x = w * (idx % cols)
+    y = h * (idx // cols)
     qi.ensure()
     for k in range(26):
         id = '%c' % (65 + k)
@@ -179,12 +182,15 @@ def subplot(rows, cols, idx):
             return
     qi.error('Too many panels')
     
-def save(ofn=None, reso=None):
+def save(ofn=None, reso=300, qual=95):
     '''SAVE - Saves a qplot figure
     SAVE(ofn) saves the current qplot figure to the named file.
     SAVE(ext), where EXT is just a filename extension (without the dot),
     uses the name of the current figure.
-    SAVE(ofn, reso) specifies bitmap resolution for png/jpeg output.
+    Optional argument RESO specifies bitmap resolution for png/jpeg output. 
+    (The default is 300 dpi).
+    Optional argument QUAL specifies quality for jpeg output. (The default
+    is 95.)
     SAVE without arguments saves to pdf.'''
     if qi.f is None:
         error('No window')
@@ -197,7 +203,7 @@ def save(ofn=None, reso=None):
         ext = pth
         pth, oldext = os.path.splitext(qi.f.fn)
         ofn = pth + '.' + ext
-    qi.f.save(ofn, reso)
+    qi.f.save(ofn, reso, qual)
 
 def shrink(margin=1, ratio=None):
     '''SHRINK - Add margin to QPlot panel

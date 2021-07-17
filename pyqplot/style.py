@@ -43,7 +43,9 @@ def pen(color=None, width=None, join=None, cap=None, pattern=None, \
         stroke and space lengths, or it may be a tuple ('dot', vec) where
         VEC is a vector of space lengths.
       ALPHA specifies transparency between 0 and 1.
-      ID must be a single capital letter'''
+      ID must be a single capital letter.
+    Note that the string 'none' is different from the Python constant None,
+    the latter meaning "do not change."'''
     out = [ 'pen' ]
     if id is not None:
         out.append(id)
@@ -84,22 +86,30 @@ pen.joins = utils.wordset('miter bevel round')
 pen.caps = utils.wordset('flat square round')
 pen.patterns = utils.wordset('solid none dash dot')
     
-def font(family, size=10, bold=False, italic=False):
+def font(family=None, size=None, bold=False, italic=False):
     '''FONT - Select font 
-    FONT(family) selects a new font for QPlot.
+    FONT(...) selects a new font for QPlot.
     The default font is Helvetica at 10 points.
-    Optional arguments:
-      SIZE - Set size in points (default: 10)
+    All arguments are optional:
+      FAMILY - Font family name (default: Helvetica)
+      SIZE - Font size in points (default: 10)
       BOLD - Select bold face if true
       ITALIC - Select italic (or slanted) if true'''
+    qi.ensure()
+    if family is None:
+        family = qi.f.fontfamily
+    else:
+        qi.f.fontfamily = family
+    if size is None:
+        size = qi.f.fontsize
+    else:
+        qi.f.fontsize = size
     out = ['font', family]
     if bold:
         out.append('bold')
     if italic:
         out.append('italic')
-    if size:
-        out.append('%g' % size)
-    qi.ensure()
+    out.append('%g' % size)
     qi.f.write(out)
     
 def marker(shape=None, size=None, fill=None):

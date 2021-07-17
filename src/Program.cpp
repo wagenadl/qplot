@@ -19,69 +19,85 @@
 
 // Program.C
 
-#include "Program.H"
+#include "Error.h"
+#include "Program.h"
 #include <QDebug>
-#include "Error.H"
 
-Program::Program() {
-  isOK = false;
+Program::Program(QString lbl) {
+  reset();
+  setLabel(lbl);
 }
 
-bool Program::error(QString const &s) {
-  Error() << s;
-  return false;
-}
-
-bool Program::error(QString const &s, int l) {
-  return error(s + " at " + stmt[l].label());
-}
-
-bool Program::read(QFile &ts, QString label) {
-  isOK = false;
+void Program::reset() {
+  line = 1;
+  isOK = true;
   stmt.clear();
   foreach (Command *c, cmds)
     if (c)
       delete c;
   cmds.clear();
+}
+
+void Program::setLabel(QString lbl) {
+  label = lbl;
+}
+
+void Program::read(QList<Statement> const &ss) {
+  reset();
+  for (Statement const &s: ss) {
+    append(s);
+    if (!isOK)
+      return;
+  }
+}
+
+void Program::append(Statement const &s) {
+  if (s.length() && s[0].str=="figsize") 
+    reset();
+  stmt.append(s);
+  if (!parse(s, line))
+    isOK = false;
+  line += s.lineCount();
+}
+
+bool Program::parse(Statement const &s, int line1) {
+  if (s.length()==0) {
+    cmds.append(0); // maintain 1:1 b/w statemnts and commands
+    return true;
+  }
+
+  if (s[0].typ != Token::BAREWORD) {
+    Error() << QString("Missing keyword at “%2” line %3")
+      .arg(label).arg(line1);
+    cmds.append(0);  // maintain 1:1 b/w statemnts and commands
+    return false;
+  }
+      
+  Command *c = Command::construct(s[0].str);
+  if (!c) {
+    Error() << QString("Unknown keyword “%1” at “%2” line %3")
+      .arg(s[0].str).arg(label).arg(line1);
+    cmds.append(0);  // maintain 1:1 b/w statemnts and commands
+    return false;
+  }
   
-  int line = 1; // count lines in a file from 1
-  while (!ts.atEnd()) {
-    stmt.append(Statement());
-    QString ll = label + " line " + QString::number(line);
-    int dn = stmt.last().read(ts, ll);
-    if (dn)
-      line += dn;
-    else
-      return error("Read error");
+  if (!c->parse(s)) {
+    Error() << QString("Syntax error at “%2” line %3")
+      .arg(label).arg(line1);
+    cmds.append(0);  // maintain 1:1 b/w statemnts and commands
+    return false;
   }
-
-  bool ok = true;
-
-  for (int l=0; l<stmt.size(); l++) {
-    if (stmt[l].length()==0) {
-      cmds.append(0);
-    } else if (stmt[l][0].typ == Token::BAREWORD) {
-      cmds.append(Command::construct(stmt[l][0].str));
-      if (!cmds[l]) 
-	ok = error("Unknown keyword: " + stmt[l][0].str, l);
-      else if (!cmds[l]->parse(stmt[l]))
-	ok = error("Syntax error", l);
-    } else {
-      ok = error("Commands should start with a keyword", l);
-    }
-  }
-  isOK = ok;
-  return ok;  
+  
+  cmds.append(c);
+  return true;
 }
 
 Program::~Program() {
-  foreach (Command *c, cmds)
-    if (c)
-      delete c;
+  reset();
 }
 
 int Program::length() const {
-  return stmt.size();
+  return cmds.size();
 }
 
 static Statement nullStatement;
@@ -93,44 +109,60 @@ Statement const &Program::operator[](int idx) const {
     return nullStatement;
 }
 
-QSet<QString> Program::panels() {
+Command const *Program::command(int idx) const {
+  if (idx>=0 && idx<cmds.size())
+    return cmds[idx];
+  else
+    return 0;
+}
+
+QSet<QString> Program::panels(int upto) {
   QSet<QString> pp;
   pp.insert("-");
-  for (int l=0; l<stmt.size(); l++) 
-    if (stmt[l].length()>=2 && stmt[l][0].str=="panel")
-      pp.insert(stmt[l][1].str);
+  if (upto<0)
+    upto = cmds.size();
+  for (int k=0; k<upto; k++) {
+    Statement const &s(stmt[k]); 
+    if (s.length()>=2 && s[0].str=="panel")
+      pp.insert(s[1].str);
+  }
   return pp;
 }
 
-QRectF Program::dataRange(QString p) {
+QRectF Program::dataRange(QString p, int upto) {
   QRectF r;
   bool in = p=="-";
-  for (int l=0; l<stmt.size(); l++) {
-    if (stmt[l].length()>=2 && stmt[l][0].str=="panel")
-      in = stmt[l][1].str==p;
-    if (in && cmds[l])
-      r |= cmds[l]->dataRange(stmt[l]);
+  if (upto<0)
+    upto = cmds.size();
+  for (int k=0; k<upto; k++) {
+    Statement const &s(stmt[k]); 
+    if (s.length()>=2 && s[0].str=="panel")
+      in = s[1].str==p;
+    if (in && cmds[k])
+      r |= cmds[k]->dataRange(s);
   }
   return r;
 }
 
-void Program::render(Figure &f, bool dryrun) {
-  //qDebug() << "Prorgram ok: " << isOK;
+void Program::render(Figure &f, bool dryrun, int upto) {
   f.reset();
-  //qDebug() << "Program: fudged0? " << f.checkFudged();
+
   if (!isOK)
     return; // won't render if not ok
-  for (int l=0; l<stmt.size(); l++) {
+
+  if (upto<0) 
+    upto = cmds.size();
+
+  for (int l=0; l<upto; l++) {
     if (cmds[l]) {
       cmds[l]->render(stmt[l], f, dryrun);
       if (dryrun && f.checkFudged()) {
-	//qDebug() << "Program: fudged! " << stmt[l].label() << ": " << stmt[l][0].str;
 	f.endGroups();
 	break;
       }
     }
   } 
-  //qDebug() << "Program: fudged? " << f.checkFudged();
+
   f.endGroups(); // this prevents panel change warning when file is incomplete
   f.leavePanel();
 }

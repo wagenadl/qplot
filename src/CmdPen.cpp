@@ -19,10 +19,10 @@
 
 // CmdPen.C
 
-#include "CmdPen.H"
+#include "CmdPen.h"
 #include <QDebug>
 
-#include "Error.H"
+#include "Error.h"
 
 static CBuilder<CmdPen> cbPen("pen");
 

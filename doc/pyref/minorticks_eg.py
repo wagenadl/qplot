@@ -11,4 +11,4 @@ qp.xaxis('', [0, np.pi, 2*np.pi], ['0', 'π', '2π'], y=-1)
 
 qp.minorticks(np.arange(0, 2*np.pi, np.pi/4), ticklen=3)
 
-qp.shrink
+qp.shrink()

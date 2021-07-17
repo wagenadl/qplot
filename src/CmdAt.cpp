@@ -19,9 +19,9 @@
 
 // CmdAt.C
 
-#include "CmdAt.H"
+#include "CmdAt.h"
 #include <QDebug>
-#include "Slightly.H"
+#include "Slightly.h"
 
 static CBuilder<CmdAt> cbAt("at");
 

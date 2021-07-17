@@ -1,9 +1,9 @@
-######################################################################
-# Project file for qplot
-######################################################################
+# QMake project file for qplot |            -*- mode: shell-script; -*-
+# -----------------------------'
 
 QT += gui svg
 CONFIG += debug_and_release
+CONFIG += c++11
 TEMPLATE = app
 TARGET = qplot
 CONFIG(debug, debug|release) { TARGET=$${TARGET}_debug }
@@ -11,51 +11,56 @@ DEPENDPATH += .
 INCLUDEPATH += .
 
 # Input
-HEADERS += Align.H \
-           Axis.H \
-           CmdAlign.H \
-           CmdAt.H \
-           CmdBrush.H \
-           CmdCaligraph.H \
-           CmdEndGroup.H \
-           CmdFigSize.H \
-           CmdFont.H \
-           CmdGLine.H \
-           CmdGroup.H \
-           CmdHairline.H \
-           CmdImage.H \
-           CmdMark.H \
-           CmdMarker.H \
-           CmdPanel.H \
-           CmdPen.H \
-           CmdPlot.H \
-           CmdRefText.H \
-           CmdShareLim.H \
-           CmdShrink.H \
-           CmdText.H \
-           CmdTextOnPath.H \
-           CmdXLim.H \
-           CmdYLim.H \
-           Command.H \
-           Error.H \
-           Factor.H \
-           Figure.H \
-           GroupData.H \
-           Marker.H \
-           Program.H \
-           QPWidget.H \
-           Range.H \
-           Rotate.H \
-           ScrollWidget.H \
-           Slightly.H \
-           Statement.H \
-           Text.H \
-           TextShiftAccum.H \
-           Token.H \
-           Watcher.H \
-           Image.H
+HEADERS += Align.h \
+           Axis.h \
+           CmdAlign.h \
+           CmdAt.h \
+           CmdBrush.h \
+           CmdCaligraph.h \
+           CmdEndGroup.h \
+           CmdFigSize.h \
+           CmdFont.h \
+           CmdGLine.h \
+           CmdGroup.h \
+           CmdHairline.h \
+           CmdImage.h \
+           CmdMark.h \
+           CmdMarker.h \
+           CmdPanel.h \
+           CmdPen.h \
+           CmdPlot.h \
+           CmdRefText.h \
+           CmdShareLim.h \
+           CmdShrink.h \
+           CmdText.h \
+           CmdTextOnPath.h \
+           CmdXLim.h \
+           CmdYLim.h \
+           Command.h \
+           Error.h \
+           Factor.h \
+           Figure.h \
+           GroupData.h \
+           Marker.h \
+           Program.h \
+           QPWidget.h \
+           Range.h \
+           Rotate.h \
+           ScrollWidget.h \
+           Slightly.h \
+           Statement.h \
+           Text.h \
+           TextShiftAccum.h \
+           Token.h \
+           FileReader.h \
+           PipeReader.h \
+           Image.h \
+           Renderer.h \
+           CmdSave.h \
+           pi.h
 
 SOURCES += Axis.cpp \
+           CmdSave.cpp \
            CmdAlign.cpp \
            CmdAt.cpp \
            CmdBrush.cpp \
@@ -97,5 +102,7 @@ SOURCES += Axis.cpp \
            Text.cpp \
            TextShiftAccum.cpp \
            Token.cpp \
-           Watcher.cpp \
-           Image.cpp
+           FileReader.cpp \
+           PipeReader.cpp \
+           Image.cpp \
+           Renderer.cpp

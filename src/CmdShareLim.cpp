@@ -19,12 +19,12 @@
 
 // CmdShareLim.C
 
-#include "CmdShareLim.H"
+#include "CmdShareLim.h"
 
 #include <QDebug>
 #include <math.h>
-#include "Error.H"
-#include "Range.H"
+#include "Error.h"
+#include "Range.h"
 
 static CBuilder<CmdShareLim> cbShareLim("sharelim");
 

@@ -201,9 +201,9 @@ def _qaxis(orient='x', lim_d=None,
         limpx[1] -= qi.f.linewidth/2
     limpy = coord_p + np.zeros((2))
     
-    if lim_d is not None:
+    if lim_d is not None and lim_d is not []:
         ttldx = np.mean(limdx)
-    elif tick_d is not None:
+    elif tick_d is not None and tick_d is not []:
         ttldx = np.mean([tickdx[0], tickdx[-1]])
     else:
         ttldx = np.nan
@@ -217,7 +217,7 @@ def _qaxis(orient='x', lim_d=None,
         
         
     # Draw an axis line if desired
-    if lim_d is not None:
+    if lim_d is not None and len(lim_d)>0:
         if isvert:
             (limdx, limdy) = (limdy, limdx)
             (limpx, limpy) = (limpy, -limpx)
@@ -345,7 +345,10 @@ def xaxis(title='', ticks=None, labels=None, y=0, lim=None, flip=False,
     if ticks is None:
         ticks = utils.sensibleticks(qi.f.datarange[0:2], inc=True)
     if lim is None:
-        lim = [ticks[0], ticks[-1]]
+        if callable(ticks):
+            lim = [ticks(labels[0]), ticks(labels[-1])]
+        else:
+            lim = [ticks[0], ticks[-1]]
     if labels is None:
         labels = qi.f.format(ticks)
     if ticklen is None:
@@ -406,7 +409,10 @@ def yaxis(title='', ticks=None, labels=None, x=0, lim=None, flip=False,
     if ticks is None:
         ticks = utils.sensibleticks(qi.f.datarange[2:4], inc=True)
     if lim is None:
-        lim = [ticks[0], ticks[-1]]
+        if callable(ticks):
+            lim = [ticks(labels[0]), ticks(labels[-1])]
+        else:
+            lim = [ticks[0], ticks[-1]]
     if labels is None:
         labels = qi.f.format(ticks)
     if titlerot is None:

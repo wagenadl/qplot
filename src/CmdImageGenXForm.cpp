@@ -19,7 +19,7 @@
 
 // CmdImage.C
 
-#include "CmdImage.H"
+#include "CmdImage.h"
 #include <QDebug>
 
 

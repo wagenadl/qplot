@@ -19,473 +19,213 @@
 
 // main.C
 
+#include <iostream>
+#include <string>
+
+#include <QCommandLineParser>
 #include <QApplication>
 #include <QWidget>
 #include <QDebug>
 #include <QImage>
 #include <QFile>
 #include <QDir>
-#include <QPdfWriter>
-#include <QSvgGenerator>
 #include <QFileInfo>
-#include <QTemporaryFile>
 #include <QDateTime>
 #include <QProcessEnvironment>
 #include <QDebug>
 
 #include <math.h>
 #include <sys/types.h>
-#include <unistd.h>
 #include <stdio.h>
 
-#include "Program.H"
-#include "Figure.H"
-#include "Command.H"
-#include "QPWidget.H"
-#include "Watcher.H"
-#include "Error.H"
-#include "Factor.H"
+#include "Program.h"
+#include "Figure.h"
+#include "Command.h"
+#include "QPWidget.h"
+#include "FileReader.h"
+#include "PipeReader.h"
+#include "Error.h"
+#include "Factor.h"
+#include "Renderer.h"
 
-double BITMAPRES = 300;
-double OVERRIDEWIDTH = 0;
-double OVERRIDEHEIGHT = 0;
-
-#define MAXTRIES_DEFAULT 100
-int MAXTRIES = MAXTRIES_DEFAULT;
-
-#undef QPLOT_POSTSCRIPT_SUPPORT
-
-extern void setFACTOR(double); // in Factor.C
-
-int error(QString const &s) {
-  Error() << s;
-  return 1;
-}
-
-int error_failtosave(QString const &fn) {
-  if (fn.isEmpty())
-    return error("Failed to save: no filename");
-  QFileInfo fi(fn);
-  QDir d(fi.dir());
-  if (!d.exists())
-    return error(QString::fromUtf8("Failed to save as “%1”: The folder “%2” does not exist.").arg(fn).arg(d.path()));
-  else if (!QFileInfo(d.path()).isWritable())
-    return error(QString::fromUtf8("Failed to save as “%1”: The folder “%2” is not writable.").arg(fn).arg(d.path()));
-  else if (fi.exists() && !fi.isWritable()) 
-    return error(QString::fromUtf8("Failed to save as “%1”: File exists and is not writable.").arg(fn));
-  else
-    return error(QString::fromUtf8("Failed to save as “%1”. (Reason unknown.)"));
-}
-
-int error_unknownextension(QString const &extn) {
-  if (extn.isEmpty())
-    return error("Failed to save: filename without an extension.");
-  else
-    return error(QString::fromUtf8("Failed to save. Unknown extension “") + extn
-		 + QString::fromUtf8("”."));
-}
-
-int usage(int ex=1) {
-  Error() << "Usage: qplot input.txt";
-  Error() << "       qplot input.txt output.pdf|svg|ps";
-  Error() << "       qplot [-rDPI] input.txt output.png|tif|jpg";
-  Error() << "       qplot -wWIDTH -hHEIGHT ... overrides output size (pts)";
-  Error() << "       qplot --maxtries N ... overrides max tries for shrink";
-  Error() << "       qplot --autoraise ... automatically raises the window on update";
-  Error() << "";
-  Error() << "For noninteractive use, input.txt may be '-' for stdin, and";
-  Error() << "output.EXT may be '-.EXT' for stdout.";
-
-  return ex;
-}
-
-QSizeF papersize() {
-  // right now, just return letter size:
-  return QSizeF(8.5*72, 11*72);
-}
-
-void prerender(Program &prog, Figure &fig) {
-  QImage img(1,1,QImage::Format_ARGB32);
-  fig.setSize(QSizeF(1, 1)); // this may be overridden later
-  fig.painter().begin(&img);
-  //fig.painter().scale(iu2pt(), iu2pt());
-  fig.reset();
-  foreach (QString p, prog.panels()) {
-    QRectF dataExtent = prog.dataRange(p);
-    //qDebug() << "1" << p << dataExtent;
-    if (p=="-") {
-      //qDebug() << "xax";
-      fig.xAxis().setDataRange(dataExtent.left(), dataExtent.right());
-      //qDebug() << "yax";
-      fig.yAxis().setDataRange(dataExtent.top(), dataExtent.bottom());
-    } else {
-      fig.panelRef(p).xaxis.setDataRange(dataExtent.left(), dataExtent.right());
-      fig.panelRef(p).yaxis.setDataRange(dataExtent.top(), dataExtent.bottom());
-    }
-  }
-
-  int iter = 0;
-  while (iter<MAXTRIES) {
-    //qDebug() << iter;
-    prog.render(fig, true); // render to determine paper bbox & fudge
-    if (fig.checkFudged()) {
-      //qDebug() << "will reiterate";
-    } else {
-      //qDebug() << "won't reiterate";
-      break;
-    }
-    iter++;
-  } 
-  //  qDebug() << "Hello world";
-  if (MAXTRIES==MAXTRIES_DEFAULT) {
-    if (iter>=MAXTRIES)
-      Error() << "Shrink failed";
-  } else {
-    //qDebug() << "Iterations used: " << iter;
-  }
-
-  fig.painter().end();
-}
-
-int read(Program &prog, QString ifn) {
-  QFile f(ifn);
-  if (f.open(QIODevice::ReadOnly)) {
-    //QTextStream ts(&f);
-    if (prog.read(f, ifn))
-      return 0;
-    Error() << "Interpretation failed";
-  } else {
-    Error() << "Cannot open file";
-  }
-  return 1;
-}  
+#ifdef _WIN32
+#include <io.h>
+#include <fcntl.h>
+#endif
 
 static bool autoraise = false;
 
-int interactive(QString ifn, QApplication *app) {
-  if (ifn=="-")
-    Error() << "Input may not be stdin for interactive use";
+int interactive(QString ifn, QString ttl, Renderer *renderer,
+                QApplication *app) {
+#ifdef _WIN32
+  _setmode(_fileno(stdin), _O_BINARY);
+#endif
   
-  Program prog;
-  read(prog, ifn);
-  Figure fig;
-  fig.setHairline(0);
-  prerender(prog, fig);
-
   QPWidget win;
-  Watcher wtch(ifn, &prog, &fig, &win);
-  int idx = ifn.lastIndexOf('/');
-  win.setWindowTitle("qplot: " + ((idx>=0) ? ifn.mid(idx+1) : ifn));
-  if (autoraise)
-    QObject::connect(&wtch, SIGNAL(ping()), &win, SLOT(raise()));
-  QObject::connect(&wtch, SIGNAL(ping()), &win, SLOT(update()));
-  win.setContents(&fig, &prog);
+  int idx = ttl.lastIndexOf('/');
+  win.setWindowTitle("qplot: " + ((idx>=0) ? ttl.mid(idx+1) : ttl));
+  win.setContents(renderer->figure(), renderer->program());
   win.setMargin(pt2iu(20));
   win.show();
   win.autoSize();
-  wtch.reread(true);
-  QFileInfo fi(ifn);
-  QString path = fi.path();
-  QString leaf = fi.fileName();
-  QFile pidfile(path + "/.qp-" + leaf + ".pid");
-  QFile fbfile(path + "/.qp-" + leaf + ".fb");
-  if (fbfile.exists())
-    win.setFeedbackFile(fbfile.fileName());
-  pidfile.open(QIODevice::WriteOnly);
-  char pid[100];
-  snprintf(pid, 100, "%i\n", getpid());
-  pidfile.write(pid, strlen(pid));
-  pidfile.close();
-  int r = app->exec();
-  pidfile.remove();
-  return r;
-}
 
-bool renderSVG(Program &prog, Figure &fig, QString ofn) {
-  QSvgGenerator img;
-  img.setFileName(ofn);
-  img.setResolution(90); // anything else seems to be poorly supported
-  img.setViewBox(QRectF(QPointF(0,0),
-			QSizeF(90./72*iu2pt(fig.extent().width()),
-			       90./72*iu2pt(fig.extent().height()))));
-  if (!fig.painter().begin(&img))
-    return false;
-  fig.painter().scale(90./72*iu2pt(), 90./72*iu2pt());
-  fig.setDashScale(90./72*iu2pt());
-  fig.painter().translate(fig.extent().left(),
-			  fig.extent().top());
-  prog.render(fig);
-  fig.painter().end();
-  return true;
-}
+  bool isstdin = ifn=="-" || ifn=="";
 
-bool renderPDF(Program &prog, Figure &fig, QString ofn) {
-  QPdfWriter img(ofn);
-  img.setPageSizeMM(QSizeF(iu2pt(fig.extent().width())*25.4/72,
-			   iu2pt(fig.extent().height())*25.4/72));
+  FileReader *filereader = 0;
+  PipeReader *pipereader = 0;
 
-  if (!fig.painter().begin(&img))
-    return false;
+  if (isstdin) {
+    pipereader = new PipeReader();
+    QObject::connect(pipereader, &PipeReader::ready,
+                     &win, [&pipereader, &win, &renderer]() {
+                       QList<Statement> ss = pipereader->readQueue();
+                       if (ss.size()) {
+                         int n0 = renderer->program()->length();
+                         for (auto s: ss) 
+                           renderer->program()->append(s);
+                         renderer->prerender();
+                         int n1 = renderer->program()->length();
+                         renderer->dosaves(n0, n1);
+                         win.update();
+                       }
+                     },
+                     Qt::QueuedConnection);
+    QObject::connect(pipereader, &PipeReader::finished,
+                     app, &QApplication::quit);
+    pipereader->start();
+  } else {
+    filereader = new FileReader(ifn);
+    if (filereader->contents().valid) 
+      renderer->program()->read(filereader->contents().contents);
+    else
+      Error() << filereader->contents().error;
 
-  double dpix = img.logicalDpiX();
-  double dpiy = img.logicalDpiY();
+    if (autoraise)
+      QObject::connect(filereader, &FileReader::ready,
+                       &win, &QWidget::raise);
 
-  fig.painter().translate(-10*dpix/72., -10*dpiy/72.);
-  // I don't know why this translation is needed.
+    QObject::connect(filereader, &FileReader::ready,
+                     &win, [filereader, &win, &renderer]() {
+                       FileReader::Contents c(filereader->contents());
+                       if (c.valid)
+                         renderer->program()->read(c.contents);
+                       else
+                         Error() << c.error;
+                       renderer->prerender();
+                       if (c.valid)
+                         renderer->dosaves();
+                       win.update();
+                     },
+                     Qt::QueuedConnection);
 
-  fig.painter().scale(iu2pt()*dpix/72.0,
-		      iu2pt()*dpix/72.0);
-  fig.setDashScale(iu2pt()*sqrt(dpix*dpiy)/72.0);
-  fig.painter().translate(-fig.extent().left(),
-			  -fig.extent().top());
-  prog.render(fig);
-  fig.painter().end();
-  return true;
-}
-
-#ifdef QPLOT_POSTSCRIPT_SUPPORT
-
-bool renderPS(Program &prog, Figure &fig, QString ofn, QString ttl="") {
-  QSizeF p = papersize();
-  QPrinter img(QPrinter::ScreenResolution);
-  img.setResolution(72);
-  img.setPaperSize(p, QPrinter::Point);
-  img.setPageMargins(0, 0, 0, 0, QPrinter::Point);
-  QSizeF imsize(QSizeF(iu2pt(fig.extent().width()),
-		       iu2pt(fig.extent().height())));
-  img.setOutputFileName(ofn);
-  img.setOutputFormat(QPrinter::PostScriptFormat);
-  if (!fig.painter().begin(&img))
-    return false;
-  fig.painter().translate((p.width()-imsize.width())/2,
-			  (p.height()-imsize.height())/2);
-
-  /* Draw some crop marks */
-  fig.painter().save();
-  { QPen p; p.setWidth(.5); fig.painter().setPen(p); }
-  const int MINX = 5;
-  const int MAXX = 20;
-  // tl
-  fig.painter().drawLine(-MAXX,0,-MINX,0);
-  fig.painter().drawLine(0,-MAXX,0,-MINX);
-  // bl
-  fig.painter().drawLine(-MAXX,imsize.height(),-MINX,imsize.height());
-  fig.painter().drawLine(0,imsize.height()+MINX,0,imsize.height()+MAXX);
-  // tr
-  fig.painter().drawLine(imsize.width()+MINX,0,imsize.width()+MAXX,0);
-  fig.painter().drawLine(imsize.width(),-MINX,imsize.width(),-MAXX);
-  // tr
-  fig.painter().drawLine(imsize.width()+MINX,imsize.height(),
-			 imsize.width()+MAXX,imsize.height());
-  fig.painter().drawLine(imsize.width(),imsize.height()+MINX,
-			 imsize.width(),imsize.height()+MAXX);
-  // render title
-  fig.painter().setFont(QFont("Helvetica", 10));
-  fig.painter().drawText(10, imsize.height()+18, ttl);
-  fig.painter().restore();
-  /* Done with crop marks */
-  fig.painter().scale(iu2pt(), iu2pt());
-  fig.setDashScale(iu2pt());
-  fig.painter().translate(-fig.extent().left(),
-			  -fig.extent().top());
-  prog.render(fig);
-  fig.painter().end();
-  return true;
-}
-
-#endif
-
-bool renderImage(Program &prog, Figure &fig, QString ofn) {
-  QImage img(int(fig.extent().width()),
-	     int(fig.extent().height()),
-	     QImage::Format_ARGB32);
-  img.fill(0xffffffff);
-  fig.painter().begin(&img);
-  fig.setHairline(0);
-  //  fig.painter().scale(iu2pt(), iu2pt());
-  fig.setDashScale(1);
-  fig.painter().translate(-fig.extent().left(),
-			  -fig.extent().top());
-  prog.render(fig);
-  fig.painter().end();
-  return img.save(ofn);
-}
-
-int noninteractive(QString ifn, QString ofn) {
-  if (ofn=="-")
-    ofn = "-.ps";
+    filereader->start(); // starts the thread
+  }
   
-  int idx = ofn.lastIndexOf(".");
-  if (idx<0)
-    return error("Output file must have an extension");
-  QString extn = ofn.mid(idx+1);
+  renderer->prerender();
 
-  bool extnIsBitmap = extn=="png" || extn=="jpg" || extn=="tif" || extn=="tiff";
-  if (extnIsBitmap)
-    setFACTOR(BITMAPRES/72);
+  return app->exec();
+}
 
-  Program prog;
-  if (ifn.isEmpty() || ifn=="-") {
-    QFile f; f.open(stdin,QFile::ReadOnly);
-    if (!prog.read(f, "<stdin>")) {
-      Error() << "Interpretation error";
-      return 1;
-    }
+int noninteractive(QString ifn, QString ofn, Renderer *renderer) {
+  FileReader reader(ifn);
+  FileReader::Contents contents = reader.contents();
+  if (contents.valid) {
+    renderer->program()->setLabel(ifn);
+    renderer->program()->read(contents.contents);
+    if (renderer->save(ofn))
+      return 0;
+    else
+      return 2;
   } else {
-    read(prog, ifn);
+    Error() << contents.error;
+    return 2;
   }
+}
 
-  QTemporaryFile tmpf;
-  bool usetmpf = false;
-  if (ofn == "-."+extn) {
-    // write to stdout
-    if (!tmpf.open())
-      return error("Cannot write to temporary file");
-    tmpf.close();
-    ofn = tmpf.fileName();
-    usetmpf = true;
-  }
-
-  Figure fig;
-  fig.overrideSize(QSizeF(pt2iu(OVERRIDEWIDTH),
-			  pt2iu(OVERRIDEHEIGHT)));
-  prerender(prog, fig);
-
-  if (extn == "svg") {
-    if (!renderSVG(prog, fig, ofn))
-      return error_failtosave(ofn);
-   } else if (extn == "eps") {
-    return error("Writing to .eps is not supported in this version");
-  } else if (extn == "pdf") {
-    if (!renderPDF(prog, fig, ofn))
-      return error_failtosave(ofn);
-  } else if (extn=="ps") {
-#ifdef QPLOT_POSTSCRIPT_SUPPORT
-    renderPS(prog, fig, ofn, ifn + QString::fromUtf8(" — ")
-	     + QDateTime::currentDateTime()
-	     .toString(QString::fromUtf8("MM/dd/’yy hh:mm")));
-#else
-    return error("Writing to .ps is not supported in this version");
-#endif
-  } else if (extnIsBitmap) {
-    if (!renderImage(prog, fig, ofn))
-      return error_failtosave(ofn);
-  } else {
-    return error_unknownextension(extn);
-  }
-
-  if (usetmpf) {
-    if (!tmpf.open())
-      error("Cannot re-read temporary file");
-    QFile f;
-    if (!f.open(stdout,QFile::WriteOnly))
-      error("Cannot write to stdout");
-    while (1) {
-      QByteArray ba = tmpf.read(1024*1024);
-      if (ba.isEmpty())
-	break;
-      if (f.write(ba)!=ba.size())
-	error("Failure to write to stdout");
-    }
-    if (!tmpf.atEnd())
-      error("Error reading from temporary file");
-  }
+int showVersion() {
+  std::cerr << "QPlot 0.3.0\n";
+  std::cerr << "Copyright (C) 2014-2021 Daniel A. Wagenaar\n";
+  std::cerr << "\n";
+  std::cerr << "QPlot is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.\n\n";
+  std::cerr << "QPlot is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.\n\n";
+  std::cerr << "You should have received a copy of the GNU General Public License along with this program. If not, see www.gnu.org/licenses/gpl.html.\n";
   return 0;
-}  
+};
+
+
 
 int main(int argc, char **argv) {
   QApplication app(argc, argv);
-
-  QProcessEnvironment env(QProcessEnvironment::systemEnvironment());
-  if (env.contains("QPLOT_MAXITER")) {
-    MAXTRIES = env.value("QPLOT_MAXITER").toInt();
-    qDebug() << "Max shrink iterations set to " << MAXTRIES;
-  }
-
-  int argi=1;
-  if (argc<2)
-    return usage();
-  while (argi<argc) {
-    QString arg = argv[argi];
-    if (arg=="--help") {
-      return usage(0);
-    } else if (arg=="-r") {
-      argi++;
-      if (argi>=argc)
-	return usage();
-      arg = argv[argi];
-      bool ok;
-      BITMAPRES = arg.toDouble(&ok);
-      if (!ok)
-	return usage();
-      argi++;
-    } else if (arg.startsWith("-r")) {
-      bool ok;
-      BITMAPRES = arg.mid(2).toDouble(&ok);
-      if (!ok)
-	return usage();
-      argi++;
-    } else if (arg=="-w") {
-      argi++;
-      if (argi>=argc)
-	return usage();
-      arg = argv[argi];
-      bool ok;
-      OVERRIDEWIDTH = arg.toDouble(&ok);
-      if (!ok)
-	return usage();
-      argi++;
-    } else if (arg.startsWith("-w")) {
-      bool ok;
-      OVERRIDEWIDTH = arg.mid(2).toDouble(&ok);
-      if (!ok)
-	return usage();
-      argi++;
-    } else if (arg=="-h") {
-      argi++;
-      if (argi>=argc)
-	return usage();
-      arg = argv[argi];
-      bool ok;
-      OVERRIDEHEIGHT = arg.toDouble(&ok);
-      if (!ok)
-	return usage();
-      argi++;
-    } else if (arg.startsWith("-h")) {
-      bool ok;
-      OVERRIDEHEIGHT = arg.mid(2).toDouble(&ok);
-      if (!ok)
-	return usage();
-      argi++;
-    } else if (arg=="--autoraise") {
-      autoraise = true;
-      argi++;
-    } else if (arg=="--maxtries") {
-      argi++;
-      if (argi>=argc)
-	return usage();
-      arg = argv[argi];
-      bool ok;
-      MAXTRIES = arg.toInt(&ok);
-      if (!ok)
-	return usage();
-      argi++;
-    } else if (arg.startsWith("--maxtries=")) {
-      argi++;
-      bool ok;
-      MAXTRIES=arg.mid(QString("--maxtries=").length()).toInt(&ok);
-      if (!ok)
-	return usage();
-    } else {
-      break;
-    }
-  }
-
-  if (argc-argi == 1) 
-    return interactive(argv[argi], &app);
-  else if (argc-argi == 2) 
-    return noninteractive(argv[argi], argv[argi+1]);
-  else 
-    return usage();
+  app.setApplicationName("QPlot");
+  app.setApplicationVersion("0.3.0");
   
+  QCommandLineOption cli_autoraise("autoraise",
+                             "Automatically raise the window on update");
+  QCommandLineOption cli_width("w", "Override output width (points)",
+                               "w");
+  QCommandLineOption cli_height("h", "Override output height (points)",
+                               "h");
+  QCommandLineOption cli_reso(QStringList() << "r" << "res" << "resolution",
+                              "Specify output resolution",
+                              "res", "300");
+  QCommandLineOption cli_qual(QStringList() << "q" << "quality",
+                              "Specify output jpeg quality",
+                              "qual", "95");
+  QCommandLineOption cli_maxtries("maxtries",
+                                  "Override max tries for shrink",
+                                  "N", "100");
+  QCommandLineOption cli_version(QStringList() << "v" << "version",
+                                 "Show version information");
+  QCommandLineOption cli_title("title", "Override window title", "title");
+  QProcessEnvironment env(QProcessEnvironment::systemEnvironment());
+  if (env.contains("QPLOT_MAXITER"))
+    cli_maxtries.setDefaultValue(env.value("QPLOT_MAXITER"));
+
+  QCommandLineParser cli;
+
+  cli.addHelpOption();
+  cli.addPositionalArgument("input", "Input filename (“-” for stdin)");
+  cli.addPositionalArgument("output", "Output filename (“-.ext” for stdout)",
+                            "[output]");
+  cli.addOption(cli_reso);
+  cli.addOption(cli_qual);
+  cli.addOption(cli_width);
+  cli.addOption(cli_height);
+  cli.addOption(cli_autoraise);
+  cli.addOption(cli_maxtries);
+  cli.addOption(cli_title);
+  cli.addOption(cli_version);
+
+  cli.setApplicationDescription("\n"
+                                "QPlot is Publication-quality plotting for Python, Octave, or Matlab.\n"
+                                "More information is at https://danielwagenaar.net/qplot.");
+                                    
+  cli.process(app);
+
+  if (cli.isSet("version")) 
+    return showVersion();
+
+  autoraise = cli.isSet("autoraise");
+  
+  QStringList args = cli.positionalArguments();
+  if (args.size() < 1 || args.size() > 2)
+    cli.showHelp(1);
+
+  Renderer renderer;
+  if (cli.isSet("w"))
+    renderer.overrideWidth(cli.value("w").toDouble());
+  if (cli.isSet("h"))
+    renderer.overrideWidth(cli.value("h").toDouble());
+  renderer.setMaxTries(cli.value("maxtries").toInt());
+  renderer.setBitmapResolution(cli.value("r").toInt());
+  renderer.setBitmapQuality(cli.value("q").toInt());
+
+  QString ttl = args[0];
+  if (cli.isSet("title"))
+    ttl = cli.value("title");
+  
+  if (args.size()==1) 
+    return interactive(args[0], ttl, &renderer, &app);
+  else 
+    return noninteractive(args[0], args[1], &renderer);
 }

@@ -19,9 +19,9 @@
 
 // Axis.C
 
-#include "Axis.H"
+#include "Axis.h"
 #include <QDebug>
-#include "Error.H"
+#include "Error.h"
 #include <math.h>
 
 Axis::Axis() {

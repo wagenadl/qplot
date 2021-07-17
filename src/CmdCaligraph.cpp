@@ -19,8 +19,8 @@
 
 // CmdCaligraph.C
 
-#include "CmdCaligraph.H"
-#include "Rotate.H"
+#include "CmdCaligraph.h"
+#include "Rotate.h"
 
 #include <QDebug>
 #include <math.h>

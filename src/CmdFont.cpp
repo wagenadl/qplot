@@ -19,7 +19,7 @@
 
 // CmdFont.C
 
-#include "CmdFont.H"
+#include "CmdFont.h"
 
 
 static CBuilder<CmdFont> cbFont("font");

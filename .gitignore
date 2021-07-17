@@ -1,5 +1,6 @@
 qplot
-build
+build*
+release*
 build-doc
 build-web
 octave-core
@@ -12,3 +13,4 @@ debian/files
 *debhelper*
 __pycache__
 hello.qpt
+src/CMakeLists.txt

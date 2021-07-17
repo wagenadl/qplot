@@ -19,11 +19,12 @@
 
 // CmdMark.C
 
-#include "CmdMark.H"
+#include "CmdMark.h"
 #include <math.h>
 #include <QPolygonF>
-#include "Rotate.H"
-#include "Slightly.H"
+#include "Rotate.h"
+#include "Slightly.h"
+#include "pi.h"
 
 static CBuilder<CmdMark> cbMark("mark");
 static CBuilder<CmdMark> cbPMark("pmark");
@@ -40,7 +41,7 @@ static void rendermark(QPainter &p, QPointF const &xy,
     p.drawEllipse(xy, r, r);
     break;
   case Marker::SQUARE:
-    r *= sqrt(M_PI/4);
+    r *= sqrt(PI/4);
     if (asSpine) {
       p.drawLine(QPointF(xy)+QPointF(-r,-r), QPointF(xy)+QPointF(r,r));
       p.drawLine(QPointF(xy)+QPointF(-r,r), QPointF(xy)+QPointF(r,-r));
@@ -49,7 +50,7 @@ static void rendermark(QPainter &p, QPointF const &xy,
     }
     break;
   case Marker::DIAMOND: 
-    r *= sqrt(2*M_PI/4);
+    r *= sqrt(2*PI/4);
     pf.resize(4);
     pf[0] = xy + QPointF(-r, 0);
     pf[1] = xy + QPointF(0, -r);
@@ -124,8 +125,8 @@ static void rendermark(QPainter &p, QPointF const &xy,
     r1=r1*r1;
     pf.resize(10);
     for (int k=0; k<10; k++) {
-      double dy = -r*cos(2*M_PI*k/10);
-      double dx = r*sin(2*M_PI*k/10);
+      double dy = -r*cos(2*PI*k/10);
+      double dx = r*sin(2*PI*k/10);
       if (k&1) {
 	dx *= r1;
 	dy *= r1;
@@ -144,8 +145,8 @@ static void rendermark(QPainter &p, QPointF const &xy,
     double r1 = 1/sqrt(3);
     pf.resize(12);
     for (int k=0; k<12; k++) {
-      double dy = r*cos(2*M_PI*k/12);
-      double dx = -r*sin(2*M_PI*k/12);
+      double dy = r*cos(2*PI*k/12);
+      double dx = -r*sin(2*PI*k/12);
       if (k&1) {
 	dx *= r1;
 	dy *= r1;
