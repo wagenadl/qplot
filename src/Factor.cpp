@@ -19,7 +19,7 @@
 
 // Factor.C
 
-#include "Factor.H"
+#include "Factor.h"
 
 static double FACTOR = 30.0;
 

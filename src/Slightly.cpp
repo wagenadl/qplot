@@ -19,7 +19,7 @@
 
 // Slightly.C
 
-#include "Slightly.H"
+#include "Slightly.h"
 
 #define EPSI (1e-25)
 

@@ -86,7 +86,8 @@ def line(xx, yy):
 def area(xx, yy):
     '''AREA - Draw a polygon in paper space
     AREA(xx, yy) draws a polygon with vertices at (XX,YY). The polygon
-    is closed (i.e., it is not necessary for xx(end) to equal xx(1)).
+    is automatically closed (i.e., it is not necessary for xx[-1] to equal
+    xx[0]).
     The polygon is filled with the current brush.
     XX and YY are given in postscript points. See also PATCH and GAREA.'''
     qi.plot(xx, yy, cmd='area')
@@ -191,14 +192,14 @@ def gline2(vglcs):
 def garea(ptspecs):
     '''GAREA - Generalized area drawing
     GAREA is to PATCH and AREA as GLINE is to PLOT and LINE.
-    All the same commands are supported.'''
+    See GLINE for supported commands.'''
 
     _gline('garea', ptspecs)
 
 def garea2(vglcs):
     '''GAREA2 - Generalized area drawing
     GAREA2 is to PATCH and AREA as GLINE2 is to PLOT and LINE.
-    All the same commands are supported.'''
+    See GLINE2 for supported commands.'''
     _gline2('garea', vglcs)
     
 def mm(x=1):

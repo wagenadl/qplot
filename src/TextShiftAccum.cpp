@@ -19,7 +19,7 @@
 
 // TextShiftAccum.C
 
-#include "TextShiftAccum.H"
+#include "TextShiftAccum.h"
 #include <QDebug>
 
 TextShiftAccum::TextShiftAccum() {

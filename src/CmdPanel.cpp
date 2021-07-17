@@ -19,7 +19,7 @@
 
 // CmdPanel.C
 
-#include "CmdPanel.H"
+#include "CmdPanel.h"
 
 
 static CBuilder<CmdPanel> cbPanel("panel");

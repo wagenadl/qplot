@@ -19,38 +19,88 @@
 
 // Statement.C
 
-#include "Statement.H"
+#include "Statement.h"
 #include <math.h>
 #include <QStringList>
-#include "Error.H"
+#include "Error.h"
+#include <iostream>
 
 Statement::Statement() {
+  clear();
 }
 
-void Statement::reset() {
+void Statement::clear() {
   toks.clear();
   dat.clear();
+  nlines = 0;
 }
 
+class Reader {
+public:
+    Reader(QFile &src): qfile(&src), cin(0), q(true) {}
+    Reader(std::istream &src): qfile(0), cin(&src), q(false) {}
+    QString readline() {
+        if (q) {
+            return QString::fromUtf8(qfile->readLine());
+        } else {
+            std::string s;
+            std::getline(*cin, s);
+            return QString::fromUtf8(s.data()) + "\n";
+        }
+    }
+    QVector<unsigned char> readbytes(int N) {
+        QVector<unsigned char> v(N);
+        if (q)
+            qfile->read((char*)v.data(), N);
+        else
+            cin->read((char*)v.data(), N);
+    return v;
+    }
+    QVector<double> readdoubles(int N) {
+        QVector<double> v(N);
+        if (q)
+            qfile->read((char*)v.data(), N*sizeof(double));
+        else
+            cin->read((char*)v.data(), N*sizeof(double));
+    return v;
+    }
+private:
+    QFile *qfile;
+    std::istream *cin;
+    bool q;
+};
+
 int Statement::read(QFile &source, QString label) {
+    Reader reader(source);
+    return read(reader, label);
+}
+
+int Statement::read(std::istream &source, QString label) {
+    Reader reader(source);
+    return read(reader, label);
+}
+
+int Statement::read(Reader &source, QString label) {
   lbl = label;
-  reset();
+  clear();
 
   inString = false;
   lev = 0;
   dataRefs.clear();
 
-  QString line(QString::fromUtf8(source.readLine()));
+  QString line(source.readline());
+
   if (line.isNull() || !line.endsWith('\n'))
     return 0;
-  int nlines = 1;
+
+  nlines = 1;
   
   QStringList words = line.split(QRegExp("[ \t\n\r]+"));
   foreach (QString w, words) 
     process(w);
 
   while (lev>0) {
-    QString line(QString::fromUtf8(source.readLine()));
+    QString line(source.readline());
     if (line.isNull() || !line.endsWith('\n'))
       break;
     nlines ++;
@@ -69,11 +119,10 @@ int Statement::read(QFile &source, QString label) {
       // unsigned characters
       int N = desc.mid(2).toInt(&ok);
       if (ok) {
-	QVector<unsigned char> uc(N);
-	int Nread = source.read((char*)uc.data(), N);
-	if (Nread<N) {
-	  Error() << "End-of-file while reading data";
-	  return 0;
+        QVector<unsigned char> uc = source.readbytes(N);
+        if (uc.size()<N) {
+          Error() << "End-of-file while reading data";
+          return 0;
 	}
 	QVector<double> data(N);
 	for (int n=0; n<N; n++)
@@ -85,9 +134,8 @@ int Statement::read(QFile &source, QString label) {
     } else {
       int N = desc.toInt(&ok);
       if (ok) {
-	QVector<double> data(N);
-	int Nread = source.read((char*)data.data(), N*sizeof(double));
-	if (Nread<N*int(sizeof(double))) {
+        QVector<double> data = source.readdoubles(N);
+        if (data.size()<N) {
 	  Error() << "End-of-file while reading data";
 	  return 0;
 	}
@@ -254,4 +302,8 @@ QVector<double> const &Statement::data(int idx) const {
 
 QString const &Statement::label() const {
   return lbl;
+}
+
+int Statement::lineCount() const {
+  return nlines;
 }

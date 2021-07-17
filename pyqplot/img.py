@@ -10,25 +10,16 @@
 from . import qi
 from . import axes
 from . import utils
+from . import style
+from . import data as qpdata
 import numpy as np
 
-def image(data, rect=None, xx=None, yy=None):
-    '''IMAGE - Plot an image
-    IMAGE(data) plots an image at (0,0)+(XxY). Note that that differs
-    by 0.5 units from matlab conventions. The image must be YxXx1 or YxXx3
-    and may be either UINT8 or FLOAT.
-    IMAGE(data, rect=(x, y, w, h)) specifies location and scale.
-    If H is negative, the image is plotted upside down.
-    If W is negative, the image is flipped right to left.
-    Instead of RECT, optional arguments XX and YY may be used to specify
-    bin centers. Only the first and last elements of the vectors are
-    actually used.'''
-    S = data.shape
+def _getrect(S, rect, xx, yy):
     if rect is None:
         X = S[1]
         Y = S[0]
         if xx is None and yy is None:
-            rect = (0, 0, X, Y)
+            return (0, 0, X, Y)
         else:
             xx = np.array(xx)
             yy = np.array(yy)
@@ -40,8 +31,79 @@ def image(data, rect=None, xx=None, yy=None):
                 dy = 1
             else:
                 dy = (yy.flat[0] - yy.flat[-1]) / (Y-1)
-            rect = (xx.flat[0]-dx/2, yy.flat[-1]-dy/2, X*dx, Y*dy)
+            return (xx.flat[0]-dx/2, yy.flat[-1]-dy/2, X*dx, Y*dy)
+    else:
+        return rect
 
+def _imagehard(data, rect, X, Y, C):
+    style.pen('k', 0, 'miter', 'square', 'solid', 1)
+    x0 = rect[0]
+    y0 = rect[3]
+    dx = rect[2]/X
+    dy = -rect[3]/Y
+    if C==1:
+        def color(x,y):
+            c = data[y,x] / 255.0
+            style.pen((c,c,c))
+            style.brush((c,c,c))
+    elif C==2:
+        def color(x,y):
+            c, a = data[y,x,:] / 255.0
+            style.pen((c,c,c), alpha=a)
+            style.brush((c,c,c), alpha=a)
+    elif C==3:
+        def color(x,y):
+            r, g, b = data[y,x,:] / 255.0
+            style.pen((r, g, b))
+            style.brush((r, g, b))
+    elif C==4:
+        def color(x,y):
+            r, g, b, a = data[y,x,:] / 255.0
+            style.pen((r, g, b), alpha=a)
+            style.brush((r, g, b), alpha=a)
+    else:
+        raise ValueError('Unexpected color depth')
+    for y in range(Y):
+        for x in range(X):
+            color(x,y)
+            xa = x0 + dx*x
+            ya = y0 + dy*y
+            qpdata.patch((xa, xa+dx, xa+dx, xa),
+                       (ya, ya, ya+dy, ya+dy))
+
+def _imagenormal(data, rect, X, Y, C):
+    if C==1:
+        qi.f.write('imageg %g %g %g %g %i *uc%i\n'
+                   % (rect[0], rect[1], rect[2], rect[3], X, X*Y*C))
+    elif C==3:
+        qi.f.write('image %g %g %g %g %i *uc%i\n'
+                   % (rect[0], rect[1], rect[2], rect[3], X, X*Y*C))
+    elif C==2 or C==4:
+        qi.f.write('image [ %g %g %g %g ] [ 0 0 0 0 ] [ %i %i %i ] *uc%i\n'
+                   % (rect[0], rect[1], rect[2], rect[3],
+                      X, Y, C,
+                      X*Y*C))
+    else:
+        qi.error('Image data must be YxX or YxXx3')
+    qi.f.writeuc(data)
+  
+def image(data, rect=None, xx=None, yy=None, hard=False):
+    '''IMAGE - Plot an image
+    IMAGE(data) plots an image at (0,0)+(XxY). Note that that differs
+    by 0.5 units from matlab conventions. The image must be YxXx1 or YxXx3
+    and may be either UINT8 or FLOAT.
+    IMAGE(data, rect=(x, y, w, h)) specifies location and scale.
+    If H is negative, the image is plotted upside down.
+    If W is negative, the image is flipped right to left.
+    Instead of RECT, optional arguments XX and YY may be used to specify
+    bin centers. Only the first and last elements of the vectors are
+    actually used.
+    Optional argument HARD, if true, specifies that pixels should be
+    individually drawn with PATCH rather than as a pixmap. This ensures
+    sharpness in pdf output for some viewers.'''
+    S = data.shape
+    rect = _getrect(S, rect, xx, yy)
+    
     if rect[2] < 0:
         data = np.flip(data, 1)
         rect = (rect[0] + rect[2], rect[1], -rect[2], rect[3])
@@ -61,20 +123,17 @@ def image(data, rect=None, xx=None, yy=None):
     qi.ensure()
     if data.dtype!='uint8':
         data = (255*data+.5).astype('uint8')
-    if C==1:
-        qi.f.write('imageg %g %g %g %g %i *uc%i\n'
-                   % (rect[0], rect[1], rect[2], rect[3], X, X*Y*C))
-    elif C==3:
-        qi.f.write('image %g %g %g %g %i *uc%i\n'
-                   % (rect[0], rect[1], rect[2], rect[3], X, X*Y*C))
+
+    if hard:
+        _imagehard(data, rect, X, Y, C)
     else:
-        qi.error('Image data must be YxX or YxXx3')
-    qi.f.writeuc(data)
+        _imagenormal(data, rect, X, Y, C)
+        
     qi.f.imrect = rect
     qi.f.updaterange([rect[0], rect[0]+rect[2]],
                      [rect[1], rect[1]+rect[3]])
 
-def imsc(data, rect=None, c0=None, c1=None, xx=None, yy=None):
+def imsc(data, rect=None, c0=None, c1=None, xx=None, yy=None, hard=False):
     '''IMSC - Plot 2D data as an image using lookup table
     IMSC(data) plots the DATA as an image using a lookup previously
     set by QLUT. The color axis limits default to the min and max of the data.
@@ -84,23 +143,26 @@ def imsc(data, rect=None, c0=None, c1=None, xx=None, yy=None):
     lut = qi.f.lut
     nanc = qi.f.lut_nan
     if c0 is None:
-        c0 = np.min(data)
+        c0 = np.nanmin(data)
     if c1 is None:
-        c1 = np.max(data)
+        c1 = np.nanmax(data)
     qi.f.clim = (c0, c1)
     N = lut.shape[0]
     data = np.floor((N-.0001)*(data-c0)/(c1-c0))
+    Y,X = data.shape
+    data = data.flatten()
     isn = np.isnan(data).nonzero()[0]
     data[isn] = 0
     data[data<=0] = 0
     data[data>=N-1] = N-1
     data = data.astype('int')
-    data = lut[data[:], :]
+    data = lut[data, :]
     K = isn.size
     if K>0:
-        nanc = np.repeat(nanc, K, 0)
+        nanc = np.repeat(np.reshape(nanc, [1, 3]), K, 0)
         data[isn,:] = nanc
-    image(data, rect, xx, yy)
+    data = np.reshape(data, [Y, X, 3])
+    image(data, rect, xx, yy, hard)
 
 def lut(cc=None, nanc=None):
     '''LUT - Set lookup table for future IMSC.
@@ -112,6 +174,7 @@ def lut(cc=None, nanc=None):
     lut, nanc = LUT returns current values.'''
 
     qi.ensure()
+    ret = True
     if cc is not None:
         cc = cc[:,0:3]
         if cc.dtype!='uint8':
@@ -120,6 +183,7 @@ def lut(cc=None, nanc=None):
             cc[cc>255]=255
             cc = cc.astype('uint8')
         qi.f.lut = cc
+        ret = False
     if nanc is not None:
         nanc = np.reshape(np.array(nanc),(1,3))
         nanc = nanc[:,0:3]
@@ -129,7 +193,8 @@ def lut(cc=None, nanc=None):
             nanc[nanc>255]=255
             nanc = nanc.astype('uint8')
         qi.f.lut_nan = nanc.astype('uint8')
-    return (qi.f.lut, qi.f.lut_nan)
+    if ret:
+        return (qi.f.lut, qi.f.lut_nan)
 
 def gimage(img, drect=None, prect=None):
     '''GIMAGE - Place an image with data and paper coordinates
@@ -148,10 +213,10 @@ def gimage(img, drect=None, prect=None):
         C = 1
     else:
         C = S[2]
-    if C==1 or C==3 or C==4:
+    if C==1 or C==2 or C==3 or C==4:
         pass
     else:
-        error('Image must have 1, 3, or 4 planes')
+        error('Image must have 1, 2, 3, or 4 planes')
 
     if drect is None:
         drect = [ np.nan, np.nan, 0, 0]

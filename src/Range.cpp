@@ -19,7 +19,7 @@
 
 // Range.C
 
-#include "Range.H"
+#include "Range.h"
 
 Range::Range() {
   empty_ = true;

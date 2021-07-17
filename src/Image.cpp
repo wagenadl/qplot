@@ -1,6 +1,6 @@
 // Image.cpp
 
-#include "Image.H"
+#include "Image.h"
 
 namespace Image {
   QImage build(int X, int Y, int C,

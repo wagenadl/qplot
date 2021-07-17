@@ -19,10 +19,10 @@
 
 // CmdZYImage.C
 
-#include "CmdZYImage.H"
+#include "CmdZYImage.h"
 #include <QDebug>
 #include <math.h>
-#include "Image.H"
+#include "Image.h"
 
 static CBuilder<CmdZYImage> cbZYImage("zyimage");
 

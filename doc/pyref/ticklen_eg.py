@@ -12,4 +12,4 @@ qp.xaxis('Negative', np.arange(6), y=1)
 qp.ticklen(10)
 qp.xaxis('Big', np.arange(6), y=2)
 
-qp.shrink
+qp.shrink()

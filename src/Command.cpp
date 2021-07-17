@@ -19,9 +19,9 @@
 
 // Command.C
 
-#include "Command.H"
+#include "Command.h"
 #include <QDebug>
-#include "Error.H"
+#include "Error.h"
 
 QMap<QString, CBuilder_ *> *Command::builders = 0;
 

@@ -19,10 +19,10 @@
 
 // CmdShrink.C
 
-#include "CmdShrink.H"
+#include "CmdShrink.h"
 #include <QDebug>
 #include <math.h>
-#include "Error.H"
+#include "Error.h"
 
 static CBuilder<CmdShrink> cbShrink("shrink");
 

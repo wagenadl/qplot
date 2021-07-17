@@ -19,8 +19,8 @@
 
 // CmdAlign.C
 
-#include "CmdAlign.H"
-#include "Align.H"
+#include "CmdAlign.h"
+#include "Align.h"
 
 static CBuilder<CmdAlign> cbAlign("align");
 
