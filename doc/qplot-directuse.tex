@@ -205,6 +205,14 @@ in data coordinates, the second  \emph{$\delta$x $\delta$y $\delta$w
 image. \emph{C} must be one of 1 (grayscale), 2 (grayscale + alpha), 3
 (RGB), or 4 (RGB + alpha).}
 
+\cmd{image}{[ \emph{x y w h} ] [ \emph{$\delta$x $\delta$y $\delta$w
+      $\delta$h} ] [ \emph{W H C} ] [ \emph{aspect anchor} ] [
+    \emph{cdata} ]} \expl{Same as above, but automatically calculates
+  image width if both \emph{w} and \emph{$\delta$w} are zero, or
+  automatically calculates image height if both \emph{h} and
+  \emph{$\delta$h} are zero. In that case, the image pixels are made
+  square if \emph{aspect} equals one, or taller if \emph{aspect} is greater than one, or wider if it is less than one. If \emph{anchor} is zero, the image extends to the right or downward from the position specified by the other parameters; if \emph{anchor} is one, it extends to the left or upward. Intermediate values are supported: if, e.g., \emph{anchor} is 0.5, the image is centered in the automatic direction.}
+ 
 \cmd{imageg}{\emph{x y w h K} [ \emph{cdata} ]}
 \expl{Renders a grayscale image at given data location. \emph{cdata} is
   stored as pixels in row order (again, numpy order, not Matlab order); 
