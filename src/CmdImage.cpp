@@ -28,7 +28,8 @@ static CBuilder<CmdImage> cbImage("image");
 
 bool CmdImage::usage() {
   return error("Usage: image x y w h K cdata\n"
-	       "       image [ dataxywh ] [ paperxywh ] [ W H C ] cdata");
+	       "       image [ dataxywh ] [ paperxywh ] [ W H C ] cdata\n"
+	       "       image [ dataxywh ] [ paperxywh ] [ W H C ] [ aspect anchor ] cdata");
 }
 
 static bool hasComplexSyntax(Statement const &s) {
@@ -39,6 +40,8 @@ bool CmdImage::parse_complex(Statement const &s) {
   int id1 = s.nextIndex(1);
   int id2 = s.nextIndex(id1);
   int id3 = s.nextIndex(id2);
+  int id4 = s.nextIndex(id3);
+  int id5 = s.nextIndex(id4);
 
   if (!s.isNumeric(1) || !s.isNumeric(id1) || !s.isNumeric(id2))
     usage();
@@ -51,6 +54,11 @@ bool CmdImage::parse_complex(Statement const &s) {
     usage();
   if (s.data(id2).size() != 3) // check size spec
     usage();
+  if (id5!=-1) {
+    if (s.data(id3).size() != 2) // check aspect anchor spec
+      usage();
+    id3 = id4;
+  }
   if (s.data(id3).size() != s.data(id2)[0]*s.data(id2)[1]*s.data(id2)[2])
     usage(); // check data size
 
@@ -108,6 +116,8 @@ void CmdImage::render_complex(Statement const &s, Figure &f, bool dryrun) {
   int ipaperxywh = s.nextIndex(idataxywh);
   int isizespec = s.nextIndex(ipaperxywh);
   int idata = s.nextIndex(isizespec);
+  int idataend = s.nextIndex(idata);
+  int itest = s.nextIndex(idataend);
 
   int X = s.data(isizespec)[0];
   int Y = s.data(isizespec)[1];
@@ -117,6 +127,7 @@ void CmdImage::render_complex(Statement const &s, Figure &f, bool dryrun) {
   double y = s.data(idataxywh)[1];
   double w = s.data(idataxywh)[2];
   double h = s.data(idataxywh)[3];
+
   bool nax = isnan(x);
   bool nay = isnan(y);
   if (nax)
@@ -142,6 +153,25 @@ void CmdImage::render_complex(Statement const &s, Figure &f, bool dryrun) {
   p2 += QPointF(pt2iu(s.data(ipaperxywh)[0] + s.data(ipaperxywh)[2]),
 		pt2iu(s.data(ipaperxywh)[1] + s.data(ipaperxywh)[3]));
 
+  double ratio = 1;
+  double anchor = 0;
+  if (itest>=0) {
+    ratio = s.data(idata)[0];
+    anchor = s.data(idata)[1];
+    idata = idataend;
+    idataend = itest;
+  }
+  
+  if (s.data(idataxywh)[2]==0 && s.data(ipaperxywh)[2]==0) {
+    double w = (p2.y()-p1.y())*X/ratio/Y;
+    p2 += QPointF((1-anchor)*w, 0);
+    p1 -= QPointF(anchor*w, 0);
+  } else if (s.data(idataxywh)[3]==0 && s.data(ipaperxywh)[3]==0) {
+    double h = (p2.x()-p1.x())*Y*ratio/X;
+    p2 += QPointF(0, (1-anchor)*h);
+    p1 -= QPointF(0, anchor*h);
+  }
+  
   QRectF bbox = QRectF(p1,p2).normalized();
   f.setBBox(bbox);
 
