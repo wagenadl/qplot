@@ -128,6 +128,7 @@ def at(x=None, y=None, phi=None, along=None, id=None):
         else:
             qi.error('Bad specification for x')
     else:
+        x = qi.f.xtransform(x)
         cmd.append('%g' % x)
         qi.f.atx = x
     if type(y)==str:
@@ -136,6 +137,7 @@ def at(x=None, y=None, phi=None, along=None, id=None):
         else:
             qi.error('Bad specification for y')
     else:
+        y = qi.f.ytransform(y)
         cmd.append('%g' % y)
         qi.f.aty = y
     if phi is not None:

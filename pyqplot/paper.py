@@ -107,7 +107,8 @@ def pmark(xx, yy):
     qi.f.writedbl(yy)
 
 def AbsData(x, y):
-    return ('absdata', x, y)
+    qi.ensure()
+    return ('absdata', qi.f.xtransform(x), qi.f.ytransform(y))
 
 def RelData(x, y):
     return ('reldata', x, y)
@@ -143,8 +144,10 @@ def gline(ptspecs):
     GLINE([ptspec1, ptspec2, ...]).
     A PTSPEC is a list containing commands from the following list:
 
-     AbsData(x, y)    - Absolute data coordinates 
-     RelData(dx, dy)  - Relative data coordinates 
+     AbsData(x, y)    - Absolute data coordinates. (This respects the
+                        transformation set by XTRANSFORM and YTRANSFORM.)
+     RelData(dx, dy)  - Relative data coordinates. (This does not respect
+                        those transformations.)
      AbsPaper(x, y)   - Absolute paper coordinates (in pt)
      RelPaper(dx, dy) - Relative data coordinates (in pt)
      RotData(xi, eta) - Rotate by atan2(eta, xi) in data space.
