@@ -1,0 +1,14 @@
+qplot
+build
+build-doc
+build-web
+octave-core
+*~
+doc/html
+doc/*.pdf
+debian/qqplot
+debian/*.substvars
+debian/files
+*debhelper*
+__pycache__
+hello.qpt

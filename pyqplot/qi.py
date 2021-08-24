@@ -39,6 +39,8 @@ class Figure:
         self.linewidth = 0
         self.fontfamily = 'Helvetica'
         self.fontsize = 10
+        self.xtransform = lambda x: x
+        self.ytransform = lambda y: y
 
     def write(self, s):
         # Can take either a string or a list of strings.
@@ -263,6 +265,8 @@ def plot(xx, yy, cmd='plot'):
     ensure()
     N = len(xx)
     f.write('%s *%i *%i\n' % (cmd, N, N))
+    xx = self.xtransform(xx)
+    yy = self.xtransform(yy)
     f.writedbl(xx)
     f.writedbl(yy)
     f.updaterange(xx, yy)

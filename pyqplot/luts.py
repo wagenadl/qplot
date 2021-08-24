@@ -1,6 +1,13 @@
 import numpy as np
 from collections import OrderedDict
 
+haveplotly = False
+try:
+    import plotly.colors
+    haveplotly = True
+except ModuleNotFoundError:
+    pass
+
 _cmaps = OrderedDict()
 
 _cmaps['native'] = [ 'qpjet', 'qphot', 'qpcold', 'qpcoldhot' ]
@@ -45,10 +52,13 @@ def _load_plotly_cmaps():
     for k in _cmaps:
         if _cmaps[k] is None:
             m = k.replace('plotly.', '')
-            import plotly.colors as pc
-            mod = pc.__dict__[m]
-            names = [x for x in mod.__dict__ if not '_' in x and x!='swatches']
-            _cmaps[k] = names
+            if haveplotly:
+                mod = plotly.colors.__dict__[m]
+                names = [x for x in mod.__dict__
+                         if not '_' in x and x!='swatches']
+                _cmaps[k] = names
+            else:
+                _cmaps[k] = []
 
 def families():
     '''FAMILIES - Return a list of colormap families.
@@ -147,8 +157,9 @@ def _get_mpl_cmap(name, N, reverse):
     return rgb
 
 def _get_plotly_cmap(name, N, reverse):
-    import plotly.colors as pc
     _load_plotly_cmaps()
+    if not haveplotly:
+        return []
     if reverse:
         name += '_r'
     name = name.replace('-', '_')
@@ -157,8 +168,8 @@ def _get_plotly_cmap(name, N, reverse):
         lst = _cmaps[f]
         if name in lst:
             fam = f.replace('plotly.', '')
-    cmap = pc.__dict__[fam].__dict__[name]
-    cmap = pc.validate_colors(cmap)
+    cmap = plotly.colors.__dict__[fam].__dict__[name]
+    cmap = plotly.colors.validate_colors(cmap)
     K = len(cmap)
     rgb = np.zeros((K, 3))
     for k in range(K):

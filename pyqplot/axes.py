@@ -734,3 +734,8 @@ def zaxis(title, ticks, proj, labels=None, x=0, y=0, lim=None, below=False):
         markup.at(x + proj[0]*z, y + proj[1]*z)
         markup.align('center', 'middle')
         markup.text(title)
+
+def arange(start, end, step):
+    xx = np.arange(start, end+step*1e-10, step)
+    xx[np.abs(xx)<step*1e-10] = 0
+    return xx

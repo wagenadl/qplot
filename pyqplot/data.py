@@ -16,6 +16,29 @@ from . import utils
 from . import paper
 from . import markup
 
+def xtransform(foo):
+    '''XTRANSFORM - Specify a transformation to be applied to all x-data
+    XTRANSFORM(foo), where FOO is a callable that accepts numpy arrays,
+    specifies a transformation to apply to all x-data. Call XTRANSFORM(None)
+    to revert to linear plotting.'''
+    qi.ensure()
+    if foo is None:
+        qi.f.xtransform = lambda x: x
+    else:
+        qi.f.xtransform = foo
+
+def ytransform(foo):
+    '''YTRANSFORM - Specify a transformation to be applied to all y-data
+    YTRANSFORM(foo), where FOO is a callable that accepts numpy arrays,
+    specifies a transformation to apply to all y-data. Call YTRANSFORM(None)
+    to revert to linear plotting.'''
+    qi.ensure()
+    if foo is None:
+        qi.f.ytransform = lambda y: y
+    else:
+        qi.f.ytransform = foo
+    
+
 def plot(xx, yy=None):
     '''PLOT - Draw a line series in data space
     PLOT(xx, yy) plots the data YY vs XX. XX and YY are given in data
@@ -36,6 +59,13 @@ def patch(xx, yy):
     XX and YY are given in data coordinates. See also AREA and GAREA.'''
     qi.plot(xx, yy, cmd='patch')
 
+def rectangle(x, y, w, h):
+    '''RECTANGLE - Draw a rectangle in data space
+    RECTANGLE(x, y, w, h) draws a rectangle in paper space with given
+    coordinates. The rectangle is drawn with the current pen and filled
+    with the current brush. See also PATCH.'''
+    patch([x, x+w, x+w, x], [y, y, y+h, y+h])
+    
 def mark(xx, yy):
     '''MARK - Draw on the current graph with the current marker
     MARK(xx, yy) draws marks at the given location in data space. See also
