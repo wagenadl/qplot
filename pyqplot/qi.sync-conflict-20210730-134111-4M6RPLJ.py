@@ -2,19 +2,13 @@ import numpy as np
 import tempfile
 import os
 import re
-import subprocess
 from . import utils
 
-here = "/".join(__file__.replace("\\", "/").split("/")[:-2])
-exe = f"{here}/bin/qplot.exe"
-if not os.path.exists(exe):
-    exe = "qplot"
-
 class Figure:
-    global_interactive = True
-    def interactive(k):
-        Figure.global_interactive = k
-    
+    fd = None
+    fn = None
+    istmp = False
+    extent = [0,0,1,1]
     def reset(self):
         self.ticklen = 3
         self.axshift = 0
@@ -37,10 +31,6 @@ class Figure:
         self.overlinedist = 7
         self.overlinemin = 3
         self.linewidth = 0
-        self.fontfamily = 'Helvetica'
-        self.fontsize = 10
-        self.xtransform = lambda x: x
-        self.ytransform = lambda y: y
 
     def write(self, s):
         # Can take either a string or a list of strings.
@@ -49,20 +39,18 @@ class Figure:
             s = ' '.join(s) + '\n'
         self.flushcounter = len(self.flushwaitre.findall(s))
         self.fd.write(bytes(s, 'utf8'))
-        if True or self.flushcounter==0:
+        if self.flushcounter==0:
             self.fd.flush()
     flushcounter=0
     flushwaitre = re.compile(r' \*(uc)?\d')
 
     def writedbl(self, v):
-        buf = np.array(v).astype('float64').tobytes(order='C')
-        self.fd.write(buf)
+        np.array(v).astype('float64').tofile(self.fd)
         self.flushcounter -= 1
         if self.flushcounter<=0:
             self.fd.flush()
     def writeuc(self, v):
-        buf = np.array(v).astype('uint8').tobytes(order='C')
-        self.fd.write(buf)
+        np.array(v).astype('uint8').tofile(self.fd)
         self.flushcounter -= 1
         if self.flushcounter<=0:
             self.fd.flush()
@@ -72,8 +60,6 @@ class Figure:
         Mx = np.max(xx)
         my = np.min(yy)
         My = np.max(yy)
-        if np.isnan(mx) or np.isnan(Mx) or np.isnan(my) or np.isnan(My):
-            return
         if self.datarange is None:
             self.datarange = [mx, Mx, my, My]
         else:
@@ -92,9 +78,6 @@ class Figure:
         return [ self.numfmt % x for x in xx ]
 
     def __init__(self, fn=None, w=5, h=None):
-        self.is_interactive = Figure.global_interactive
-        self.is_pipe = False
-        self.is_tempfile = False
         if h is None:
             h = .75 * w
         MAXALLOWED = 36
@@ -104,69 +87,46 @@ class Figure:
         h *= 72
         self.extent = (0, 0, w, h)
         self.reset()
-
-        if self.is_interactive:
-            # Create a pipe
-            if utils.isempty(fn):
-                fn = tempfile.mktemp(dir='')
-            self.fn = fn
-            self.pipe = subprocess.Popen([exe, "--title", fn, "-"],
-                                        stdin=subprocess.PIPE)
-            self.fd = self.pipe.stdin
-            self.is_pipe = True
+    
+        if utils.isempty(fn):
+            (fd, self.fn) = tempfile.mkstemp(suffix='.qpt')
+            self.fd = open(fd, 'wb')
+            self.istmp = True
         else:
-            if utils.isempty(fn):
-                (fd, self.fn) = tempfile.mkstemp(suffix='.qpt')
-                self.is_tempfile = True
-            else:
-                if not fn.endswith('.qpt'):
-                    fn = fn + '.qpt'
-                self.fn = fn
+            if not fn.endswith('.qpt'):
+                fn = fn + '.qpt'
+            self.fn = fn
             self.fd = open(fn, 'wb')
+            self.istmp = False
     
         self.write('figsize %g %g\n' % (w,h))
-
+        utils.unix('qpclient %s' % self.fn)
 
     def clf(self):
-        if not self.is_pipe:
-            self.fd.close()
-            self.fd = open(self.fn, 'wb')
+        self.fd.close()
         self.reset()
+        self.fd = open(self.fn, 'wb')
         self.write('figsize %g %g\n' % (self.extent[2], self.extent[3]))
 
     def close(self):
-        if self.is_pipe:
-            self.pipe.terminate()
-            self.is_pipe = False
-            self.fd = None
-        elif self.fd is not None:
-            self.fd.close()
-            self.fd = None
+        self.fd.close()
+        self.fd = None
+        utils.unix('qpclose %s' % self.fn)
 
     def tofront(self):
-        pass
+        utils.unix('touch %s' % self.fn)
+        # This supposedly signals qplot to raise it
 
-    def save(self, ofn, reso=None, qual=None):
-        if self.is_pipe:
-            cmd = f'save "{ofn}"';
-            if reso is not None:
-                cmd += f' {reso}'
-                if qual is not None:
-                    cmd += f' {qual}'
-            self.write(cmd + '\n')
-        else:
-            cmd = ['qplot']
-            if reso is not None:
-                cmd.append('-r')
-                cmd.append('%i' % reso)
-            if qual is not None:
-                cmd.append('-q')
-                cmd.append('%i' % qual)
-            cmd.append(self.fn)
-            cmd.append(ofn)
-            s = utils.unix(' '.join(cmd))
-            if s:
-                error('qplot failed')
+    def save(self, ofn, reso=None): 
+        cmd = ['qplot']
+        if reso is not None:
+            cmd.append('-r')
+            cmd.append('%i' % reso)
+        cmd.append(self.fn)
+        cmd.append(ofn)
+        s = utils.unix(' '.join(cmd))
+        if s:
+            error('qplot failed')
         
 figs = {} # map from filename to Figure
 f = None
@@ -262,53 +222,12 @@ def plot(xx, yy, cmd='plot'):
     if utils.isempty(xx):
         return
     
+    [iup, idn] = utils.nonanstretch(xx+yy)
+    
     ensure()
-    N = len(xx)
-    f.write('%s *%i *%i\n' % (cmd, N, N))
-    xx = self.xtransform(xx)
-    yy = self.xtransform(yy)
-    f.writedbl(xx)
-    f.writedbl(yy)
+    for k in range(len(iup)):
+        N = idn[k] - iup[k]
+        f.write('%s *%i *%i\n' % (cmd, N, N))
+        f.writedbl(xx[iup[k]:idn[k]])
+        f.writedbl(yy[iup[k]:idn[k]])
     f.updaterange(xx, yy)
-
-def figisopen(fn):
-    if fn is None:
-        return False
-    f1 = None
-    if fn in figs:
-        f1 = figs[fn]
-    elif not fn.endswith('.qpt'):
-        fn = fn + '.qpt'
-        if fn in figs:
-            f1 = figs[fn]
-    if f1 is None:
-        return False
-    try:
-        f1.pipe.wait(0)
-    except subprocess.TimeoutExpired:
-        return True # Still open
-    # We're here, so evidently, the figure got closed externally
-    f1.close()
-    del figs[fn]
-    return False
-
-def refigure(fn, w, h):
-    f1 = None
-    if fn in figs:
-        f1 = figs[fn]
-    elif not fn.endswith('.qpt'):
-        fn = fn + '.qpt'
-        if fn in figs:
-            f1 = figs[fn]
-    if f1 is None:
-        f1 = qi.Figure(fn, w, h)
-        figs[f1.fn] = f1
-        return f1
-
-    if h is None:
-        h = .75 * w
-    w = w*72
-    h = h*72
-    f1.extent = (0, 0, w, h)
-    f1.clf()
-    return f1
