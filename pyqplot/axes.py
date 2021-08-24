@@ -735,7 +735,13 @@ def zaxis(title, ticks, proj, labels=None, x=0, y=0, lim=None, below=False):
         markup.align('center', 'middle')
         markup.text(title)
 
-def arange(start, end, step):
-    xx = np.arange(start, end+step*1e-10, step)
-    xx[np.abs(xx)<step*1e-10] = 0
-    return xx
+def arange(start, end, step=1):
+    '''ARANGE - Return evenly spaced values within interval
+    xx = RANGE(start, end, step) returns numbers in the closed interval
+    [START, END] with a step size of STEP.
+    This is similar to numpy's arange, but care is taken that the endpoint
+    is included. Also, the number zero is protected from numerical error.'''
+    rng = np.arange(start, end+step/2, step)
+    rng[np.abs(rng)<step/1e3] = 0
+    return rng
+
