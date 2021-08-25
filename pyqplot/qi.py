@@ -51,7 +51,7 @@ class Figure:
     def ytransform(self, y):
         y = self._ytransform(y)
         if np.any(np.isinf(y)):
-            raise Eyception('Infinity')
+            raise Exception('Infinity')
         return y
 
     def write(self, s):
