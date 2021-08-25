@@ -19,7 +19,7 @@ def _getrect(S, rect, xx, yy):
         X = S[1]
         Y = S[0]
         if xx is None and yy is None:
-            return (0, 0, X, Y)
+            rect = (0, 0, X, Y)
         else:
             xx = np.array(xx)
             yy = np.array(yy)
@@ -31,9 +31,14 @@ def _getrect(S, rect, xx, yy):
                 dy = 1
             else:
                 dy = (yy.flat[0] - yy.flat[-1]) / (Y-1)
-            return (xx.flat[0]-dx/2, yy.flat[-1]-dy/2, X*dx, Y*dy)
-    else:
-        return rect
+            rect = (xx.flat[0]-dx/2, yy.flat[-1]-dy/2, X*dx, Y*dy)
+
+    qi.f.ensure()
+    x0 = qi.f.xtransform(rect[0])
+    y0 = qi.f.ytransform(rect[1])
+    x1 = qi.f.xtransform(rect[0] + rect[2])
+    y1 = qi.f.ytransform(rect[1] + rect[3])
+    return (x0, y0, x1-x0, y1-y0)
 
 def _imagehard(data, rect, X, Y, C):
     style.pen('k', 0, 'miter', 'square', 'solid', 1)
@@ -123,7 +128,7 @@ def image(data, rect=None, xx=None, yy=None, hard=False):
     qi.ensure()
     if data.dtype!='uint8':
         data = (255*data+.5).astype('uint8')
-
+  
     if hard:
         _imagehard(data, rect, X, Y, C)
     else:
@@ -238,7 +243,7 @@ def gimage(img, drect=None, prect=None, aspect=1, anchor=0):
         error('Position must given as [x y w h]')
 
     out = [ 'image', '[' ]
-    for v in drect:
+    for v in _getrect(None, drect, None, None):
         out.append('%g' % v)
     out.append(']')
     out.append('[')
@@ -310,6 +315,10 @@ def cbar(x0=None, y0=None, y1=None, width=5, dist=10):
         y0 = qi.f.imrect[1]
         y1 = qi.f.imrect[1] + qi.f.imrect[3]
         #print('cbar(%g, %g, %g, %g)\n' % (x0, y0, y1, width))
+    else:
+        x0 = qi.f.xtransform(x0)
+        y0 = qi.f.ytransform(y0)
+        y1 = qi.f.ytransform(y1)
 
     isup = y1>y0
     if isup:
@@ -354,6 +363,10 @@ def hcbar(y0=None, x0=None, x1=None, width=5, dist=10):
         y0 = qi.f.imrect[1]
         x0 = qi.f.imrect[0]
         x1 = qi.f.imrect[0] + qi.f.imrect[2]
+    else:
+        x0 = qi.f.xtransform(x0)
+        x1 = qi.f.xtransform(x1)
+        y0 = qi.f.ytransform(y0)
 
     isright = x1>x0
     if isright:
@@ -397,6 +410,8 @@ def xzimage(data, rect, proj, y=0):
         data = np.flip(data, 0)
         rect = (rect[0], rect[1] + rect[3], rect[2], -rect[3])
 
+    rect = _getrect(None, rect, None, None)
+        
     S = data.shape
     Z = S[0]
     X = S[1]
@@ -437,6 +452,8 @@ def zyimage(data, rect, proj, x=0):
         data = np.flip(data, 0)
         rect = (rect[0], rect[1] + rect[3], rect[2], -rect[3])
 
+    rect = _getrect(None, rect, None, None)
+        
     S = data.shape
     Y = S[0]
     Z = S[1]
@@ -458,7 +475,9 @@ def jetlut(N=256):
     '''JETLUT - Color lookup table akin to Matlab's JET
     JETLUT(N) returns a Color lookup table akin to Matlab's JET,
     but with better sampling of color space, especially for small N.
-    N defaults to 256.'''
+    N defaults to 256.
+
+    Many more LUTs are available through the LUTS.GET function.'''
     phi = np.linspace(0, 1, N)
     B0 = .2
     G0 = .5

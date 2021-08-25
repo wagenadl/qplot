@@ -16,27 +16,30 @@ from . import utils
 from . import paper
 from . import markup
 
-def xtransform(foo):
+def xtransform(foo=None):
     '''XTRANSFORM - Specify a transformation to be applied to all x-data
     XTRANSFORM(foo), where FOO is a callable that accepts numpy arrays,
-    specifies a transformation to apply to all x-data. Call XTRANSFORM(None)
-    to revert to linear plotting.'''
-    qi.ensure()
-    if foo is None:
-        qi.f._xtransform = lambda x: x
-    else:
-        qi.f._xtransform = foo
+    specifies a transformation to apply to all x-data. 
+    XTRANSFORM(None) reverts to linear plotting.
 
-def ytransform(foo):
+    The transformation applies to coordinates passed into commands like
+    PLOT, PATCH, AT, XAXIS, LEGOPT, IMAGE, etc. It also applies to the 
+    ABSDATA subcommand for GLINE and friends. However, it does not apply
+    to the RELDATA or ROTDATA subcommands.
+
+    See also YTRANSFORM.'''
+    qi.ensure()
+    qi.f._xtransform = foo
+
+def ytransform(foo=None):
     '''YTRANSFORM - Specify a transformation to be applied to all y-data
     YTRANSFORM(foo), where FOO is a callable that accepts numpy arrays,
-    specifies a transformation to apply to all y-data. Call YTRANSFORM(None)
-    to revert to linear plotting.'''
+    specifies a transformation to apply to all y-data.
+    YTRANSFORM(None) reverts to linear plotting.
+
+    See XTRANSFORM for more details.'''
     qi.ensure()
-    if foo is None:
-        qi.f._ytransform = lambda y: y
-    else:
-        qi.f._ytransform = foo
+    qi.f._ytransform = foo
     
 def clipy(xx, yy, ymin=None, ymax=None):
     '''CLIPY - Clip data at given y-values for plotting

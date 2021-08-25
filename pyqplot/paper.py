@@ -80,7 +80,9 @@ def _gline2(cmd='gline', vglcs=[]):
 def line(xx, yy):
     '''LINE - Draw a line series in paper space
     LINE(xx, yy) draws a line series between the points (XX,YY).
-    XX and YY are given in postscript points. See also PLOT and GLINE.'''
+    XX and YY are given in postscript points. 
+
+    See also PLOT and GLINE.'''
     qi.plot(xx, yy, cmd='line')
 
 def area(xx, yy):
@@ -89,13 +91,16 @@ def area(xx, yy):
     is automatically closed (i.e., it is not necessary for xx[-1] to equal
     xx[0]).
     The polygon is filled with the current brush.
-    XX and YY are given in postscript points. See also PATCH and GAREA.'''
+    XX and YY are given in postscript points. 
+
+    See also PATCH and GAREA.'''
     qi.plot(xx, yy, cmd='area')
 
 def pmark(xx, yy):
     '''PMARK - Draw on the current graph with the current marker
-    PMARK(xx, yy) draws marks at the given location in paper space. See also
-    MARKER and MARK.'''
+    PMARK(xx, yy) draws marks at the given location in paper space. 
+
+    See also MARKER and MARK.'''
 
     xx = utils.aslist(xx)
     yy = utils.aslist(yy)
@@ -176,7 +181,9 @@ def gline(ptspecs):
     
     Note: The rather cumbersome syntax of GLINE makes LINE and PLOT more
     attractive for general usage. The same applies to GAREA versus AREA 
-    and PATCH. See also SHIFTEDLINE and GLINE2.'''
+    and PATCH. 
+    
+    See also SHIFTEDLINE and GLINE2.'''
     _gline('gline', ptspecs)
 
 def gline2(vglcs):
@@ -198,6 +205,7 @@ def gline2(vglcs):
 def garea(ptspecs):
     '''GAREA - Generalized area drawing
     GAREA is to PATCH and AREA as GLINE is to PLOT and LINE.
+    
     See GLINE for supported commands.'''
 
     _gline('garea', ptspecs)
@@ -205,6 +213,7 @@ def garea(ptspecs):
 def garea2(vglcs):
     '''GAREA2 - Generalized area drawing
     GAREA2 is to PATCH and AREA as GLINE2 is to PLOT and LINE.
+    
     See GLINE2 for supported commands.'''
     _gline2('garea', vglcs)
     
