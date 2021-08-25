@@ -39,17 +39,19 @@ class Figure:
         self.linewidth = 0
         self.fontfamily = 'Helvetica'
         self.fontsize = 10
-        self._xtransform = lambda x: x
-        self._ytransform = lambda y: y
+        self._xtransform = None # lambda x: x
+        self._ytransform = None # lambda y: y
 
     def xtransform(self, x):
-        x = self._xtransform(x)
+        if self._xtransform is not None:
+            x = self._xtransform(x)
         if np.any(np.isinf(x)):
             raise Exception('Infinity')
         return x
     
     def ytransform(self, y):
-        y = self._ytransform(y)
+        if self._ytransform is not None:
+            y = self._ytransform(y)
         if np.any(np.isinf(y)):
             raise Exception('Infinity')
         return y
