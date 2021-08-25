@@ -102,7 +102,7 @@ def darrow(x, y, phi=None, along=None, l=8, w=5, dist=0, dimple=0):
         at(x, y)
     arrow(l, w, dl=dist, dimple=dimple)
     
-def at(x=None, y=None, phi=None, along=None, id=None):
+def at(x=None, y=None, phi=None, along=None, id=None, notransform=False):
     '''AT - Specify location for future text
     AT(x, y) specifies that future text will be placed at data location (x,y)
     Optional arguments:
@@ -128,7 +128,8 @@ def at(x=None, y=None, phi=None, along=None, id=None):
         else:
             qi.error('Bad specification for x')
     else:
-        x = qi.f.xtransform(x)
+        if not notransform:
+            x = qi.f.xtransform(x)
         cmd.append('%g' % x)
         qi.f.atx = x
     if type(y)==str:
@@ -137,7 +138,8 @@ def at(x=None, y=None, phi=None, along=None, id=None):
         else:
             qi.error('Bad specification for y')
     else:
-        y = qi.f.ytransform(y)
+        if not notransform:
+            y = qi.f.ytransform(y)
         cmd.append('%g' % y)
         qi.f.aty = y
     if phi is not None:

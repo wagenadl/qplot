@@ -192,6 +192,11 @@ def _qaxis(orient='x', lim_d=None,
         lblly = lblly + tickly
         
     # Axis line position (x and y may be flipped later!)
+    if ishori:
+        xf, yf = qi.f.xtransform, qi.f.ytransform
+    else:
+        yf, xf = qi.f.xtransform, qi.f.ytransform
+        
     limdx = lim_d
     limdy = coord_d + np.zeros((2))
     limpx = np.zeros((2))
@@ -202,12 +207,12 @@ def _qaxis(orient='x', lim_d=None,
     limpy = coord_p + np.zeros((2))
     
     if lim_d is not None and lim_d is not []:
-        ttldx = np.mean(limdx)
+        ttldx = np.mean(xf(limdx))
     elif tick_d is not None and tick_d is not []:
-        ttldx = np.mean([tickdx[0], tickdx[-1]])
+        ttldx = np.mean(xf([tickdx[0], tickdx[-1]]))
     else:
         ttldx = np.nan
-    ttldy = coord_d
+    ttldy = yf(coord_d)
         
     if tick_p is not None:
         ttlpx = np.mean([tickpx[0], tickpx[-1]])
@@ -282,7 +287,8 @@ def _qaxis(orient='x', lim_d=None,
             if np.sign(ttldist)==np.sign(ticklen):
                 ttllx = ttllx + ticklx
                 ttlly = ttlly + tickly
-            markup.at(ttldx, ttldy, phi=-np.pi/2*np.sign(ttlrot))
+            markup.at(ttldx, ttldy, phi=-np.pi/2*np.sign(ttlrot),
+                      notransform=True)
         else:
             if ishori:
                 ttlpy = 0
@@ -290,9 +296,11 @@ def _qaxis(orient='x', lim_d=None,
                 ttlpx = 0
             [xa, ya] = _align(ishori, -ttldist)
             if ishori:
-                markup.at(ttldx, ya, phi=-np.pi/2*np.sign(ttlrot))
+                markup.at(ttldx, ya, phi=-np.pi/2*np.sign(ttlrot),
+                          notransform=True)
             else:
-                markup.at(xa, ttldy, phi=-np.pi/2*np.sign(ttlrot))
+                markup.at(xa, ttldy, phi=-np.pi/2*np.sign(ttlrot),
+                          notransform=True)
         if ttlrot==0:
             xa, ya = _align(ishori, ttldist)
         else:

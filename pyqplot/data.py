@@ -23,9 +23,9 @@ def xtransform(foo):
     to revert to linear plotting.'''
     qi.ensure()
     if foo is None:
-        qi.f.xtransform = lambda x: x
+        qi.f._xtransform = lambda x: x
     else:
-        qi.f.xtransform = foo
+        qi.f._xtransform = foo
 
 def ytransform(foo):
     '''YTRANSFORM - Specify a transformation to be applied to all y-data
@@ -34,11 +34,74 @@ def ytransform(foo):
     to revert to linear plotting.'''
     qi.ensure()
     if foo is None:
-        qi.f.ytransform = lambda y: y
+        qi.f._ytransform = lambda y: y
     else:
-        qi.f.ytransform = foo
+        qi.f._ytransform = foo
     
+def clipy(xx, yy, ymin=None, ymax=None):
+    '''CLIPY - Clip data at given y-values for plotting
+    xx, yy = CLIPY(xx, yy, ymin, ymax) finds runs in the data where
+    YMIN <= YY <= YMAX and returns those runs, placing np.nan in between 
+    runs. At the beginning and end of each run, a point (X, YMIN) or (X, YMAX)
+    is inserted that marks the linearly interpolated location where the run 
+    passes through the threshold.
+    This is useful for plotting, because qplot does not implement XLIM and 
+    YLIM with a proper clip rectangle.'''
+    if ymin is not None:
+        xx, yy = clipy(xx, np.negative(yy), ymax=-ymin)
+        yy = -yy
+    if ymax is None:
+        return xx, yy
+    runs = []
+    inrun = False
+    run = []
+    for n, y in enumerate(yy):
+        if inrun:
+            if y<=ymax:
+                run.append(n)
+            else:
+                if len(run):
+                    runs.append(run)
+                    run = []
+                    inrun = False
+        else:
+            if y<=ymax:
+                run.append(n)
+                inrun = True
+    if len(run):
+        runs.append(run)
 
+    xxx = []
+    yyy = []
+    for run in runs:
+        rxx = xx[run]
+        ryy = yy[run]
+        if run[0]>0:
+            # Prepend something
+            x = np.interp(ymax, [yy[run[0]], yy[run[0]-1]],
+                          [xx[run[0]], xx[run[0]-1]])
+            rxx = np.concatenate(([x], rxx))
+            ryy = np.concatenate(([ymax], ryy))
+        if run[-1]<len(xx)-1:
+            # Append something
+            x = np.interp(ymax, [yy[run[-1]], yy[run[-1]+1]],
+                          [xx[run[-1]], xx[run[-1]+1]])
+            rxx = np.append(rxx, x)
+            ryy = np.append(ryy, ymax)
+        xxx.append(rxx)
+        yyy.append(ryy)
+
+    if len(xxx)==0:
+        return np.array([]), np.array([])
+    xx = xxx[0]
+    yy = yyy[0]
+    for k in range(1,len(xxx)):
+        xx = np.append(xx, np.nan)
+        yy = np.append(yy, np.nan)
+        xx = np.concatenate((xx, xxx[k]))
+        yy = np.concatenate((yy, yyy[k]))
+    return xx, yy
+        
 def plot(xx, yy=None):
     '''PLOT - Draw a line series in data space
     PLOT(xx, yy) plots the data YY vs XX. XX and YY are given in data
@@ -76,8 +139,8 @@ def mark(xx, yy):
     xx = np.array(utils.aslist(xx))
     yy = np.array(utils.aslist(yy))
     ok = ~np.isnan(xx+yy)
-    xx = xx[ok]
-    yy = yy[ok]
+    xx = qi.f.xtransform(xx[ok])
+    yy = qi.f.ytransform(yy[ok])
     qi.f.write('mark *%i *%i\n' % (len(xx), len(yy)))
     qi.f.writedbl(xx)
     qi.f.writedbl(yy)
