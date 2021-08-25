@@ -39,8 +39,20 @@ class Figure:
         self.linewidth = 0
         self.fontfamily = 'Helvetica'
         self.fontsize = 10
-        self.xtransform = lambda x: x
-        self.ytransform = lambda y: y
+        self._xtransform = lambda x: x
+        self._ytransform = lambda y: y
+
+    def xtransform(self, x):
+        x = self._xtransform(x)
+        if np.any(np.isinf(x)):
+            raise Exception('Infinity')
+        return x
+    
+    def ytransform(self, y):
+        y = self._ytransform(y)
+        if np.any(np.isinf(y)):
+            raise Eyception('Infinity')
+        return y
 
     def write(self, s):
         # Can take either a string or a list of strings.
@@ -68,6 +80,8 @@ class Figure:
             self.fd.flush()
             
     def updaterange(self, xx, yy):
+        if len(xx)==0 or len(yy)==0:
+            return
         mx = np.min(xx)
         Mx = np.max(xx)
         my = np.min(yy)
@@ -265,8 +279,9 @@ def plot(xx, yy, cmd='plot'):
     ensure()
     N = len(xx)
     f.write('%s *%i *%i\n' % (cmd, N, N))
-    xx = f.xtransform(xx)
-    yy = f.ytransform(yy)
+    if cmd=='plot' or cmd=='patch':
+        xx = f.xtransform(xx)
+        yy = f.ytransform(yy)
     f.writedbl(xx)
     f.writedbl(yy)
     f.updaterange(xx, yy)

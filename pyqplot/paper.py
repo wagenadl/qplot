@@ -13,7 +13,7 @@
 
 from . import qi
 from . import utils
-
+import numpy as np
 # A GLC is a tuple (cmd, arg) or (cmd, arg, arg2).
 # A PTSPEC is a list of GLCS.
 def _gline(cmd='gline', ptspecs=[]):
@@ -108,7 +108,10 @@ def pmark(xx, yy):
 
 def AbsData(x, y):
     qi.ensure()
-    return ('absdata', qi.f.xtransform(x), qi.f.ytransform(y))
+    x = qi.f.xtransform(x)
+    y = qi.f.ytransform(y)
+    
+    return ('absdata', x, y)
 
 def RelData(x, y):
     return ('reldata', x, y)
