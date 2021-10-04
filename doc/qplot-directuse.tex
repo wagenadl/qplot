@@ -339,10 +339,13 @@ specifies the desired aspect ratio of y:x data units.}
 \expl{Places the given text \emph{string} at the position (\emph{dx},
   \emph{dy}), specified in points relative to the anchor set by
   \cref{at}. Underscores and hats make subscripts and superscripts
-  (up to the next space, which is swallowed).
+  (up to the next space, which is swallowed). Use tilde as a protected
+  space inside subscripts and superscripts.
   Slashes and asterisks make enclosed words
   appear in /italics/ and *bold*. Unicode is supported. Backslash
-  protects interpretation of special characters. The string
+  protects interpretation of special characters, but backslash + comma
+  and backslash + exclamation point insert and remove space as in
+  TeX equations. The string
   must be enclosed in single or double quotes. Respects alignment
   options set by \cref{align}.}
 

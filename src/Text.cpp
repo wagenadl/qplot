@@ -33,6 +33,16 @@ Text::Text() {
 Text::~Text() {
 }
 
+bool allWord(QString txt) {
+  int L = txt.size();
+  if (L==0)
+    return false;
+  for (int k=0; k<L; k++)
+    if (!txt[k].isLetterOrNumber())
+      return false;
+  return true;
+}
+
 void Text::addInterpreted(QString txt) {
   int i=-1;
   while ((i=txt.indexOf('-', i+1), i>=0)) {
@@ -42,17 +52,16 @@ void Text::addInterpreted(QString txt) {
   }
 
   QString bld;
-  QRegExp word("\\w+");
   int idx=0;
   while (idx<txt.size()) {
     QString x = txt.mid(idx,1);
     if (x=="*") {
-      int id1 = txt.indexOf("*",idx+1);
-      if (id1>=0 && word.exactMatch(txt.mid(idx+1,id1-idx-1))) {
+      int id1 = txt.indexOf("*", idx+1);
+      if (id1>=0 && allWord(txt.mid(idx+1, id1-idx-1))) {
 	add(bld);
 	bld="";
 	toggleBold();
-	add(txt.mid(idx+1,id1-idx-1));
+	add(txt.mid(idx+1, id1-idx-1));
 	restore();
 	idx=id1;
       } else {
@@ -60,34 +69,34 @@ void Text::addInterpreted(QString txt) {
       }
     } else if (x=="/") {
       int id1 = txt.indexOf("/",idx+1);
-      if (id1>=0 && word.exactMatch(txt.mid(idx+1,id1-idx-1))) {
+      if (id1>=0 && allWord(txt.mid(idx+1, id1-idx-1))) {
 	add(bld);
 	bld="";
 	toggleSlant();
-	add(txt.mid(idx+1,id1-idx-1));
+	add(txt.mid(idx+1, id1-idx-1));
 	restore();
 	idx=id1;
       } else {
 	bld+="/";
       }
     } else if (x=="_") {
-      int id1 = txt.indexOf(QRegExp("[ \t\n\r]"),idx+1);
+      int id1 = txt.indexOf(QRegExp("[ \t\n\r]"), idx+1);
       if (id1<0)
 	id1 = txt.size();
       add(bld);
       bld="";
       setSub();
-      addInterpreted(txt.mid(idx+1,id1-idx-1));
+      addInterpreted(txt.mid(idx+1, id1-idx-1));
       restore();
       idx=id1;
     } else if (x=="^") {
-      int id1 = txt.indexOf(QRegExp("[ \t\n\r]"),idx+1);
+      int id1 = txt.indexOf(QRegExp("[ \t\n\r]"), idx+1);
       if (id1<0)
 	id1 = txt.size();
       add(bld);
       bld="";
       setSuper();
-      addInterpreted(txt.mid(idx+1,id1-idx-1));
+      addInterpreted(txt.mid(idx+1, id1-idx-1));
       restore();
       idx=id1;
     } else if (x=="\\") {
