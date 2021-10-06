@@ -63,10 +63,6 @@ target_include_directories(qplot PUBLIC "${Qt5Widgets_INCLUDE_DIRS}")
 ##    FORCE_PDF INCLUDE_DIRECTORIES doc)
 ##endif()
 
-# PlaceQPT
-set (PLACEQPTBINPATH "${CMAKE_INSTALL_PREFIX}")
-configure_file(placeqpt/placeqpt.in placeqpt)
-
 ######################################################################
 # General packaging / installation
 set(CPACK_PACKAGE_VENDOR "Daniel Wagenaar")
