@@ -24,6 +24,7 @@
 #include "Range.h"
 #include <QDebug>
 #include <cmath>
+#include <QPainterPath>
 
 static CBuilder<CmdPlot> cbPlot("plot");
 static CBuilder<CmdPlot> cbPatch("patch");

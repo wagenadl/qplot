@@ -16,7 +16,7 @@ install(TARGETS qplot)
 install(DIRECTORY ${CMAKE_BINARY_DIR}/windeploy/ DESTINATION bin)
 set(PYPATH "${PYPKG}")
 include(pyqplot/Install.CMakeLists.txt)
-set(OCTPATH $"{OCTPKG}")
+set(OCTPATH "${OCTPKG}")
 include(octave/Install.CMakeLists.txt)
 
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/GPL-3.0.txt")

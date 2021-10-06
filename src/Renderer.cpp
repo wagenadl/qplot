@@ -76,8 +76,9 @@ bool Renderer::renderSVG(QString ofn, int upto) {
 
 bool Renderer::renderPDF(QString ofn, int upto) {
   QPdfWriter img(ofn);
-  img.setPageSizeMM(QSizeF(iu2pt(fig.extent().width())*25.4/72,
-			   iu2pt(fig.extent().height())*25.4/72));
+  img.setPageSize(QPageSize(QSizeF(iu2pt(fig.extent().width()),
+				            iu2pt(fig.extent().height())), 
+							QPageSize::Point));
 
   if (!fig.painter().begin(&img))
     return false;
