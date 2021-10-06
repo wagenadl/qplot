@@ -1,0 +1,26 @@
+# Install QPLOT
+install(TARGETS qplot DESTINATION bin)
+install(FILES scripts/qpclient DESTINATION bin)
+install(FILES scripts/qpclose DESTINATION bin)
+install(FILES scripts/qplotml DESTINATION bin)
+
+# Install octave
+set(OCTPATH "share/octave/packages/${OCTPKG}")
+include(octave/Install.CMakeLists.txt)
+
+# Install python
+set(PYPATH "lib/python3/dist-packages/${PYPKG}")
+include(pyqplot/Install.CMakeLists.txt)
+
+# Install placeqpt
+install(PROGRAMS placeqpt/placeqpt-backend DESTINATION bin)
+install(PROGRAMS placeqpt/placeqpt DESTINATION bin)
+
+# Install user guide
+#install(FILES ${CMAKE_BINARY_DIR}/userguide.pdf DESTINATION share/doc/qplot)
+install(FILES README.md DESTINATION share/doc/qplot)
+install(FILES CHANGELOG DESTINATION share/doc/qplot)
+
+# Install icons and mimetypes
+install(FILES tools/qplot.svg DESTINATION share/pixmaps)
+install(FILES tools/qplot.desktop DESTINATION share/applications)
