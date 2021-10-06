@@ -47,6 +47,7 @@
 #include "Error.h"
 #include "Factor.h"
 #include "Renderer.h"
+#include "config.h"
 
 #ifdef _WIN32
 #include <io.h>
@@ -143,7 +144,7 @@ int noninteractive(QString ifn, QString ofn, Renderer *renderer) {
 }
 
 int showVersion() {
-  std::cerr << "QPlot 0.3.0\n";
+  std::cerr << "QPlot " QPLOT_VERSION "\n";
   std::cerr << "Copyright (C) 2014-2021 Daniel A. Wagenaar\n";
   std::cerr << "\n";
   std::cerr << "QPlot is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.\n\n";
@@ -157,7 +158,7 @@ int showVersion() {
 int main(int argc, char **argv) {
   QApplication app(argc, argv);
   app.setApplicationName("QPlot");
-  app.setApplicationVersion("0.3.0");
+  app.setApplicationVersion(QPLOT_VERSION);
   
   QCommandLineOption cli_autoraise("autoraise",
                              "Automatically raise the window on update");

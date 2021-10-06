@@ -1,6 +1,6 @@
 // the configured options and settings for QPLOT
 
-#define QPLOT_VERSION @QPlot_VERSION@
+#define QPLOT_VERSION "@QPlot_VERSION@"
 #define QPLOT_VERSION_MAJOR @QPlot_VERSION_MAJOR@
 #define QPLOT_VERSION_MINOR @QPlot_VERSION_MINOR@
 #define QPLOT_VERSION_PATCH @QPlot_VERSION_PATCH@

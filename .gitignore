@@ -13,4 +13,4 @@ debian/files
 *debhelper*
 __pycache__
 hello.qpt
-src/CMakeLists.txt
+.idea
