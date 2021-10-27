@@ -100,6 +100,8 @@ public:
   void markFudged();
   bool checkFudged() const;
   TextShiftAccum &textShiftAccum();
+  void showBoundingBoxes(bool b=true);
+  bool areBoundingBoxesShown() const { return showbboxes; }
 private:
   QRectF figextent;
   Axis xax, yax;
@@ -126,6 +128,7 @@ private:
   QMap<QString, QPointF> locations;
   bool fudged;
   TextShiftAccum textshiftaccum;
+  bool showbboxes;
 private:
   QSizeF overrideWH;
 private:

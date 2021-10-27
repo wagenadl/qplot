@@ -28,6 +28,7 @@
 
 Figure::Figure() {
   hairline_ = DEFAULTHAIR;
+  showbboxes = false;
   hardReset();
 }
 
@@ -392,4 +393,8 @@ void Figure::markFudged() {
 
 bool Figure::checkFudged() const {
   return fudged;
+}
+
+void Figure::showBoundingBoxes(bool b) {
+  showbboxes = b;
 }
