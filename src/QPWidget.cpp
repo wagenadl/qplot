@@ -279,6 +279,11 @@ void QPWidget::keyPressEvent(QKeyEvent *e) {
   case Qt::Key_R:
     setRuler(!hasRuler());
     break;
+  case Qt::Key_B:
+    if (fig)
+      fig->showBoundingBoxes(!fig->areBoundingBoxesShown());
+    update();
+    break;
   default:
     ScrollWidget::keyPressEvent(e);
   }

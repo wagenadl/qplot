@@ -43,6 +43,7 @@ void ScrollWidget::setExtent(QRectF const &e) {
 
 void ScrollWidget::scaleToFit() {
   scaletofit = true;
+  sureScale();
   update();
 }
 

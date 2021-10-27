@@ -105,7 +105,7 @@ void CmdText::render(Statement const &s, Figure &f, bool dummy) {
       break;
     }
   }
-  
+
   // work on bbox: (actual, not ref)
   r = ::rotate(r0.translated(dx, dy), f.anchorAngle());
   r.translate(f.anchor());
@@ -114,6 +114,13 @@ void CmdText::render(Statement const &s, Figure &f, bool dummy) {
 
   if (dummy)
     return;
+
+  if (f.areBoundingBoxesShown()) {
+    QPen p = f.painter().pen();
+    f.painter().setPen(QPen(QColor(255, 0, 0), 8));
+    f.painter().drawRect(r);
+    f.painter().setPen(p);
+  }
 
   f.painter().save();
   f.painter().translate(f.anchor());
