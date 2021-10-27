@@ -248,32 +248,39 @@ def errorbar(xx, yy, dy, w=None, dir='both'):
                 markup.at(xx[n], yy[n] + dy_dn[n])
                 paper.line(np.array([-1, 1])*w/2, np.array([0, 0]))
 
-def errorpatch(xx, yy, dy, dir='both'):
+def errorpatch(xx, yy, dy=None, dir='both'):
     '''ERRORPATCH - Draw error patch
-    ERRORPATCH(xx, yy, dy) plots an error patch at (XX,YY+-DY).
-    Normally, XX, YY, and DY have the same shape. However, it is permissible
-    for DY to be shaped Nx2, in which case lower and upper error bounds
-    are different.
+    ERRORPATCH(xx, yy, dy) plots an error patch at (XX, YY ± DY).
+    Normally, XX, YY, and DY all are N-vectors. 
     ERRORPATCH(..., 'up') only plots upward; QERRORPATCH(..., 'down') only 
-    plots downward.'''
+    plots downward.
+    To specify downward and upward errors separately,  DY may be shaped Nx2.
+    DY must be positive, even for the downward error.
+    
+    ERRORPATCH(xx, yy), where YY is shaped Nx2, directly specifies the bounds
+    as (XX, YY[:,0]) and (XX, YY[:,1]), much like matplotlib's fill_between.
+    '''
 
     N = len(xx)
-    if np.prod(dy.shape)==2*N:
-        dy_dn = -dy[:,0]
-        dy_up = dy[:,1]
+    if dy is None:
+        yy_dn = yy[:,0]
+        yy_up = yy[:,1]
     else:
-        dy_up = dy
-        dy_dn = -dy
-
-    if dir=='up':
-        dy_dn = 0*dy_dn
-    elif dir=='down':
-        dy_up = 0*dy_up
-    elif dir!='both':
-        qi.error('Bad direction name')
+        if len(dy.shape)==2:
+            yy_dn = yy - dy[:,0]
+            yy_up = yy + dy[:,1]
+        else:
+            yy_dn = yy - dy
+            yy_up = yy + dy
+        if dir=='up':
+            yy_dn = yy
+        elif dir=='down':
+            yy_up = yy
+        elif dir!='both':
+            qi.error('Bad direction name')
     
     patch(np.concatenate((xx, np.flip(xx, 0))),
-          np.concatenate((yy + dy_dn, np.flip(yy+dy_up, 0))))
+          np.concatenate((yy_dn, np.flip(yy_up, 0))))
 
 def skyline(xx, yy, y0=0):
     '''SKYLINE - Skyline plot (bar plot)
