@@ -56,12 +56,12 @@ target_include_directories(qplot PUBLIC "${PROJECT_BINARY_DIR}")
 target_include_directories(qplot PUBLIC "${Qt5Widgets_INCLUDE_DIRS}")
 
 ########################################################################
-### Userguide
-##if (UNIX AND NOT APPLE)
-##  include(doc/UseLATEX.cmake)
-##  add_latex_document(doc/userguide.tex IMAGE_DIRS doc doc/icons
-##    FORCE_PDF INCLUDE_DIRECTORIES doc)
-##endif()
+# Userguide
+#if (UNIX AND NOT APPLE)
+#  include(doc/UseLATEX.cmake)
+#  add_latex_document(doc/userguide.tex IMAGE_DIRS doc doc/icons
+#    FORCE_PDF INCLUDE_DIRECTORIES doc)
+#endif()
 
 ######################################################################
 # General packaging / installation
