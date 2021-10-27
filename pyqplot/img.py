@@ -33,7 +33,7 @@ def _getrect(S, rect, xx, yy):
                 dy = (yy.flat[0] - yy.flat[-1]) / (Y-1)
             rect = (xx.flat[0]-dx/2, yy.flat[-1]-dy/2, X*dx, Y*dy)
 
-    qi.f.ensure()
+    qi.ensure()
     x0 = qi.f.xtransform(rect[0])
     y0 = qi.f.ytransform(rect[1])
     x1 = qi.f.xtransform(rect[0] + rect[2])

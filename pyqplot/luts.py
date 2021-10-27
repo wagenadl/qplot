@@ -159,7 +159,7 @@ def _get_mpl_cmap(name, N, reverse):
 def _get_plotly_cmap(name, N, reverse):
     _load_plotly_cmaps()
     if not haveplotly:
-        return []
+        return None
     if reverse:
         name += '_r'
     name = name.replace('-', '_')
@@ -230,6 +230,8 @@ def demo(fam=None, N=None):
     else:
         names = family(fam)
         Q = len(names)
+        if Q==0:
+            return
         C = int(np.ceil(Q/10))
         R = int(np.ceil(Q/C))
         fig.figure(f'/tmp/luts-{fam}', 3*C, R/4)
