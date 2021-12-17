@@ -132,7 +132,7 @@ def rectangle(x, y, w, h):
     with the current brush. See also PATCH.'''
     patch([x, x+w, x+w, x], [y, y, y+h, y+h])
     
-def mark(xx, yy):
+def _mark(xx, yy, rx=None, ry=None, vert=None):
     '''MARK - Draw on the current graph with the current marker
     MARK(xx, yy) draws marks at the given location in data space. See also
     MARKER and PMARK.'''
@@ -144,11 +144,44 @@ def mark(xx, yy):
     ok = ~np.isnan(xx+yy)
     xx = qi.f.xtransform(xx[ok])
     yy = qi.f.ytransform(yy[ok])
-    qi.f.write('mark *%i *%i\n' % (len(xx), len(yy)))
+    if rx is not None:
+        if ry is None:
+            ry = rx;
+        extra = f" {rx} {ry}"
+        if vert is not None:
+            extra += f" {vert}"
+    else:
+        extra = ''
+    
+    print(f'mark *{len(xx)} *{len(yy)}{extra}\n')
+    qi.f.write(f'mark *{len(xx)} *{len(yy)}{extra}\n')
     qi.f.writedbl(xx)
     qi.f.writedbl(yy)
     qi.f.updaterange(xx, yy)
 
+def mark(xx, yy):
+    '''MARK - Draw on the current graph with the current marker
+    MARK(xx, yy) draws marks at the given location in data space. See also
+    MARKER and PMARK.'''
+    _mark(xx, yy)
+
+
+def xmark(xx, yy, rx, ry=None):
+    '''XMARK - Like mark, but with horizontal collision avoidance
+    XMARK(xx, yy, rx, ry) tries to draw marks at (XX, YY), but displaces marks
+    horizontally in steps of RX points to avoid collision within an ellipse
+    with radii RX and RY. (Leaving out RY uses a circle with radius RX.)'''
+    _mark(xx, yy, rx, ry, 0)
+
+    
+def ymark(xx, yy, rx, ry=None):
+    '''YMARK - Like mark, but with vertical collision avoidance
+    XMARK(xx, yy, rx, ry) tries to draw marks at (XX, YY), but displaces marks
+    vertically in steps of RX points to avoid collision within an ellipse
+    with radii RX and RY. (Leaving out RY uses a circle with radius RX.)'''
+    _mark(xx, yy, rx, ry, 1)
+
+    
 def bars(xx, yy, w=None, y0=0):
     '''BARS - Bar plot with bar width specified in data coordinates
     BARS(xx, yy, w) draws a bar graph of YY vs XX with bars
@@ -161,8 +194,8 @@ def bars(xx, yy, w=None, y0=0):
     If the length of the XX vector is one greater than the length
     of the YY vector, the XX vector is taken to represent the edges
     of the bins.'''
-    xx = np.array(xx)
-    yy = np.array(yy)
+    xx = np.array(xx).flatten()
+    yy = np.array(yy).flatten()
     if utils.isnscalar(y0):
         y0=np.zeros(yy.shape) + y0
 
@@ -248,32 +281,39 @@ def errorbar(xx, yy, dy, w=None, dir='both'):
                 markup.at(xx[n], yy[n] + dy_dn[n])
                 paper.line(np.array([-1, 1])*w/2, np.array([0, 0]))
 
-def errorpatch(xx, yy, dy, dir='both'):
+def errorpatch(xx, yy, dy=None, dir='both'):
     '''ERRORPATCH - Draw error patch
-    ERRORPATCH(xx, yy, dy) plots an error patch at (XX,YY+-DY).
-    Normally, XX, YY, and DY have the same shape. However, it is permissible
-    for DY to be shaped Nx2, in which case lower and upper error bounds
-    are different.
+    ERRORPATCH(xx, yy, dy) plots an error patch at (XX, YY ± DY).
+    Normally, XX, YY, and DY all are N-vectors. 
     ERRORPATCH(..., 'up') only plots upward; QERRORPATCH(..., 'down') only 
-    plots downward.'''
+    plots downward.
+    To specify downward and upward errors separately,  DY may be shaped Nx2.
+    DY must be positive, even for the downward error.
+    
+    ERRORPATCH(xx, yy), where YY is shaped Nx2, directly specifies the bounds
+    as (XX, YY[:,0]) and (XX, YY[:,1]), much like matplotlib's fill_between.
+    '''
 
     N = len(xx)
-    if np.prod(dy.shape)==2*N:
-        dy_dn = -dy[:,0]
-        dy_up = dy[:,1]
+    if dy is None:
+        yy_dn = yy[:,0]
+        yy_up = yy[:,1]
     else:
-        dy_up = dy
-        dy_dn = -dy
-
-    if dir=='up':
-        dy_dn = 0*dy_dn
-    elif dir=='down':
-        dy_up = 0*dy_up
-    elif dir!='both':
-        qi.error('Bad direction name')
+        if len(dy.shape)==2:
+            yy_dn = yy - dy[:,0]
+            yy_up = yy + dy[:,1]
+        else:
+            yy_dn = yy - dy
+            yy_up = yy + dy
+        if dir=='up':
+            yy_dn = yy
+        elif dir=='down':
+            yy_up = yy
+        elif dir!='both':
+            qi.error('Bad direction name')
     
     patch(np.concatenate((xx, np.flip(xx, 0))),
-          np.concatenate((yy + dy_dn, np.flip(yy+dy_up, 0))))
+          np.concatenate((yy_dn, np.flip(yy_up, 0))))
 
 def skyline(xx, yy, y0=0):
     '''SKYLINE - Skyline plot (bar plot)
@@ -317,4 +357,3 @@ def caligraph(xx, yy, ww):
         qi.f.writedbl(xx[iup[k]:idn[k]])
         qi.f.writedbl(yy[iup[k]:idn[k]])
         qi.f.writedbl(ww[iup[k]:idn[k]])
-    

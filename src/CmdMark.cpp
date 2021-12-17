@@ -25,12 +25,13 @@
 #include "Rotate.h"
 #include "Slightly.h"
 #include "pi.h"
+#include <QDebug>
 
 static CBuilder<CmdMark> cbMark("mark");
 static CBuilder<CmdMark> cbPMark("pmark");
 
 bool CmdMark::usage() {
-  return error("Usage: mark|pmark xdata ydata");
+  return error("Usage: mark|pmark xdata ydata [rx [ry [1]]]");
 }
 
 static void rendermark(QPainter &p, QPointF const &xy,
@@ -188,11 +189,30 @@ static void rendermark(QPainter &p, QPointF const &xy,
 bool CmdMark::parse(Statement const &s) {
   int id1 = s.nextIndex(1);
   int id2 = s.nextIndex(id1);
-  if (id2==s.length() && s.isNumeric(1) && s.isNumeric(id1) &&
-      s.data(1).size()==s.data(id1).size())
-    return true;
-  else
+  qDebug() << "parse mark" << s.length() << s.data(1).size() << s.data(id1).size();
+  if (!s.isNumeric(1) || !s.isNumeric(id1)
+      || s.data(1).size()!=s.data(id1).size())
     return usage();
+  if (id2==s.length())
+    return true;
+  if (s[0].str=="pmark")
+    return usage();
+  if (!s.isNumeric(id2) || s.data(id2).size()!=1) // rx
+    return usage();
+  int id3 = s.nextIndex(id2);
+  if (id3==s.length())
+    return true;
+  if (!s.isNumeric(id3) || s.data(id3).size()!=1) // ry
+    return usage();
+  int id4 = s.nextIndex(id3);
+  if (id4==s.length())
+    return true;
+  if (!s.isNumeric(id4) || s.data(id4).size()!=1) // isvert
+    return usage();
+  int id5 = s.nextIndex(id4);
+  if (id5==s.length())
+    return true;
+  return usage();
 }
 
 QRectF CmdMark::dataRange(Statement const &s) {
@@ -225,20 +245,70 @@ QRectF CmdMark::dataRange(Statement const &s) {
 		QPointF(Slightly::more(maxx), Slightly::more(maxy)));
 }
 
+QPolygonF avoidCollision(QPolygonF const &in, double rx, double ry, bool ver) {
+  QPolygonF out;
+  auto sqr = [](double x) { return x*x; };
+  double rx2 = sqr(rx);
+  double ry2 = sqr(ry);
+  auto collides = [&out, rx2, ry2, sqr](QPointF const &p) {
+                    for (QPointF const &q: out) {
+                      if (sqr(p.x()-q.x())/rx2 + sqr(p.y()-q.y())/ry2 < 1)
+                        return true;
+                    }
+                    return false;
+                  };
+  for (QPointF const &p: in) {
+    double dx = 0;
+    while (collides(p + (ver ? QPointF(0,dx) : QPointF(dx,0))))
+      if (dx>0)
+        dx = -dx;
+      else
+        dx = -dx + rx;
+    out.append(p + (ver ? QPointF(0,dx) : QPointF(dx,0)));
+  }
+  return out;
+}
+
+    
+
 void CmdMark::render(Statement const &s, Figure &f, bool dryrun) {
   QVector<double> const &xdata = s.data(1);
-  QVector<double> const &ydata = s.data(s.nextIndex(1));
+  int idx = s.nextIndex(1);
+  QVector<double> const &ydata = s.data(idx);
   if (xdata.isEmpty()) {
     f.setBBox(QRectF());
     return;
   }
-
-  QPolygonF p(xdata.size());
+  double rx = 0;
+  double ry = 0;
+  bool hori = false;
+  bool vert = false;
+  idx = s.nextIndex(idx);
+  if (idx < s.length()) {
+    hori = true;
+    rx = pt2iu(s.data(idx)[0]);
+    ry = rx;
+    idx = s.nextIndex(idx);
+    if (idx < s.length()) {
+      ry = pt2iu(s.data(idx)[0]);
+      idx = s.nextIndex(idx);
+      if (idx < s.length()) {
+        vert = s.data(idx)[0]!=0;
+        hori = !vert;
+      }
+    }
+  }
+  
+  QPolygonF pp(xdata.size());
 
   if (s[0].str=="mark") {
     for (int k=0; k<xdata.size(); k++)
-      p[k] = f.map(xdata[k],ydata[k]);
-  } else {
+      pp[k] = f.map(xdata[k], ydata[k]);
+    if (hori) 
+      pp = avoidCollision(pp, rx, ry, false);
+    else if (vert)
+      pp = avoidCollision(pp, rx, ry, true);
+  } else { // pmark
     double a = f.anchorAngle();
     QPointF xy0 = f.anchor();
     for (int k=0; k<xdata.size(); k++) {
@@ -246,11 +316,11 @@ void CmdMark::render(Statement const &s, Figure &f, bool dryrun) {
       if (a)
 	xy = ::rotate(xy, a);
       xy += xy0;
-      p[k] = xy;
+      pp[k] = xy;
     }
   }
 
-  QRectF bbox = p.boundingRect();
+  QRectF bbox = pp.boundingRect();
   double w = f.painter().pen().widthF();
   if (w>0)
     bbox.adjust(-w/2, -w/2, w/2, w/2);
@@ -281,20 +351,8 @@ void CmdMark::render(Statement const &s, Figure &f, bool dryrun) {
 
   Marker::Type t = f.marker().type;
 
-  if (s[0].str=="pmark") {
-    double a = f.anchorAngle();
-    QPointF xy0 = f.anchor();
-    for (int k=0; k<xdata.size(); k++) {
-      QPointF xy(pt2iu(xdata[k]), pt2iu(ydata[k]));
-      if (a)
-	xy = ::rotate(xy, a);
-      xy += xy0;
-      rendermark(ptr, xy, r, t, asSpine);
-    }
-  } else {
-    for (int k=0; k<xdata.size(); k++)
-      rendermark(ptr, f.map(xdata[k],ydata[k]), r, t, asSpine);
-  }
+  for (QPointF const &p: pp)
+    rendermark(ptr, p, r, t, asSpine);
 
   ptr.restore();  
 }

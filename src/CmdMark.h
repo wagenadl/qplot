@@ -28,6 +28,8 @@
 class CmdMark: public Command {
   /* Syntax:
        mark xdata ydata
+       mark xdata ydata rx ry - displace horizontally to avoid crowding
+       mark xdata ydata rx ry 1 - displace vertically to avoid crowding
    */
 public:
   virtual bool parse(Statement const &);

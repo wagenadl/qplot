@@ -19,7 +19,7 @@ class Figure:
         self.ticklen = 3
         self.axshift = 0
         self.ytitlerot = np.pi/2
-        self.textdist = (3, 3)
+        self.textdist = (3, 5)
         self.lastax = None
         self.lut_nan = np.array([255, 255, 255], dtype='uint8')
         self.lut = np.transpose(np.tile(np.arange(0,256,dtype='uint8'), (3,1)))
