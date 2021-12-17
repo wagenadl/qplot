@@ -246,8 +246,17 @@ image. \emph{C} must be one of 1 (grayscale), 2 (grayscale + alpha), 3
   \cref{plot}.}
 
 \cmd{mark}{[ \emph{x$_1$ x$_2$ \ldots} ] [ \emph{y$_1$ y$_2$ \ldots} ]}
+\cmd{mark}{[ \emph{x$_1$ x$_2$ \ldots} ] [ \emph{y$_1$ y$_2$ \ldots} ]
+\emph{r}}
+\cmd{mark}{[ \emph{x$_1$ x$_2$ \ldots} ] [ \emph{y$_1$ y$_2$ \ldots} ]
+\emph{rx} \emph{ry}}
+\cmd{mark}{[ \emph{x$_1$ x$_2$ \ldots} ] [ \emph{y$_1$ y$_2$ \ldots} ]
+\emph{rx} \emph{ry} 1}
 \expl{Renders markers set by \cref{marker} at the given data
-  coordinates.}
+  coordinates ($x_k, y_k$). With \emph{r} (or \emph{rx} and \emph{ry})
+  given, data are horizontally displaced to avoid collision within the
+  given radius. Final argument 1 switches to vertical displacement.
+}
 
 \cmd{marker}{\emph{size}\bar\emph{fill}\bar\emph{shape} \ldots) (open\bar{}solid\bar{}brush)
   ()

@@ -62,7 +62,8 @@ def textdist(lbl=None, ttl=None):
     qi.ensure()
     if lbl is None:
         lbl = qi.f.textdist[0]
-        ttl = qi.f.textdist[1]
+        if ttl is None:
+            ttl = qi.f.textdist[1]
     elif ttl is None:
         ttl = lbl
     qi.f.textdist = (lbl, ttl)
@@ -668,7 +669,7 @@ def xcaxis(title='', xx=None, labels=None, y=None, lim=None, flip=False):
     
     btwnx = (xx[0:-1] + xx[1:])/2
     if lim is None:
-        avg = np.mean(np.diff(btwnx))
+        avg = np.mean(np.diff(xx))
         lim = (btwnx[0]-avg, btwnx[-1]+avg)
 
     tickx = np.concatenate(([lim[0]], btwnx, [lim[1]]))
