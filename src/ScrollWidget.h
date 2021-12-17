@@ -44,6 +44,7 @@ protected:
   void keyPressEvent(QKeyEvent *);
   void mousePressEvent(QMouseEvent *);
   void mouseMoveEvent(QMouseEvent *);
+  void wheelEvent(QWheelEvent *);
 private:
   void surePan();
   void sureScale();

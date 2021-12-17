@@ -127,7 +127,7 @@ QRectF CmdAt::dataRange(Statement const &s) {
   }
 }
   
-void CmdAt::render(Statement const &s, Figure &f, bool) {
+void CmdAt::render(Statement const &s, Figure &f, bool dryrun) {
   if (s[1].typ==Token::CAPITAL) {
     switch (s.length()) {
     case 2:
@@ -199,4 +199,13 @@ void CmdAt::render(Statement const &s, Figure &f, bool) {
   default:
     qDebug() << "Unexpected syntax in AT";
   }
+
+  if (dryrun)
+    return;
+  if (!f.areBoundingBoxesShown())
+    return;
+  QPen p = f.painter().pen();
+  f.painter().setPen(QPen(QColor(255, 0, 0), 10));
+  f.painter().drawEllipse(anchor, 30, 30);
+  f.painter().setPen(p);
 }

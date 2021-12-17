@@ -20,11 +20,13 @@
 // ScrollWidget.C
 
 #include "ScrollWidget.h"
+#include <QWheelEvent>
 #include <QMouseEvent>
 #include <QKeyEvent>
 #include <QDebug>
 #include <QCursor>
 #include "Factor.h"
+#include <math.h>
 
 ScrollWidget::ScrollWidget(QWidget *parent): QWidget(parent) {
   extent_world = QRectF(QPointF(0,0), QPointF(1000,1000));
@@ -43,6 +45,7 @@ void ScrollWidget::setExtent(QRectF const &e) {
 
 void ScrollWidget::scaleToFit() {
   scaletofit = true;
+  sureScale();
   update();
 }
 
@@ -173,4 +176,13 @@ QPointF ScrollWidget::tlDest() const {
   double x = (width() - ws.width())/2;
   double y = (height() - ws.height())/2;
   return QPointF(x>0 ? x : 0, y>0 ? y : 0);
+}
+
+void ScrollWidget::wheelEvent(QWheelEvent *e) {
+  double delta = e->angleDelta().y() / 120.0;
+  QPointF mousexy_old = tl_world + (e->pos()-tlDest())/scale();
+  setScale(scale() * pow(1.2, delta));
+  QPointF mousexy_new = tl_world + (e->pos()-tlDest())/scale();
+  tl_world += mousexy_old - mousexy_new;
+  surePan();
 }

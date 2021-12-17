@@ -35,7 +35,15 @@ bool CmdEndGroup::parse(Statement const &s) {
     return usage();
 }
 
-void CmdEndGroup::render(Statement const &, Figure &f, bool) {
+void CmdEndGroup::render(Statement const &, Figure &f, bool dryrun) {
   f.endGroup();
+  if (dryrun)
+    return;
+  if (!f.areBoundingBoxesShown())
+    return;
+  QPen p = f.painter().pen();
+  f.painter().setPen(QPen(QColor(0, 180, 0), 8, Qt::DotLine, Qt::RoundCap));
+  f.painter().drawRect(f.lastBBox());
+  f.painter().setPen(p);
 }
 
