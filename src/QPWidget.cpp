@@ -37,8 +37,8 @@ QPWidget::QPWidget(QWidget *parent): ScrollWidget(parent) {
   margindecor = NONE;
   coord = new QLabel(this);
   coord->hide();
-  coord->resize(200,18);
-  coord->move(5, height()-coord->height()-3);
+  coord->resize(width()/2, 24);
+  coord->move(5, height() - coord->height() - 5);
   trackpanel = "-";
   ruler = false;
 }
@@ -174,32 +174,32 @@ void QPWidget::renderRuler(QPainter &p) {
   
   p.setPen("#666666");
   QFont f("Helvetica");
-  f.setPixelSize(11/scale());
+  f.setPointSize(10/scale());
   p.setFont(f);
 
   double s = 1/scale();
   for (double x=x0; x<=x1+dx/2; x+=dx) {
     double xw = xax->map(x).x();
-    p.drawText(QRectF(xw-100*s, world.top()-50*s,
-		      200*s, 50*s-pt2iu(7)),
+    p.drawText(QRectF(xw-200*s, world.top()-50*s,
+		      400*s, 50*s),
 	       Qt::AlignHCenter | Qt::AlignBottom,
 	       coordtext(x, dx));
-    p.drawText(QRectF(xw-100*s, world.bottom()+pt2iu(7),
-		      200*s, 15*s),
+    p.drawText(QRectF(xw-200*s, world.bottom(),
+		      400*s, 50*s),
 	       Qt::AlignCenter | Qt::AlignTop,
 	       coordtext(x, dx));
   }
   
   for (double y=y0; y<=y1+dy/2; y+=dy) {
     double yw = yax->map(y).y();
-    p.drawText(QRectF(world.left()-200*s, yw-20*s,
-		      200*s-pt2iu(7), 40*s), 
+    p.drawText(QRectF(world.left()-400*s, yw-20*s,
+		      400*s, 40*s), 
 	       Qt::AlignRight | Qt::AlignVCenter,
-	       coordtext(y, dy));
-    p.drawText(QRectF(world.right()+pt2iu(7), yw-20*s,
-		      200*s, 40*s),
+	       coordtext(y, dy) + "  ");
+    p.drawText(QRectF(world.right(), yw-20*s,
+		      400*s, 40*s),
 	       Qt::AlignLeft | Qt::AlignVCenter,
-	       coordtext(y, dy));
+	       "  " + coordtext(y, dy));
   }
   
   
@@ -279,6 +279,11 @@ void QPWidget::keyPressEvent(QKeyEvent *e) {
   case Qt::Key_R:
     setRuler(!hasRuler());
     break;
+  case Qt::Key_B:
+    if (fig)
+      fig->showBoundingBoxes(!fig->areBoundingBoxesShown());
+    update();
+    break;
   default:
     ScrollWidget::keyPressEvent(e);
   }
@@ -321,7 +326,8 @@ void QPWidget::setWindowTitle(QString t) {
 
 void QPWidget::resizeEvent(QResizeEvent *e) {
   ScrollWidget::resizeEvent(e);
-  coord->move(5, height()-coord->height()-3);
+  coord->resize(width()/2, 24);
+  coord->move(5, height() - coord->height() - 5);
 }
 
 

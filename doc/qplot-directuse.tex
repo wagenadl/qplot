@@ -49,12 +49,14 @@ QPlot can also be run interactively, like this:
 \begin{quotation}
 qplot \emph{source}
 \end{quotation}
- In that case, graphics are rendered in a window. Keys ``+''
-and ``--'' zoom in and out, ``0'' scales to fit, ``1'' scales to
-100\%. ``E'' resizes the window to fit the whole scene. ``G'' toggles
-between white, gray, and crop-mark borders. ``C'' enables or disables reporting
-coordinates below the mouse pointer. ``Ctrl-Q'' quits. The graphics are
-automatically rerendered if the \emph{source}
+In that case, graphics are rendered in a window. Keys ``+'' and ``--''
+zoom in and out, ``0'' scales to fit, ``1'' scales to 100\%. ``E''
+resizes the window to fit the whole scene. ``G'' toggles between
+white, gray, and crop-mark borders. ``C'' enables or disables
+reporting coordinates below the mouse pointer. ``G'' enables or
+disables rendering of text anchors and bounding boxes for debugging
+purposes.  ``Ctrl-C'' copies a screenshot to the clipboard. ``Ctrl-Q''
+quits. The graphics are automatically rerendered if the \emph{source}
 file changes on disk.
 
 
@@ -281,7 +283,7 @@ image. \emph{C} must be one of 1 (grayscale), 2 (grayscale + alpha), 3
   panel. Or drops out to the top level. While drawing inside a panel,
   \cref{figsize} changes the size of the panel, and \cref{shrink}
   affects the panel rather than the figure as a whole. Also
-  \cref{xaxis} and \cref{yaxis} affect the axes in the
+  \cref{xlim} and \cref{ylim} affect the axes in the
   panel. Choices of pen, brush, font, etc., are not local to panels.}
 
 \cmd{patch}{[ \emph{x$_1$ x$_2$ \ldots} ] [ \emph{y$_1$ y$_2$ \ldots} ]}

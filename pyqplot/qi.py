@@ -110,6 +110,7 @@ class Figure:
     def __init__(self, fn=None, w=5, h=None):
         self.is_interactive = Figure.global_interactive
         self.is_pipe = False
+        self.pipe = None
         self.is_tempfile = False
         if h is None:
             h = .75 * w
@@ -122,14 +123,23 @@ class Figure:
         self.reset()
 
         if self.is_interactive:
-            # Create a pipe
-            if utils.isempty(fn):
-                fn = tempfile.mktemp(dir='')
-            self.fn = fn
-            self.pipe = subprocess.Popen([exe, "--title", fn, "-"],
-                                        stdin=subprocess.PIPE)
-            self.fd = self.pipe.stdin
-            self.is_pipe = True
+            if not utils.isempty(fn) and fn.startswith("/"):
+                # Create a file
+                if not fn.endswith('.qpt'):
+                    fn = fn + '.qpt'
+                self.fn = fn
+                self.fd = open(fn, 'wb')
+                self.pipe = subprocess.Popen([exe, fn])
+                # We use the "pipe" as a pid
+            else:
+                # Create a pipe
+                if utils.isempty(fn):
+                    fn = tempfile.mktemp(dir='')
+                self.fn = fn
+                self.pipe = subprocess.Popen([exe, "--title", fn, "-"],
+                                            stdin=subprocess.PIPE)
+                self.fd = self.pipe.stdin
+                self.is_pipe = True
         else:
             if utils.isempty(fn):
                 (fd, self.fn) = tempfile.mkstemp(suffix='.qpt')
@@ -158,6 +168,8 @@ class Figure:
         elif self.fd is not None:
             self.fd.close()
             self.fd = None
+            if pipe is not None:
+                self.pipe.terminate()
 
     def tofront(self):
         pass
