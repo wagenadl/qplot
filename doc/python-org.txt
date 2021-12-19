@@ -16,6 +16,9 @@ ecoplot
 errorbar
 errorpatch
 mark
+xmark
+ymark
+rectangle
 patch
 plot
 skyline
@@ -34,6 +37,7 @@ xaxis
 xcaxis
 yaxis
 zaxis
+arange
 
 Annotations:
 arrow
@@ -96,9 +100,12 @@ sharelim
 shrink
 xlim
 ylim
+clipy
 
 Specialized functions:
 caligraph
 ctext
 hairline
 textonpath
+xtransform
+ytransform

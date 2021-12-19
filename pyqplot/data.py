@@ -175,7 +175,7 @@ def xmark(xx, yy, rx, ry=None):
     
 def ymark(xx, yy, rx, ry=None):
     '''YMARK - Like mark, but with vertical collision avoidance
-    XMARK(xx, yy, rx, ry) tries to draw marks at (XX, YY), but displaces marks
+    YMARK(xx, yy, rx, ry) tries to draw marks at (XX, YY), but displaces marks
     vertically in steps of RX points to avoid collision within an ellipse
     with radii RX and RY. (Leaving out RY uses a circle with radius RX.)'''
     _mark(xx, yy, rx, ry, 1)

@@ -180,7 +180,7 @@ def subplot(rows, cols, idx):
             style.brush('none')
             relpanel(id, (x,y,w,h))
             style.pen('k')
-            return
+            return id
     qi.error('Too many panels')
     
 def save(ofn=None, reso=300, qual=95):
