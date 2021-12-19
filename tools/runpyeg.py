@@ -2,7 +2,7 @@
 
 import sys
 import os
-
+import time
 ifn = sys.argv[1]
 ofn = sys.argv[2]
 ofn, ext = os.path.splitext(ofn)
@@ -23,6 +23,7 @@ with open(ifn) as f:
         qp.save(ofn + '.pdf')
         qp.close()
     else:
+        print("No figure - unlinking files")
         if os.path.exists(ofn + '.png'):
             os.unlink(ofn + '.png')
         if os.path.exists(ofn + '.pdf'):

@@ -21,7 +21,7 @@ use strict;
 my $here = $0;
 $here =~ s{/[^/]+$}{};
 
-system("$here/matlabdoc -f $here/../octave/qplot-0.2 /tmp/qplotml 'QPlot' .") and die;
+system("$here/matlabdoc -f $here/../octave/qplot /tmp/qplotml 'QPlot' .") and die;
 
 my @files = ();
 my %files = ();

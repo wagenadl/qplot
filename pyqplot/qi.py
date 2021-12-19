@@ -3,6 +3,7 @@ import tempfile
 import os
 import re
 import subprocess
+import time
 from . import utils
 
 here = "/".join(__file__.replace("\\", "/").split("/")[:-2])
@@ -162,7 +163,13 @@ class Figure:
 
     def close(self):
         if self.is_pipe:
-            self.pipe.terminate()
+            self.fd.close()
+            try:
+                self.pipe.wait(2)
+            except TimeOutExpired:
+                print("timeout", time.time())
+                self.pipe.terminate()
+                self.pipe.wait()
             self.is_pipe = False
             self.fd = None
         elif self.fd is not None:

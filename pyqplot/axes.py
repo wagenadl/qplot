@@ -749,7 +749,8 @@ def arange(start, end, step=1):
     xx = RANGE(start, end, step) returns numbers in the closed interval
     [START, END] with a step size of STEP.
     This is similar to numpy's arange, but care is taken that the endpoint
-    is included. Also, the number zero is protected from numerical error.'''
+    is included if STEP divides the interval evenly. 
+    Also, the number zero is protected from numerical error.'''
     rng = np.arange(start, end+step/1e10, step)
     rng[np.abs(rng)<step/1e10] = 0
     return rng
