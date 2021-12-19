@@ -189,7 +189,6 @@ static void rendermark(QPainter &p, QPointF const &xy,
 bool CmdMark::parse(Statement const &s) {
   int id1 = s.nextIndex(1);
   int id2 = s.nextIndex(id1);
-  qDebug() << "parse mark" << s.length() << s.data(1).size() << s.data(id1).size();
   if (!s.isNumeric(1) || !s.isNumeric(id1)
       || s.data(1).size()!=s.data(id1).size())
     return usage();

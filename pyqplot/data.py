@@ -153,7 +153,6 @@ def _mark(xx, yy, rx=None, ry=None, vert=None):
     else:
         extra = ''
     
-    print(f'mark *{len(xx)} *{len(yy)}{extra}\n')
     qi.f.write(f'mark *{len(xx)} *{len(yy)}{extra}\n')
     qi.f.writedbl(xx)
     qi.f.writedbl(yy)
