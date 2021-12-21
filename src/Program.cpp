@@ -29,6 +29,7 @@ Program::Program(QString lbl) {
 }
 
 void Program::reset() {
+  mustresetfigure = true;
   line = 1;
   isOK = true;
   stmt.clear();
@@ -145,6 +146,9 @@ QRectF Program::dataRange(QString p, int upto) {
 }
 
 void Program::render(Figure &f, bool dryrun, int upto) {
+  if (mustresetfigure)
+    f.hardReset();
+  mustresetfigure = false;
   f.reset();
 
   if (!isOK)
