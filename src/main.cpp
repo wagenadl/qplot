@@ -198,8 +198,8 @@ int main(int argc, char **argv) {
   cli.addOption(cli_version);
 
   cli.setApplicationDescription("\n"
-                                "QPlot is Publication-quality plotting for Python, Octave, or Matlab.\n"
-                                "More information is at https://danielwagenaar.net/qplot.");
+    "QPlot is Publication-quality plotting for Python, Octave, or Matlab.\n"
+    "More information is at https://danielwagenaar.net/qplot.");
                                     
   cli.process(app);
 
