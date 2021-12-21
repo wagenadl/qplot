@@ -172,10 +172,11 @@ class Figure:
                 self.pipe.wait()
             self.is_pipe = False
             self.fd = None
+            self.pipe is None
         elif self.fd is not None:
             self.fd.close()
             self.fd = None
-            if pipe is not None:
+            if self.pipe is not None:
                 self.pipe.terminate()
 
     def tofront(self):

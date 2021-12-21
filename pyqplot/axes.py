@@ -648,7 +648,7 @@ def xcaxis(title='', xx=None, labels=None, y=None, lim=None, flip=False):
       XX specifies locations for the labels.
       LABELS specifies the label texts.
       Y specifies intersect with y-axis. If None, defaults to a reasonable
-        position below the data. (Default is 0.)
+        position below the data.
       LIM overrides the default positions of the first and last ticks.
       FLIP, if True, inverts the sign of the settings from TICKLEN, TEXTDIST,
         and AXSHIFT.
@@ -682,6 +682,53 @@ def xcaxis(title='', xx=None, labels=None, y=None, lim=None, flip=False):
     _qaxis(orient='x', lim_d=lim, tick_d=tickx, tick_lbl='',
             ticklen=ticklen,
             coord_d=y, coord_p=axshift)
+
+def ycaxis(title='', yy=None, labels=None, x=None, lim=None, flip=False):
+    '''YCAXIS - Plot y-axis with labels between ticks
+    YCAXIS plots an y-axis with labels at specfied positions but ticks
+    between the labels rather than at the label positions. First and
+    last tick positions are extrapolated.
+    All arguments are optional.
+      TITLE specifies title for axis.
+      YY specifies locations for the labels.
+      LABELS specifies the label texts.
+      X specifies intersect with x-axis. If None, defaults to a reasonable
+        position left of the data.
+      LIM overrides the default positions of the first and last ticks.
+      FLIP, if True, inverts the sign of the settings from TICKLEN, TEXTDIST,
+        and AXSHIFT.
+    YCAXIS obeys settings from TICKLEN, TEXTDIST, and AXSHIFT.'''
+    qi.ensure()
+    if x is None:
+        xx = utils.sensibleticks(qi.f.datarange[0:2], 1)
+        x = xx[0]
+    ticklen = qi.f.ticklen
+    axshift = qi.f.axshift
+    [lbldist, ttldist] = textdist()
+    
+    if flip==0:
+        ticklen = -ticklen
+        axshift = -axshift
+        lbldist = -lbldist
+        ttldist = -ttldist
+    elif flip==2:
+        lblrot = lblrot
+        
+    btwnx = (yy[0:-1] + yy[1:])/2
+    if lim is None:
+        avg = np.mean(np.diff(yy))
+        lim = (btwnx[0]-avg, btwnx[-1]+avg)
+
+    ticky = np.concatenate(([lim[0]], btwnx, [lim[1]]))
+
+    # Place labels, do not draw bar
+    _qaxis(orient='y', tick_d=yy, tick_lbl=labels, ttl=title,
+            ticklen=0, lbldist=lbldist+ticklen, ttldist=ttldist,
+            coord_d=x, coord_p=axshift)
+    # Place ticks, draw bar
+    _qaxis(orient='y', lim_d=lim, tick_d=ticky, tick_lbl='',
+            ticklen=ticklen,
+            coord_d=x, coord_p=axshift)
     
 def zaxis(title, ticks, proj, labels=None, x=0, y=0, lim=None, below=False):
     '''ZAXIS - Draw a z-axis.
