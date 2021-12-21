@@ -55,7 +55,6 @@ private:
   bool isOK;
   QString label;
   int line;
-  bool mustresetfigure; // hacky
 };
 
 #endif

@@ -21,7 +21,7 @@ void Renderer::prerender(int upto) {
   QImage img(1,1,QImage::Format_ARGB32);
   fig.setSize(QSizeF(1, 1)); // this may be overridden later
   fig.painter().begin(&img);
-  fig.reset();
+  fig.hardReset();
   foreach (QString p, prog.panels(upto)) {
     QRectF dataExtent = prog.dataRange(p, upto);
     if (p=="-") {

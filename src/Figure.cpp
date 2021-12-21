@@ -33,10 +33,10 @@ Figure::Figure() {
 }
 
 void Figure::hardReset() {
-  dashscale = 1;
   figextent = QRectF(QPointF(0,0), QSizeF(72*6, 72*4));
-  currentPanel = "-";
   panels.clear();
+  dashscale = 1;
+  currentPanel = "-";
   replaceAxes();
   reset();
 }
