@@ -62,7 +62,6 @@ void CmdShrink::render(Statement const &s, Figure &f, bool) {
   QPointF x1 = f.xAxis().maxp();
   QPointF y0 = f.yAxis().minp();
   QPointF y1 = f.yAxis().maxp();
-  qDebug() << "render shrink" << dtop << dbottom << y0 << y1 << mrg;
 
   double olddx = x1.x()-x0.x();
   double olddy = y1.y()-y0.y();
