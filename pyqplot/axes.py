@@ -706,13 +706,14 @@ def ycaxis(title='', yy=None, labels=None, x=None, lim=None, flip=False):
     axshift = qi.f.axshift
     [lbldist, ttldist] = textdist()
     
+    lblrot = ytitlerot()
     if flip==0:
         ticklen = -ticklen
         axshift = -axshift
         lbldist = -lbldist
         ttldist = -ttldist
     elif flip==2:
-        lblrot = lblrot
+        lblrot = -lblrot
         
     btwnx = (yy[0:-1] + yy[1:])/2
     if lim is None:
@@ -724,11 +725,11 @@ def ycaxis(title='', yy=None, labels=None, x=None, lim=None, flip=False):
     # Place labels, do not draw bar
     _qaxis(orient='y', tick_d=yy, tick_lbl=labels, ttl=title,
             ticklen=0, lbldist=lbldist+ticklen, ttldist=ttldist,
-            coord_d=x, coord_p=axshift)
+            coord_d=x, coord_p=axshift, ttlrot=lblrot)
     # Place ticks, draw bar
     _qaxis(orient='y', lim_d=lim, tick_d=ticky, tick_lbl='',
             ticklen=ticklen,
-            coord_d=x, coord_p=axshift)
+            coord_d=x, coord_p=axshift, ttlrot=lblrot)
     
 def zaxis(title, ticks, proj, labels=None, x=0, y=0, lim=None, below=False):
     '''ZAXIS - Draw a z-axis.
