@@ -31,6 +31,7 @@
 #define MARGPIX 15
 
 QPWidget::QPWidget(QWidget *parent): ScrollWidget(parent) {
+  brandnew = true;
   fig=0;
   prog=0;
   marg = 20;
@@ -70,6 +71,10 @@ void QPWidget::paintEvent(QPaintEvent *) {
   if (fig->extent()!=worldextent) {
     worldextent = fig->extent();
     setExtent(worldextent.adjusted(-marg, -marg, marg, marg));
+    if (brandnew)
+      resize((worldextent.size()/20).toSize());
+    brandnew = false;
+    autoSize();
   }    
   
   QPainter &p(fig->painter());
