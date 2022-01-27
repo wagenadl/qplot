@@ -20,7 +20,7 @@
 import sys
 import os
 sys.path.append('..')
-import pyqplot as qp
+import qplot as qp
 
 def header(f, title):
     f.write('''

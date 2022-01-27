@@ -21,7 +21,7 @@ import sys
 import os
 import glob
 sys.path.append('..')
-import pyqplot as qp
+import qplot as qp
 
 egs = glob.glob('html/pyref/*.html')
 

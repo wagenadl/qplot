@@ -19,7 +19,7 @@
 import glob
 import sys
 sys.path.append('..')
-import pyqplot as qp
+import qplot as qp
 
 def header(f, title):
     f.write('''<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">

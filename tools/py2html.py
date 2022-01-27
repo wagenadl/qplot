@@ -21,7 +21,7 @@ import os
 import re
 import inspect
 sys.path.append('..')
-import pyqplot as qp
+import qplot as qp
 
 ofn = sys.argv[1]
 dr, fn = os.path.split(sys.argv[1])

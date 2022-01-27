@@ -15,7 +15,7 @@ set(CPACK_GENERATOR "NSIS")
 install(TARGETS qplot)
 install(DIRECTORY ${CMAKE_BINARY_DIR}/windeploy/ DESTINATION bin)
 set(PYPATH "${PYPKG}")
-include(pyqplot/Install.CMakeLists.txt)
+include(python/qplot/Install.CMakeLists.txt)
 set(OCTPATH "${OCTPKG}")
 include(octave/Install.CMakeLists.txt)
 
