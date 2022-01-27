@@ -1,4 +1,4 @@
-import pyqplot as qp
+import qplot as qp
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2

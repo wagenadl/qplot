@@ -10,7 +10,7 @@ include(octave/Install.CMakeLists.txt)
 
 # Install python
 set(PYPATH "lib/python3/dist-packages/${PYPKG}")
-include(pyqplot/Install.CMakeLists.txt)
+include(python/qplot/Install.CMakeLists.txt)
 
 # Install placeqpt
 install(PROGRAMS placeqpt/placeqpt-backend DESTINATION bin)

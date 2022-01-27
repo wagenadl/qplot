@@ -14,7 +14,7 @@ root = "C:/Users/Wagenaar/Documents/Progs/qplot"
 qplot_build = root + "/build-qplot-Desktop_Qt_5_12_10_MSVC2017_64bit-Release/release"
 release_path = root + "/release-x64"
 bin_path = release_path + "/bin"
-py_path = release_path + "/pyqplot"
+py_path = release_path + "/qplot"
 
 #%%
 envpath = os.environ['PATH'].split(";")
@@ -36,7 +36,7 @@ os.mkdir(py_path)
 os.system(f"{qbin_path}/windeployqt --release --dir {bin_path} {qplot_build}/qplot.exe")
 shutil.copy(f"{qplot_build}/qplot.exe", bin_path)
 
-for py in glob.glob(f"{root}/pyqplot/*.py"):
+for py in glob.glob(f"{root}/python/qplot/*.py"):
     shutil.copy(py, py_path)
 
 #%%

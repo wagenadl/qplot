@@ -1,4 +1,4 @@
-import pyqplot as qp
+import qplot as qp
 import numpy as np
 
 qp.figure('xaxis', 3, 3)
