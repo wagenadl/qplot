@@ -1,4 +1,4 @@
-import pyqplot as qp
+import qplot as qp
 import numpy as np
 qp.figure('c:/users/wagenaar/desktop/test.qpt')
 qp.plot([0,1,2], [1,2,0])

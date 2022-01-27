@@ -53,7 +53,7 @@ PYREFCHECK: ../tools/checkpyeg.py $(PYREFEGHTMLS)
 	../tools/checkpyeg.py
 
 html/pyref/alpha.html: ../tools/mkpyalpha.py
-	$< ../pyqplot $@
+	$< ../python/qplot $@
 
 html/pyref/catg.html: ../tools/mkpycatg.py ../doc/python-org.txt
 	$< ../doc/python-org.txt $@
