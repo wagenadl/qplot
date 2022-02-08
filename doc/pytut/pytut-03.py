@@ -1,7 +1,7 @@
 import sys
 sys.path.append('../../..')
 import numpy as np
-import pyqplot as qp
+import qplot as qp
 
 qp.figure('tut-03');
 
