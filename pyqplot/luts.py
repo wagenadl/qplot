@@ -136,7 +136,7 @@ def _native(name, N, reverse):
     elif name=='qpcoldhot':
         rgb = np.vstack((np.flipud(_cold(N//2)), _hot(N//2)))
     else:
-        raise ValueError('Unknown colormap')
+        return None
     if reverse:
         rgb = np.flipud(rgb)
     return rgb
@@ -194,14 +194,16 @@ def get(name, N=None, reverse=False):
     Optional argument REVERSE specifies that the order of the colors should
     be reversed.
     See also SET.'''
-    if name in _cmaps['native']:
-        return _native(name, N, reverse)
+    cmap = _native(name, N, reverse)
+    if cmap is not None:
+        return cmap
     cmap = _get_mpl_cmap(name, N, reverse)
-    if cmap is None:
-        cmap = _get_plotly_cmap(name, N, reverse)
-    if cmap is None:
-        raise ValueError(f'Unknown color map {name}')
-    return cmap
+    if cmap is not None:
+        return cmap
+    cmap = _get_plotly_cmap(name, N, reverse)
+    if cmap is not None:
+        return cmap
+    raise ValueError(f'Unknown color map {name}')
 
 def set(name, N=None, reverse=False):
     '''SET - Retrieve and apply a colormap.
