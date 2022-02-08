@@ -1,4 +1,4 @@
-import pyqplot as qp
+import qplot as qp
 import numpy as np
 
 qp.figure('mlegend', 3, 3)

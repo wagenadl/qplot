@@ -1,7 +1,7 @@
 import sys
 sys.path.append('../../..')
 import numpy as np
-import pyqplot as qp
+import qplot as qp
 
 x = np.arange(-10, 10, 0.1)
 qp.plot(x, np.sin(x));
