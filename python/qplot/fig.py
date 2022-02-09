@@ -170,7 +170,7 @@ def subplot(rows, cols, idx):
     w = 1./cols
     x = w * (idx % cols)
     y = h * (idx // cols)
-    print(x,y,w,h)
+    #print(x,y,w,h)
     qi.ensure()
     for k in range(26):
         id = '%c' % (65 + k)
