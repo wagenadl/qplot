@@ -215,7 +215,44 @@ def bars(xx, yy, w=None, y0=0):
                       np.array([0, 0, 1, 1])*yy[k] + y0[k])
     else:
         raise ValueError('Inconsistent array sizes')
-            
+
+
+def hbars(yy, xx, h=None, x0=0):
+    '''HBARS - Horizontal bar plot with bar height specified in data coords
+    HBARS(yy, xx, h) draws a horizontal bar graph of data XX at YY with bars
+    of height H specified in data coordinates.
+    HBARS(yy, xx, h, x0) specifies the baseline of the plot;
+    default for X0 is 0. X0 may also be a vector (which must
+    then be the same size as XX and YY). This is useful for
+    creating stacked bar graphs.
+    If H is not given, it defaults to mean(diff(yy)).
+    If the length of the YY vector is one greater than the length
+    of the XX vector, the YY vector is taken to represent the edges
+    of the bins.'''
+    xx = np.array(xx).flatten()
+    yy = np.array(yy).flatten()
+    if utils.isnscalar(x0):
+        x0 = np.zeros(xx.shape) + x0
+
+    if xx.size == yy.size:
+        if h is None:
+            h = np.mean(np.diff(yy))
+        for k in range(xx.size):
+            patch(np.array([0, 0, 1, 1]) * xx[k] + x0[k],
+            np.array([-.5, .5, .5, -.5]) * h + yy[k])
+    elif xx.size == yy.size - 1:
+        if h is None:
+            for k in range(xx.size):
+                patch(np.array([0, 0, 1, 1]) * xx[k] + x0[k],
+                np.array([yy[k], yy[k + 1], yy[k + 1], yy[k]]))
+        else:
+            for k in range(xx.size):
+                patch(np.array([0, 0, 1, 1]) * xx[k] + x0[k],
+                    np.array([-.5, .5, .5, -.5]) * h + (yy[k] + yy[k + 1]) / 2)
+
+    else:
+        raise ValueError('Inconsistent array sizes')
+    
 
 def ecoplot(x0, dx, yy, N=100):
     '''ECOPLOT - Economically plot large datasets
