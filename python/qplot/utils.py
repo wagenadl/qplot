@@ -89,6 +89,14 @@ def aslist(x):
     else:
         return [x]
 
+def arange(start, end, step=1):
+    # See axes.py for docs
+    rng = np.arange(start, end+step/1e10, step)
+    rng[np.abs(rng)<step/1e10] = 0
+    return rng
+
+
+    
 def sensiblestep(mx):
     '''dx = SENSIBLESTEP(mx) returns a sensible step size not much smaller
     than MX:
@@ -133,7 +141,7 @@ def sensibleticks(xxx, cnt=5, inc=False):
         else:
             x1a = np.floor(x1/dx)*dx
         #print(x0a, x1a, dx)
-        tx = np.arange(x0a, x1a+dx/2, dx)
+        tx = arange(x0a, x1a, dx)
         scl = scl*1.5
     return tx
 
