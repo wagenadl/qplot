@@ -30,9 +30,10 @@ Error::Error(): QTextStream(&str, QIODevice::WriteOnly) {
 }
 
 Error::~Error() {
-  if (dest)
+  if (dest) {
     (*dest) << str << "\n";
-  else {
+    dest->flush();
+  } else {
     QTextStream ts(stderr, QIODevice::WriteOnly);
     ts << str << "\n";
   }

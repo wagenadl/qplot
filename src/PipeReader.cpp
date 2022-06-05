@@ -4,6 +4,8 @@
 #include "Error.h"
 #include <QDebug>
 #include <iostream>
+#include <io.h>
+#include <fcntl.h>
 
 PipeReader::PipeReader() {
 }
@@ -14,8 +16,9 @@ PipeReader::~PipeReader() {
 }
 
 void PipeReader::run() {
+  _setmode(_fileno(stdin), _O_BINARY);
   int line = 1;
-  while (!std::cin.eof()) {
+  while (std::cin) {
     Statement s;
     if (s.read(std::cin)) {
       mutex.lock();
@@ -23,8 +26,12 @@ void PipeReader::run() {
       mutex.unlock();
       emit ready();
     } else {
-      if (!std::cin.eof())
+      if (std::cin.eof()) {
+        Error() << "EOF";
+        break;
+      } else {
         Error() << QString("Read error at line %1 of stdin").arg(line);
+      }
     }
     line += s.lineCount();
   }
