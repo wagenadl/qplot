@@ -82,8 +82,18 @@ int interactive(QString ifn, QString ttl, Renderer *renderer,
                        QList<Statement> ss = pipereader->readQueue();
                        if (ss.size()) {
                          int n0 = renderer->program()->length();
-                         for (auto s: ss) 
-                           renderer->program()->append(s);
+                         for (auto s: ss) {
+                           if (s.length() && s[0].str=="figsize") {
+                             // save now, because program about to be reset
+                             renderer->prerender();
+                             int n1 = renderer->program()->length();
+                             renderer->dosaves(n0, n1);
+                             renderer->program()->append(s);
+                             n0 = renderer->program()->length();
+                           } else {
+                             renderer->program()->append(s);
+                           }
+                         }
                          renderer->prerender();
                          int n1 = renderer->program()->length();
                          renderer->dosaves(n0, n1);
