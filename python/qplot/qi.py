@@ -166,7 +166,7 @@ class Figure:
             self.fd.close()
             try:
                 self.pipe.wait(2)
-            except TimeOutExpired:
+            except subprocess.TimeoutExpired:
                 print("timeout", time.time())
                 self.pipe.terminate()
                 self.pipe.wait()
@@ -184,7 +184,7 @@ class Figure:
 
     def save(self, ofn, reso=None, qual=None):
         if self.is_pipe:
-            cmd = f'save "{ofn}"';
+            cmd = f'save "{ofn}"'
             if reso is not None:
                 cmd += f' {reso}'
                 if qual is not None:
@@ -338,7 +338,7 @@ def refigure(fn, w, h):
         if fn in figs:
             f1 = figs[fn]
     if f1 is None:
-        f1 = qi.Figure(fn, w, h)
+        f1 = Figure(fn, w, h)
         figs[f1.fn] = f1
         return f1
 
