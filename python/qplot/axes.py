@@ -174,9 +174,10 @@ def _qaxis(orient='x', lim_d=None,
                 shf1 = 0
             if orient=='y':
                 shf0, shf1 = -shf0, -shf1
-            for k in range(len(tick_p)):
-                a = (tick_d[k] - tick_d[0]) / (tick_d[-1] - tick_d[0])
-                tick_p[k] += (1-a)*shf0 + a*shf1
+            if len(tick_p)>1:    
+                for k in range(len(tick_p)):
+                    a = (tick_d[k] - tick_d[0]) / (tick_d[-1] - tick_d[0])
+                    tick_p[k] += (1-a)*shf0 + a*shf1
                 
     fig.group()
     
