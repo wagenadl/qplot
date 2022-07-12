@@ -82,27 +82,23 @@ alternatives.\bigskip
 \cmd{at}{--}
 \cmd{at}{\emph{x} \emph{y} \emph{ID}}
 \cmd{at}{\emph{ID}}
-\expl{Places subsequent text and lines at graph
-    position (\emph{x}, \emph{y}). If (\emph{$\xi$}, \emph{$\eta$})
-    are given, this specifies a rotation such that the baseline of the
-    text is in the direction of the vector (\emph{$\xi$},
-    \emph{$\eta$}). This vector is specified in data
-    coordinates. Alternatively, a rotation may be specified as a
-    direct (clockwise) angle $\phi$. Besides a numeric value, \emph{x}
-    may be one of {``left''}, {``right''}, or {``center''} to place 
-    relative to the
-    bounding box of the last drawn object (or group, see
-    \cref{group}), ``abs'' or ``absolute'' to revert to absolute
-    placement in the horizontal direction, or a dash (``--'') to
-    retain the previous anchor for
-    the horizontal direction.  
-    Likewise, \emph{y} may be one of {``top''}, {``bottom''},
-    {``middle''}, ``abs'', ``absolute'', or a dash. ``at --''
-    reverts to absolute placement (i.e., relative to the top left of the
-    current panel)
-    in both horizontal and vertical directions. \cref{at} may also be
-    used to mark a location for later reference, as per the final two
-    syntax forms.}
+\expl{Places subsequent text and lines at graph position (\emph{x},
+  \emph{y}). If (\emph{$\xi$}, \emph{$\eta$}) are given, this
+  specifies a rotation such that the baseline of the text is in the
+  direction of the data vector (\emph{$\xi$}, \emph{$\eta$}). This
+  vector is specified in data coordinates. Alternatively, a rotation
+  may be specified as a direct (clockwise) angle $\phi$ (in
+  radians). Besides a numeric value, \emph{x} may be one of
+  {``left''}, {``right''}, or {``center''} to place relative to the
+  bounding box of the last drawn object (or group, see \cref{group}),
+  ``abs'' or ``absolute'' to revert to absolute placement in the
+  horizontal direction, or a dash (``--'') to retain the previous
+  anchor for the horizontal direction.  Likewise, \emph{y} may be one
+  of {``top''}, {``bottom''}, {``middle''}, ``abs'', ``absolute'', or
+  a dash. ``at --'' reverts to absolute placement (i.e., relative to
+  the top left of the current panel) in both horizontal and vertical
+  directions. \cref{at} may also be used to mark a location for later
+  reference, as per the final two syntax forms.}
 
 \cmd{brush}{(\emph{ID}) \emph{color}\bar{}none\bar{}\emph{opacity} \ldots}
 \expl{Selects a brush by \emph{ID}, defines its color (or sets it to

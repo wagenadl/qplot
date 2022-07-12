@@ -4,7 +4,9 @@
 #include "Error.h"
 #include <QDebug>
 #include <iostream>
+#ifdef _WIN32
 #include <io.h>
+#endif
 #include <fcntl.h>
 
 PipeReader::PipeReader() {
@@ -16,7 +18,9 @@ PipeReader::~PipeReader() {
 }
 
 void PipeReader::run() {
+  #ifdef _WIN32
   _setmode(_fileno(stdin), _O_BINARY);
+  #endif
   int line = 1;
   while (std::cin) {
     Statement s;

@@ -39,7 +39,8 @@ public:
   void clear();
   int lineCount() const; // number of lines processed
   int length() const; // number of tokens
-  Token const &operator[](int idx) const; // returns null token if out-of-range
+  Token const &operator[](int idx) const { return token(idx); };
+  Token const &token(int idx) const;  // returns null token if out-of-range
   bool isNumeric(int idx) const; // true if token is number, numeric vector or "-"
   int nextIndex(int idx) const; // skips over multitoken vectors
   
