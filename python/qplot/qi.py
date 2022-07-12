@@ -15,6 +15,12 @@ class Figure:
     global_interactive = True
     def interactive(k):
         Figure.global_interactive = k
+
+    global_degrees = False
+    def use_degrees():
+        Figure.global_degrees = True
+    def use_radians():
+        Figure.global_degrees = False
     
     def reset(self):
         self.ticklen = 3
@@ -207,6 +213,14 @@ class Figure:
 figs = {} # map from filename to Figure
 f = None
 
+
+def to_radians(angle):
+    if Figure.global_degrees:
+        return np.pi * angle / 180
+    else:
+        return angle
+
+
 def error(msg):
     raise ValueError(msg)
 
@@ -307,6 +321,32 @@ def plot(xx, yy, cmd='plot'):
     f.writedbl(xx)
     f.writedbl(yy)
     f.updaterange(xx, yy)
+
+def hatch(xx, yy, angle, spacing, offset, cmd='hatch'):
+    xx = np.array(xx)
+    yy = np.array(yy)
+    if not utils.isnvector(xx):
+        error('xx must be a real vector')
+    if not utils.isnvector(yy):
+        error('yy must be a real vector')
+    if len(xx) != len(yy):
+        error('xx and yy must be equally long')
+    xx=xx[:,]
+    yy=yy[:,]
+    if utils.isempty(xx):
+        return
+    angle = to_radians(angle)
+    
+    ensure()
+    N = len(xx)
+    f.write('%s *%i *%i %g %g %g\n' % (cmd, N, N, angle, spacing, offset))
+    if cmd=='hatch':
+        xx = f.xtransform(xx)
+        yy = f.ytransform(yy)
+    f.writedbl(xx)
+    f.writedbl(yy)
+    f.updaterange(xx, yy)
+    
 
 def figisopen(fn):
     if fn is None:

@@ -249,3 +249,21 @@ def current():
         return None
     qi.ensure()
     return qi.f.fn
+
+
+def ion():
+    '''ION - Enable interactive rendering'''
+    qi.Figure.interactive(True)
+
+def ioff():
+    '''IOFF - Disable interactive rendering'''
+    qi.Figure.interactive(False)
+
+def degrees():
+    '''DEGREES - Specify future angles to AT and HATCH in degrees'''
+    qi.Figure.use_degrees()
+
+def radians():
+    '''RADIANS - Specify future angles to AT and HATCH in radians (default)'''
+    qi.Figure.use_radians()
+    

@@ -243,7 +243,7 @@ int Statement::nextIndex(int idx) const {
 
 static Token nullToken;
 
-Token const &Statement::operator[](int idx) const {
+Token const &Statement::token(int idx) const {
   if (idx>=0 && idx<toks.size())
     return toks[idx];
   else

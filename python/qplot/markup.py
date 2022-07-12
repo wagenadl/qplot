@@ -162,7 +162,7 @@ def at(x=None, y=None, phi=None, along=None, id=None, notransform=False):
         cmd.append('%g' % y)
         qi.f.aty = y
     if phi is not None:
-        cmd.append('%g' % phi)
+        cmd.append('%g' % qi.to_radians(phi))
     elif along is not None:
         cmd.append('%g %g' % (along[0], along[1]))
     if id is not None:

@@ -96,6 +96,20 @@ def area(xx, yy):
     See also PATCH and GAREA.'''
     qi.plot(xx, yy, cmd='area')
 
+
+def phatch(xx, yy, angle=0, spacing=10, offset=0):
+    '''PHATCH - Hatch a polygonal patch in paper space
+    PATCH(xx, yy, angle) hatches a polygon with vertices at (XX,YY) using
+    lines at the given angle. 
+    Optional argument SPACING specifies space between lines, in points.
+    By default, the line pattern is aligned with the center of the polygon.
+    OFFSET shifts this center by the given number of points.
+    NaN values in XX or YY may be used to separate multiple polygons to be
+    drawn with common line pattern alignment.
+    See also HATCH.'''
+    qi.hatch(xx, yy, angle, spacing, offset, cmd="phatch")
+        
+
 def pmark(xx, yy):
     '''PMARK - Draw on the current graph with the current marker
     PMARK(xx, yy) draws marks at the given location in paper space. 

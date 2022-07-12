@@ -131,6 +131,19 @@ def rectangle(x, y, w, h):
     coordinates. The rectangle is drawn with the current pen and filled
     with the current brush. See also PATCH.'''
     patch([x, x+w, x+w, x], [y, y, y+h, y+h])
+
+def hatch(xx, yy, angle=0, spacing=10, offset=0):
+    '''HATCH - Hatch a polygonal patch in data space
+    HATCH(xx, yy, angle) hatches a polygon with vertices at (XX,YY) using
+    lines at the given angle. 
+    Optional argument SPACING specifies space between lines, in points.
+    By default, the line pattern is aligned with the center of the polygon.
+    OFFSET shifts this center by the given number of points.
+    NaN values in XX or YY may be used to separate multiple polygons to be
+    drawn with common line pattern alignment.
+    See also PHATCH.'''
+    qi.hatch(xx, yy, angle, spacing, offset)
+    
     
 def _mark(xx, yy, rx=None, ry=None, vert=None):
     '''MARK - Draw on the current graph with the current marker
@@ -160,8 +173,8 @@ def _mark(xx, yy, rx=None, ry=None, vert=None):
 
 def mark(xx, yy):
     '''MARK - Draw on the current graph with the current marker
-    MARK(xx, yy) draws marks at the given location in data space. See also
-    MARKER and PMARK.'''
+    MARK(xx, yy) draws marks at the given location in data space. 
+    See also MARKER and PMARK, and XMARK and YMARK.'''
     _mark(xx, yy)
 
 
@@ -188,11 +201,12 @@ def bars(xx, yy, w=None, y0=0):
     BARS(xx, yy, w, y0) specifies the baseline of the plot;
     default for Y0 is 0. Y0 may also be a vector (which must
     then be the same size as XX and YY). This is useful for
-    creating stacked bar graphs.
+    creating stacked bar graphs. Note that YY is not relative to Y0.
     If W is not given, it defaults to mean(diff(xx)).
     If the length of the XX vector is one greater than the length
     of the YY vector, the XX vector is taken to represent the edges
-    of the bins.'''
+    of the bins.
+    See also HBARS and SKYLINE.'''
     xx = np.array(xx).flatten()
     yy = np.array(yy).flatten()
     if utils.isnscalar(y0):
@@ -221,10 +235,10 @@ def hbars(yy, xx, h=None, x0=0):
     '''HBARS - Horizontal bar plot with bar height specified in data coords
     HBARS(yy, xx, h) draws a horizontal bar graph of data XX at YY with bars
     of height H specified in data coordinates.
-    HBARS(yy, xx, h, x0) specifies the baseline of the plot;
-    default for X0 is 0. X0 may also be a vector (which must
-    then be the same size as XX and YY). This is useful for
-    creating stacked bar graphs.
+    HBARS(yy, xx, h, x0) specifies the baseline of the plot; default for X0 
+    is 0. X0 may also be a vector (which must then be the same size as XX 
+    and YY). This is useful for  creating stacked bar graphs. Note that XX is
+    not relative to X0.
     If H is not given, it defaults to mean(diff(yy)).
     If the length of the YY vector is one greater than the length
     of the XX vector, the YY vector is taken to represent the edges
@@ -275,14 +289,15 @@ def ecoplot(x0, dx, yy, N=100):
 
 def errorbar(xx, yy, dy, w=None, dir='both'):
     '''ERRORBAR - Draw error bars
-    ERRORBAR(xx, yy, dy) plots error bars at (XX,YY+-DY).
+    ERRORBAR(xx, yy, dy) plots error bars at (XX, YY ± DY).
     Normally, XX, YY, and DY have the same shape. However, it is permissible
     for DY to be shaped Nx2, or for DY to be a 2-tuple, in which case
     lower and upper error bounds are different. (DY should always be positive).
-    QERRORBAR(xx, yy, dy, w) adorns the error bars with horizontal lines of
+    ERRORBAR(xx, yy, dy, w) adorns the error bars with horizontal lines of
     given width (W in points).
-    QERRORBAR(..., 'up') only plots upward; QERRORBAR(..., 'down') only plots
-    downward.'''
+    ERRORBAR(..., 'up') only plots upward; ERRORBAR(..., 'down') only plots
+    downward.
+    See also ERRORPATCH and HERRORBAR'''
 
     N = len(xx)
     if type(dy)==tuple:
@@ -317,11 +332,57 @@ def errorbar(xx, yy, dy, w=None, dir='both'):
                 markup.at(xx[n], yy[n] + dy_dn[n])
                 paper.line(np.array([-1, 1])*w/2, np.array([0, 0]))
 
+                
+def herrorbar(yy, xx, dx, w=None, dir='both'):
+    '''HERRORBAR - Draw horizontal error bars
+    HERRORBAR(yy, xx, dx) plots horizontal error bars at (XX ± DX, YY).
+    Normally, YY, XX, and DX have the same shape. However, it is permissible
+    for DX to be shaped Nx2, or for DX to be a 2-tuple, in which case
+    lower and upper error bounds are different. (DX should always be positive).
+    HERRORBAR(yy, xx, dx, w) adorns the error bars with vertical lines of
+    given extent (W in points).
+    HERRORBAR(..., 'left') only plots to the left; HERRORBAR(..., 'right')
+    only plots to the right.'''
+
+    N = len(xx)
+    if type(dx)==tuple:
+        dy_dn = -dx[0]
+        dy_up = dx[1]
+    elif np.prod(dx.shape)==2*N:
+        dy_dn = -dx[:,0]
+        dy_up = dx[:,1]
+    else:
+        dy_dn = -dx
+        dy_up = dx
+
+    if dir=='right':
+        dy_dn = 0*dy_dn
+    elif dir=='left':
+        dy_up = 0*dy_up
+    elif dir!='both':
+        qi.error('Bad direction name')
+
+    for n in range(N):
+        plot(xx[n] + np.array([dy_dn[n], dy_up[n]]), yy[n]+np.zeros(2))
+    
+    if w is not None:
+        if dir!='left':
+            # Draw right ticks
+            for n in range(N):
+                markup.at(xx[n] + dy_up[n], yy[n])
+                paper.line(np.array([0, 0]), np.array([-1, 1])*w/2)
+        if dir!='left':
+            # Draw down ticks
+            for n in range(N):
+                markup.at(xx[n] + dy_dn[n], yy[n])
+                paper.line(np.array([0, 0]), np.array([-1, 1])*w/2)
+
+                
 def errorpatch(xx, yy, dy=None, dir='both'):
     '''ERRORPATCH - Draw error patch
     ERRORPATCH(xx, yy, dy) plots an error patch at (XX, YY ± DY).
     Normally, XX, YY, and DY all are N-vectors. 
-    ERRORPATCH(..., 'up') only plots upward; QERRORPATCH(..., 'down') only 
+    ERRORPATCH(..., 'up') only plots upward; ERRORPATCH(..., 'down') only 
     plots downward.
     To specify downward and upward errors separately,  DY may be shaped Nx2.
     DY must be positive, even for the downward error.
@@ -354,7 +415,8 @@ def errorpatch(xx, yy, dy=None, dir='both'):
 def skyline(xx, yy, y0=0):
     '''SKYLINE - Skyline plot (bar plot)
     SKYLINE(xx, yy) draws a bar plot of YY vs XX with bars touching.
-    SKYLINE(xx, yy, y0) specifies the baseline of the plot; default is 0.'''
+    SKYLINE(xx, yy, y0) specifies the baseline of the plot; default is 0.
+    (Note that YY is not relative to Y0.)'''
     N = len(xx)
     if N==1:
         xxx = np.array([-.5, .5]) + xx
