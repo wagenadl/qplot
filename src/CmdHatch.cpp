@@ -6,6 +6,7 @@
 #include <QDebug>
 #include <cmath>
 #include <QPainterPath>
+#include "CmdMark.h"
 
 static CBuilder<CmdHatch> cbHatch("hatch");
 static CBuilder<CmdHatch> cbPHatch("phatch");
@@ -31,7 +32,9 @@ bool CmdHatch::parse(Statement const &s) {
   int idx_end = s.nextIndex(idx_o);
   if (s.isNumeric(idx_x) && s.isNumeric(idx_y)
       && s.data(idx_x).size()==s.data(idx_y).size()
-      && s.token(idx_a).typ==Token::NUMBER
+      && (s.token(idx_a).typ==Token::NUMBER
+          || (s.token(idx_a).typ==Token::STRING
+              && (s.token(idx_a).str=="*" || s.token(idx_a).str==":")))
       && s.token(idx_s).typ==Token::NUMBER
       && (idx_o==s.length() || s.token(idx_o).typ==Token::NUMBER)
       && (idx_o==s.length() || idx_end==s.length())
@@ -50,6 +53,8 @@ void CmdHatch::render(Statement const &s, Figure &f, bool dryrun) {
   QVector<double> const &xdata = s.data(idx_x);
   QVector<double> const &ydata = s.data(idx_y);
   double angle = s.token(idx_a).num;
+  bool ishex = s.token(idx_a).typ==Token::STRING && s.token(idx_a).str=="*";
+  bool isrect = s.token(idx_a).typ==Token::STRING && s.token(idx_a).str==":";
   double spacing = pt2iu(s.token(idx_s).num);
   double offset = pt2iu(s.token(idx_o).num);
   // above is safe even if no offset given, because num==0 for NONE tokens
@@ -138,9 +143,31 @@ void CmdHatch::render(Statement const &s, Figure &f, bool dryrun) {
     double eta1 = bbox.bottom();
     xi0 = std::floor((xi0 - anticenter.x()) / spacing) * spacing
       + anticenter.x();
-    for (double xi=xi0; xi<xi1; xi+=spacing) 
-      f.painter().drawLine(::rotate(QPointF(xi, eta0), angle),
-                           ::rotate(QPointF(xi, eta1), angle));
+    if (ishex) {
+      float yspace = 1.732 * spacing; // sqrt3
+      eta0 = std::floor((eta0 - anticenter.y()) / yspace) * yspace
+        + anticenter.y();
+      QPolygonF pp;
+      for (double eta=eta0; eta<eta1; eta+=yspace) {
+        for (double xi=xi0; xi<xi1; xi+=spacing) 
+          pp << ::rotate(QPointF(xi, eta), angle);
+        for (double xi=xi0 + spacing/2; xi<xi1; xi+=spacing) 
+          pp << ::rotate(QPointF(xi, eta + yspace/2), angle);
+      }
+      CmdMark::draw(pp, f);
+    } else if (isrect) {
+      eta0 = std::floor((eta0 - anticenter.y()) / spacing) * spacing
+        + anticenter.y();
+      QPolygonF pp;
+      for (double eta=eta0; eta<eta1; eta+=spacing)
+        for (double xi=xi0; xi<xi1; xi+=spacing) 
+          pp << ::rotate(QPointF(xi, eta), angle);
+      CmdMark::draw(pp, f);
+    } else {
+      for (double xi=xi0; xi<xi1; xi+=spacing) 
+        f.painter().drawLine(::rotate(QPointF(xi, eta0), angle),
+                             ::rotate(QPointF(xi, eta1), angle));
+    }
     f.painter().setClipping(false);
   }
 }

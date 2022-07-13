@@ -330,6 +330,10 @@ void CmdMark::render(Statement const &s, Figure &f, bool dryrun) {
   if (dryrun)
     return;
 
+  draw(pp, f);
+}
+
+void CmdMark::draw(QPolygonF const &pp, Figure &f) {
   QPainter &ptr(f.painter());
   ptr.save();
 
@@ -349,6 +353,7 @@ void CmdMark::render(Statement const &s, Figure &f, bool dryrun) {
   }
 
   Marker::Type t = f.marker().type;
+  double r = f.marker().radius;
 
   for (QPointF const &p: pp)
     rendermark(ptr, p, r, t, asSpine);

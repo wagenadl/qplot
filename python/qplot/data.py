@@ -132,17 +132,27 @@ def rectangle(x, y, w, h):
     with the current brush. See also PATCH.'''
     patch([x, x+w, x+w, x], [y, y, y+h, y+h])
 
-def hatch(xx, yy, angle=0, spacing=10, offset=0):
+def hatch(xx, yy, pattern="|", angle=0, spacing=10, offset=0):
     '''HATCH - Hatch a polygonal patch in data space
-    HATCH(xx, yy, angle) hatches a polygon with vertices at (XX,YY) using
-    lines at the given angle. 
+    HATCH(xx, yy, pattern) hatches a polygon with vertices at (XX,YY) using
+    the given pattern. PATTERN is a single character from the following:
+      | / - \  : lines at the angle suggested angle
+      + x      : combination of either orthogonal or diagonal lines
+      : *      : marks in an orthogonal or hexagonal pattern.
+    Lines are rendered with the current PEN.
+    Marks are rendereded as by MARK, i.e., with the current MARKER (and PEN
+    and BRUSH).
+    Instead of a pattern, a numeric ANGLE may be specified, clockwise from
+    vertical (in radians, but see DEGREES).
     Optional argument SPACING specifies space between lines, in points.
     By default, the line pattern is aligned with the center of the polygon.
     OFFSET shifts this center by the given number of points.
     NaN values in XX or YY may be used to separate multiple polygons to be
     drawn with common line pattern alignment.
-    See also PHATCH.'''
-    qi.hatch(xx, yy, angle, spacing, offset)
+    See also PHATCH.
+
+    '''
+    qi.hatch(xx, yy, pattern, angle, spacing, offset)
     
     
 def _mark(xx, yy, rx=None, ry=None, vert=None):
