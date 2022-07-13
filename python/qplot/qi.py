@@ -322,7 +322,29 @@ def plot(xx, yy, cmd='plot'):
     f.writedbl(yy)
     f.updaterange(xx, yy)
 
-def hatch(xx, yy, angle, spacing, offset, cmd='hatch'):
+def hatch(xx, yy, pattern, angle, spacing, offset, cmd='hatch'):
+    angle = to_radians(angle)
+    if pattern=='|':
+        pass
+    elif pattern=='/':
+        angle = np.pi/4
+    elif pattern=='-':
+        angle = np.pi/2
+    elif pattern=='\\':
+        angle = -np.pi/4
+    elif pattern=='x':
+        hatch(xx, yy, '/', 0, spacing=spacing, offset=offset, cmd=cmd)
+        angle = -np.pi/4
+    elif pattern=='+':
+        hatch(xx, yy, '-', 0, spacing=spacing, offset=offset, cmd=cmd)
+        angle = 0
+    elif pattern=='*':
+        angle = '*'
+    elif pattern==':':
+        angle = ':'
+    else:
+        print(pattern)
+        raise ValueError("Hatch pattern must be one of | / - \\ + x * :")
     xx = np.array(xx)
     yy = np.array(yy)
     if not utils.isnvector(xx):
@@ -335,11 +357,13 @@ def hatch(xx, yy, angle, spacing, offset, cmd='hatch'):
     yy=yy[:,]
     if utils.isempty(xx):
         return
-    angle = to_radians(angle)
     
     ensure()
     N = len(xx)
-    f.write('%s *%i *%i %g %g %g\n' % (cmd, N, N, angle, spacing, offset))
+    if type(angle)==str:
+        f.write('%s *%i *%i "%s" %g %g\n' % (cmd, N, N, angle, spacing, offset))
+    else:
+        f.write('%s *%i *%i %g %g %g\n' % (cmd, N, N, angle, spacing, offset))
     if cmd=='hatch':
         xx = f.xtransform(xx)
         yy = f.ytransform(yy)
