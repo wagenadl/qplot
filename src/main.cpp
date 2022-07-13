@@ -169,7 +169,9 @@ int main(int argc, char **argv) {
   QApplication app(argc, argv);
   app.setApplicationName("QPlot");
   app.setApplicationVersion(QPLOT_VERSION);
-  
+
+  QCommandLineOption cli_help("help",
+                              "Display help on commandline options");
   QCommandLineOption cli_autoraise("autoraise",
                              "Automatically raise the window on update");
   QCommandLineOption cli_width("w", "Override output width (points)",
@@ -194,10 +196,10 @@ int main(int argc, char **argv) {
 
   QCommandLineParser cli;
 
-  cli.addHelpOption();
   cli.addPositionalArgument("input", "Input filename (“-” for stdin)");
   cli.addPositionalArgument("output", "Output filename (“-.ext” for stdout)",
                             "[output]");
+  cli.addOption(cli_help);
   cli.addOption(cli_reso);
   cli.addOption(cli_qual);
   cli.addOption(cli_width);
@@ -213,6 +215,8 @@ int main(int argc, char **argv) {
                                     
   cli.process(app);
 
+  if (cli.isSet("help")) 
+    cli.showHelp();
   if (cli.isSet("version")) 
     return showVersion();
 
