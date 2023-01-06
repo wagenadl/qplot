@@ -50,7 +50,7 @@ for my $f (@files) {
   close IN;
 
   my @example;
-  if (open IN, "html/ref/${f}_eg.m") {
+  if (open IN, "html/octref/${f}_eg.m") {
     while (<IN>) {
       s/^\s+$//;
       if (s/^( +)//) {
@@ -71,14 +71,14 @@ for my $f (@files) {
 
 sub output {
   my ($fn, $title, $body, $example) = @_;
-  open OUT, ">html/ref/$fn.html" or die;
+  open OUT, ">html/octref/$fn.html" or die;
   header($fn);
 
   print OUT "<body class=\"mloct\"><div class=\"main\">\n";
   indextext();
   ttltext($fn, $title);
   bodytext($fn, $body);
-  egimage($fn) if -f "html/ref/$fn.png";
+  egimage($fn) if -f "html/octref/$fn.png";
   egtext($fn, $example) if @$example;
 
   trailer();

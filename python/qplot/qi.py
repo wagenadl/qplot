@@ -333,17 +333,17 @@ def hatch(xx, yy, pattern, angle, spacing, offset, cmd='hatch'):
     elif pattern=='\\':
         angle = -np.pi/4
     elif pattern=='x':
-        hatch(xx, yy, '/', 0, spacing=spacing, offset=offset, cmd=cmd)
+        hatch(xx, yy, '/', angle=0, spacing=spacing, offset=offset, cmd=cmd)
         angle = -np.pi/4
     elif pattern=='+':
-        hatch(xx, yy, '-', 0, spacing=spacing, offset=offset, cmd=cmd)
+        hatch(xx, yy, '-', angle=0, spacing=spacing, offset=offset, cmd=cmd)
         angle = 0
     elif pattern=='*':
         angle = '*'
     elif pattern==':':
         angle = ':'
     else:
-        print(pattern)
+        print("hatch", pattern, angle)
         raise ValueError("Hatch pattern must be one of | / - \\ + x * :")
     xx = np.array(xx)
     yy = np.array(yy)

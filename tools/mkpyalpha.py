@@ -54,7 +54,7 @@ def printlist(f, funcs):
     f.write('''<div class="list">
 ''')
     lastletter = ''
-    funcs = [f for f in funcs if f==f.lower() and f.find('__')<0]
+    funcs = [f for f in funcs if f==f.lower() and '_' not in f]
     for func in sorted(funcs, key=lambda s: s.casefold()):
         letter = func[0].upper()
         if letter != lastletter:
@@ -74,7 +74,12 @@ def printlist(f, funcs):
 </div>
 ''')
 
-funcs = [k for k,v in qp.__dict__.items() if callable(v)]
+funcs = [k for k,v in qp.__dict__.items() if callable(v) and k!="jetlut"]
+for k, v in qp.luts.__dict__.items():
+    if callable(v):
+        funcs.append("luts." + k)
+funcs.sort()
+
 with open(sys.argv[2], 'w') as f:
     header(f, "QPlot: Alphabetical list of functions")
     bodystart(f)

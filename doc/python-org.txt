@@ -9,19 +9,24 @@ select
 subplot
 save
 current
+ion
+ioff
 
 Plotting:
-bars
-ecoplot
-errorbar
-errorpatch
+plot
 mark
 xmark
 ymark
+bars
+hbars
+skyline
+ecoplot
+errorbar
+herrorbar
+errorpatch
 rectangle
 patch
-plot
-skyline
+hatch
 
 Images:
 image
@@ -30,14 +35,15 @@ xzimage
 zyimage
 
 Tick axes:
+xaxis
+yaxis
+xcaxis
+ycaxis
+zaxis
+arange
 caxis
 minorticks
 overline
-xaxis
-xcaxis
-yaxis
-zaxis
-arange
 
 Annotations:
 arrow
@@ -61,7 +67,6 @@ brush
 lut
 marker
 pen
-jetlut
 
 Text styling:
 align
@@ -82,6 +87,7 @@ area
 line
 mm
 pmark
+phatch
 
 Mixed coordinate plotting:
 shiftedline
@@ -102,6 +108,15 @@ xlim
 ylim
 clipy
 
+Color lookup tables:
+*jetlut
+luts.get
+luts.set
+luts.names
+luts.families
+luts.family
+luts.demo
+
 Specialized functions:
 caligraph
 ctext
@@ -109,3 +124,5 @@ hairline
 textonpath
 xtransform
 ytransform
+degrees
+radians

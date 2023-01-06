@@ -14,6 +14,14 @@ from . import style
 from . import data as qpdata
 import numpy as np
 
+havempl=False
+try:
+    import matplotlib.pyplot as plt
+    import matplotlib as mpl
+    havempl = True
+except ModuleNotFoundError:
+    pass
+
 def _getrect(S, rect, xx, yy):
     if rect is None:
         X = S[1]
@@ -141,10 +149,15 @@ def image(data, rect=None, xx=None, yy=None, hard=False):
 def imsc(data, rect=None, c0=None, c1=None, xx=None, yy=None, hard=False):
     '''IMSC - Plot 2D data as an image using lookup table
     IMSC(data) plots the DATA as an image using a lookup previously
-    set by QLUT. The color axis limits default to the min and max of the data.
-    Optional arguments C0 and C1 override those limits.
-    Optional argument RECT specifies (x, y, w, h) rectangle for placement
-    as for IMAGE. Alternatively, XX and YY arguments can be used.'''
+    set by QLUT. 
+    IMSC(data, rect) specifies (x, y, w, h) rectangle for placement
+    as for IMAGE. 
+    Alternatively, IMSC(data, XX, YY) specifies X and Y coordinates for 
+    each column and row of the image. (Only the first and last coordinates
+    are used; nonlinear scaling is not supported.)
+    The color axis limits default to the min and max of the data.
+    Optional arguments C0 and C1 override those limits.'''
+
     lut = qi.f.lut
     nanc = qi.f.lut_nan
     if c0 is None:
@@ -174,12 +187,21 @@ def lut(cc=None, nanc=None):
     LUT(cc) where CC is Nx3 sets a new lookup table for IMSC.
     LUT(cc, nanc) where NANC is a 3-tuple sets a special color to use
     for NaN values. (The default is white.)
+
     CC must contain RGB values in the range 0 to 1, or, if of type uint8,
     in the range 0 to 255.
-    lut, nanc = LUT returns current values.'''
+
+    If you have Matplotlib installed, CC may also be a Matplotlib Colormap,
+    e.g., from MATPLOTLIB.PYPLOT.CM.GET_CMAP(). See also 
+    https://matplotlib.org/stable/tutorials/colors/colormaps.html.
+
+    lut, nanc = LUT() returns current values.'''
 
     qi.ensure()
     ret = True
+    if havempl:
+        if isinstance(cc, mpl.colors.Colormap):
+            cc = cc(range(cc.N))
     if cc is not None:
         cc = cc[:,0:3]
         if cc.dtype!='uint8':
@@ -471,23 +493,3 @@ def zyimage(data, rect, proj, x=0):
                       x, proj[0], proj[1], Z, Y, Z*Y*C))
     qi.f.writeuc(data)
 
-def jetlut(N=256):
-    '''JETLUT - Color lookup table akin to Matlab's JET
-    JETLUT(N) returns a Color lookup table akin to Matlab's JET,
-    but with better sampling of color space, especially for small N.
-    N defaults to 256.
-
-    Many more LUTs are available through the LUTS.GET function.'''
-    phi = np.linspace(0, 1, N)
-    B0 = .2
-    G0 = .5
-    R0 = .8
-    SB = .2
-    SG = .25
-    SR = .2
-    P=4
-    
-    blue = np.exp(-.5*(phi-B0)**P / SB**P)
-    red = np.exp(-.5*(phi-R0)**P / SR**P)
-    green = np.exp(-.5*(phi-G0)**P / SG**P)
-    return np.column_stack((red, green, blue))

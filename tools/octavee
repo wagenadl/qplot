@@ -16,6 +16,6 @@ CODE="$*"
 
 export DISPLAY=`$HERE/ensurexvfb`
 
-PATH=$HERE/../build:$HERE/../scripts:$PATH /usr/bin/octave --no-gui --path $HERE/../octave/qplot-0.2 --path $HERE --eval "$CODE"
+PATH=$HERE/../build:$HERE/../scripts:$PATH /usr/bin/octave --no-gui --path $HERE/../octave/qplot --path $HERE --eval "$CODE"
 
 exit $?

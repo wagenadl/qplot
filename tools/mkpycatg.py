@@ -57,12 +57,14 @@ def writecatg(f, lines):
     funcs = []
     f.write('<div class="list">\n')
     for line in lines:
-        if line.find(':')>=0:
+        if ':' in line:
             if not first:
                 f.write('</table>\n')
             f.write('''<table class=funcs>
 <tr><td class="letter"><span class="letterspan">%s</span></td></tr>
 ''' % line)
+        elif '*' in line:
+            funcs.append(line.replace("*", ""))
         elif line != '':
             f.write('''<tr><td class="regular">
 <a class="mlink" href="%s.html">%s</a>
@@ -72,7 +74,10 @@ def writecatg(f, lines):
     f.write('</table></div>\n')
     return funcs
     
-funcs = [k for k,v in qp.__dict__.items() if callable(v)]
+funcs = {k for k,v in qp.__dict__.items() if callable(v)}
+for k, v in qp.luts.__dict__.items():
+    if callable(v) and "_" not in k:
+        funcs.add("luts." + k)
 
 ifn = sys.argv[1]
 ofn = sys.argv[2]
@@ -88,7 +93,7 @@ with open(ofn, 'w') as f:
 
 ok = True
 for f in funcs:
-    if f.find('__')<0 and f==f.lower() and not f in docd:
+    if '__' not in f and '*' not in f and f==f.lower() and not f in docd:
         print('Not in category page: %s' % f)
         ok = False
 for f in docd:
@@ -98,4 +103,5 @@ for f in docd:
 
 if not ok:
     os.unlink(ofn)
-    
+    print("catagory file not created")
+    exit(1)
