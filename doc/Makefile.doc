@@ -6,33 +6,34 @@ ALL: qplot-directuse.pdf HTML
 HTML: REF TUT CSS HOME PYREF PYTUT
 
 OCTAVE=../tools/octavex
+QPLOTLIBVERSION=0.4
 
 # Octave Reference material
-REFEGMS=$(subst ../doc/ref,html/ref,$(wildcard ../doc/ref/*_eg.m))
+REFEGMS=$(subst ../doc/octref,html/octref,$(wildcard ../doc/octref/*_eg.m))
 REFEGPDFS=$(patsubst %_eg.m,%.pdf,$(REFEGMS))
 REFEGPNGS=$(patsubst %_eg.m,%.png,$(REFEGMS))
 REFEGHTMLS=$(patsubst %_eg.m,%.html,$(REFEGMS))
 
 REF: $(REFEGMS) $(REFEGPDFS) $(REFEGPNGS) $(REFEGHTMLS) \
-	html/ref/alpha.html html/ref/catg.html
+	html/octref/alpha.html html/octref/catg.html
 
-html/ref/alpha.html: ../tools/mkalpha.pl
-	$< ../octave/qplot-0.2 $@
+html/octref/alpha.html: ../tools/mkalpha.pl
+	$< ../octave/qplot $@
 
-html/ref/catg.html: ../tools/mkcatg.pl ../doc/matlab-org.txt
-	$< ../doc/matlab-org.txt $@
+html/octref/catg.html: ../tools/mkcatg.pl ../doc/octave-org.txt
+	$< ../doc/octave-org.txt $@
 
-html/ref/%_eg.m: ../doc/ref/%_eg.m
-	mkdir -p html/ref
+html/octref/%_eg.m: ../doc/octref/%_eg.m
+	mkdir -p html/octref
 	cp $^ $@
 
-html/ref/%.pdf: html/ref/%_eg.m ../tools/runmeg.m
-	( cd html/ref; ../../../tools/octavee "runmeg('$<')" )
-html/ref/%.png: html/ref/%_eg.m ../tools/runmeg.m
-	( cd html/ref; ../../../tools/octavee "runmeg('$<')" )
+html/octref/%.pdf: html/octref/%_eg.m ../tools/runmeg.m
+	( cd html/octref; ../../../tools/octavee "runmeg('$<')" )
+html/octref/%.png: html/octref/%_eg.m ../tools/runmeg.m
+	( cd html/octref; ../../../tools/octavee "runmeg('$<')" )
 
 #$(REFEGPDFS) $(REFEGPNGS): $(REFEGMS) ../tools/alleg.m
-#	(cd html/ref; ../../$(OCTAVE) ../../../tools/alleg.m ) && touch $@
+#	(cd html/octref; ../../$(OCTAVE) ../../../tools/alleg.m ) && touch $@
 
 $(REFEGHTMLS): ../tools/m2html.pl $(REFEGMS) $(REFEGPNGS)
 	$<
@@ -44,7 +45,7 @@ PYREFEGPNGS=$(patsubst %_eg.py,%.png,$(PYREFEGMS))
 PYREFEGHTMLS=$(patsubst %_eg.py,%.html,$(PYREFEGMS))
 
 PYREF: $(PYREFEGHTMLS) $(PYREFEGPDFS) $(PYREFEGPNGS) $(PYREFEGMS) \
-	html/pyref/alpha.html html/pyref/catg.html \
+	html/pyref/alpha.html html/pyref/catg.html html/pyref/lutdemo.html \
 	PYREFCHECK
 
 $(PYREFEGHTMLS): html/pyref/%.html: html/pyref/%.pdf html/pyref/%.png
@@ -57,6 +58,9 @@ html/pyref/alpha.html: ../tools/mkpyalpha.py
 
 html/pyref/catg.html: ../tools/mkpycatg.py ../doc/python-org.txt
 	$< ../doc/python-org.txt $@
+
+html/pyref/lutdemo.html: ../tools/lutdemo.py
+	$< $@
 
 html/pyref/%_eg.py: ../doc/pyref/%_eg.py
 	mkdir -p html/pyref
@@ -72,29 +76,29 @@ html/pyref/%.html: html/pyref/%_eg.py html/pyref/%.png ../tools/py2html.py
 	../tools/py2html.py $@
 
 # Octave Tutorial material
-TUTHTMLS=$(subst ../doc/tut,html/tut,$(wildcard ../doc/tut/tut-*.html))
-TUTMS=$(subst ../doc/tut,html/tut,$(wildcard ../doc/tut/tut-*.m))
-TUTPNGS=$(subst tut,html/tut/tut,tut-01-01.png tut-02-01.png tut-02-02.png tut-02-03.png tut-03-01.png tut-03-02.png tut-03-03.png)
+TUTHTMLS=$(subst ../doc/octtut,html/octtut,$(wildcard ../doc/octtut/tut-*.html))
+TUTMS=$(subst ../doc/octtut,html/octtut,$(wildcard ../doc/octtut/tut-*.m))
+TUTPNGS=$(subst tut,html/octtut/tut,tut-01-01.png tut-02-01.png tut-02-02.png tut-02-03.png tut-03-01.png tut-03-02.png tut-03-03.png)
 
 TUT: $(TUTHTMLS) $(TUTMS) $(TUTPNGS)
 
-html/tut/%.html: ../doc/tut/%.html
-	mkdir -p html/tut
+html/octtut/%.html: ../doc/octtut/%.html
+	mkdir -p html/octtut
 	cp $^ $@
 
-html/tut/%.m: ../doc/tut/%.m
-	mkdir -p html/tut
+html/octtut/%.m: ../doc/octtut/%.m
+	mkdir -p html/octtut
 	cp $^ $@
 
-html/tut/tut-01-01.png: ../doc/tut/tut-01-01.png
-	mkdir -p html/tut
+html/octtut/tut-01-01.png: ../doc/octtut/tut-01-01.png
+	mkdir -p html/octtut
 	cp $^ $@
 
-html/tut/tut-02-01.png html/tut/tut-02-02.png html/tut/tut-02-03.png: html/tut/tut-01.m
-	(cd html/tut; ../../$(OCTAVE) ../../$< )
+html/octtut/tut-02-01.png html/octtut/tut-02-02.png html/octtut/tut-02-03.png: html/octtut/tut-01.m
+	(cd html/octtut; ../../$(OCTAVE) ../../$< )
 
-html/tut/tut-03-01.png html/tut/tut-03-02.png html/tut/tut-03-03.png: html/tut/tut-03.m
-	(cd html/tut; ../../$(OCTAVE) ../../$< )
+html/octtut/tut-03-01.png html/octtut/tut-03-02.png html/octtut/tut-03-03.png: html/octtut/tut-03.m
+	(cd html/octtut; ../../$(OCTAVE) ../../$< )
 
 # Python Tutorial material
 PYTUTHTMLS=$(subst ../doc/pytut,html/pytut,$(wildcard ../doc/pytut/pytut-*.html))
@@ -132,13 +136,18 @@ html/css/%.css: ../doc/css/%.css
 
 # HOME folder
 HOMEMS=$(subst ../doc/home,html/home,$(wildcard ../doc/home/eg_*.m))
+HOMEPYS=$(subst ../doc/home,html/home,$(wildcard ../doc/home/eg_*.py))
 HOMEPDFS=$(patsubst %.m,%.pdf,$(HOMEMS))
 HOMEPNGS=$(patsubst %.m,%.png,$(HOMEMS))
 HOMEHTML=$(subst ../doc/home,html,$(wildcard ../doc/home/*.html))
 
-HOME: $(HOMEPNGS) $(HOMEPDFS) $(HOMEHTML) $(HOMEMS)
+HOME: $(HOMEPNGS) $(HOMEPDFS) $(HOMEHTML) $(HOMEMS) $(HOMEPYS)
 
 html/home/%.m: ../doc/home/%.m
+	mkdir -p html/home
+	cp $^ $@
+
+html/home/%.py: ../doc/home/%.py
 	mkdir -p html/home
 	cp $^ $@
 

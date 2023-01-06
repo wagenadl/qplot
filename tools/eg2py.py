@@ -36,8 +36,9 @@ def writepython(fd, codelines):
         else:
             fd.write('%s\n' % l.rstrip())
         
-inroot = 'doc/ref'
+inroot = 'doc/octref'
 outroot = 'doc/pyref'
+raise Exception("Are you sure you want to run this?")
 for ifn in glob.glob(inroot + '/*.m'):
     pth, ofn = os.path.split(ifn)
     ofn, ext = os.path.splitext(ofn)

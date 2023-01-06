@@ -1,5 +1,10 @@
+'''LUTS - Look-up tables for image rendering
+
+Functions: FAMILIES, FAMILY, GET, SET,  DEMO'''
+
 import numpy as np
 from collections import OrderedDict
+from . import data
 
 haveplotly = False
 try:
@@ -10,7 +15,7 @@ except ModuleNotFoundError:
 
 _cmaps = OrderedDict()
 
-_cmaps['native'] = [ 'qpjet', 'qphot', 'qpcold', 'qpcoldhot' ]
+_cmaps['native'] = [ 'qpjet', 'qphsv', 'qphot', 'qpcold', 'qpcoldhot' ]
 
 _cmaps['sequential.perceptuallyuniform'] = [
     'viridis', 'plasma', 'inferno', 'magma' ]
@@ -37,7 +42,7 @@ _cmaps['qualitative'] = [
     'tab10', 'tab20', 'tab20b', 'tab20c' ]
 
 _cmaps['misc'] = [
-    'flag', 'prism', 'ocean', 'gist_earth', 'terrain', 'gist_stern',
+    'ocean', 'gist_earth', 'terrain', 'gist_stern',
     'gnuplot', 'gnuplot2', 'CMRmap', 'cubehelix', 'brg',
     'gist_rainbow', 'rainbow', 'jet', 'nipy_spectral', 'gist_ncar' ]
 
@@ -61,18 +66,34 @@ def _load_plotly_cmaps():
                 _cmaps[k] = []
 
 def families():
-    '''FAMILIES - Return a list of colormap families.
-    x = FAMILIES() returns a list of family names of colormaps. The family
-    names can be passed to FAMILY to obtain the names of colormaps in that
-    family.'''
+    '''LUTS.FAMILIES - Return a list of colormap families.
+    x = LUTS.FAMILIES() returns a list of family names of
+    colormaps. The family names can be passed to LUTS.FAMILY to obtain the
+    names of colormaps in that family.
+    See also LUTS.DEMO.
+    '''
     return [x for x in _cmaps.keys()]
 
 def family(name):
-    '''FAMILY - Return a list of colormaps in a family.
-    x = FAMILY(f) returns a list of all the colormaps in the given family.'''
+    '''LUTS.FAMILY - Return a list of colormaps in a family.
+    x = LUTS.FAMILY(f) returns a list of all the colormaps in the
+    given family.
+    Several families depend on the availability of PLOTLY. If PLOTLY is
+    not installed, those families will comprise empty lists.
+    See also LUTS.FAMILIES, LUTS.DEMO.
+    '''
     if _cmaps[name] is None:
         _load_plotly_cmaps()
+    _cmaps[name].sort()
     return _cmaps[name]
+
+def names():
+    '''LUTS.NAMES - Names of all available colormaps.
+    x = LUTS.NAMES() returns a list of all the available colormaps.
+    See also LUTS.DEMO.'''
+    nn = sum([family(x) for x in families()], [])
+    nn.sort()
+    return nn
 
 def _ankle(x, gamma, x0):
     '''
@@ -103,6 +124,42 @@ def _cosinebump(x, mu, sigma):
     y[use] = .5 + .5*np.cos(t[use])
     return y
 
+# import daw.colorx
+# cc = daw.colorx.dhsv(64)
+# for x in cc: print(f"[{x[0]:.3f},{x[1]:.3f},{x[2]:.3f}],")
+# copy output as hsvdata
+_hsvdata = np.array([
+        [1.000,0.164,0.000], [1.000,0.257,0.000], [1.000,0.343,0.000],
+        [1.000,0.430,0.000], [1.000,0.522,0.000], [1.000,0.616,0.000],
+        [1.000,0.706,0.000], [1.000,0.791,0.000], [1.000,0.864,0.000],
+        [1.000,0.924,0.000], [1.000,0.970,0.000], [0.998,0.999,0.000],
+        [0.966,1.000,0.000], [0.918,1.000,0.000], [0.853,1.000,0.000],
+        [0.773,1.000,0.000], [0.677,1.000,0.000], [0.565,1.000,0.000],
+        [0.434,1.000,0.000], [0.275,1.000,0.000], [0.008,1.000,0.081],
+        [0.000,1.000,0.316], [0.000,1.000,0.466], [0.000,1.000,0.591],
+        [0.000,1.000,0.698], [0.000,1.000,0.790], [0.000,1.000,0.865],
+        [0.000,1.000,0.925], [0.000,1.000,0.969], [0.000,0.999,0.998],
+        [0.000,0.972,1.000], [0.000,0.932,1.000], [0.000,0.883,1.000],
+        [0.000,0.826,1.000], [0.000,0.765,1.000], [0.000,0.703,1.000],
+        [0.000,0.643,1.000], [0.000,0.585,1.000], [0.000,0.528,1.000],
+        [0.000,0.470,1.000], [0.000,0.408,1.000], [0.000,0.338,1.000],
+        [0.000,0.255,1.000], [0.000,0.142,1.000], [0.115,0.001,1.000],
+        [0.246,0.000,1.000], [0.343,0.000,1.000], [0.431,0.000,1.000],
+        [0.515,0.000,1.000], [0.599,0.000,1.000], [0.684,0.000,1.000],
+        [0.770,0.000,1.000], [0.854,0.000,1.000], [0.931,0.000,1.000],
+        [0.988,0.000,1.000], [1.000,0.000,0.963], [1.000,0.000,0.881],
+        [1.000,0.000,0.769], [1.000,0.000,0.642], [1.000,0.000,0.516],
+        [1.000,0.000,0.399], [1.000,0.000,0.292], [1.000,0.000,0.185],
+        [1.000,0.000,0.069]])
+def _hsv(n=256):
+    X = _hsvdata.shape[0]
+    cc = np.zeros((n,3))
+    xx = np.arange(X)
+    ii = np.arange(n)*X/n
+    for c in range(3):
+        cc[:,c] = np.interp(ii, xx, _hsvdata[:,c], X)
+    return cc
+
 def _hot(n=300):
     xx = np.arange(0,1,1/n)
     yy = 0*xx
@@ -123,12 +180,29 @@ def _cold(n=300):
     res = np.stack((red,grn,blu), 1)
     return np.clip(res, 0, 1)
 
+def _jet(n=256):
+    phi = np.linspace(0, 1, n)
+    B0 = .2
+    G0 = .5
+    R0 = .8
+    SB = .2
+    SG = .25
+    SR = .2
+    P=4
+    
+    blue = np.exp(-.5*(phi-B0)**P / SB**P)
+    red = np.exp(-.5*(phi-R0)**P / SR**P)
+    green = np.exp(-.5*(phi-G0)**P / SG**P)
+    return np.column_stack((red, green, blue))
+
 def _native(name, N, reverse):
     from . import img
     if N is None:
         N = 256
     if name=='qpjet':
-        rgb = img.jetlut(N)
+        rgb = _jet(N)
+    elif name=='qphsv':
+        rgb = _hsv(N)
     elif name=='qphot':
         rgb = _hot(N)
     elif name=='qpcold':
@@ -142,9 +216,8 @@ def _native(name, N, reverse):
     return rgb
 
 def _get_mpl_cmap(name, N, reverse):
-    if reverse:
-        name += '_r'
-    name = name.replace('-', '_')
+    if type(name)==str:
+        name = name.replace('-', '_')
     import matplotlib.cm as cm
     try:
         cmap = cm.get_cmap(name, N)
@@ -154,14 +227,15 @@ def _get_mpl_cmap(name, N, reverse):
     rgb = np.zeros((N, 3))
     for n in range(N):
         rgb[n,:] = cmap(n)[:3]
-    return rgb
+    if reverse:
+        return rgb[-1::-1,:]
+    else:
+        return rgb
 
 def _get_plotly_cmap(name, N, reverse):
     _load_plotly_cmaps()
     if not haveplotly:
         return None
-    if reverse:
-        name += '_r'
     name = name.replace('-', '_')
     fam = None
     for f in _cmaps:
@@ -175,25 +249,28 @@ def _get_plotly_cmap(name, N, reverse):
     for k in range(K):
         r,g,b = cmap[k]
         rgb[k,:] = [r,g,b]
-    if N is None:
-        return rgb
-    xx = np.arange(N) * (K-1) / (N-1)
-    res = np.zeros((N, 3))
-    for n in range(N):
-        k0 = int(np.floor(xx[n]))
-        k1 = int(np.ceil(xx[n]))
-        dx = xx[n] - k0
-        res[n,:] = rgb[k0,:]*(1-dx) + rgb[k1,:]*dx
-    return res
+    if N is not None:
+        kk = np.arange(K)
+        xx = np.arange(N) * (K-1) / (N-1)
+        res = np.zeros((N, 3))
+        for c in range(3):
+            res[:,c] = np.interp(xx, kk, rgb[:,c])
+    else:
+        res = rgb
+    if reverse:
+        return res[-1::-1,:]
+    else:
+        return res
         
 def get(name, N=None, reverse=False):
-    '''GET - Retrieve a colormap.
-    cm = GET(name) retrieves the named colormap.
+    '''LUTS.GET - Retrieve a colormap.
+    cm = LUTS.GET(name) retrieves the named colormap.
     Optional argument N specifies the number of colors to return. Default is
     dependent on the particular map.
     Optional argument REVERSE specifies that the order of the colors should
     be reversed.
-    See also SET.'''
+    Use LUTS.FAMILIES, LUTS.FAMILY, LUTS.NAMES to explore available colormaps.
+    See also LUTS.SET.'''
     cmap = _native(name, N, reverse)
     if cmap is not None:
         return cmap
@@ -206,18 +283,21 @@ def get(name, N=None, reverse=False):
     raise ValueError(f'Unknown color map {name}')
 
 def set(name, N=None, reverse=False):
-    '''SET - Retrieve and apply a colormap.
-    SET(name, N, reverse) is a shortcut for the corresponding call to GET,
-    followed by a call to LUT.'''
+    '''LUTS.SET - Retrieve and apply a colormap.
+    LUTS.SET(name, N, reverse) is a shortcut for the corresponding
+    call to LUTS.GET, followed by a call to LUT.
+    Use LUTS.FAMILIES, LUTS.FAMILY, LUTS.NAMES to learn which colormaps exist.
+    '''
     
     from . import img
     cm = get(name, N, reverse)
     img.lut(cm)
     
 def demo(fam=None, N=None):
-    '''DEMO - Produce tableau of colormaps.
-    DEMO(family) produces a tableau of all the colormaps in the given family.
-    DEMO() produces separate tableaus for all families.
+    '''LUTS.DEMO - Produce tableau of colormaps.
+    LUTS.DEMO(family) produces a tableau of all the colormaps in the given
+    family.
+    LUTS.DEMO() produces separate tableaus for all families.
     Optional argument N specifies the number of colors to request for each
     colormap. The default is to render each map with its own default.'''
     
@@ -234,20 +314,30 @@ def demo(fam=None, N=None):
         Q = len(names)
         if Q==0:
             return
-        C = int(np.ceil(Q/10))
-        R = int(np.ceil(Q/C))
-        fig.figure(f'/tmp/luts-{fam}', 3*C, R/4)
+        R = int(np.ceil(Q/2))
+        C = int(np.ceil(Q/R))
+        figname = f'/tmp/luts-{fam}'
+        fig.figure(figname, 3*C, R/4)
         style.pen('none')
-        for c in range(int(C)):
+        for c in range(C):
             fig.relpanel(chr(65+c), (c/C, 0, 1/C, 1))
+            for r in range(R):
+                data.plot([0,1],[-r,-r+.5])
         for q in range(Q):
             c = q//R
             r = q%R
             fig.panel(chr(65+int(c)))
             rgb = get(names[q], N)
-            N = rgb.shape[0]
-            rgb = np.reshape(rgb, (1,N,3))
-            img.image(rgb, rect=(0, -r, 1, .5))
+            N1 = rgb.shape[0]
+            rgb = np.reshape(rgb, (1,N1,3))
+            if N1 < 20 and N is None:
+                img.image(rgb, rect=(0, -r-.15, 1, .3))
+                rgb = get(names[q], 256)
+                N1 = rgb.shape[0]
+                rgb = np.reshape(rgb, (1,N1,3))
+                img.image(rgb, rect=(0, -r+.25, 1, .3))
+            else:
+                img.image(rgb, rect=(0, -r, 1, .5))
             markup.at(0, -r+.25)
             markup.align('right', 'middle')
             txt = names[q]

@@ -28,6 +28,10 @@ dr, fn = os.path.split(sys.argv[1])
 func, xt = os.path.splitext(fn)
 
 funcs = {k for k,v in qp.__dict__.items() if callable(v)}
+for k, v in qp.luts.__dict__.items():
+    if callable(v):
+        funcs.add("luts." + k)
+
 
 def writeheader(f, func):
     f.write('''<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
@@ -75,9 +79,14 @@ def extractbody(doc):
     return '\n'.join(lines)
 
 def pyeg(doc, func):
-    r = re.compile(r'(qp\.\w+)')
-    bits = r.split(doc)
     out = []
+    gr = re.compile(r'^( *)').search(doc).group()
+    for k in gr:
+        out.append("&nbsp; ")
+    doc = doc[len(gr):]
+
+    r = re.compile(r'(qp(?:\.luts)?\.\w+)')
+    bits = r.split(doc)
     for k in range(len(bits)):
         bit = bits[k]
         if k % 2:
@@ -90,8 +99,8 @@ def pyeg(doc, func):
     return ''.join(out)
 
 def pydoc(doc, func):
-    r = re.compile(r'(\W+)')
-    wrd = re.compile(r'\w+')
+    r = re.compile(r'((?<!LUTS)\W+)')
+    wrd = re.compile(r'(?:LUTS\.)?[a-zA-Z]+')
     nl = re.compile(r'\n')
     paren = re.compile(r'\(')
     parenc = re.compile(r'\)')
@@ -152,13 +161,29 @@ def titletext(f, func, tagline):
 </div>
 ''' % (func, tagline))
 
-def sigline(f, func):
+def submoduletext(f, func, body):
+    f.write('''<div class="pysighead">Contained functions:</div>
+<div class="pyhelp">
+<p>
+''')
+    for name, fn in qp.__dict__[func].__dict__.items():
+        if name.upper() in body:
+            f.write(f'''<a href="{func}.{name}.html"><b>{name}</b></a> — ''')
+            print(name, fn)
+            doc = fn.__doc__.split("\n")[0].split(" - ")[-1]
+            f.write(doc)
+            f.write("<br>")
+    f.write('''</div>
+''')
+
+    
+def sigline(f, func, obj):
     # This should be improved to print annotations in the future,
     # but for now, we don't use them, so it's OK.
     f.write('''<div class="pysighead">Call signature:</div>
 <div class="pysig"><p><b>%s</b>(''' % func)
     first = True
-    sig = inspect.signature(qp.__dict__[func])
+    sig = inspect.signature(obj)
     pp = sig.parameters
     for k in pp.keys():
         if not first:
@@ -193,7 +218,7 @@ def egtext(f, func, example):
 ''')
     
     for line in example:
-        line = line.strip()
+        line = line.rstrip()
         if line=='':
             f.write('''<p class="empty"></p>
 ''')
@@ -207,7 +232,10 @@ Download <a href="%s_eg.py">source</a>.
 </div>
 ''' % func)
 
-doc = qp.__dict__[func].__doc__
+obj = qp
+for fn in func.split("."):
+    obj = obj.__dict__[fn]
+doc = obj.__doc__
 title = extracttitle(func, doc)
 body = extractbody(doc)
 with open('html/pyref/%s_eg.py' % func) as f:
@@ -217,13 +245,19 @@ with open(ofn, 'w') as f:
     writeheader(f, func)
     indextext(f)
     titletext(f, func, title)
-    sigline(f, func)
-    bodytext(f, body, func)
+    if func=="luts":
+        submoduletext(f, func, body)
+    else:
+        sigline(f, func, obj)
+        bodytext(f, body, func)
     if os.path.exists('html/pyref/%s.png' % func):
         s = os.stat('html/pyref/%s.png' % func)
         if s.st_size>0:
             egimage(f, func)
     if example is not None:
         egtext(f, func, example)
+
+    if func.startswith("luts."):
+        f.write('''<p>The full collection of available colormaps is shown <a href="lutdemo.html">here</a>.''')
     writetrailer(f)
 

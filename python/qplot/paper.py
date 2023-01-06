@@ -18,9 +18,16 @@ import numpy as np
 # A PTSPEC is a list of GLCS.
 def _gline(cmd='gline', ptspecs=[]):
     out = [cmd]
+    if type(ptspecs) != list:
+        raise Exception(f"{cmd} takes a list of ptspecs, not {type(ptspecs)}")
+        
     for pt in ptspecs:
+        if type(pt) != list:
+            raise Exception(f"{cmd} takes a list of ptspecs, which are lists of commands not {type(pt)}")
         out.append('(')
         for glc in pt:
+            if type(glc) != tuple or len(glc)<2 or len(glc)>3:
+                raise Exception(f"Commands in ptspec must be made with the AbsData etc. constructors")
             out.append(glc[0])
             if type(glc[1])==str:
                 out.append(glc[1])
@@ -115,7 +122,7 @@ def phatch(xx, yy, pattern="|", angle=0, spacing=10, offset=0):
     NaN values in XX or YY may be used to separate multiple polygons to be
     drawn with common line pattern alignment.
     See also HATCH.'''
-    qi.hatch(xx, yy, angle, pattern, spacing, offset, cmd="phatch")
+    qi.hatch(xx, yy, pattern, angle, spacing, offset, cmd="phatch")
         
 
 def pmark(xx, yy):
