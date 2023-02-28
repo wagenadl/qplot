@@ -23,6 +23,8 @@
 
 #define RANGE_H
 
+#include <cmath>
+
 class Range {
 public:
   Range();
@@ -30,7 +32,7 @@ public:
   Range(double x, double y);
   bool empty() const;
   void extend(double x) {
-    if (empty_) {
+    if (empty_ && !std::isnan(x)) {
       min_ = max_ = x;
       empty_ = false;
     } else if (x<min_)
