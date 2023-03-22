@@ -65,6 +65,7 @@ private:
   QVector<State> stack;
 private:
   QFont makeFont(State const &s);
+  void italicCorrect();
 };
 
 #endif

@@ -72,8 +72,10 @@ void Text::addInterpreted(QString txt) {
       if (id1>=0 && allWord(txt.mid(idx+1, id1-idx-1))) {
 	add(bld);
 	bld="";
+        italicCorrect();
 	toggleSlant();
 	add(txt.mid(idx+1, id1-idx-1));
+        italicCorrect();
 	restore();
 	idx=id1;
       } else {
@@ -214,9 +216,10 @@ void Text::add(QString txt) {
   /* In Qt5, ZWNJ and ZWSP result in incorrect measurements. I am therefore
      forced to get rid of their use. That doesn't make me happy, because
      I know there was a reason why I put them in. I just cannot remember.
+     3/21/23: Probably for italics correction
   */
-  // txt = QString(QChar(0x200b)) + txt + QString(QChar(0x200b));
-  // txt = QString(QChar(0x200c)) + txt + QString(QChar(0x200c));
+  //txt = QString(QChar(0x200b)) + txt + QString(QChar(0x200b));
+  //txt = QString(QChar(0x200c)) + txt + QString(QChar(0x200c));
   State s(stack.last());
   Span span;
   span.startpos = QPointF(nextx, s.baseline);
@@ -224,13 +227,11 @@ void Text::add(QString txt) {
   if (t0 == "\\!") {
     span.text = "";
     QFontMetricsF fm(span.font);
-    QRectF r = fm.tightBoundingRect("x");
-    nextx -= r.width()/5;
+    nextx -= fm.horizontalAdvance("x")/5;
   } else if (t0 == "\\,") {
     span.text = "";
     QFontMetricsF fm(span.font);
-    QRectF r = fm.tightBoundingRect("x");
-    nextx += r.width()/5;
+    nextx += fm.horizontalAdvance("x")/5;
   } else {
     span.text = txt;
   }
@@ -240,7 +241,7 @@ void Text::add(QString txt) {
     QRectF r = fm.tightBoundingRect(txt);
     //    qDebug() << "add" << txt << txt.size() << r << span.startpos << fm.width(txt) << fm.boundingRect(txt);
     bb |= r.translated(span.startpos);
-    nextx += fm.width(txt);
+    nextx += fm.horizontalAdvance(txt);
   }
 }
 
@@ -258,5 +259,17 @@ void Text::render(QPainter &p, QPointF const &xy0) {
     QString txt = s.text;
     //    qDebug() << "render" << txt << txt.size() << xy0 << s.startpos << p.boundingRect(QRectF(0,0,0,0), Qt::AlignLeft| Qt::AlignBottom, txt);
     p.drawText(xy0+s.startpos, txt);
+  }
+}
+
+void Text::italicCorrect() {
+  if (stack.last().slant && spans.size()) {
+    Span const &sp = spans.last();
+    if (sp.text.size()) {
+      QFontMetricsF fm(makeFont(stack.last()));
+      qreal dx = fm.rightBearing(sp.text[sp.text.size()-1]);
+      if (dx<0)
+        nextx -= dx;
+    }
   }
 }
