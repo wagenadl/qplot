@@ -15,6 +15,6 @@ qp.text('*F* = /m/ *a*', dy=60)
 qp.text('a^x~+~y ~ 2^3^5 b', dy=90)
 # Current syntax doesn't allow for continuation of nested superscripts,
 # but some cases have solutions:
-qp.text('e^–½ (/x/ ²~+~/y/ ²', dy=120)
+qp.text('e^–½ (/x/ ²~+~/y/ ²)', dy=120)
 # Note the unicode thin spaces in the last example.
 
