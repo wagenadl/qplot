@@ -91,10 +91,10 @@ class Figure:
     def updaterange(self, xx, yy):
         if len(xx)==0 or len(yy)==0:
             return
-        mx = np.min(xx)
-        Mx = np.max(xx)
-        my = np.min(yy)
-        My = np.max(yy)
+        mx = np.nanmin(xx)
+        Mx = np.nanmax(xx)
+        my = np.nanmin(yy)
+        My = np.nanmax(yy)
         if np.isnan(mx) or np.isnan(Mx) or np.isnan(my) or np.isnan(My):
             return
         if self.datarange is None:
