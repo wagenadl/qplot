@@ -578,7 +578,7 @@ def overlinedist(x=None):
     return qi.f.overlinedist
     
 def overlinemin(x=None):
-    '''OVERLINEMIN - Specifies minimum vertical length of OVERLINEs
+    '''OVERLINEMIN - Specifies minimum vertical length for OVERLINEs
     OVERLINEMIN(h) specifies the minimum vertical length of OVERLINEs,
     in points.
     h = OVERLINEMIN() returns current settings.'''
@@ -598,7 +598,7 @@ def overline(xx, yy, txt=None, datadist=None, textdist=None, minlen=None):
     The whole thing is displaced by a distance OVERLINEDIST from the data,
     and the text placement uses the absolute value of TEXTDIST.
     If OVERLINEMIN is non-zero, a vertical line is drawn on both ends.
-    OVERLINE(xx, y) or QOVERLINE(xx, yy) is permitted: no text is drawn.
+    The TEXT argument may be omitted.
     Optional arguments DATADIST, TEXTDIST, and MINLEN override global
     settings.'''
     qi.ensure()

@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 # QPlot - Publication quality 2D graphs with dual coordinate systems
-# Copyright (C) 2014-2019  Daniel Wagenaar
+# Copyright (C) 2014-2023  Daniel Wagenaar
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ def writeheader(f, func):
 def writetrailer(f):
     f.write('''</div>
 <div class="tail">
-QPlot Documentation — (C) <a href="http://www.danielwagenaar.net">Daniel Wagenaar</a>, 2019
+QPlot Documentation — (C) <a href="http://www.danielwagenaar.net">Daniel Wagenaar</a>, 2014–2023
 </div>
 </body>
 </html>
@@ -91,14 +91,14 @@ def pyeg(doc, func):
         bit = bits[k]
         if k % 2:
             if bit=='qp.'+func:
-                out.append('qp.<b>%s</b>' % func)
+                out.append('qp.<span class="mefunc">%s</span>' % func)
             else:
                 out.append('qp.<a href="%s.html">%s</a>' % (bit[3:],bit[3:]))
         else:
             out.append(bit)
     return ''.join(out)
 
-def pydoc(doc, func):
+def pydoc(doc, func, kww):
     r = re.compile(r'((?<!LUTS)\W+)')
     wrd = re.compile(r'(?:LUTS\.)?[a-zA-Z]+')
     nl = re.compile(r'\n')
@@ -109,38 +109,53 @@ def pydoc(doc, func):
     gotfunc = False
     depth = 0
     inargs = False
+    myargs = { kw for kw in kww }
+    column = 0
     for bit in bits:
         if wrd.match(bit):
-            if bit==bit.upper() and bit.lower() in funcs:
-                if bit.lower()==func:
-                    out.append('<b>%s</b>' % bit.lower())
-                else:
-                    out.append('<a class="tmlink" href="%s.html">%s</a>'
-                               % (bit.lower(), bit.lower()))
-                gotfunc = True
-            else:
+            if bit==bit.upper() and bit.lower()==func:
+                out.append('<span class="mefunc">%s</span>' % bit.lower())
+                if column<=4:
+                    gotfunc = True
+            elif inargs and (gotfunc or bit.lower() in myargs):
+                out.append('<span class="arg">%s</span>' % bit.lower())
+                if gotfunc:
+                    myargs.add(bit.lower())
+            elif bit==bit.upper() and bit.lower() in myargs:
+                out.append('<span class="arg">%s</span>' % bit.lower())
+            elif bit==bit.upper() and bit.lower() in funcs:
+                out.append('<a class="tmlink" href="%s.html">%s</a>'
+                           % (bit.lower(), bit.lower()))
+            elif bit[:-1] == bit[:-1].upper() and bit.endswith("s") \
+                 and bit[:-1].lower() in funcs:
+                out.append('<a class="tmlink" href="%s.html">%s</a>s'
+                           % (bit[:-1].lower(), bit[:-1].lower()))
+            elif len(bit)>1 and bit==bit.upper():
+                out.append('<span class="arg">%s</span>' % bit.lower())
                 gotfunc = False
-                if bit==bit.upper() or inargs:
-                    out.append('<i>%s</i>' % bit.lower())
-                else:
-                    out.append(bit)
+            else:
+                out.append(bit)
         else:
-            if bit.startswith('(') and gotfunc:
+            if bit.startswith('('):
                 inargs = True
             depth += len(paren.findall(bit)) - len(parenc.findall(bit))
-            if depth==0:
+            if gotfunc and depth==0:
                 inargs = False
+                gotfunc = False
                 
             sub = nl.split(bit)
             lst = sub.pop(0)
             out.append(lst)
+            nobr = False
             for sbit in sub:
                 if sbit=='':
                     out.append('\n<p>')
+                    nobr = True
                 else:
                     if lst.endswith('.') or lst.endswith(':') \
                        or sbit.startswith('     '):
-                        out.append('<br>\n')
+                        if not nobr:
+                            out.append('<br>\n')
                     else:
                         out.append(' ')
                     if not sbit.startswith('    '):
@@ -152,11 +167,13 @@ def pydoc(doc, func):
                         out.append('&nbsp;')
                         sbit = sbit[1:]
                     out.append(sbit)
+                    nobr = False
+        column += len(bit)
     return ''.join(out) + '\n'
 
 def titletext(f, func, tagline):
     f.write('''<div class="titlehead">
-<span class="title">%s</span>
+<span class="title mefunc">%s</span>
 <span class="tagline">%s</span>
 </div>
 ''' % (func, tagline))
@@ -181,26 +198,29 @@ def sigline(f, func, obj):
     # This should be improved to print annotations in the future,
     # but for now, we don't use them, so it's OK.
     f.write('''<div class="pysighead">Call signature:</div>
-<div class="pysig"><p><b>%s</b>(''' % func)
+<div class="pysig"><p><span class="mefunc">%s</span>(''' % func)
     first = True
     sig = inspect.signature(obj)
     pp = sig.parameters
+    kww = []
     for k in pp.keys():
         if not first:
             f.write(', ')
         first = False
         kv = str(pp[k]).split('=', 1)
-        f.write('<i>%s</i>' % kv[0])
+        f.write('<span class="arg">%s</span>' % kv[0])
+        kww.append(kv[0])
         if len(kv)>1:
             f.write('=%s' % kv[1])
     f.write(''')</p></div>
 ''')
+    return kww
     
-def bodytext(f, body, func):
+def bodytext(f, body, func, kww):
     f.write('''<div class="pyhelphead">Help text:</div>
 <div class="pyhelp">
 ''')
-    f.write(pydoc(body, func))
+    f.write(pydoc(body, func, kww))
     f.write('''</div>
 ''')
 
@@ -248,8 +268,8 @@ with open(ofn, 'w') as f:
     if func=="luts":
         submoduletext(f, func, body)
     else:
-        sigline(f, func, obj)
-        bodytext(f, body, func)
+        kww = sigline(f, func, obj)
+        bodytext(f, body, func, kww)
     if os.path.exists('html/pyref/%s.png' % func):
         s = os.stat('html/pyref/%s.png' % func)
         if s.st_size>0:

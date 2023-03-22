@@ -109,7 +109,6 @@ ylim
 clipy
 
 Color lookup tables:
-*jetlut
 luts.get
 luts.set
 luts.names

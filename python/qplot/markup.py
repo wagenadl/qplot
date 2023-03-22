@@ -58,16 +58,21 @@ def reftext(s):
 def text(s, dx=0, dy=0):
     '''TEXT - Render text 
     TEXT(text) renders text at the current anchor point.
-    TEXT(text, dx, dy) renders text displaced by the given number of points.
+    TEXT(text, dx, dy) renders text displaced by the given number of
+    points. Normally, positive DX is to the right and positive DY down,
+    but the x- and y-axes rotate along with the angle set by the AT 
+    command.
     The text may not contain double-quote ("). Use “ or ” instead.
     Text between underscore (_) and next space is set as subscript.
-    Text between hat (^) and next space is set as superscript. (The space
+    Text between hat (^) and next space is set as superscript. The space
     that terminates a sub- or superscript is swallowed. Use tilde (~) as
-    a space inside sub- or superscripts.) Words can be /italicized/ or
-    *boldfaced* with slashes and asterisks. “Words” in this context means
-    a sequence of letters and/or numbers. Slashes and asterisks that do
-    not form pairs around a word are not interpreted specially. As in TeX
-    math, \, inserts a thin space, and \! inserts a thin negative space.
+    a space inside sub- or superscripts. 
+    Words can be /italicized/ or *boldfaced* with slashes and
+    asterisks. “Words” in this context means a sequence of letters
+    and/or numbers. Slashes and asterisks that do not form pairs
+    around a word are not interpreted specially. 
+    As in TeX math, \, inserts a thin space, and \! inserts a thin
+    negative space.
     
     Examples of valid strings:
     
@@ -77,8 +82,11 @@ def text(s, dx=0, dy=0):
       "e^-½/x/\,²/σ²" - Note the use of \, for italics correction and the
                         use of unicode superscripts for nesting.
 
-    See also AT and ALIGN.'''
+    See also AT and ALIGN.
+
+    '''
     qi.ensure()
+    s = s.replace('"', '”')
     qi.f.write('text %g %g "%s"\n' % (dx, dy, s))
     
 def arrow(l=8, w=None, dl=0, dimple=0, dw=0):

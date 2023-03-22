@@ -205,13 +205,13 @@ def ymark(xx, yy, rx, ry=None):
 
     
 def bars(xx, yy, w=None, y0=0):
-    '''BARS - Bar plot with bar width specified in data coordinates
+    '''BARS - Bar plot in data coordinates
     BARS(xx, yy, w) draws a bar graph of YY vs XX with bars
     of width W specified in data coordinates.
-    BARS(xx, yy, w, y0) specifies the baseline of the plot;
-    default for Y0 is 0. Y0 may also be a vector (which must
-    then be the same size as XX and YY). This is useful for
-    creating stacked bar graphs. Note that YY is not relative to Y0.
+    BARS(xx, yy, w, y0) specifies a nonzero baseline of the plot.
+    Y0 may also be a vector, which must be the same length as XX and YY. 
+    This is useful for creating stacked bar graphs. Note that YY is never
+    relative to Y0.
     If W is not given, it defaults to mean(diff(xx)).
     If the length of the XX vector is one greater than the length
     of the YY vector, the XX vector is taken to represent the edges
@@ -242,13 +242,13 @@ def bars(xx, yy, w=None, y0=0):
 
 
 def hbars(yy, xx, h=None, x0=0):
-    '''HBARS - Horizontal bar plot with bar height specified in data coords
+    '''HBARS - Horizontal bar plot in data coordinates
     HBARS(yy, xx, h) draws a horizontal bar graph of data XX at YY with bars
-    of height H specified in data coordinates.
-    HBARS(yy, xx, h, x0) specifies the baseline of the plot; default for X0 
-    is 0. X0 may also be a vector (which must then be the same size as XX 
-    and YY). This is useful for  creating stacked bar graphs. Note that XX is
-    not relative to X0.
+    of width H (in the vertical direction), specified in data coordinates.
+    HBARS(yy, xx, h, x0) specifies a nonzero baseline of the plot.
+    X0 may also be a vector, which must be the same length as XX 
+    and YY. This is useful for creating stacked bar graphs. Note that XX is
+    never relative to X0.
     If H is not given, it defaults to mean(diff(yy)).
     If the length of the YY vector is one greater than the length
     of the XX vector, the YY vector is taken to represent the edges

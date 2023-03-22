@@ -38,7 +38,16 @@ iframe {
 .tagline {
     display: block;
     padding-left: 15px;
+}
+
+.mefunc {
+    font-weight: bold;
+    color: #bb0000;
+}
+.arg {
     font-style: italic;
+    font-weight: bold;
+    color: #bb6600;
 }
 
 .doc {
