@@ -42,7 +42,7 @@ def axshift(pt=None):
     '''AXSHIFT - Specifies shift of drawn axis for XAXIS and YAXIS
     AXSHIFT(len) specifies shift (in points) for XAXIS and
     YAXIS. Positive means down or left, negative means up or right.
-    pt = AXSHIFT returns current setting.'''
+    pt = AXSHIFT() returns current setting.'''
     qi.ensure()
     if pt is None:
         pt = qi.f.axshift
@@ -57,7 +57,7 @@ def textdist(lbl=None, ttl=None):
     QTEXTDIST(dist) uses DIST for both distances.
     Positive numbers are to the left and down; negative numbers are to the
     right and up.
-    (lbl, ttl) = TEXTDIST returns current settings.'''
+    (lbl, ttl) = TEXTDIST() returns current settings.'''
 
     qi.ensure()
     if lbl is None:
@@ -73,7 +73,7 @@ def ticklen(pt=None):
     '''TICKLEN - Specifies length of ticks for XAXIS and YAXIS
     TICKLEN(len) specifies length of ticks (in points) for XAXIS and
     YAXIS. Positive means down or left, negative means up or right.
-    pt = TICKLEN returns current setting.'''
+    pt = TICKLEN() returns current setting.'''
     qi.ensure()
     if pt is None:
         pt = qi.f.ticklen
