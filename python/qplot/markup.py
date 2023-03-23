@@ -62,11 +62,11 @@ def text(s, dx=0, dy=0):
     points. Normally, positive DX is to the right and positive DY down,
     but the x- and y-axes rotate along with the angle set by the AT 
     command.
-    The text may not contain double-quote ("). Use “ or ” instead.
     Text between underscore (_) and next space is set as subscript.
-    Text between hat (^) and next space is set as superscript. The space
-    that terminates a sub- or superscript is swallowed. Use tilde (~) as
-    a space inside sub- or superscripts. 
+    Text between hat (^) and next space is set as superscript. The
+    space that terminates a sub- or superscript is swallowed. Matched
+    parentheses, brackets, and quotes protect spaces. Additionally,
+    tilde (~) can be used as a protected space inside sub- or superscripts.
     Words can be /italicized/ or *boldfaced* with slashes and
     asterisks. “Words” in this context means a sequence of letters
     and/or numbers. Slashes and asterisks that do not form pairs
@@ -76,11 +76,14 @@ def text(s, dx=0, dy=0):
     
     Examples of valid strings:
     
-      "Distance (μm)" - note unicode support
-      "Coefficient *A*_1 ^2" - without the space, the 2 would be a nested
+      "Distance (μm)" - Note unicode support
+      "Coefficient *A*_1 ^2" - Without the space, the 2 would be a nested
                                superscript.
-      "e^-½/x/\,²/σ²" - Note the use of \, for italics correction and the
-                        use of unicode superscripts for nesting.
+      "e^-½/x/²/σ²" - Note the use of unicode superscripts for nesting.
+      "e^-½(/x/^2  / σ^2 )" - The first space after each ^2 is eaten up; the
+                              parentheses protect the outer superscript.
+      "frown^:\(  or smile^:\)" - The backslashes prevent unwanted space 
+                                  protection.
 
     See also AT and ALIGN.
 
