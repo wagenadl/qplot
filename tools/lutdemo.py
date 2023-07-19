@@ -64,18 +64,23 @@ with open(ofn, 'w') as f:
 The “sequential,” “diverging,” “cyclic,” “qualitative,” and “misc”
 colormaps are from <a href="https://matplotlib.org/">Matplotlib</a>.
 The “plotly,” “carto,” “cmocean,” and “colorbrewer” colormaps are from
-<a href="https://plotly.com/">plotly</a>. Non-native colormaps are only
+<a href="https://plotly.com/">plotly</a>. 
+The “cet” colormaps are from 
+<a href="https://colorcet.holoviz.org/"/>colorcet</a>.
+Non-native colormaps are only
 available if the respective libraries are installed on your computer.
 For copyright information on non-native colormaps, please refer to
-<a href="https://matplotlib.org/">matplotlib.org</a> and
-<a href="https://plotly.com/">plotly.com</a>.\n''')
+<a href="https://matplotlib.org/">matplotlib.org</a>,
+<a href="https://plotly.com/">plotly.com</a>, and
+<a href="https://colorcet.holoviz.org/"/>colorcet</a>.\n''')
+
+    f.write('''<p>In a few instances, multiple families offer like-named colormaps. In that case, you can prefix the name with the family in GET and SET, e.g., “cm = qp.get("cet.rainbow")”.''')
 
     f.write('''<p>Colormaps from other sources can also be used with QPlot.
 Excellent colormaps are provided, e.g., by the 
 <a href="https://cmasher.readthedocs.io/index.html">CMasher</a>,
-<a href="https://github.com/callumrollo/cmcrameri">cmcrameri</a>,
-<a href="https://github.com/yt-project/cmyt">cmyt</a>, and
-<a href="https://colorcet.holoviz.org/">colorcet</a>
+<a href="https://github.com/callumrollo/cmcrameri">cmcrameri</a>, and
+<a href="https://github.com/yt-project/cmyt">cmyt</a>
 projects. See also <a href="lut.html">lut()</a>.\n''')
 
     trailer(f)
