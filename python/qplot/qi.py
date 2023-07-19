@@ -318,9 +318,9 @@ def plot(xx, yy, cmd='plot'):
     if cmd=='plot' or cmd=='patch':
         xx = f.xtransform(xx)
         yy = f.ytransform(yy)
+        f.updaterange(xx, yy)
     f.writedbl(xx)
     f.writedbl(yy)
-    f.updaterange(xx, yy)
 
 def hatch(xx, yy, pattern, angle, spacing, offset, cmd='hatch'):
     angle = to_radians(angle)
@@ -367,9 +367,9 @@ def hatch(xx, yy, pattern, angle, spacing, offset, cmd='hatch'):
     if cmd=='hatch':
         xx = f.xtransform(xx)
         yy = f.ytransform(yy)
+        f.updaterange(xx, yy)
     f.writedbl(xx)
     f.writedbl(yy)
-    f.updaterange(xx, yy)
     
 
 def figisopen(fn):
