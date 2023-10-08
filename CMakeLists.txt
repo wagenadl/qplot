@@ -1,18 +1,12 @@
 # CMakeLists.txt - Part of QPlot, (C) Daniel Wagenaar 2021
 
-# NEW BUILD INSTRUCTIONS (as of version 0.3.1)
-# Type:
-#   cd build
-#   cmake ..
-# to build QPlot.
-
 
 ######################################################################
 cmake_minimum_required(VERSION 3.10.0)
 
 ######################################################################
 # Set the project name and version
-project(QPlot VERSION 0.4.2)
+project(QPlot VERSION 0.4.4)
 set(CMAKE_PROJECT_HOMEPAGE_URL "http://danielwagenaar.net/qplot")
 set(OCTPKG "qplot-${QPlot_VERSION_MAJOR}.${QPlot_VERSION_MINOR}")
 set(PYPKG "qplot")
