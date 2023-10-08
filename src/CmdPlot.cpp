@@ -112,6 +112,7 @@ void CmdPlot::render(Statement const &s, Figure &f, bool dryrun) {
   
   QRectF bbox = p.boundingRect();
   double w = f.painter().pen().widthF();
+  
   if (w>0)
     bbox.adjust(-w/2, -w/2, w/2, w/2);
   /* Adjust for line width.

@@ -49,7 +49,7 @@ void CmdShrink::render(Statement const &s, Figure &f, bool) {
   if (s.length()>=2 && s[1].typ==Token::NUMBER)
     mrg = pt2iu(s[1].num);
   bool hasRatio = s.length()>=3;
-  double ratio = s[2].num;
+  double ratio = hasRatio ? s[2].num : 1;
   QRectF actual = f.fullBBox();
   QRectF desired = f.extent();
 

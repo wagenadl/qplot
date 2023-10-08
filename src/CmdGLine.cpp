@@ -145,6 +145,47 @@ bool CmdGLine::parse(Statement const &s) {
   return true;
 }
 
+QRectF CmdGLine::dataRange(Statement const &s) {
+  QPolygonF pts;
+  int k=1;
+  while (k<s.length()) {
+    // build a new point
+    k++; // we already know we have parentheses
+    while (s[k].typ!=Token::CLOSEPAREN) {
+      GLineKW kw = glineKW(s[k].str); // we already know keyword is valid
+      switch (kw) {
+      case KW_absdata:
+        if (s[k+1].typ==Token::NUMBER && s[k+2].typ==Token::NUMBER)
+          pts << QPointF(s[k+1].num, s[k+2].num);
+        break;
+      case KW_rotpaper:
+        --k; // only one number
+        break;
+      case KW_at:
+	--k;
+	break;
+      case KW_atx:
+	--k;
+	break;
+      case KW_aty:
+	--k;
+	break;
+      case KW_retract:
+        if (s[k+2].typ!=Token::NUMBER) 
+	  --k; // only one number
+	break;
+      }
+      k+=3; // skip keyword and both numbers
+    }
+    k++; // skip close paren
+  }
+  if (pts.size())
+    return pts.boundingRect();
+  else
+    return QRectF();
+}
+  
+
 void CmdGLine::render(Statement const &s, Figure &f, bool dryrun) {
   QPolygonF pts;
   QVector<double> retractL;
@@ -249,6 +290,7 @@ void CmdGLine::render(Statement const &s, Figure &f, bool dryrun) {
   if (pcurrent.size()>1)
     ppp << pcurrent;
 
+
   QRectF bbox;
   foreach (QPolygonF const &p, ppp) {
     if (bbox.isNull())
@@ -258,6 +300,7 @@ void CmdGLine::render(Statement const &s, Figure &f, bool dryrun) {
   }
 
   double w = f.painter().pen().widthF();
+ 
   if (w>0)
     bbox.adjust(-w/2, -w/2, w/2, w/2);
 
