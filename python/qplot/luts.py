@@ -13,6 +13,14 @@ try:
 except ModuleNotFoundError:
     pass
 
+havecolorcet = False
+try:
+    import colorcet
+    havecolorcet = True
+except ModuleNotFoundError:
+    pass
+
+
 _cmaps = OrderedDict()
 
 _cmaps['native'] = [ 'qpjet', 'qphsv', 'qphot', 'qpcold', 'qpcoldhot' ]
@@ -53,14 +61,39 @@ _cmaps['carto'] = None
 _cmaps['cmocean'] = None
 _cmaps['colorbrewer'] = None
 
+_cmaps['cet.linear'] = None
+_cmaps['cet.diverging'] = None
+_cmaps['cet.cyclic'] = None
+_cmaps['cet.glassbey'] = None
+_cmaps['cet.isoluminant'] = None
+_cmaps['cet.rainbow'] = None
+
 def _load_plotly_cmaps():
     for k in _cmaps:
         if _cmaps[k] is None:
-            m = k.replace('plotly.', '')
             if haveplotly:
+                m = k.replace('plotly.', '')
+                if m not in plotly.colors.__dict__:
+                    return
                 mod = plotly.colors.__dict__[m]
                 names = [x for x in mod.__dict__
                          if not '_' in x and x!='swatches']
+                _cmaps[k] = names
+            else:
+                _cmaps[k] = []
+
+                
+def _load_colorcet_cmaps():
+    for k in _cmaps:
+        if k.startswith('cet.') and _cmaps[k] is None:
+            if havecolorcet:
+                pfx = k.replace('cet.', '') + '_'
+                names = []
+                for name in colorcet.all_original_names():
+                    if name.startswith(pfx):
+                        alii = colorcet.get_aliases(name).split(',')
+                        if len(alii)>1:
+                            names.append(alii[0])
                 _cmaps[k] = names
             else:
                 _cmaps[k] = []
@@ -84,6 +117,7 @@ def family(name):
     '''
     if _cmaps[name] is None:
         _load_plotly_cmaps()
+        _load_colorcet_cmaps()
     _cmaps[name].sort()
     return _cmaps[name]
 
@@ -232,16 +266,40 @@ def _get_mpl_cmap(name, N, reverse):
     else:
         return rgb
 
+def _get_colorcet_cmap(name, N, reverse):
+    if not havecolorcet:
+        return None
+    _load_colorcet_cmaps()
+    if name not in colorcet.__dict__:
+        return None
+    cmap = [[int(x[1:3], 16), int(x[3:5], 16), int(x[5:], 16)]
+            for x in colorcet.__dict__[name]]
+    rgb = np.array(cmap).astype(float)/255.0
+    if N is not None:
+        kk = np.arange(K)
+        xx = np.arange(N) * (K-1) / (N-1)
+        res = np.zeros((N, 3))
+        for c in range(3):
+            res[:,c] = np.interp(xx, kk, rgb[:,c])
+    else:
+        res = rgb
+    if reverse:
+        return res[-1::-1,:]
+    else:
+        return res
+   
+    
 def _get_plotly_cmap(name, N, reverse):
-    _load_plotly_cmaps()
     if not haveplotly:
         return None
+    _load_plotly_cmaps()
     name = name.replace('-', '_')
     fam = None
-    for f in _cmaps:
-        lst = _cmaps[f]
-        if name in lst:
+    for f, lst in _cmaps.items():
+        if lst is not None and name in lst:
             fam = f.replace('plotly.', '')
+    if fam not in plotly.colors.__dict__:
+        return None
     cmap = plotly.colors.__dict__[fam].__dict__[name]
     cmap = plotly.colors.validate_colors(cmap)
     K = len(cmap)
@@ -271,15 +329,29 @@ def get(name, N=None, reverse=False):
     be reversed.
     Use LUTS.FAMILIES, LUTS.FAMILY, LUTS.NAMES to explore available colormaps.
     See also LUTS.SET.'''
-    cmap = _native(name, N, reverse)
-    if cmap is not None:
-        return cmap
-    cmap = _get_mpl_cmap(name, N, reverse)
-    if cmap is not None:
-        return cmap
-    cmap = _get_plotly_cmap(name, N, reverse)
-    if cmap is not None:
-        return cmap
+    if '.' in name:
+        fam, name = name.split('.', 1)
+    else:
+        fam = None
+
+    if fam is None or fam=="native":
+        cmap = _native(name, N, reverse)
+        if cmap is not None:
+            return cmap
+    if fam is None or (not fam.startswith("plotly")
+                       and not fam.startswith("cet")):
+        cmap = _get_mpl_cmap(name, N, reverse)
+        if cmap is not None:
+            return cmap
+    if fam is None or fam.startswith("plotly"):
+        cmap = _get_plotly_cmap(name, N, reverse)
+        if cmap is not None:
+            return cmap
+    if fam is None or fam.startswith("cet"):
+        cmap = _get_colorcet_cmap(name, N, reverse)
+        if cmap is not None:
+            return cmap
+    
     raise ValueError(f'Unknown color map {name}')
 
 def set(name, N=None, reverse=False):

@@ -43,6 +43,65 @@ bool allWord(QString txt) {
   return true;
 }
 
+static int nextUnprotectedSpace(QString const &s, int idx) {
+  /* Returns the index of the next unprotected space in the string S,
+     starting the search from position IDX.
+     If none found, returns the length of the string.
+     Spaces are considered protected if they occur inside matching parens
+     (such as (), [], {}, or ⟨⟩), or matching quotes («», ‘’, or “”).
+     Unpaired parens or quotes do not protect. For instance, the string
+     "a{(b, c) d" breaks before "d", because the "{" is not paired,
+     as does "a{(b, c} d)" because the {} protect the space before "c".
+     Backslashes cause an otherwise pairable character to be ignored. Thus,
+     "a\{b, c}" breaks before "c", as does "a\{(b, c} d)", (because the "}"
+     mismatches the "("), while "a\{(b, c\} d)" doesn't break.
+   */
+  QString pairs = "()[]{}〈〉⟨⟩«»⟪⟫⟦⟧‘’“”⌊⌋⌈⌉";
+  QList<int> starts;
+  QSet<int> matchedstart;
+  QSet<int> matchedend;
+  int L = s.length();
+
+  // first iteration, find matching pairs
+  bool backslash = false;
+  for (int i=idx; i<L; i++) {
+    if (backslash) {
+      backslash = false;
+      continue;
+    }
+    int what = pairs.indexOf(s[i]);
+    if (what<0) {
+      backslash = s[i]=='\\';
+      continue;
+    }
+    if ((what&1)==0) {
+      starts << i;
+    } else {
+      while (starts.size()) {
+        int start = starts.takeLast();
+        if (pairs[what & ~1]==s[start]) {
+          matchedstart << start;
+          matchedend << i;
+          break;
+        }
+      }
+    }
+  }
+
+  // second iteration, find unprotected spaces
+  QString space = " \t\n\r";
+  int prot = 0;
+  for (int i=idx; i<L; i++) {
+    if (matchedstart.contains(i))
+      prot ++;
+    else if (matchedend.contains(i))
+      prot --;
+    else if (prot==0 && space.contains(s[i]))
+      return i;
+  }
+  return L;
+}
+
 void Text::addInterpreted(QString txt) {
   int i=-1;
   while ((i=txt.indexOf('-', i+1), i>=0)) {
@@ -50,7 +109,10 @@ void Text::addInterpreted(QString txt) {
       txt.replace(i, 1, QChar(0x2212));
     }
   }
-
+  static QString sups = "²³¹⁰ⁱ⁴⁵⁶⁷⁸⁹⁺⁻⁼⁽⁾ⁿ";
+  static QString supr = "2310i456789+−=()n";
+  static QString subs = "ᵢᵣᵤᵥᵦᵧᵨᵩᵪ₀₁₂₃₄₅₆₇₈₉₊₋₌₍₎ₐₑₒₓₔₕₖₗₘₙₚₛₜⱼ";
+  static QString subr = "iruvβγρφχ0123456789+-=()aeoxəhklmnpstj";
   QString bld;
   int idx=0;
   while (idx<txt.size()) {
@@ -72,17 +134,17 @@ void Text::addInterpreted(QString txt) {
       if (id1>=0 && allWord(txt.mid(idx+1, id1-idx-1))) {
 	add(bld);
 	bld="";
+        italicCorrect();
 	toggleSlant();
 	add(txt.mid(idx+1, id1-idx-1));
+        italicCorrect();
 	restore();
 	idx=id1;
       } else {
 	bld+="/";
       }
     } else if (x=="_") {
-      int id1 = txt.indexOf(QRegExp("[ \t\n\r]"), idx+1);
-      if (id1<0)
-	id1 = txt.size();
+      int id1 = nextUnprotectedSpace(txt, idx+1);
       add(bld);
       bld="";
       setSub();
@@ -90,9 +152,7 @@ void Text::addInterpreted(QString txt) {
       restore();
       idx=id1;
     } else if (x=="^") {
-      int id1 = txt.indexOf(QRegExp("[ \t\n\r]"), idx+1);
-      if (id1<0)
-	id1 = txt.size();
+      int id1 = nextUnprotectedSpace(txt, idx+1); 
       add(bld);
       bld="";
       setSuper();
@@ -114,6 +174,18 @@ void Text::addInterpreted(QString txt) {
 	bld += txt.mid(idx+1,1);
         idx++;
       }
+    } else if (sups.contains(x)) {
+      add(bld);
+      bld="";
+      setSuper();
+      add(supr.mid(sups.indexOf(x), 1));
+      restore();
+    } else if (subs.contains(x)) {
+      add(bld);
+      bld="";
+      setSub();
+      add(subr.mid(subs.indexOf(x), 1));
+      restore();
     } else {
       bld += x;
     }
@@ -185,7 +257,7 @@ void Text::setSuper() {
 void Text::setSub() {
   State s = stack.last();
   s.fontsize *= SCRIPTSIZE;
-  QRectF rscript = QFontMetricsF(makeFont(s)).tightBoundingRect("0");
+  QRectF rscript = QFontMetricsF(makeFont(s)).tightBoundingRect("x");
   s.baseline -= SCRIPTSHIFT*rscript.top();
   stack.push_back(s);
 }
@@ -207,16 +279,17 @@ Text &Text::operator<<(QString const &txt) {
 
 void Text::add(QString txt) {
   QString t0 = txt;
-  txt.replace(QRegExp("  +")," ");
+  //  txt.replace(QRegExp("  +")," ");
   txt.replace("~", " ");
   if (txt.isEmpty())
     return;
   /* In Qt5, ZWNJ and ZWSP result in incorrect measurements. I am therefore
      forced to get rid of their use. That doesn't make me happy, because
      I know there was a reason why I put them in. I just cannot remember.
+     3/21/23: Probably for italics correction
   */
-  // txt = QString(QChar(0x200b)) + txt + QString(QChar(0x200b));
-  // txt = QString(QChar(0x200c)) + txt + QString(QChar(0x200c));
+  //txt = QString(QChar(0x200b)) + txt + QString(QChar(0x200b));
+  //txt = QString(QChar(0x200c)) + txt + QString(QChar(0x200c));
   State s(stack.last());
   Span span;
   span.startpos = QPointF(nextx, s.baseline);
@@ -224,13 +297,11 @@ void Text::add(QString txt) {
   if (t0 == "\\!") {
     span.text = "";
     QFontMetricsF fm(span.font);
-    QRectF r = fm.tightBoundingRect("x");
-    nextx -= r.width()/5;
+    nextx -= fm.horizontalAdvance("x")/5;
   } else if (t0 == "\\,") {
     span.text = "";
     QFontMetricsF fm(span.font);
-    QRectF r = fm.tightBoundingRect("x");
-    nextx += r.width()/5;
+    nextx += fm.horizontalAdvance("x")/5;
   } else {
     span.text = txt;
   }
@@ -238,9 +309,8 @@ void Text::add(QString txt) {
   if (span.text != "") {
     QFontMetricsF fm(span.font);
     QRectF r = fm.tightBoundingRect(txt);
-    //    qDebug() << "add" << txt << txt.size() << r << span.startpos << fm.width(txt) << fm.boundingRect(txt);
     bb |= r.translated(span.startpos);
-    nextx += fm.width(txt);
+    nextx += fm.horizontalAdvance(txt);
   }
 }
 
@@ -258,5 +328,17 @@ void Text::render(QPainter &p, QPointF const &xy0) {
     QString txt = s.text;
     //    qDebug() << "render" << txt << txt.size() << xy0 << s.startpos << p.boundingRect(QRectF(0,0,0,0), Qt::AlignLeft| Qt::AlignBottom, txt);
     p.drawText(xy0+s.startpos, txt);
+  }
+}
+
+void Text::italicCorrect() {
+  if (stack.last().slant && spans.size()) {
+    Span const &sp = spans.last();
+    if (sp.text.size()) {
+      QFontMetricsF fm(makeFont(stack.last()));
+      qreal dx = fm.rightBearing(sp.text[sp.text.size()-1]);
+      if (dx<0)
+        nextx -= dx;
+    }
   }
 }
