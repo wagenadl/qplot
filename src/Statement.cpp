@@ -95,18 +95,20 @@ int Statement::read(Reader &source, QString label) {
 
   nlines = 1;
   
-  QStringList words = line.split(QRegExp("[ \t\n\r]+"));
+  QStringList words = line.split(QRegExp("[ \t\n\r]"));
   foreach (QString w, words) 
-    process(w);
+    if (w.size() || lev || inString)
+      process(w);
 
   while (lev>0) {
     QString line(source.readline());
     if (line.isNull() || !line.endsWith('\n'))
       break;
     nlines ++;
-    QStringList words = line.split(QRegExp("\\s+"));
-    foreach (QString w, words) 
-      process(w);
+    QStringList words = line.split(QRegExp("[ \t\n\r]"));
+    foreach (QString w, words)
+      if (w.size() || lev || inString)
+        process(w);
   }
 
   QPair<int, QString> x;

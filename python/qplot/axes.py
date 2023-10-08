@@ -42,7 +42,7 @@ def axshift(pt=None):
     '''AXSHIFT - Specifies shift of drawn axis for XAXIS and YAXIS
     AXSHIFT(len) specifies shift (in points) for XAXIS and
     YAXIS. Positive means down or left, negative means up or right.
-    pt = AXSHIFT returns current setting.'''
+    pt = AXSHIFT() returns current setting.'''
     qi.ensure()
     if pt is None:
         pt = qi.f.axshift
@@ -57,7 +57,7 @@ def textdist(lbl=None, ttl=None):
     QTEXTDIST(dist) uses DIST for both distances.
     Positive numbers are to the left and down; negative numbers are to the
     right and up.
-    (lbl, ttl) = TEXTDIST returns current settings.'''
+    (lbl, ttl) = TEXTDIST() returns current settings.'''
 
     qi.ensure()
     if lbl is None:
@@ -73,7 +73,7 @@ def ticklen(pt=None):
     '''TICKLEN - Specifies length of ticks for XAXIS and YAXIS
     TICKLEN(len) specifies length of ticks (in points) for XAXIS and
     YAXIS. Positive means down or left, negative means up or right.
-    pt = TICKLEN returns current setting.'''
+    pt = TICKLEN() returns current setting.'''
     qi.ensure()
     if pt is None:
         pt = qi.f.ticklen
@@ -578,7 +578,7 @@ def overlinedist(x=None):
     return qi.f.overlinedist
     
 def overlinemin(x=None):
-    '''OVERLINEMIN - Specifies minimum vertical length of OVERLINEs
+    '''OVERLINEMIN - Specifies minimum vertical length for OVERLINEs
     OVERLINEMIN(h) specifies the minimum vertical length of OVERLINEs,
     in points.
     h = OVERLINEMIN() returns current settings.'''
@@ -598,7 +598,7 @@ def overline(xx, yy, txt=None, datadist=None, textdist=None, minlen=None):
     The whole thing is displaced by a distance OVERLINEDIST from the data,
     and the text placement uses the absolute value of TEXTDIST.
     If OVERLINEMIN is non-zero, a vertical line is drawn on both ends.
-    OVERLINE(xx, y) or QOVERLINE(xx, yy) is permitted: no text is drawn.
+    The TEXT argument may be omitted.
     Optional arguments DATADIST, TEXTDIST, and MINLEN override global
     settings.'''
     qi.ensure()
@@ -639,7 +639,9 @@ def overline(xx, yy, txt=None, datadist=None, textdist=None, minlen=None):
         markup.align('center', 'bottom')
         markup.text(txt, dy=-(datadist + minlen + td))
 
-def xcaxis(title='', xx=None, labels=None, y=None, lim=None, flip=False):
+def xcaxis(title='', xx=None, labels=None, y=None, lim=None, flip=False,
+           ticklen=None, axshift=None, lbldist=None, ttldist=None,
+           microshift=False):
     '''XCAXIS - Plot x-axis with labels between ticks
     XCAXIS plots an x-axis with labels at specfied positions but ticks
     between the labels rather than at the label positions. First and
@@ -658,9 +660,17 @@ def xcaxis(title='', xx=None, labels=None, y=None, lim=None, flip=False):
     if y is None:
         yy = utils.sensibleticks(qi.f.datarange[2:4], 1)
         y = yy[0]
-    ticklen = qi.f.ticklen
-    axshift = qi.f.axshift
-    [lbldist, ttldist] = textdist()
+    if labels is None:
+        labels = qi.f.format(ticks)
+    if ticklen is None:
+        ticklen = qi.f.ticklen
+    if axshift is None:
+        axshift = qi.f.axshift
+    if lbldist is None:
+        lbldist = qi.f.textdist[0]
+    if ttldist is None:
+        ttldist = qi.f.textdist[1]
+
     
     if flip:
         ticklen = -ticklen
@@ -682,9 +692,11 @@ def xcaxis(title='', xx=None, labels=None, y=None, lim=None, flip=False):
     # Place ticks, draw bar
     _qaxis(orient='x', lim_d=lim, tick_d=tickx, tick_lbl='',
             ticklen=ticklen,
-            coord_d=y, coord_p=axshift)
+            coord_d=y, coord_p=axshift, microshift=microshift)
 
-def ycaxis(title='', yy=None, labels=None, x=None, lim=None, flip=False):
+def ycaxis(title='', yy=None, labels=None, x=None, lim=None, flip=False,
+           ticklen=None, axshift=None, lbldist=None, ttldist=None,
+           microshift=False):
     '''YCAXIS - Plot y-axis with labels between ticks
     YCAXIS plots an y-axis with labels at specfied positions but ticks
     between the labels rather than at the label positions. First and
@@ -703,10 +715,18 @@ def ycaxis(title='', yy=None, labels=None, x=None, lim=None, flip=False):
     if x is None:
         xx = utils.sensibleticks(qi.f.datarange[0:2], 1)
         x = xx[0]
-    ticklen = qi.f.ticklen
-    axshift = qi.f.axshift
-    [lbldist, ttldist] = textdist()
-    
+
+    if labels is None:
+        labels = qi.f.format(ticks)
+    if ticklen is None:
+        ticklen = qi.f.ticklen
+    if axshift is None:
+        axshift = qi.f.axshift
+    if lbldist is None:
+        lbldist = qi.f.textdist[0]
+    if ttldist is None:
+        ttldist = qi.f.textdist[1]
+
     lblrot = ytitlerot()
     if flip==0:
         ticklen = -ticklen
@@ -715,7 +735,8 @@ def ycaxis(title='', yy=None, labels=None, x=None, lim=None, flip=False):
         ttldist = -ttldist
     elif flip==2:
         lblrot = -lblrot
-        
+
+    yy = np.array(yy)
     btwnx = (yy[0:-1] + yy[1:])/2
     if lim is None:
         avg = np.mean(np.diff(yy))
@@ -729,8 +750,9 @@ def ycaxis(title='', yy=None, labels=None, x=None, lim=None, flip=False):
             coord_d=x, coord_p=axshift, ttlrot=lblrot)
     # Place ticks, draw bar
     _qaxis(orient='y', lim_d=lim, tick_d=ticky, tick_lbl='',
-            ticklen=ticklen,
-            coord_d=x, coord_p=axshift, ttlrot=lblrot)
+           ticklen=ticklen,
+           coord_d=x, coord_p=axshift, ttlrot=lblrot,
+           microshift=microshift)
     
 def zaxis(title, ticks, proj, labels=None, x=0, y=0, lim=None, below=False):
     '''ZAXIS - Draw a z-axis.

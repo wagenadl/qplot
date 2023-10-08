@@ -16,9 +16,13 @@
 
 ALL: QPLOT DOCS
 
-QPLOT: build/qplot
-	mkdir -p build
-	( cd build; cmake ..; cmake --build . )
+QPLOT:
+	+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+	+cmake --build build --config=Release
+
+debug:
+	+cmake -S . -B build-dbg -DCMAKE_BUILD_TYPE=Debug
+	+cmake --build build-dbg --config=Debug
 
 clean:; rm -rf build build-dbg build-doc
 
@@ -29,3 +33,5 @@ DOCS: build-doc/Makefile QPLOT
 build-doc/Makefile: doc/Makefile.doc
 	mkdir -p build-doc
 	cp doc/Makefile.doc build-doc/Makefile
+
+.PHONY: ALL QPLOT DOCS clean debug
