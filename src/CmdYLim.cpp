@@ -35,9 +35,16 @@ bool CmdYLim::parse(Statement const &s) {
     return usage();
 }
 
+QRectF CmdYLim::dataRange(Statement const &s) {
+  double y0 = s[1].num;
+  double y1 = s[2].num;
+  return QRectF(QPointF(0, y0), QPointF(-1, y1)); // return -ve width rect.
+}
+
 
 void CmdYLim::render(Statement const &s, Figure &f, bool) {
-  double x0 = s[1].num;
-  double x1 = s[2].num;
-  f.yAxis().setDataRange(x0, x1);
+  double y0 = s[1].num;
+  double y1 = s[2].num;
+  f.forceBBoxY(f.map(0,y0).y(), f.map(0,y1).y());
+  //f.yAxis().setDataRange(y0, y1);
 }

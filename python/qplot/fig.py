@@ -93,7 +93,10 @@ def closeall():
             
 def xlim(x0=None, x1=None):
     '''XLIM - Set x-axis limits
-    XLIM(x0, x1) or XLIM([x0, x1]) sets x-axis limits in the current panel.'''
+    XLIM(x0, x1) or XLIM([x0, x1]) sets x-axis limits in the current panel.
+    This means that data outside of that range are not included in
+    calculations for shrink. It does not mean that such data are not
+    plotted.'''
     if x0 is None:
         qi.error('Usage: xlim x0 x1')    
     if x1 is None:
@@ -104,7 +107,10 @@ def xlim(x0=None, x1=None):
 
 def ylim(y0=None, y1=None):
     '''YLIM - Set y-axis limits
-    YLIM(y0, y1) or YLIM([y0, y1]) sets y-axis limits in the current panel.'''
+    YLIM(y0, y1) or YLIM([y0, y1]) sets y-axis limits in the current panel.
+    This means that data outside of that range are not included in
+    calculations for shrink. It does not mean that such data are not
+    plotted.'''
     if y0 is None:
         qi.error('Usage: ylim y0 y1')    
     if y1 is None:

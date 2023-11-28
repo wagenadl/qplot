@@ -138,8 +138,22 @@ QRectF Program::dataRange(QString p, int upto) {
     Statement const &s(stmt[k]); 
     if (s.length()>=2 && s[0].str=="panel")
       in = s[1].str==p;
-    if (in && cmds[k])
-      r |= cmds[k]->dataRange(s);
+    if (in && cmds[k]) {
+      QRectF r1 = cmds[k]->dataRange(s);
+      if (r1.width() < 0) {
+        // this is a ylim command -> overwrite vertical range
+        r.setTop(r1.top());
+        r.setBottom(r1.bottom());
+      } else if (r1.height() < 0) {
+        QRectF r0 = r; // debug
+        // this is a xlim command -> overwrite horizontal range
+        r.setLeft(r1.left());
+        r.setRight(r1.right());
+        // qDebug() << "got xlim" << r0 << r1 << r;
+      } else if (r1.isValid()) {
+        r |= r1;
+      }
+    }
   }
   return r;
 }
