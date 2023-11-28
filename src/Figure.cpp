@@ -185,6 +185,21 @@ void Figure::setBBox(QRectF const &b) {
   fullbbox |= b;
 }
 
+void Figure::forceBBoxX(double x0, double x1) {
+  fullbbox.setLeft(x0);
+  fullbbox.setRight(x1);
+  cumulbbox.setLeft(x0);
+  cumulbbox.setRight(x1);
+}
+
+void Figure::forceBBoxY(double y0, double y1) {
+  fullbbox.setTop(y0);
+  fullbbox.setBottom(y1);
+  cumulbbox.setTop(y0);
+  cumulbbox.setBottom(y1);
+}
+  
+
 QRectF const &Figure::lastBBox() const {
   return lastbbox;
 }

@@ -60,6 +60,8 @@ public:
   QTransform xform() const; // return data to paper transformation matrix
   void clearBBox(bool full=false);
   void setBBox(QRectF const &); // sets lastbbox, updates fullbbox and cumulbbox
+  void forceBBoxX(double x0, double x1); // overwrites cumul and fullbox only
+  void forceBBoxY(double y0, double y1); // ditto
   void setAnchor(QPointF const &, double phi=0); // in paper coords
   void setAnchor(double x, double y, double dx=1, double dy=0); // in data coords
   /* setAnchor also resets the textShiftAccum */
