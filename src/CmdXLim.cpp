@@ -34,15 +34,15 @@ bool CmdXLim::parse(Statement const &s) {
   else
     return usage();
 }
-QRectF CmdXLim::dataRange(Statement const &s) {
+
+Range CmdXLim::xlim(Statement const &s) {
   double x0 = s[1].num;
   double x1 = s[2].num;
-  return QRectF(QPointF(x0, 0), QPointF(x1, -1)); // return -ve height rect.
+  return Range(x0, x1);
 }
 
 void CmdXLim::render(Statement const &s, Figure &f, bool) {
   double x0 = s[1].num;
   double x1 = s[2].num;
   f.forceBBoxX(f.map(x0,0).x(), f.map(x1,0).x());
-  //f.xAxis().setDataRange(x0, x1);
 }

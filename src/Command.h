@@ -27,6 +27,7 @@
 #include "Figure.h"
 #include "Factor.h"
 #include <QMap>
+#include "Range.h"
 
 class Command {
 public:
@@ -53,6 +54,16 @@ public:
        set style or that annotate based on paper coordinates need not
        implement this.
   */
+  virtual Range xlim(Statement const &) { return Range(); }
+  /*:F xlim
+   *:D Return x-range overwriting limits. Most commands don't do this.
+       Only xlim.
+   */
+  virtual Range ylim(Statement const &) { return Range(); }
+  /*:F ylim
+   *:D Return y-range overwriting limits. Most commands don't do this.
+       Only ylim.
+   */
 protected:
   bool error(QString const &);
 public:

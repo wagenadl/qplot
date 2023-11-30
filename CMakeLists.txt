@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.10.0)
 
 ######################################################################
 # Set the project name and version
-project(QPlot VERSION 0.4.6)
+project(QPlot VERSION 0.4.8)
 set(CMAKE_PROJECT_HOMEPAGE_URL "http://danielwagenaar.net/qplot")
 set(OCTPKG "qplot-${QPlot_VERSION_MAJOR}.${QPlot_VERSION_MINOR}")
 set(PYPKG "qplot")
