@@ -35,10 +35,10 @@ bool CmdYLim::parse(Statement const &s) {
     return usage();
 }
 
-QRectF CmdYLim::dataRange(Statement const &s) {
+Range CmdYLim::ylim(Statement const &s) {
   double y0 = s[1].num;
   double y1 = s[2].num;
-  return QRectF(QPointF(0, y0), QPointF(-1, y1)); // return -ve width rect.
+  return Range(y0, y1);
 }
 
 

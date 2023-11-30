@@ -139,18 +139,20 @@ QRectF Program::dataRange(QString p, int upto) {
     if (s.length()>=2 && s[0].str=="panel")
       in = s[1].str==p;
     if (in && cmds[k]) {
+      Range xl = cmds[k]->xlim(s);
+      if (!xl.empty()) {
+        r.setLeft(xl.min());
+        r.setRight(xl.max());
+        continue;
+      } 
+      Range yl = cmds[k]->ylim(s);
+      if (!yl.empty()) {
+        r.setTop(yl.min());
+        r.setBottom(yl.max());
+        continue;
+      } 
       QRectF r1 = cmds[k]->dataRange(s);
-      if (r1.width() < 0) {
-        // this is a ylim command -> overwrite vertical range
-        r.setTop(r1.top());
-        r.setBottom(r1.bottom());
-      } else if (r1.height() < 0) {
-        QRectF r0 = r; // debug
-        // this is a xlim command -> overwrite horizontal range
-        r.setLeft(r1.left());
-        r.setRight(r1.right());
-        // qDebug() << "got xlim" << r0 << r1 << r;
-      } else if (r1.isValid()) {
+      if (r1.isValid()) {
         r |= r1;
       }
     }
