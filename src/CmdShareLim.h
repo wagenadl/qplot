@@ -43,6 +43,11 @@ public:
   virtual void render(Statement const &, Figure &, bool);
 private:
   bool usage();
+  void scaleX(Figure &f, QSet<QString> ids);
+  void alignX(Figure &f, QSet<QString> ids);
+  void scaleY(Figure &f, QSet<QString> ids);
+  void alignY(Figure &f, QSet<QString> ids);
+  
 };
 
 #endif

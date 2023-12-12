@@ -18,6 +18,7 @@ Renderer::Renderer() {
 }
 
 void Renderer::prerender(int upto) {
+  qDebug() << "prerender" << upto;
   QImage img(1,1,QImage::Format_ARGB32);
   fig.setSize(QSizeF(1, 1)); // this may be overridden later
   fig.painter().begin(&img);
@@ -39,16 +40,16 @@ void Renderer::prerender(int upto) {
   while (iter<maxtries) {
     prog.render(fig, true, upto); // renderer to determine paper bbox & fudge
     if (fig.checkFudged()) {
-      //qDebug() << "will reiterate";
+      qDebug() << "will reiterate";
     } else {
-      //qDebug() << "won't reiterate";
+      qDebug() << "won't reiterate";
       break;
     }
     iter++;
   } 
 
   if (iter>=maxtries)
-    Error() << QString("“Shrink” failed, even after %1 iterations.").arg(iter);
+    Error() << QString("\"Shrink\" failed, even after %1 iterations.").arg(iter);
 
   fig.painter().end();
 }

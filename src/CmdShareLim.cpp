@@ -60,6 +60,7 @@ bool CmdShareLim::parse(Statement const &s) {
 }
 
 void CmdShareLim::render(Statement const &s, Figure &f, bool) {
+  qDebug() << "sharelim at " << s.label();
   bool shareX = true;
   bool shareY = true;
   QSet<QString> ids;
@@ -136,100 +137,12 @@ void CmdShareLim::render(Statement const &s, Figure &f, bool) {
     }
     if (px.range()<MINOVERLAP) {
       // No common overlap. Revert to scaling only.
-      // Get the scale
-      double scale = f.xAxis().maprel(1).x();
-      foreach (QString id, ids) {
-	Panel const &p(f.panelRef(id));
-	double sc1 = p.xaxis.maprel(1).x();
-	if (sc1<scale)
-	  scale = sc1;
-      }
-      // Apply the scale to current panel
-      double sc1 = f.xAxis().maprel(1).x();
-      if (sc1>scale*(1+SCALETOLERANCE)) {
-	// Let's actually shrink
-	double currentWidth = f.xAxis().maxp().x() - f.xAxis().minp().x();
-	double newWidth = currentWidth * scale/sc1;
-	double shift = (currentWidth - newWidth)/2;
-	f.xAxis().setPlacement(QPointF(f.xAxis().minp().x()+shift,0),
-			       QPointF(f.xAxis().maxp().x()-shift,0));
-	f.markFudged();
-      }
-      // Apply the scale to other panels
-      foreach (QString id, ids) {
-	Panel &p(f.panelRef(id));
-	double sc1 = p.xaxis.maprel(1).x();
-	if (sc1>scale*(1+SCALETOLERANCE)) {
-	  double currentWidth = p.xaxis.maxp().x() - p.xaxis.minp().x();
-	  double newWidth = currentWidth * scale/sc1;
-	  double shift = (currentWidth - newWidth)/2;
-	  p.xaxis.setPlacement(QPointF(p.xaxis.minp().x()+shift,0),
-			       QPointF(p.xaxis.maxp().x()-shift,0));
-	  f.markFudged();
-	}
-      }
+      scaleX(f, ids);
     } else {
       // Common overlap. Align all.
-      // Find union of extents
-      Range px(f.extent().left(), f.extent().right());
-      foreach (QString id, ids) {
-	Panel const &p(f.panelRef(id));
-	px.unionize(Range(p.desiredExtent.left(), p.desiredExtent.right()));
-      }
-      // Find min and max represented there
-      /* Note that I am assuming the axis has negative values on the left.
-	 I think I make that assumption throughout the program, probably
-	 to my ultimate detriment.
-      */      
-      double x0 = f.xAxis().rev(QPointF(px.min(), 0));
-      double x1 = f.xAxis().rev(QPointF(px.max(), 0));
-      foreach (QString id, ids) {
-	Panel const &p(f.panelRef(id));
-	double x0a = p.xaxis.rev(QPointF(px.min(), 0));
-	double x1a = p.xaxis.rev(QPointF(px.max(), 0));
-	if (x0a<x0)
-	  x0 = x0a;
-	if (x1a>x1)
-	  x1 = x1a;
-      }
-      /* Now I need to calculate the Placement that will ensure the
-	 appropriate mapping at the edges.
-	 I need: a*x0+b = px0   (1)
-	         a*x1+b = px1   (2)
-	 Solve for a and b.
-	 Then use these a and b to set the Placement PX0 and PX1 to
-	         PX0 = a*X0+b   (3)
-	         PX1 = a*X1+b   (4)
-	 where X0 and X1 are the min and max data coord of the Axis.
-	 Subtract (1) and (2):
-	         a = (px1-px0) / (x1-x0)
-	 Then:
-	         b = px0 - a*x0.
-      */
-      double a = (px.max()-px.min()) / (x1-x0);
-      double b = px.min() - a*x0;
-      // Should current panel be shrunk?
-      if (f.xAxis().map(x0).x()<px.min()-SHIFTTOLERANCE ||
-	  f.xAxis().map(x1).x()>px.max()+SHIFTTOLERANCE)  {
-	f.xAxis().setPlacement(QPointF(a*f.xAxis().min()+b, 0),
-			       QPointF(a*f.xAxis().max()+b, 0));
-      	f.markFudged();
-      }
-      // Now do the same for each of the panels
-      foreach (QString id, ids) {
-	Panel &p(f.panelRef(id));
-	if (p.xaxis.map(x0).x()<px.min()-SHIFTTOLERANCE ||
-	    p.xaxis.map(x1).x()>px.max()+SHIFTTOLERANCE)  {
-	  p.xaxis.setPlacement(QPointF(a*p.xaxis.min()+b, 0),
-			       QPointF(a*p.xaxis.max()+b, 0));
-	  f.markFudged();
-	}	  
-      }
+      alignX(f, ids);
     }
   }
-
-
-  
 
   if (shareY) {
     // Let's find out if we have paper overlap
@@ -240,97 +153,194 @@ void CmdShareLim::render(Statement const &s, Figure &f, bool) {
     }
     if (py.range()<MINOVERLAP) {
       // No common overlap. Revert to scaling only.
-      // Get the scale
-      double scale = fabs(f.yAxis().maprel(1).y());
-      foreach (QString id, ids) {
-	Panel const &p(f.panelRef(id));
-	double sc1 = fabs(p.yaxis.maprel(1).y());
-	if (sc1<scale)
-	  scale = sc1;
-      }
-      
-      // Apply the scale to current panel
-      double sc1 = fabs(f.yAxis().maprel(1).y());
-      if (sc1>scale*(1+SCALETOLERANCE)) {
-	// Let's actually shrink
-	double currentHeight = f.yAxis().minp().y() - f.yAxis().maxp().y();
-	double newHeight = currentHeight * scale/sc1;
-	double shift = (currentHeight - newHeight)/2;
-	f.yAxis().setPlacement(QPointF(0, f.yAxis().minp().y()-shift),
-			       QPointF(0, f.yAxis().maxp().y()+shift));
-	f.markFudged();
-      }
-      // Apply the scale to other panels
-      foreach (QString id, ids) {
-	Panel &p(f.panelRef(id));
-	double sc1 = fabs(p.yaxis.maprel(1).y());
-	if (sc1>scale*(1+SCALETOLERANCE)) {
-	  double currentHeight = p.yaxis.minp().y() - p.yaxis.maxp().y();
-	  double newHeight = currentHeight * scale/sc1;
-	  double shift = (currentHeight - newHeight)/2;
-	  p.yaxis.setPlacement(QPointF(0, p.yaxis.minp().y()-shift),
-			       QPointF(0, p.yaxis.maxp().y()+shift));
-	  f.markFudged();
-	}
-      }
+      scaleY(f, ids);
     } else {
       // Common overlap. Align all.
-      // Find union of extents
-      Range py(f.extent().top(), f.extent().bottom());
-      foreach (QString id, ids) {
-	Panel const &p(f.panelRef(id));
-	py.unionize(Range(p.desiredExtent.top(), p.desiredExtent.bottom()));
-      }
-      // Find min and max represented there
-      /* Note that I am assuming the axis has negative values on the bottom.
-	 I think I make that assumption throughout the program, probably
-	 to my ultimate detriment.
-      */      
-      double y0 = f.yAxis().rev(QPointF(0, py.max()));
-      double y1 = f.yAxis().rev(QPointF(0, py.min()));
-      foreach (QString id, ids) {
-	Panel const &p(f.panelRef(id));
-	double y0a = p.yaxis.rev(QPointF(0, py.max()));
-	double y1a = p.yaxis.rev(QPointF(0, py.min()));
-	if (y0a<y0)
-	  y0 = y0a;
-	if (y1a>y1)
-	  y1 = y1a;
-      }
-      /* Now I need to calculate the Placement that will ensure the
-	 appropriate mapping at the edges.
-	 I need: a*y0+b = py0   (1)
-	         a*y1+b = py1   (2)
-	 Solve for a and b.
-	 Then use these a and b to set the Placement PY0 and PY1 to
-	         PY0 = a*Y0+b   (3)
-	         PY1 = a*Y1+b   (4)
-	 where Y0 and Y1 are the min and max data coord of the Axis.
-	 Subtract (1) and (2):
-	         a = (py1-py0) / (y1-y0)
-	 Then:
-	         b = py0 - a*y0.
-      */
-      double a = (py.min()-py.max()) / (y1-y0);
-      double b = py.max() - a*y0;
-      // Should current panel be shrunk?
-      if (f.yAxis().map(y1).y()<py.min()-SHIFTTOLERANCE ||
-	  f.yAxis().map(y0).y()>py.max()+SHIFTTOLERANCE) {
-	f.yAxis().setPlacement(QPointF(0, a*f.yAxis().min()+b),
-			       QPointF(0, a*f.yAxis().max()+b));
-	f.markFudged();
-      }	
-      
-      // Now do the same for each of the panels
-      foreach (QString id, ids) {
-	Panel &p(f.panelRef(id));
-	if (p.yaxis.map(y1).y()<py.min()-SHIFTTOLERANCE ||
-	    p.yaxis.map(y0).y()>py.max()+SHIFTTOLERANCE) {
-	  p.yaxis.setPlacement(QPointF(0, a*p.yaxis.min()+b),
-			       QPointF(0, a*p.yaxis.max()+b));
-	  f.markFudged();
-	}	
-      }
+      alignY(f, ids);
     }
   }
+}
+
+void CmdShareLim::scaleX(Figure &f, QSet<QString> ids) {
+  // Get the scale
+  qDebug() << "scalex";
+  double scale = f.xAxis().maprel(1).x();
+  // int N = 1;
+  foreach (QString id, ids) {
+    Panel const &p(f.panelRef(id));
+    double sc1 = p.xaxis.maprel(1).x();
+    if (sc1<scale)
+      scale = sc1;
+    // scale *= sc1;
+    // N += 1;
+  }
+  //  scale = pow(scale, 1.0/N);
+
+  auto applyScale = [scale, &f](Axis &axis) {
+    double sc1 = axis.maprel(1).x();
+    if (sc1>scale*(1+SCALETOLERANCE)) { // || sc1<scale*(1-SCALETOLERANCE)) {
+      // Let's actually shrink
+      double currentWidth = axis.maxp().x() - axis.minp().x();
+      double newWidth = currentWidth * scale/sc1;
+      double shift = (currentWidth - newWidth)/2;
+      qDebug() << "apply" << scale << sc1/scale << " . " << axis.minp().x() << axis.maxp().x() << shift;
+      axis.setPlacement(QPointF(axis.minp().x() + shift, 0),
+                        QPointF(axis.maxp().x() - shift, 0));
+      f.markFudged();
+    } else {
+      qDebug() << "done" << scale << " . " << axis.minp().x() << axis.maxp().x();
+    }
+  };
+  
+  // Apply the scale to current panel
+  applyScale(f.xAxis());
+  
+  // Apply the scale to other panels
+  foreach (QString id, ids) 
+    applyScale(f.panelRef(id).xaxis);
+
+}
+
+void CmdShareLim::alignX(Figure &f, QSet<QString> ids) {
+  // Find union of extents
+  Range px(f.extent().left(), f.extent().right());
+  foreach (QString id, ids) {
+    Panel const &p(f.panelRef(id));
+    px.unionize(Range(p.desiredExtent.left(), p.desiredExtent.right()));
+  }
+  // Find min and max represented there
+  /* Note that I am assuming the axis has negative values on the left.
+     I think I make that assumption throughout the program, probably
+     to my ultimate detriment.
+  */      
+  double x0 = f.xAxis().rev(QPointF(px.min(), 0));
+  double x1 = f.xAxis().rev(QPointF(px.max(), 0));
+  foreach (QString id, ids) {
+    Panel const &p(f.panelRef(id));
+    double x0a = p.xaxis.rev(QPointF(px.min(), 0));
+    double x1a = p.xaxis.rev(QPointF(px.max(), 0));
+    if (x0a<x0)
+      x0 = x0a;
+    if (x1a>x1)
+      x1 = x1a;
+  }
+  /* Now I need to calculate the Placement that will ensure the
+     appropriate mapping at the edges.
+     I need: a*x0+b = px0   (1)
+     a*x1+b = px1   (2)
+     Solve for a and b.
+     Then use these a and b to set the Placement PX0 and PX1 to
+     PX0 = a*X0+b   (3)
+     PX1 = a*X1+b   (4)
+     where X0 and X1 are the min and max data coord of the Axis.
+     Subtract (1) and (2):
+     a = (px1-px0) / (x1-x0)
+     Then:
+     b = px0 - a*x0.
+  */
+  double a = (px.max()-px.min()) / (x1-x0);
+  double b = px.min() - a*x0;
+
+  auto applyPlacement = [px, x0, x1, a, b, &f](Axis &axis) {
+    if (axis.map(x0).x()<px.min()-SHIFTTOLERANCE ||
+        axis.map(x1).x()>px.max()+SHIFTTOLERANCE)  {
+      axis.setPlacement(QPointF(a*axis.min()+b, 0),
+                     QPointF(a*axis.max()+b, 0));
+      f.markFudged();
+    }
+  };
+
+  applyPlacement(f.xAxis());
+  // Now do the same for each of the panels
+  foreach (QString id, ids) 
+    applyPlacement(f.panelRef(id).xaxis);
+}
+
+void CmdShareLim::scaleY(Figure &f, QSet<QString> ids) {
+  // Get the scale
+  double scale = fabs(f.yAxis().maprel(1).y());
+  foreach (QString id, ids) {
+    Panel const &p(f.panelRef(id));
+    double sc1 = fabs(p.yaxis.maprel(1).y());
+    if (sc1<scale)
+      scale = sc1;
+  }
+
+  auto applyScale = [scale, &f](Axis &axis) {
+    double sc1 = fabs(axis.maprel(1).y());
+    if (sc1>scale*(1+SCALETOLERANCE)) {
+      // Let's actually shrink
+      double currentHeight = axis.minp().y() - axis.maxp().y();
+      double newHeight = currentHeight * scale/sc1;
+      double shift = (currentHeight - newHeight)/2;
+      axis.setPlacement(QPointF(0, axis.minp().y()-shift),
+                             QPointF(0, axis.maxp().y()+shift));
+      f.markFudged();
+    }
+  };
+
+  
+  // Apply the scale to current panel
+  applyScale(f.yAxis());
+
+  // Apply the scale to other panels
+  foreach (QString id, ids) 
+    applyScale(f.panelRef(id).yaxis);
+}
+
+void CmdShareLim::alignY(Figure &f, QSet<QString> ids) {
+  // Find union of extents
+  Range py(f.extent().top(), f.extent().bottom());
+  foreach (QString id, ids) {
+    Panel const &p(f.panelRef(id));
+    py.unionize(Range(p.desiredExtent.top(), p.desiredExtent.bottom()));
+  }
+  // Find min and max represented there
+  /* Note that I am assuming the axis has negative values on the bottom.
+     I think I make that assumption throughout the program, probably
+     to my ultimate detriment.
+  */      
+  double y0 = f.yAxis().rev(QPointF(0, py.max()));
+  double y1 = f.yAxis().rev(QPointF(0, py.min()));
+  foreach (QString id, ids) {
+    Panel const &p(f.panelRef(id));
+    double y0a = p.yaxis.rev(QPointF(0, py.max()));
+    double y1a = p.yaxis.rev(QPointF(0, py.min()));
+    if (y0a<y0)
+      y0 = y0a;
+    if (y1a>y1)
+      y1 = y1a;
+  }
+  /* Now I need to calculate the Placement that will ensure the
+     appropriate mapping at the edges.
+     I need: a*y0+b = py0   (1)
+     a*y1+b = py1   (2)
+     Solve for a and b.
+     Then use these a and b to set the Placement PY0 and PY1 to
+     PY0 = a*Y0+b   (3)
+     PY1 = a*Y1+b   (4)
+     where Y0 and Y1 are the min and max data coord of the Axis.
+     Subtract (1) and (2):
+     a = (py1-py0) / (y1-y0)
+     Then:
+     b = py0 - a*y0.
+  */
+  double a = (py.min()-py.max()) / (y1-y0);
+  double b = py.max() - a*y0;
+
+  auto applyPlacement = [py, y0, y1, a, b, &f](Axis &axis) {
+    if (axis.map(y1).y()<py.min()-SHIFTTOLERANCE ||
+        axis.map(y0).y()>py.max()+SHIFTTOLERANCE) {
+      axis.setPlacement(QPointF(0, a*axis.min()+b),
+                        QPointF(0, a*axis.max()+b));
+      f.markFudged();
+    }
+  };
+   
+  // Should current panel be shrunk?
+  applyPlacement(f.yAxis());
+   
+  // Now do the same for each of the panels
+  foreach (QString id, ids) 
+    applyPlacement(f.panelRef(id).yaxis);
 }

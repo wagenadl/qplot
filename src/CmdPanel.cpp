@@ -20,7 +20,7 @@
 // CmdPanel.C
 
 #include "CmdPanel.h"
-
+#include <QDebug>
 
 static CBuilder<CmdPanel> cbPanel("panel");
 
@@ -59,6 +59,7 @@ void CmdPanel::render(Statement const &s, Figure &f, bool dryrun) {
       f.painter().drawRect(area);
   }
   f.choosePanel(s[1].str);
+  qDebug() << "panel" << s[1].str << f.extent() << area;
   if (s.length()==6)
     f.setExtent(area);
 }
