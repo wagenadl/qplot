@@ -62,6 +62,7 @@ void CmdShrink::render(Statement const &s, Figure &f, bool) {
   QPointF x1 = f.xAxis().maxp();
   QPointF y0 = f.yAxis().minp();
   QPointF y1 = f.yAxis().maxp();
+  //  qDebug() << "shrink" << x0 << x1 << actual << desired;
 
   double olddx = x1.x()-x0.x();
   double olddy = y1.y()-y0.y();
@@ -80,7 +81,7 @@ void CmdShrink::render(Statement const &s, Figure &f, bool) {
 
   if (newdx*olddx<0 || newdy*olddy<0) {
     f.markFudged();
-    //    qDebug() << "Shrink at " << s.label() << " did work";
+    // qDebug() << "Shrink at " << s.label() << " did work";
     return;
   }
 
@@ -108,7 +109,7 @@ void CmdShrink::render(Statement const &s, Figure &f, bool) {
     f.xAxis().setPlacement(x0, x1);
     f.yAxis().setPlacement(y0, y1);
     f.markFudged();
-    //qDebug() << "Shrink at " << s.label() << " did work";
+    // qDebug() << "Shrink at " << s.label() << " did work " << x0 << ":" << x1 << " / " << y0 << ":" << y1;
   }
 }
 
