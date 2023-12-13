@@ -129,43 +129,71 @@ def endgroup():
     qi.ensure()
     qi.f.write('endgroup\n')
 
-def panel(id, rect=None):
+
+def _autoid():
+    for k in range(26):
+        id = '%c' % (65 + k)
+        if id not in qi.f.panels:
+            return id
+    for k in range(26):
+        for l in range(26):
+            id = '%c%c' % (65 + k, 65 + l)
+            if id not in qi.f.panels:
+                return id
+    qi.error('Too many panels')
+    
+    
+
+def panel(id=None, rect=None):
     '''PANEL - Define a new subpanel or reenter a previous one
-    PANEL(id, (x, y, w, h)) defines a new panel. (X, Y, W, H) are 
-    specified in points. (X, Y) are measured from top left.
+    PANEL(id, (x, y, w, h)) defines a new panel. 
+    Either absolute or relative coordinates may be used:
+    Absolute means (X, Y, W, H) are specified in points (1/72th of an inch).
+    Relative means (X, Y, W, H) are specified relative to figure size.
+    Coordinates are understood to be relative if all are ≤ 1.
+    In either case (X, Y) are measured from top left.
     PANEL(id) revisits a previously defined panel. ID must be a single
     capital or None to revert to the top level.
-    See also SUBPLOT and RELPANEL.'''
+    If ID is None but a rectangle is specified, a new ID is automatically
+    assigned and returned.
+    See also SUBPLOT.'''
     qi.ensure()
     qi.f.panel = id
     qi.f.datarange = None
-        
+    retid = False
+    
     out = ['panel']
     if id is None:
-        out.append('-')
-    else:
-        out.append(id)
+        if rect is None:
+            id = '-'
+        else:
+            id = _autoid()
+            retid = True
+    out.append(id)
     if rect is not None:
-        if id is None:
-            qi.error('Cannot specify panel extent for root panel.')
-        for k in range(4):
-            out.append('%g' % rect[k])
-        if id is not None:
+        isrel = all([dim<1.001 for dim in rect])
+        x,y,w,h = rect
+        if isrel:
+            W = qi.f.extent[2]
+            H = qi.f.extent[3]
+            x *= W
+            y *= H
+            w *= W
+            h *= H
+        out.append(f"{x} {y} {w} {h}")            
+        if id != '-':
             qi.f.panels[id] = rect
-
+    print(out)
     qi.f.write(out)
+    if retid:
+        return id
 
+    
 def relpanel(id, rect):
     '''RELPANEL - Define  a new subpanel
-    PANELSUB(id, (x, y, w, h)) defines a new panel. (X, Y, W, H) are 
-    specified as a fraction of the figure width and height.
-    ID must be a single capital.
-    See also SUBPLOT and PANEL.'''
-    qi.ensure()
-    panel(id, (rect[0]*qi.f.extent[2],
-               rect[1]*qi.f.extent[3],
-               rect[2]*qi.f.extent[2],
-               rect[3]*qi.f.extent[3]))
+    Now an alias for PANEL, which see.'''
+    panel(id, rect)
+    
 
 def subplot(rows, cols, r=None, c=None):
     '''SUBPLOT - Define a new subpanel in Matlab/Octave style
@@ -178,14 +206,14 @@ def subplot(rows, cols, r=None, c=None):
     if c is None:
         idx = r
         if idx<0 or idx>=rows*cols:
-            raise Exception("Subplot index out of range")
+            qp.error("Subplot index out of range")
         x = w * (idx % cols)
         y = h * (idx // cols)
     else:
         if c<0 or c>=cols:
-            raise Exception("Subplot column out of range")
+            qi.error("Subplot column out of range")
         if r<0 or r>=rows:
-            raise Exception("Subplot row out of range")
+            qi.error("Subplot row out of range")
         x = c*w
         y = r*h
     qi.ensure()
