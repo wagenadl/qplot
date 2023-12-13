@@ -132,14 +132,18 @@ def darrow(x, y, phi=None, along=None, l=8, w=5, dist=0, dimple=0):
         at(x, y)
     arrow(l, w, dl=dist, dimple=dimple)
     
-def at(x=None, y=None, phi=None, along=None, id=None, notransform=False):
+def at(x=None, y=None, phi=None, deg=None, rad=None,
+       along=None, id=None, notransform=False):
     '''AT - Specify location for future text
     AT(x, y) specifies that future text will be placed at data location (x,y)
     Optional arguments:
-      PHI - specifies that the text will be rotated by phi radians.
+      DEG - text will be rotated counterclockwise by DEG degrees.
+      RAD - text will be rotated counterclockwise by RAD radians.
+      PHI - specifies that the text will be rotated clockwise by phi radians
+            (deprecated).
       ALONG - must be a tuple (dx,dy), meaning that the text will be
             rotated s.t. the baseline points in the data direction (dx,dy).
-      ID - coordinates are specified relative to a subplot
+      ID - coordinates are specified relative to a subplot.
     X may also be one of 'left,' 'right,' 'center,' 'abs,' 'absolute.'
     Y may also be one of 'top,' 'bottom,' 'middle,' 'abs,' 'absolute.'
     If X and/or Y is omitted, placements reverts to absolute in those
@@ -174,6 +178,10 @@ def at(x=None, y=None, phi=None, along=None, id=None, notransform=False):
         qi.f.aty = y
     if phi is not None:
         cmd.append('%g' % qi.to_radians(phi))
+    elif deg is not None:
+        cmd.append('%g' % (-np.pi*deg/180))
+    elif rad is not None:
+        cmd.append('%g' % (-rad))
     elif along is not None:
         cmd.append('%g %g' % (along[0], along[1]))
     if id is not None:
