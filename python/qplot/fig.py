@@ -167,27 +167,31 @@ def relpanel(id, rect):
                rect[2]*qi.f.extent[2],
                rect[3]*qi.f.extent[3]))
 
-def subplot(rows, cols, idx):
+def subplot(rows, cols, r=None, c=None):
     '''SUBPLOT - Define a new subpanel in Matlab/Octave style
     SUBPLOT(rows, cols, idx) defines a new subpanel in Matlab/Octave style.
-    id = SUBPLOT(...) returns the ID of the subpanel, for use with PANEL.
-    Note that idx counts from 0, unlike in Matlab/Octave'''
+    Note that idx counts from 0, unlike in Matlab/Octave.
+    SUBPLOT(rows, cols, r, c) specifies row and column.
+    id = SUBPLOT(...) returns the ID of the subpanel, for use with PANEL.'''
     h = 1./rows
     w = 1./cols
-    x = w * (idx % cols)
-    y = h * (idx // cols)
-    #print(x,y,w,h)
+    if c is None:
+        idx = r
+        if idx<0 or idx>=rows*cols:
+            raise Exception("Subplot index out of range")
+        x = w * (idx % cols)
+        y = h * (idx // cols)
+    else:
+        if c<0 or c>=cols:
+            raise Exception("Subplot column out of range")
+        if r<0 or r>=rows:
+            raise Exception("Subplot row out of range")
+        x = c*w
+        y = r*h
     qi.ensure()
-    for k in range(26):
-        id = '%c' % (65 + k)
-        if id not in qi.f.panels:
-            # Gotcha
-            style.pen('none')
-            style.brush('none')
-            relpanel(id, (x,y,w,h))
-            style.pen('k')
-            return id
-    qi.error('Too many panels')
+    id = '%c%c' % (65+r, 65+c)
+    relpanel(id, (x,y,w,h))
+    return id
     
 def save(ofn=None, reso=300, qual=95):
     '''SAVE - Saves a qplot figure
