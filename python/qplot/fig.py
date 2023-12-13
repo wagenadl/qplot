@@ -12,7 +12,8 @@
 # relpanel
 # save
 # select
-# sharelim
+# alignaxes
+# commonscale
 # shrink
 # group
 # subplot
@@ -260,25 +261,49 @@ def shrink(margin=1, ratio=None):
         out.append('%g' % ratio)
     qi.f.write(out)
 
-def sharelim(axes='all', ids=[]):
-    '''SHARELIM - Share axis limits between QPlot panels
-    SHARELIM(ids) shares x and y-axis limits with the other named panels.
-    SHARELIM('x', ids) only shares x-axis limits.
-    SHARELIM('y', ids) only shares y-axis limits.
+def commonscale(axes='xy', ids=[]):
+    '''COMMONSCALE - Share axis scale between QPlot panels
+    COMMONSCALE(ids) shares x and y-axis scales between the named panels.
+    COMMONSCALE('x', ids) only shares x-axis scale.
+    COMMONSCALE('y', ids) only shares y-axis scale.
     IDS must be a list of single-letter panel IDs or a string.'''
     if type(ids)==str:
         ids = [id for id in ids]
-    out = ['sharelim']
+    out = ['commonscale']
     if axes=='x':
         out.append('x')
     elif axes=='y':
         out.append('y')
-    elif axes!='all':
+    elif axes!='xy':
         qi.error('Bad axes specification')
     out += ids
     qi.ensure()
     qi.f.write(out)
 
+
+def alignaxes(ids=[]):
+    '''ALIGNAXES - Share axis limits between QPlot panels
+    ALIGNAXES(ids) shares x or y-axis limits between the named panels.
+    IDS must be a list of single-letter panel IDs or a string.'''
+    if type(ids)==str:
+        ids = [id for id in ids]
+    out = ['alignaxes']
+    out += ids
+    qi.ensure()
+    qi.f.write(out)
+
+
+def rebalance(ids=[]):
+    '''REBALANCE - Rebalance space between QPlot panels to achieve common scale
+    REBALANCE(ids), where IDS is a list of named panels, rebalances horizontal
+    space between the panels if they form a row, or vertical space if they
+    form a column.'''
+    out = ['rebalance']
+    out += ids
+    qi.ensure()
+    qi.f.write(out)
+    
+    
 def current():
     '''CURRENT - Filename of current figure
     fn = CURRENT() returns the filename of the current figure or None
