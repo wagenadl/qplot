@@ -153,6 +153,17 @@ int Statement::read(Reader &source, QString label) {
   return nlines;
 }
 
+static bool iscapital(QString w) {
+  if (w.isEmpty())
+    return false;
+  if (w.size()>2)
+    return false;
+  for (QChar const &c: w) 
+    if (c<'A' || c>'Z')
+      return false;
+  return true;
+}
+
 void Statement::process(QString w) {
   if (inString) {
     int idx = w.indexOf(strDelim);
@@ -200,7 +211,7 @@ void Statement::process(QString w) {
       t.str = w.mid(1);
       dataRefs.push_back(QPair<int, QString>(toks.size(), w.mid(1)));
       toks.append(t);
-    } else if (w.size()==1 && w>="A" && w<="Z") {
+    } else if (iscapital(w)) {
       toks.append(Token(Token::CAPITAL, w));
     } else if (w.isEmpty()) {
       // ignore empty tokens
