@@ -25,11 +25,14 @@
 #include <math.h>
 #include "Error.h"
 #include "Range.h"
+#include "DimExtractor.h"
 
 static CBuilder<CmdRebalance> cbRebalance("rebalance");
 
-#define SCALETOLERANCE 2e-3
-#define MINOVERLAP 5
+constexpr double SCALETOLERANCE = 2e-3;
+constexpr double SPACETOLERANCE = 1; // pt
+
+constexpr double MINOVERLAP = 5; // pt
 
 bool CmdRebalance::usage() {
   return error("Usage: rebalance ID ...\n");
@@ -98,74 +101,94 @@ void CmdRebalance::render(Statement const &s, Figure &f, bool) {
   }
 
   if (py.range() > MINOVERLAP) {
-    QList<QRectF> rects = scaleX(f, ids[0]);
-    if (!rects.isEmpty()) 
+    QList<Range> ranges = scale(f, ids[0], DimExtractor::x());
+    if (!ranges.isEmpty()) 
       for (int k=1; k<ids.size(); ++k)
-        propagateX(f, ids[k], rects);
+        propagate(f, ids[k], ranges, DimExtractor::x());
   }
 
   if (px.range() > MINOVERLAP) {
-    QList<QRectF> rects = scaleY(f, ids[0]);
-    if (!rects.isEmpty()) 
+    QList<Range> ranges = scale(f, ids[0], DimExtractor::y());
+    if (!ranges.isEmpty()) 
       for (int k=1; k<ids.size(); ++k)
-        propagateY(f, ids[k], rects);
+        propagate(f, ids[k], ranges, DimExtractor::y());
   }
 }
 
-QList<QRectF> CmdRebalance::scaleX(Figure &f, QStringList ids) {
-  qDebug() << "rebalance x" << ids;
-  // Estimate the common scale
-  double scale = 1; // will be overwritten
-  int N = 0;
+QList<Range> CmdRebalance::scale(Figure &f, QStringList ids,
+                                 DimExtractor const &de) {
+  qDebug() << "rebalance" << ids;
+
+  // Get space available
   QRectF fullextent;
   for (QString id: ids) {
     Panel const &p(f.panelRef(id));
-    scale *= fabs(p.xaxis.maprel(1).x());
-    if (N==0)
+    if (fullextent.isEmpty())
       fullextent = p.desiredExtent;
     else
       fullextent |= p.desiredExtent;
-    N += 1;
   }
-  scale = pow(scale, 1.0/N);
+  
+  // Estimate space needs
+  QMap<QString, double> nondatause; // paper coords
+  QMap<QString, double> datarange;
+  QMap<QString, double> oldwidth;
+  for (QString id: ids) {
+    Panel const &p(f.panelRef(id));
+    Axis const &axis(de.axis(p));
+    Range fullbb(de.rectRange(p.fullbbox));
+    Range desibb(de.rectRange(p.desiredExtent));
+    oldwidth[id] = desibb.range();
+    Range databb(de.axisPRange(axis));
+    double prespace = databb.min() - fullbb.min();
+    double postspace = fullbb.max() - databb.max();
+    nondatause[id] = prespace + postspace;
+    datarange[id] = fabs(axis.max() - axis.min());
+  }
+  double totalnondatause = 0;
+  for (double dx: nondatause)
+    totalnondatause += dx;
+  double totaldatarange = 0;
+  for (double dx: datarange)
+    totaldatarange += dx;
 
-  double fullwidth = fullextent.width();
+  double fullwidth = de.rectRange(fullextent).range();
+  double scale = (fullwidth - totalnondatause) / totaldatarange;
   qDebug() << "  scale" << scale << "full" << fullwidth;
   
   // Figure out new proposal for sharing space
   bool trivial = true;
-  double proposedwidth = 0;
+  QMap<QString, double> propwidth;
   for (QString id: ids) {
     Panel const &panel(f.panelRef(id));
     Axis const &axis(panel.xaxis);
-    double sc1 = fabs(axis.maprel(1).x());
-    if (sc1 > scale*(1+SCALETOLERANCE) || sc1 < scale*(1-SCALETOLERANCE))
+    double desired = nondatause[id] + datarange[id] * scale;
+    propwidth[id] = desired;
+    qDebug() << "  " << id << nondatause[id] << datarange[id] << oldwidth[id] << propwidth[id];
+    if (fabs(desired - oldwidth[id]) > SPACETOLERANCE)
       trivial = false;
-    double desired = (scale/sc1) * panel.desiredExtent.width();
-    qDebug() << "  " << id << sc1 << desired << panel.desiredExtent.width();
-    proposedwidth += desired;
   }
   if (trivial)
-    return QList<QRectF>();
+    return QList<Range>();
 
   // Apply the scale to all panels
-  QList<QRectF> rects;
-  double x0 = fullextent.left();
+  QList<Range> ranges;
+  double x0 = de.rectMin(fullextent);
   for (QString id: ids) {
     Panel const &panel(f.panelRef(id));
-    Axis const &axis(panel.xaxis);
-    double sc1 = fabs(axis.maprel(1).x());
-    double desired = (scale/sc1) * panel.desiredExtent.width();
-    QRectF ext(x0, fullextent.top(), desired, fullextent.height());
-    rects << ext;
+    double x1 = x0 + propwidth[id];
+    QRectF ext = de.rerect(fullextent, x0, x1);
+    ranges << Range(x0, x1);
     f.overridePanelExtent(id, ext);
-    x0 += desired;
+    x0 = x1;
   }
+  qDebug() << "  => " << fullextent << x0;
   f.markFudged();
-  return rects;
+  return ranges;
 }
 
-void CmdRebalance::propagateX(Figure &f, QStringList ids, QList<QRectF> src) {
+void CmdRebalance::propagate(Figure &f, QStringList ids, QList<Range> src,
+                             DimExtractor const &de) {
   QRectF fullextent;
   for (QString id: ids) {
     Panel const &p(f.panelRef(id));
@@ -177,85 +200,9 @@ void CmdRebalance::propagateX(Figure &f, QStringList ids, QList<QRectF> src) {
 
   for (int n=0; n<ids.size(); n++) {
     Panel const &panel(f.panelRef(ids[n]));
-    Axis const &axis(panel.xaxis);
-    QRectF r = src[n];
-    QRectF ext = QRectF(r.left(), fullextent.top(),
-                        r.width(), fullextent.height());
+    Axis const &axis(de.axis(panel));
+    QRectF ext = de.rerect(fullextent, src[n].min(), src[n].max());
     f.overridePanelExtent(ids[n], ext);
   }  
 }
 
-
-QList<QRectF> CmdRebalance::scaleY(Figure &f, QStringList ids) {
-  qDebug() << "rebalance y" << ids;
-  // Estimate the common scale
-  double scale = 1; // will be overwritten
-  int N = 0;
-  QRectF fullextent;
-  for (QString id: ids) {
-    Panel const &p(f.panelRef(id));
-    scale *= fabs(p.yaxis.maprel(1).y());
-    if (N==0)
-      fullextent = p.desiredExtent;
-    else
-      fullextent |= p.desiredExtent;
-    N += 1;
-  }
-  scale = pow(scale, 1.0/N);
-
-  double fullheight = fullextent.height();
-  qDebug() << "  scale" << scale << "full" << fullheight;
-  
-  // Figure out new proposal for sharing space
-  bool trivial = true;
-  double proposedheight = 0;
-  for (QString id: ids) {
-    Panel const &panel(f.panelRef(id));
-    Axis const &axis(panel.yaxis);
-    double sc1 = fabs(axis.maprel(1).y());
-    if (sc1 > scale*(1+SCALETOLERANCE) || sc1 < scale*(1-SCALETOLERANCE))
-      trivial = false;
-    double desired = (scale/sc1) * panel.desiredExtent.height();
-    qDebug() << "  " << id << sc1 << desired << panel.desiredExtent.height();
-    proposedheight += desired;
-  }
-  if (trivial)
-    return QList<QRectF>();
-
-  // Apply the scale to all panels
-  QList<QRectF> rects;
-  double y0 = fullextent.top();
-  for (QString id: ids) {
-    Panel const &panel(f.panelRef(id));
-    Axis const &axis(panel.yaxis);
-    double sc1 = fabs(axis.maprel(1).y());
-    double desired = (scale/sc1) * panel.desiredExtent.height();
-    QRectF ext(fullextent.left(), y0, fullextent.width(), desired);
-    rects << ext;
-    f.overridePanelExtent(id, ext);
-    y0 += desired;
-  }
-  f.markFudged();
-  return rects;
-}
-
-
-void CmdRebalance::propagateY(Figure &f, QStringList ids, QList<QRectF> src) {
-  QRectF fullextent;
-  for (QString id: ids) {
-    Panel const &p(f.panelRef(id));
-    if (fullextent.isEmpty())
-      fullextent = p.desiredExtent;
-    else
-      fullextent |= p.desiredExtent;
-  }
-
-  for (int n=0; n<ids.size(); n++) {
-    Panel const &panel(f.panelRef(ids[n]));
-    Axis const &axis(panel.xaxis);
-    QRectF r = src[n];
-    QRectF ext = QRectF(fullextent.left(), r.top(),
-                        fullextent.width(), r.height());
-    f.overridePanelExtent(ids[n], ext);
-  }  
-}

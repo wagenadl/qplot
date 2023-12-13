@@ -57,6 +57,6 @@ void CmdPanel::render(Statement const &s, Figure &f, bool dryrun) {
               pt2iu(s[4].num), pt2iu(s[5].num));
   //if (!dryrun)
   //  f.painter().drawRect(area);
-  qDebug() << "panel" << s[1].str << f.extent() << area;
+  // qDebug() << "panel" << s[1].str << f.extent() << area;
   f.setExtent(area);
 }

@@ -36,20 +36,32 @@ void Renderer::prerender(int upto) {
     }
   }
 
-  int iter = 0;
-  while (iter<maxtries) {
-    prog.render(fig, true, upto); // renderer to determine paper bbox & fudge
-    if (fig.checkFudged()) {
-      qDebug() << "will reiterate";
+  QMap<int, int> itercount; // organize by line number
+  bool fail = false;
+  while (true) {
+    int line = prog.render(fig, true, upto);
+    // renderer to determine paper bbox & fudge
+    if (fig.checkFudgeFailure()) {
+      fail = true;
+      break;
+    } else if (fig.checkFudged()) {
+      for (auto it=itercount.begin(); it!=itercount.end(); ++it)
+        if (it.key()<line)
+          it.value() = 0;
+      itercount[line] += 1;
+      if (itercount[line] > maxtries) {
+        fail = true;
+        break;
+      }
     } else {
-      qDebug() << "won't reiterate";
       break;
     }
-    iter++;
   } 
 
-  if (iter>=maxtries)
-    Error() << QString("\"Shrink\" failed, even after %1 iterations.").arg(iter);
+  qDebug() << "Iterations" << itercount;
+
+  if (fail) 
+    Error() << QString("\"Shrink\" failed");
 
   fig.painter().end();
 }
@@ -219,6 +231,7 @@ bool Renderer::save(QString ofn, int upto) {
 
 
 void Renderer::setMaxTries(int n) {
+  qDebug() << "setmaxtries" << n;
   maxtries = n;
 }
 

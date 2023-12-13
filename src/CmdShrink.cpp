@@ -50,44 +50,44 @@ void CmdShrink::render(Statement const &s, Figure &f, bool) {
     mrg = pt2iu(s[1].num);
   bool hasRatio = s.length()>=3;
   double ratio = hasRatio ? s[2].num : 1;
-  QRectF actual = f.fullBBox();
-  QRectF desired = f.extent();
+  QRectF actual = f.fullBBox(); // paper coords of our panel at present
+  QRectF desired = f.extent(); // desired paper coords of our panel
 
   double dleft = actual.left() - desired.left(); // +ve means it's OK
   double dright = desired.right() - actual.right();
   double dtop =  actual.top() - desired.top();
   double dbottom = desired.bottom() - actual.bottom();
 
-  QPointF x0 = f.xAxis().minp();
+  QPointF x0 = f.xAxis().minp(); // paper coords of data range
   QPointF x1 = f.xAxis().maxp();
   QPointF y0 = f.yAxis().minp();
   QPointF y1 = f.yAxis().maxp();
   //  qDebug() << "shrink" << x0 << x1 << actual << desired;
 
-  double olddx = x1.x()-x0.x();
-  double olddy = y1.y()-y0.y();
+  double olddx = x1.x() - x0.x(); // paper width of data area
+  double olddy = y1.y() - y0.y(); // paper height of data area
   
   if (dleft<mrg)
-    x0 += QPointF(2*mrg-dleft, 0);
+    x0 += QPointF(2*mrg - dleft, 0);
   if (dright<mrg)
-    x1 -= QPointF(2*mrg-dright, 0);
+    x1 -= QPointF(2*mrg - dright, 0);
   if (dtop<mrg)
-    y1 += QPointF(0, 2*mrg-dtop);
+    y1 += QPointF(0, 2*mrg - dtop);
   if (dbottom<mrg)
-    y0 -= QPointF(0, 2*mrg-dbottom);
+    y0 -= QPointF(0, 2*mrg - dbottom);
 
-  double newdx = x1.x()-x0.x();
-  double newdy = y1.y()-y0.y();
+  double newdx = x1.x() - x0.x();
+  double newdy = y1.y() - y0.y();
 
   if (newdx*olddx<0 || newdy*olddy<0) {
-    f.markFudged();
-    // qDebug() << "Shrink at " << s.label() << " did work";
+    // failure
+    f.markFudgeFailure();
     return;
   }
 
   if (hasRatio) {
-    double dpx = fabs(x1.x() - x0.x());
-    double dpy = fabs(y1.y() - y0.y());
+    double dpx = fabs(newdx);
+    double dpy = fabs(newdy);
     double xrat = fabs(dpx / (f.xAxis().max() - f.xAxis().min()));
     double yrat = fabs(dpy / (f.yAxis().max() - f.yAxis().min()));
     double myrat = yrat/xrat;

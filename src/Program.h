@@ -45,7 +45,8 @@ public:
    *:N This ignores "panels", and will therefore work as expected only if
        there are none.
    */
-  void render(Figure &f, bool dryrun=false, int upto=-1);
+  int render(Figure &f, bool dryrun=false, int upto=-1);
+  // returns next line number
   Command const *command(int k) const; // 0 if not a save command
 private:
   bool parse(Statement const &s, int lineno); // true if ok. errors are reported through Error()

@@ -160,11 +160,11 @@ QRectF Program::dataRange(QString p, int upto) {
   return r;
 }
 
-void Program::render(Figure &f, bool dryrun, int upto) {
+int Program::render(Figure &f, bool dryrun, int upto) {
   f.reset();
 
   if (!isOK)
-    return; // won't render if not ok
+    return 0; // won't render if not ok
 
   if (upto<0) 
     upto = cmds.size();
@@ -174,11 +174,13 @@ void Program::render(Figure &f, bool dryrun, int upto) {
       cmds[l]->render(stmt[l], f, dryrun);
       if (dryrun && f.checkFudged()) {
 	f.endGroups();
-	break;
+        f.leavePanel();
+        return l;
       }
     }
   } 
 
   f.endGroups(); // this prevents panel change warning when file is incomplete
   f.leavePanel();
+  return upto;
 }
