@@ -1,4 +1,4 @@
-// CmdShareLim.H - This file is part of QPlot
+// CmdCommonScale.H - This file is part of QPlot
 
 /* QPlot - Publication quality 2D graphs with dual coordinate systems
    Copyright (C) 2014  Daniel Wagenaar
@@ -17,24 +17,24 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-// CmdShareLim.H
+// CmdCommonScale.H
 
-#ifndef CMDSHARELIM_H
+#ifndef CMDCOMMONSCALE_H
 
-#define CMDSHARELIM_H
+#define CMDCOMMONSCALE_H
 
 #include "Command.h"
 
-class CmdShareLim: public Command {
-  /*:C CmdShareLim
-   *:D "sharelim" reduces the placement of axes so that multiple panels
-       line up.
+class CmdCommonScale: public Command {
+  /*:C CmdCommonScale
+   *:D "commonscale" reduces the placement of axes so that multiple panels
+       have the same data scale.
    *:D Syntax:
-         sharelim ID...
-         sharelim x ID...
-         sharelim y ID...
-   *:D This links the current panel with the named panels in a symmetric
-       fashion.
+         commonscale ID...
+         commonscale xy ID...
+         commonscale x ID...
+         commonscale y ID...
+       The first two forms are equivalent.
    *:N This does not yet work for rotated axes, and it assumes that
        the y-axis runs up.
    */
@@ -44,9 +44,7 @@ public:
 private:
   bool usage();
   void scaleX(Figure &f, QSet<QString> ids);
-  void alignX(Figure &f, QSet<QString> ids);
   void scaleY(Figure &f, QSet<QString> ids);
-  void alignY(Figure &f, QSet<QString> ids);
   
 };
 
