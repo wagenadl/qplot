@@ -38,9 +38,9 @@ public:
   double max() const; // data coord
   QPointF minp() const; // paper coord (pt)
   QPointF maxp() const; // paper coord (pt)
-  QPointF map(double x) const;
+  QPointF map(double x) const; // map data coord to paper
   QPointF maprel(double dx) const;
-  double rev(QPointF p) const;
+  double rev(QPointF p) const; // map paper coord to data coord
 private:
   void recalc();
 private:

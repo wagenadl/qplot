@@ -101,7 +101,9 @@ public:
   void setLocation(QString id, QPointF const &xy);
   QPointF getLocation(QString id)  const;
   void markFudged();
+  void markFudgeFailure();
   bool checkFudged() const;
+  bool checkFudgeFailure() const;
   TextShiftAccum &textShiftAccum();
   void showBoundingBoxes(bool b=true);
   bool areBoundingBoxesShown() const { return showbboxes; }
@@ -130,6 +132,7 @@ private:
   double dashscale;
   QMap<QString, QPointF> locations;
   bool fudged;
+  bool fudgefailure;
   TextShiftAccum textshiftaccum;
   bool showbboxes;
 private:

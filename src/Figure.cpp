@@ -110,7 +110,7 @@ Align::VAlign Figure::vAlign() const {
 
 
 void Figure::setExtent(QRectF xywh_pt) {
-  qDebug() << "setextent" << xywh_pt << currentPanel << figextent;
+  //  qDebug() << "setextent" << xywh_pt << currentPanel << figextent;
   if (figextent==xywh_pt)
     return;
 
@@ -425,6 +425,15 @@ void Figure::markFudged() {
 
 bool Figure::checkFudged() const {
   return fudged;
+}
+
+void Figure::markFudgeFailure() {
+  fudged = true;
+  fudgefailure = true;
+}
+
+bool Figure::checkFudgeFailure() const {
+  return fudgefailure;
 }
 
 void Figure::showBoundingBoxes(bool b) {

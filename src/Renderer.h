@@ -27,7 +27,7 @@ public:
 private:
   Program prog;
   Figure fig;
-  int maxtries = 100;
+  int maxtries = 1000;
   double bitmapres = 300;
   int bitmapqual = 95;
   double overridewidth = 0;
