@@ -173,8 +173,8 @@ void Program::render(Figure &f, bool dryrun, int upto) {
     if (cmds[l]) {
       cmds[l]->render(stmt[l], f, dryrun);
       if (dryrun && f.checkFudged()) {
-	//f.endGroups();
-	//break;
+	f.endGroups();
+	break;
       }
     }
   } 

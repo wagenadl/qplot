@@ -47,6 +47,7 @@ public:
        In particular, that means that results from "fudge" will be preserved.
   */
   QRectF const &extent() const;
+  void overridePanelExtent(QString id, QRectF xywh_pt);
   void setDashScale(double);
   double dashScale() const;
   Axis &xAxis();

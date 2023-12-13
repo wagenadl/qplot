@@ -110,9 +110,13 @@ Align::VAlign Figure::vAlign() const {
 
 
 void Figure::setExtent(QRectF xywh_pt) {
- if (figextent==xywh_pt)
+  qDebug() << "setextent" << xywh_pt << currentPanel << figextent;
+  if (figextent==xywh_pt)
     return;
 
+  if (!figextent.isEmpty())
+    return; // avoid overwriting after rebalance - needs improvement
+                          
   figextent = xywh_pt;
   replaceAxes();
 }
@@ -281,6 +285,19 @@ void Figure::chooseBrush(QString s) {
 
 void Figure::leavePanel() {
   choosePanel("-");
+}
+
+void Figure::overridePanelExtent(QString s, QRectF ext) {
+  if (s==currentPanel) {
+    figextent = ext;
+    replaceAxes();
+  } else {
+    panels[s].desiredExtent = ext;
+    panels[s].xaxis.setPlacement(QPointF(ext.left(),0),
+                                 QPointF(ext.right(),0));
+    panels[s].yaxis.setPlacement(QPointF(0,ext.bottom()),
+                                 QPointF(0,ext.top()));
+  }
 }
 
 void Figure::choosePanel(QString s) {
