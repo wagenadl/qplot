@@ -20,7 +20,7 @@
 // CmdAlignAxes.C
 
 #include "CmdAlignAxes.h"
-#include "DimExtractor.h"
+#include "WhichAxis.h"
 
 #include <QDebug>
 #include <math.h>
@@ -32,7 +32,7 @@ static CBuilder<CmdAlignAxes> cbAlignAxes("alignaxes");
 #define SHIFTTOLERANCE .1
 
 bool CmdAlignAxes::usage() {
-  return error("Usage: alignaxes x|y ID ...\n");
+  return error("Usage: alignaxes x|y|xy ID ...\n");
 }
 
 bool CmdAlignAxes::parse(Statement const &s) { 
@@ -67,7 +67,13 @@ void CmdAlignAxes::render(Statement const &s, Figure &f, bool) {
 
   f.leavePanel();
 
-  DimExtractor const &de(shareX ? DimExtractor::x() : DimExtractor::y());
+  if (shareX) 
+    align(f, ids, WhichAxis::x());
+  if (shareY) 
+    align(f, ids, WhichAxis::y());
+}
+
+void CmdAlignAxes::align(Figure &f, QStringList ids, WhichAxis const &de) {
   QList<QStringList> groups = de.orderedGroups(f, ids);
   //  qDebug() << "align" << shareX << shareY << groups;
 

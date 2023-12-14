@@ -41,7 +41,7 @@ public:
   virtual void render(Statement const &, Figure &, bool);
 private:
   bool usage();
-  void scale(Figure &f, QSet<QString> ids, class DimExtractor const &de);
+  void scale(Figure &f, QSet<QString> ids, class WhichAxis const &de);
 };
 
 #endif
