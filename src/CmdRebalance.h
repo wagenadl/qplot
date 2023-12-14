@@ -39,9 +39,9 @@ public:
   virtual void render(Statement const &, Figure &, bool);
 private:
   bool usage();
-  QList<Range> scale(Figure &f, QStringList ids, class DimExtractor const &de);
+  QList<Range> scale(Figure &f, QStringList ids, class WhichAxis const &de);
   void propagate(Figure &f, QStringList ids, QList<Range> src,
-                 class DimExtractor const &de);
+                 class WhichAxis const &de);
 };
 
 #endif

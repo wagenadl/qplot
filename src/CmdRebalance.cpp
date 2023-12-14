@@ -25,7 +25,7 @@
 #include <math.h>
 #include "Error.h"
 #include "Range.h"
-#include "DimExtractor.h"
+#include "WhichAxis.h"
 
 static CBuilder<CmdRebalance> cbRebalance("rebalance");
 
@@ -101,22 +101,22 @@ void CmdRebalance::render(Statement const &s, Figure &f, bool) {
   }
 
   if (py.range() > MINOVERLAP) {
-    QList<Range> ranges = scale(f, ids[0], DimExtractor::x());
+    QList<Range> ranges = scale(f, ids[0], WhichAxis::x());
     if (!ranges.isEmpty()) 
       for (int k=1; k<ids.size(); ++k)
-        propagate(f, ids[k], ranges, DimExtractor::x());
+        propagate(f, ids[k], ranges, WhichAxis::x());
   }
 
   if (px.range() > MINOVERLAP) {
-    QList<Range> ranges = scale(f, ids[0], DimExtractor::y());
+    QList<Range> ranges = scale(f, ids[0], WhichAxis::y());
     if (!ranges.isEmpty()) 
       for (int k=1; k<ids.size(); ++k)
-        propagate(f, ids[k], ranges, DimExtractor::y());
+        propagate(f, ids[k], ranges, WhichAxis::y());
   }
 }
 
 QList<Range> CmdRebalance::scale(Figure &f, QStringList ids,
-                                 DimExtractor const &de) {
+                                 WhichAxis const &de) {
   qDebug() << "rebalance" << ids;
 
   // Get space available
@@ -188,7 +188,7 @@ QList<Range> CmdRebalance::scale(Figure &f, QStringList ids,
 }
 
 void CmdRebalance::propagate(Figure &f, QStringList ids, QList<Range> src,
-                             DimExtractor const &de) {
+                             WhichAxis const &de) {
   QRectF fullextent;
   for (QString id: ids) {
     Panel const &p(f.panelRef(id));

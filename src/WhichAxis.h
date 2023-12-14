@@ -1,25 +1,25 @@
-// DimExtractor.h
+// WhichAxis.h
 
-#ifndef DIMEXTRACTOR_H
+#ifndef WHICHAXIS_H
 
-#define DIMEXTRACTOR_H
+#define WHICHAXIS_H
 
 #include "Panel.h"
 #include "Axis.h"
 #include "Range.h"
 #include "Figure.h"
 
-class DimExtractor {
+class WhichAxis {
 public:
-  enum class Dim {
+  enum class AxisName {
     X,
     Y,
   };
 public:
-  static DimExtractor const &x();
-  static DimExtractor const &y();
+  static WhichAxis const &x();
+  static WhichAxis const &y();
 public:
-  DimExtractor(Dim d);
+  WhichAxis(AxisName d);
   Axis const &axis(Panel const &p) const;
   Axis &axis(Panel &p) const;
   Range axisPRange(Axis const &a) const;
@@ -31,7 +31,7 @@ public:
   double point(QPointF p) const;
   QList<QStringList> orderedGroups(Figure const &f, QStringList ids) const;
 private:
-  Dim d;
+  AxisName d;
 };
 
 #endif

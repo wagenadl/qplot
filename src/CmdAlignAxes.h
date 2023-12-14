@@ -32,6 +32,7 @@ class CmdAlignAxes: public Command {
    *:D Syntax:
          alignaxes x ID...
          alignaxes y ID...
+         alignaxes xy ID...
    *:N This does not yet work for rotated axes.
    */
 public:
@@ -39,7 +40,7 @@ public:
   virtual void render(Statement const &, Figure &, bool);
 private:
   bool usage();
-  void align(Figure &f, QStringList ids, class DimExtractor const &de);
+  void align(Figure &f, QStringList ids, class WhichAxis const &de);
 };
 
 #endif

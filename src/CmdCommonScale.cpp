@@ -20,7 +20,7 @@
 // CmdCommonScale.C
 
 #include "CmdCommonScale.h"
-#include "DimExtractor.h"
+#include "WhichAxis.h"
 #include <QDebug>
 #include <math.h>
 #include "Error.h"
@@ -66,14 +66,14 @@ void CmdCommonScale::render(Statement const &s, Figure &f, bool) {
   f.leavePanel();
 
   if (shareX) 
-    scale(f, ids, DimExtractor::x());
+    scale(f, ids, WhichAxis::x());
 
   if (shareY) 
-    scale(f, ids, DimExtractor::y());
+    scale(f, ids, WhichAxis::y());
 }
 
 void CmdCommonScale::scale(Figure &f, QSet<QString> ids,
-                           DimExtractor const &de) {
+                           WhichAxis const &de) {
   // Get the scale
   double scale = -1; // will be overwritten
   foreach (QString id, ids) {
