@@ -7,6 +7,7 @@
 #include "Panel.h"
 #include "Axis.h"
 #include "Range.h"
+#include "Figure.h"
 
 class DimExtractor {
 public:
@@ -28,6 +29,7 @@ public:
   QRectF rerect(QRectF orig, double newmin, double newmax) const;
   QPointF repoint(QPointF p, double newdim) const;
   double point(QPointF p) const;
+  QList<QStringList> orderedGroups(Figure const &f, QStringList ids) const;
 private:
   Dim d;
 };

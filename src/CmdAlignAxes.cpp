@@ -29,19 +29,21 @@
 
 static CBuilder<CmdAlignAxes> cbAlignAxes("alignaxes");
 
-#define SCALETOLERANCE 1e-3
 #define SHIFTTOLERANCE .1
-#define MINOVERLAP 5
 
 bool CmdAlignAxes::usage() {
-  return error("Usage: alignaxes ID ...\n");
+  return error("Usage: alignaxes x|y ID ...\n");
 }
 
-bool CmdAlignAxes::parse(Statement const &s) {
+bool CmdAlignAxes::parse(Statement const &s) { 
   if (s.length()<3)
     return usage(); // we could allow this null case, but that might confuse
 
-  for (int i=1; i<s.length(); i++) 
+  if (s[1].typ!=Token::BAREWORD)
+    return usage();
+  if (!(s[1].str=="x" || s[1].str=="y" || s[1].str=="xy"))
+    return usage();
+  for (int i=2; i<s.length(); i++) 
     if (s[i].typ!=Token::CAPITAL)
       return usage();
   return true;
@@ -49,10 +51,13 @@ bool CmdAlignAxes::parse(Statement const &s) {
 
 
 void CmdAlignAxes::render(Statement const &s, Figure &f, bool) {
-  QSet<QString> ids;
-  for (int i=1; i<s.length(); i++) {
+  bool shareX = s[1].str.contains("x");
+  bool shareY = s[1].str.contains("y");
+
+  QStringList ids;
+  for (int i=2; i<s.length(); i++) {
     if (f.hasPanel(s[i].str)) {
-      ids.insert(s[i].str);
+      ids << s[i].str;
     } else {
       Error() << "Unknown panel: " << s[i].str;
       return;
@@ -62,77 +67,87 @@ void CmdAlignAxes::render(Statement const &s, Figure &f, bool) {
 
   f.leavePanel();
 
-  // Let's find out if we have paper overlap in x, y 
-  Range px, py;
-  bool first = true;
-  foreach (QString id, ids) {
-    Panel const &p(f.panelRef(id));
-    Range px1(p.desiredExtent.left(), p.desiredExtent.right());
-    Range py1(p.desiredExtent.top(), p.desiredExtent.bottom());
-    if (first) {
-      px = px1;
-      py = py1;
-      first = false;
-    } else {
-      px.intersect(px1);
-      py.intersect(py1);
-    }
-  }
+  DimExtractor const &de(shareX ? DimExtractor::x() : DimExtractor::y());
+  QList<QStringList> groups = de.orderedGroups(f, ids);
+  //  qDebug() << "align" << shareX << shareY << groups;
 
-  if (px.range() > MINOVERLAP)
-    align(f, ids, DimExtractor::x());
-
-  if (py.range() > MINOVERLAP)
-    align(f, ids, DimExtractor::y());
-}
-
-
-void CmdAlignAxes::align(Figure &f, QSet<QString> ids, DimExtractor const &de) {
-  // Find union of extents
-  Range px;
-  for (QString id: ids) 
-    px.unionize(de.rectRange(f.panelRef(id).desiredExtent));
-
+  // Find union of extents in each groups
+  QList<Range> pxx;
   // Find min and max represented there
-  Range dx;
-  for (QString id: ids) {
-    Axis const &axis(de.axis(f.panelRef(id)));
-    dx.extend(axis.rev(de.repoint(QPointF(0,0), px.min())));
-    dx.extend(axis.rev(de.repoint(QPointF(0,0), px.max())));
+  QList<Range> dxx;
+  for (auto group: groups) {
+    Range px;
+    for (QString id: group)
+      px.unionize(de.rectRange(f.panelRef(id).desiredExtent));
+    pxx << px;
+    Range dx;
+    for (QString id: group) {
+      Axis const &axis(de.axis(f.panelRef(id)));
+      dx.extend(axis.rev(de.repoint(QPointF(0,0), px.min())));
+      dx.extend(axis.rev(de.repoint(QPointF(0,0), px.max())));
+    }
+    dxx << dx;
   }
 
+  double scale = 1;
+  for (int k=0; k<groups.size(); k++) {
+    double sc = pxx[k].range() / dxx[k].range();
+    // qDebug() << "  grsc" << groups[k] << sc;
+    if (k==0 || sc<scale)
+      scale = sc;
+  }
+
+  // qDebug() << "  align" << scale;
   /* Now I need to calculate the Placement that will ensure the
      appropriate mapping at the edges.
-     I need: a*x0+b = px0   (1)
-     a*x1+b = px1   (2)
+     I need:
+     a*dx0+b = px0   (1)
+     a*dx1+b = px1   (2)
      Solve for a and b.
      Then use these a and b to set the Placement PX0 and PX1 to
      PX0 = a*X0+b   (3)
      PX1 = a*X1+b   (4)
      where X0 and X1 are the min and max data coord of the Axis.
      Subtract (1) and (2):
-     a = (px1-px0) / (x1-x0)
+     a = (px1-px0) / (dx1-dx0)
      Then:
-     b = px0 - a*x0.
+     b = px0 - a*dx0.
   */
-  double x0 = dx.min();
-  double x1 = dx.max();
-
-  for (QString id: ids) {
-    Axis &axis = de.axis(f.panelRef(id));
-    bool rev = de.point(axis.maprel(1)) < 0;
-    // rev indicates wheter (d-,d+) -> (p+,p-) or (d-,d+)->(p-,p+)
-    double px0 = rev ? px.max() : px.min();
-    double px1 = rev ? px.min() : px.max();
-    // px0, px1 are paper target for x0, x1; regardless of rev
-    double a = (px1-px0) / (x1-x0);
-    double b = px0 - a*x0;
-    // qDebug() << id << x0 << x1 << px0 << px1 << a << b;
-    if (fabs(de.point(axis.map(x0)) - px0) > SHIFTTOLERANCE
-        || fabs(de.point(axis.map(x1)) - px1) > SHIFTTOLERANCE) {
-      axis.setPlacement(de.repoint(QPointF(), a*axis.min()+b),
-                        de.repoint(QPointF(), a*axis.max()+b));
-      f.markFudged();
+  /* If I am changing the scale to use a' from another group, I
+     still want
+     a'*(dx0+dx1)/2 + b = (px0+px1)/2
+     so b = (px0+px1)/2 - a'*(dx0+dx1)/2
+   */
+  for (int k=0; k<groups.size(); k++) {
+    QStringList const &group(groups[k]);
+    Range const &dx(dxx[k]);
+    Range const &px(pxx[k]);
+    // qDebug() << "  rng " << group << dx.min() << dx.max() << "=>" << px.min() << px.max();
+    double x0 = dx.min();
+    double x1 = dx.max();
+    double sc = px.range() / dx.range();
+    for (QString id: group) {
+      Axis &axis = de.axis(f.panelRef(id));
+      bool rev = de.point(axis.maprel(1)) < 0;
+      // rev indicates wheter (d-,d+) -> (p+,p-) or (d-,d+)->(p-,p+)
+      double px0 = rev ? px.max() : px.min();
+      double px1 = rev ? px.min() : px.max();
+      // px0, px1 are paper target for x0, x1; regardless of rev
+      double a = rev ? (-scale) : scale;
+      double b = (px0+px1)/2 - a * (x0+x1)/2;
+      double PX0 = a*axis.min()+b;
+      double PX1 = a*axis.max()+b;
+      //qDebug() << "  place" << id << a << b
+      //         << "|" << axis.min() << axis.max()
+      //         << "|" << de.point(axis.minp()) << PX0
+      //         << "|" << de.point(axis.maxp()) << PX1;
+      // qDebug() << id << x0 << x1 << px0 << px1 << a << b;
+      if (fabs(de.point(axis.minp()) - PX0) > SHIFTTOLERANCE
+          || fabs(de.point(axis.maxp()) - PX1) > SHIFTTOLERANCE) {
+        axis.setPlacement(de.repoint(QPointF(), PX0),
+                          de.repoint(QPointF(), PX1));
+        f.markFudged();
+      }
     }
   }
 }

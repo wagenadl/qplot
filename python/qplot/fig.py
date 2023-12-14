@@ -279,11 +279,18 @@ def commonscale(axes, ids):
     qi.f.write(out)
 
 
-def alignaxes(ids):
+def alignaxes(axis, ids):
     '''ALIGNAXES - Share axis limits between QPlot panels
-    ALIGNAXES(ids) shares x or y-axis limits between the named panels.
+    ALIGNAXES('x', ids) shares x-axis limits between the named panels.
+    ALIGNAXES('y', ids) shares y-axis limits between the named panels.
     IDS must be a list of single-letter panel IDs.'''
     out = ['alignaxes']
+    if axis=='x':
+        out.append('x')
+    elif axis=='y':
+        out.append('y')
+    else:
+        qi.error('Bad axis specification')
     out += ids
     qi.ensure()
     qi.f.write(out)

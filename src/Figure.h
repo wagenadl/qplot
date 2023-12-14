@@ -92,6 +92,7 @@ public:
   void reset(); // this is a soft reset. semantics need to be documented
   void hardReset(); // this is like restarting the program
   Panel &panelRef(QString); // blithely creates a dummy panel for unknown ID
+  Panel const &panel(QString) const;
   bool hasPanel(QString) const;
   QString currentPanelName() const;
   void startGroup();

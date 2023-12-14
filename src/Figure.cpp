@@ -341,6 +341,14 @@ Panel &Figure::panelRef(QString p) {
   return panels[p];
 }
 
+Panel const &Figure::panel(QString p) const {
+  static Panel nil;
+  auto it = panels.find(p);
+  if (it==panels.end())
+    return nil;
+  return *it;
+}
+
 bool Figure::hasPanel(QString p) const {
   return panels.contains(p);
 }
