@@ -30,11 +30,9 @@ class CmdCommonScale: public Command {
    *:D "commonscale" reduces the placement of axes so that multiple panels
        have the same data scale.
    *:D Syntax:
-         commonscale ID...
-         commonscale xy ID...
          commonscale x ID...
          commonscale y ID...
-       The first two forms are equivalent.
+         commonscale xy ID...
    *:N This does not yet work for rotated axes, and it assumes that
        the y-axis runs up.
    */
@@ -43,9 +41,7 @@ public:
   virtual void render(Statement const &, Figure &, bool);
 private:
   bool usage();
-  void scaleX(Figure &f, QSet<QString> ids);
-  void scaleY(Figure &f, QSet<QString> ids);
-  
+  void scale(Figure &f, QSet<QString> ids, class DimExtractor const &de);
 };
 
 #endif
