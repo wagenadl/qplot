@@ -20,7 +20,7 @@
 // CmdCommonScale.C
 
 #include "CmdCommonScale.h"
-
+#include "DimExtractor.h"
 #include <QDebug>
 #include <math.h>
 #include "Error.h"
@@ -28,46 +28,32 @@
 
 static CBuilder<CmdCommonScale> cbCommonScale("commonscale");
 
-#define SCALETOLERANCE 1e-4
-#define SHIFTTOLERANCE 1e-3
-#define MINOVERLAP 5
+#define SCALETOLERANCE 1e-3
 
 bool CmdCommonScale::usage() {
-  return error("Usage: commonscale [x|y|xy] ID ...\n");
+  return error("Usage: commonscale x|y|xy ID ...\n");
 }
 
 bool CmdCommonScale::parse(Statement const &s) {
-  if (s.length()<2)
+  if (s.length()<3)
     return usage(); // we could allow this null case, but that might confuse
 
-  int i0 = 1;
-  if (s[1].typ==Token::BAREWORD) {
-    if (s[1].str=="x" || s[1].str=="y" || s[1].str=="xy")
-      i0 += 1;
-    else
-      return usage();
-  }
-  if (s.length() - i0 < 2)
+  if (s[1].typ!=Token::BAREWORD)
     return usage();
-  for (int i=i0; i<s.length(); i++) 
+  if (!(s[1].str=="x" || s[1].str=="y" || s[1].str=="xy"))
+    return usage();
+  for (int i=2; i<s.length(); i++) 
     if (s[i].typ!=Token::CAPITAL)
       return usage();
   return true;
 }
 
 void CmdCommonScale::render(Statement const &s, Figure &f, bool) {
-  bool shareX = true;
-  bool shareY = true;
+  bool shareX = s[1].str.contains("x");
+  bool shareY = s[1].str.contains("y");
+
   QSet<QString> ids;
-  int i0 = 1;
-  if (s[1].typ==Token::BAREWORD) {
-    if (s[1].str=="x")
-      shareY = false;
-    if (s[1].str=="y")
-      shareX = false;
-    i0 += 1;
-  }
-  for (int i=i0; i<s.length(); i++) {
+  for (int i=2; i<s.length(); i++) {
     if (f.hasPanel(s[i].str)) {
       ids.insert(s[i].str);
     } else {
@@ -80,61 +66,40 @@ void CmdCommonScale::render(Statement const &s, Figure &f, bool) {
   f.leavePanel();
 
   if (shareX) 
-    scaleX(f, ids);
+    scale(f, ids, DimExtractor::x());
 
   if (shareY) 
-    scaleY(f, ids);
+    scale(f, ids, DimExtractor::y());
 }
 
-void CmdCommonScale::scaleX(Figure &f, QSet<QString> ids) {
+void CmdCommonScale::scale(Figure &f, QSet<QString> ids,
+                           DimExtractor const &de) {
   // Get the scale
-  double scale = 1e99; // will be overwritten
+  double scale = -1; // will be overwritten
   foreach (QString id, ids) {
     Panel const &p(f.panelRef(id));
-    double sc1 = p.xaxis.maprel(1).x();
-    if (sc1<scale)
+    Axis const &a(de.axis(p));
+    double sc1 = fabs(de.point(a.maprel(1)));
+    if (scale<0 || sc1<scale)
       scale = sc1;
   }
 
   // Apply the scale to all panels
   for (QString id: ids) {
-    Axis &axis(f.panelRef(id).xaxis);
-    double sc1 = axis.maprel(1).x();
-    if (sc1>scale*(1+SCALETOLERANCE)) { // || sc1<scale*(1-SCALETOLERANCE)) {
-      // Let's actually shrink
-      double currentWidth = axis.maxp().x() - axis.minp().x();
-      double newWidth = currentWidth * scale/sc1;
-      double shift = (currentWidth - newWidth)/2;
-      axis.setPlacement(QPointF(axis.minp().x() + shift, 0),
-                        QPointF(axis.maxp().x() - shift, 0));
-      f.markFudged();
-    }
-  }
-}
-
-void CmdCommonScale::scaleY(Figure &f, QSet<QString> ids) {
-  // Get the scale
-  double scale = 1e99; // will be overwritten
-  foreach (QString id, ids) {
-    Panel const &p(f.panelRef(id));
-    double sc1 = fabs(p.yaxis.maprel(1).y());
-    if (sc1<scale)
-      scale = sc1;
-  }
-
-  // Apply the scale to all panels
-  for (QString id: ids) {
-    Axis &axis(f.panelRef(id).yaxis);
-    double sc1 = fabs(axis.maprel(1).y());
+    Axis &axis(de.axis(f.panelRef(id)));
+    double sc1 = de.point(axis.maprel(1));
+    bool rev = sc1<0;
+    sc1 = fabs(sc1);
+    double px0 = de.point(axis.minp());
+    double px1 = de.point(axis.maxp());
     if (sc1>scale*(1+SCALETOLERANCE)) {
       // Let's actually shrink
-      double currentHeight = axis.minp().y() - axis.maxp().y();
-      double newHeight = currentHeight * scale/sc1;
-      double shift = (currentHeight - newHeight)/2;
-      axis.setPlacement(QPointF(0, axis.minp().y()-shift),
-                             QPointF(0, axis.maxp().y()+shift));
+      double currentWidth = de.axisPRange(axis).range();
+      double newWidth = currentWidth * scale/sc1;
+      double shift = (currentWidth - newWidth)/2;
+      axis.setPlacement(de.repoint(QPointF(), px0 + shift),
+                        de.repoint(QPointF(), px1 - shift));
       f.markFudged();
     }
   }
 }
-
