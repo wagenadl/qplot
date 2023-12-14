@@ -20,6 +20,7 @@
 // CmdAlignAxes.C
 
 #include "CmdAlignAxes.h"
+#include "DimExtractor.h"
 
 #include <QDebug>
 #include <math.h>
@@ -28,8 +29,8 @@
 
 static CBuilder<CmdAlignAxes> cbAlignAxes("alignaxes");
 
-#define SCALETOLERANCE 1e-4
-#define SHIFTTOLERANCE 1e-3
+#define SCALETOLERANCE 1e-3
+#define SHIFTTOLERANCE .1
 #define MINOVERLAP 5
 
 bool CmdAlignAxes::usage() {
@@ -79,36 +80,27 @@ void CmdAlignAxes::render(Statement const &s, Figure &f, bool) {
   }
 
   if (px.range() > MINOVERLAP)
-    alignX(f, ids);
+    align(f, ids, DimExtractor::x());
 
   if (py.range() > MINOVERLAP)
-    alignY(f, ids);
+    align(f, ids, DimExtractor::y());
 }
 
 
-void CmdAlignAxes::alignX(Figure &f, QSet<QString> ids) {
+void CmdAlignAxes::align(Figure &f, QSet<QString> ids, DimExtractor const &de) {
   // Find union of extents
   Range px;
-  for (QString id: ids) {
-    Panel const &p(f.panelRef(id));
-    px.unionize(Range(p.desiredExtent.left(), p.desiredExtent.right()));
-  }
+  for (QString id: ids) 
+    px.unionize(de.rectRange(f.panelRef(id).desiredExtent));
+
   // Find min and max represented there
-  /* Note that I am assuming the axis has negative values on the left.
-     I think I make that assumption throughout the program, probably
-     to my ultimate detriment.
-  */      
-  double x0 = 1e99;
-  double x1 = -1e99;
+  Range dx;
   for (QString id: ids) {
-    Axis const &axis(f.panelRef(id).xaxis);
-    double x0a = axis.rev(QPointF(px.min(), 0));
-    double x1a = axis.rev(QPointF(px.max(), 0));
-    if (x0a<x0)
-      x0 = x0a;
-    if (x1a>x1)
-      x1 = x1a;
+    Axis const &axis(de.axis(f.panelRef(id)));
+    dx.extend(axis.rev(de.repoint(QPointF(0,0), px.min())));
+    dx.extend(axis.rev(de.repoint(QPointF(0,0), px.max())));
   }
+
   /* Now I need to calculate the Placement that will ensure the
      appropriate mapping at the edges.
      I need: a*x0+b = px0   (1)
@@ -123,67 +115,23 @@ void CmdAlignAxes::alignX(Figure &f, QSet<QString> ids) {
      Then:
      b = px0 - a*x0.
   */
-  double a = (px.max()-px.min()) / (x1-x0);
-  double b = px.min() - a*x0;
+  double x0 = dx.min();
+  double x1 = dx.max();
 
   for (QString id: ids) {
-    Axis &axis = f.panelRef(id).xaxis;
-    if (axis.map(x0).x()<px.min()-SHIFTTOLERANCE ||
-        axis.map(x1).x()>px.max()+SHIFTTOLERANCE)  {
-      axis.setPlacement(QPointF(a*axis.min()+b, 0),
-                     QPointF(a*axis.max()+b, 0));
-      f.markFudged();
-    }
-  }
-}
-
-
-void CmdAlignAxes::alignY(Figure &f, QSet<QString> ids) {
-  // Find union of extents
-  Range py;
-  for (QString id: ids) {
-    Panel const &p(f.panelRef(id));
-    py.unionize(Range(p.desiredExtent.top(), p.desiredExtent.bottom()));
-  }
-  // Find min and max represented there
-  /* Note that I am assuming the axis has negative values on the bottom.
-     I think I make that assumption throughout the program, probably
-     to my ultimate detriment.
-  */      
-  double y0 = 1e99;
-  double y1 = -1e99;
-  for (QString id: ids) {
-    Axis const &axis(f.panelRef(id).yaxis);
-    double y0a = axis.rev(QPointF(0, py.max()));
-    double y1a = axis.rev(QPointF(0, py.min()));
-    if (y0a<y0)
-      y0 = y0a;
-    if (y1a>y1)
-      y1 = y1a;
-  }
-  /* Now I need to calculate the Placement that will ensure the
-     appropriate mapping at the edges.
-     I need: a*y0+b = py0   (1)
-     a*y1+b = py1   (2)
-     Solve for a and b.
-     Then use these a and b to set the Placement PY0 and PY1 to
-     PY0 = a*Y0+b   (3)
-     PY1 = a*Y1+b   (4)
-     where Y0 and Y1 are the min and max data coord of the Axis.
-     Subtract (1) and (2):
-     a = (py1-py0) / (y1-y0)
-     Then:
-     b = py0 - a*y0.
-  */
-  double a = (py.min()-py.max()) / (y1-y0);
-  double b = py.max() - a*y0;
-
-  for (QString id: ids) {
-    Axis &axis(f.panelRef(id).yaxis);
-    if (axis.map(y1).y()<py.min()-SHIFTTOLERANCE ||
-        axis.map(y0).y()>py.max()+SHIFTTOLERANCE) {
-      axis.setPlacement(QPointF(0, a*axis.min()+b),
-                        QPointF(0, a*axis.max()+b));
+    Axis &axis = de.axis(f.panelRef(id));
+    bool rev = de.point(axis.maprel(1)) < 0;
+    // rev indicates wheter (d-,d+) -> (p+,p-) or (d-,d+)->(p-,p+)
+    double px0 = rev ? px.max() : px.min();
+    double px1 = rev ? px.min() : px.max();
+    // px0, px1 are paper target for x0, x1; regardless of rev
+    double a = (px1-px0) / (x1-x0);
+    double b = px0 - a*x0;
+    // qDebug() << id << x0 << x1 << px0 << px1 << a << b;
+    if (fabs(de.point(axis.map(x0)) - px0) > SHIFTTOLERANCE
+        || fabs(de.point(axis.map(x1)) - px1) > SHIFTTOLERANCE) {
+      axis.setPlacement(de.repoint(QPointF(), a*axis.min()+b),
+                        de.repoint(QPointF(), a*axis.max()+b));
       f.markFudged();
     }
   }

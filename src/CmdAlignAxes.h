@@ -39,9 +39,7 @@ public:
   virtual void render(Statement const &, Figure &, bool);
 private:
   bool usage();
-  void alignX(Figure &f, QSet<QString> ids);
-  void alignY(Figure &f, QSet<QString> ids);
-  
+  void align(Figure &f, QSet<QString> ids, class DimExtractor const &de);
 };
 
 #endif
