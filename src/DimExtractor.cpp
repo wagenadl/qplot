@@ -1,6 +1,7 @@
 // DimExtractor.cpp
 
 #include "DimExtractor.h"
+#include <algorithm>
 
 DimExtractor::DimExtractor(Dim d): d(d) {
 }
@@ -59,3 +60,36 @@ DimExtractor const &DimExtractor::y() {
   return de;
 }
 
+
+QList<QStringList> DimExtractor::orderedGroups(Figure const &f,
+                                               QStringList ids) const {
+  QList<QStringList> result;
+  QMap<QString, double> centerpos;
+  QMap<QString, Range> range;
+  for (QString id: ids) {
+    Panel const &p(f.panel(id));
+    Range r = rectRange(p.desiredExtent);
+    range[id] = r;
+    centerpos[id] = (r.min() + r.max())/2;
+  }
+  auto key = [centerpos](QString a, QString b) {
+    return centerpos[a]<centerpos[b];
+  };
+  std::sort(ids.begin(), ids.end(), key);
+  QStringList now;
+  Range r;
+  for (QString id: ids) {
+    if (r.contains(centerpos[id])) {
+      now << id;
+    } else {
+      if (!now.empty())
+        result << now;
+      now = QStringList();
+      now << id;
+      r = range[id];
+    }
+  }
+  if (!now.empty())
+    result << now;
+  return result;
+}
