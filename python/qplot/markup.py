@@ -53,6 +53,7 @@ def reftext(s):
     of subsequent TEXT commands.'''
 
     qi.ensure()
+    qi.f.reftext = s
     qi.f.write('reftext "%s"\n' % _safetext(s))
     
 def text(s, dx=0, dy=0):

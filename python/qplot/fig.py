@@ -184,7 +184,6 @@ def panel(id=None, rect=None):
         out.append(f"{x} {y} {w} {h}")            
         if id != '-':
             qi.f.panels[id] = rect
-    print(out)
     qi.f.write(out)
     if retid:
         return id

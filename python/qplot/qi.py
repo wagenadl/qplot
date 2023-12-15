@@ -48,6 +48,7 @@ class Figure:
         self.fontsize = 10
         self._xtransform = None # lambda x: x
         self._ytransform = None # lambda y: y
+        self.reftext = ''
 
     def xtransform(self, x):
         if self._xtransform is not None:

@@ -18,7 +18,7 @@ Renderer::Renderer() {
 }
 
 void Renderer::prerender(int upto) {
-  qDebug() << "prerender" << upto;
+  //  qDebug() << "prerender" << upto;
   QImage img(1,1,QImage::Format_ARGB32);
   fig.setSize(QSizeF(1, 1)); // this may be overridden later
   fig.painter().begin(&img);
@@ -61,10 +61,11 @@ void Renderer::prerender(int upto) {
     }
   } 
 
-  qDebug() << "Iterations" << maxitercount;
 
-  if (fail) 
+  if (fail) {
+    qDebug() << "Iterations" << maxitercount;
     Error() << QString("\"Shrink\" failed");
+  }
 
   fig.painter().end();
 }
@@ -234,7 +235,7 @@ bool Renderer::save(QString ofn, int upto) {
 
 
 void Renderer::setMaxTries(int n) {
-  qDebug() << "setmaxtries" << n;
+  //  qDebug() << "setmaxtries" << n;
   maxtries = n;
 }
 

@@ -308,6 +308,7 @@ def _qaxis(orient='x', lim_d=None,
         else:
             xa, ya = _align(isvert, ttldist*np.sign(ttlrot))
         markup.align(xa, ya)
+        markup.reftext("+Xj")
         if ttlrot:
             markup.text(ttl,
                  dx=-np.sign(ttlrot)*(ttlpy+ttlly), 
