@@ -111,17 +111,25 @@ def pydoc(doc, func, kww):
     inargs = False
     myargs = { kw for kw in kww }
     column = 0
-    for bit in bits:
+    prevbits = [''] + bits[:-1]
+    nextbits = bits[1:] + ['']
+    for prv, bit, nxt in zip(prevbits, bits, nextbits):
         if wrd.match(bit):
-            if bit==bit.upper() and bit.lower()==func:
+            if (prv.endswith('"') or prv.endswith("'")) and nxt.startswith(prv[-1]):
+                out.append(bit) # don't do anything with text in quotes
+            elif prv.endswith("-") or nxt.startswith("-"):
+                out.append(bit) # hyphenated words are not function/variable names
+            elif bit==bit.upper() and bit.lower()==func:
                 out.append('<span class="mefunc">%s</span>' % bit.lower())
                 if column<=4:
                     gotfunc = True
             elif inargs and (gotfunc or bit.lower() in myargs):
+                #print(bit, inargs, gotfunc, bit.lower() in myargs)
                 out.append('<span class="arg">%s</span>' % bit.lower())
                 if gotfunc:
                     myargs.add(bit.lower())
             elif bit==bit.upper() and bit.lower() in myargs:
+                #print(bit, bit.lower() in myargs)
                 out.append('<span class="arg">%s</span>' % bit.lower())
             elif bit==bit.upper() and bit.lower() in funcs:
                 out.append('<a class="tmlink" href="%s.html">%s</a>'
@@ -131,18 +139,22 @@ def pydoc(doc, func, kww):
                 out.append('<a class="tmlink" href="%s.html">%s</a>s'
                            % (bit[:-1].lower(), bit[:-1].lower()))
             elif len(bit)>1 and bit==bit.upper():
+                #print(bit)
                 out.append('<span class="arg">%s</span>' % bit.lower())
                 gotfunc = False
             else:
                 out.append(bit)
         else:
-            if bit.startswith('('):
+            if bit.startswith('(') and prv.lower() in funcs:
                 inargs = True
             depth += len(paren.findall(bit)) - len(parenc.findall(bit))
-            if gotfunc and depth==0:
+            if depth<=0:
                 inargs = False
                 gotfunc = False
-                
+            if "\n" in bit:
+                inargs = False
+                gotfunc = False
+                depth = 0
             sub = nl.split(bit)
             lst = sub.pop(0)
             out.append(lst)

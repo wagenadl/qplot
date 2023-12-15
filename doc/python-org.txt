@@ -102,11 +102,13 @@ endgroup
 group
 
 Scale to fit:
-sharelim
 shrink
 xlim
 ylim
 clipy
+commonscale
+alignaxes
+rebalance
 
 Color lookup tables:
 luts.get
