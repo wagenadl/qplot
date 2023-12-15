@@ -97,6 +97,8 @@ void CmdCommonScale::scale(Figure &f, QSet<QString> ids,
       double currentWidth = de.axisPRange(axis).range();
       double newWidth = currentWidth * scale/sc1;
       double shift = (currentWidth - newWidth)/2;
+      if (rev)
+        shift = -shift;
       axis.setPlacement(de.repoint(QPointF(), px0 + shift),
                         de.repoint(QPointF(), px1 - shift));
       f.markFudged();

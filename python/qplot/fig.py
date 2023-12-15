@@ -206,16 +206,16 @@ def subplot(rows, cols, r=None, c=None):
     if c is None:
         idx = r
         if idx<0 or idx>=rows*cols:
-            qp.error("Subplot index out of range")
-        x = w * (idx % cols)
-        y = h * (idx // cols)
+            qi.error("Subplot index out of range")
+        c = idx % cols
+        r = idx // cols
     else:
         if c<0 or c>=cols:
             qi.error("Subplot column out of range")
         if r<0 or r>=rows:
             qi.error("Subplot row out of range")
-        x = c*w
-        y = r*h
+    x = c*w
+    y = r*h
     qi.ensure()
     id = '%c%c' % (65+r, 65+c)
     relpanel(id, (x,y,w,h))
@@ -265,7 +265,8 @@ def commonscale(axis, ids):
     COMMONSCALE('xy', ids) shares x and y-axis scales between the named panels.
     COMMONSCALE('x', ids) only shares x-axis scale.
     COMMONSCALE('y', ids) only shares y-axis scale.
-    IDS must be a list of panel IDs.'''
+    IDS must be a list of panel IDs.
+    See also ALIGNAXES and REBALANCE.'''
     out = ['commonscale']
     if axis=='x' or axis=='y' or axis=='xy':
         out.append(axis)
@@ -277,10 +278,17 @@ def commonscale(axis, ids):
 
 
 def alignaxes(axis, ids):
-    '''ALIGNAXES - Share axis limits between QPlot panels
-    ALIGNAXES('x', ids) shares x-axis limits between the named panels.
-    ALIGNAXES('y', ids) shares y-axis limits between the named panels.
-    IDS must be a list of single-letter panel IDs.'''
+    '''ALIGNAXES - Share axis limits between QPlot panels, aligning the axes
+    ALIGNAXES('x', ids) aligns x-axes between the named panels. Alignment is 
+    only performed within groups of panels that form a vertical stack. Between 
+    groups, or if the panels do not form stacks at all, the horizontal scale
+    is still shared (as in COMMONSCALE), but there will be no alignment.
+    ALIGNAXES('y', ids) aligns y-axes. Alignment occurs within groups of panels
+    that form a horizontal row.
+    ALIGNAXES('xy', ids) aligns both x- and y-axes between the named panels.
+    Grouping is performed independently for x and y.
+    IDS must be a list of single-letter panel IDs.
+    See also COMMONSCALE and REBALANCE.'''
     out = ['alignaxes']
     if axis=='x' or axis=='y' or axis=='xy':
         out.append(axis)
@@ -293,9 +301,18 @@ def alignaxes(axis, ids):
 
 def rebalance(axis, ids, *args):
     '''REBALANCE - Rebalance space between QPlot panels to achieve common scale
-    REBALANCE(ids), where IDS is a list of named panels, rebalances horizontal
-    space between the panels if they form a row, or vertical space if they
-    form a column.'''
+    REBALANCE('x', ids), where IDS is a list of named panels, rebalances horizontal
+    space between the panels. This works if IDS represent a single horizontal row 
+    of panels or a grid of panels. After, the horizontal scale of all of the panels
+    will be the same, and axes will be aligned within columns (as per ALIGNAXES).
+    REBALANCE('x', ids, moreids, ...) rebalances across all the columns represented 
+    by the panels named in IDS and MOREIDS, but does not assume that the horizontal
+    scales are the same between the two groups of panels. There is no limit on the
+    number of groups of panels that can be rebalanced concurrently.
+    REBALANCE('y', ...) rebalances vertical space.
+    REBALANCE('xy', ...) rebalances in both directions.
+    See also COMMONSCALE and ALIGNAXES.'''
+
     out = ['rebalance']
     if axis=='x' or axis=='y' or axis=='xy':
         out.append(axis)

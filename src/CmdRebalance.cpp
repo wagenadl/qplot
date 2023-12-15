@@ -180,7 +180,7 @@ static void rebalance(Figure &f, QList<QStringList> blocks,
   */
   QList<double> hypercolumnleftnondata;
   QList<double> hypercolumnrightnondata;
-  double totalnondata;
+  double totalnondata = 0;
   for (int n=0; n<N; n++) {
     double lnd = 0;
     double rnd = 0;
@@ -196,6 +196,7 @@ static void rebalance(Figure &f, QList<QStringList> blocks,
     hypercolumnrightnondata << rnd;
     totalnondata += lnd + rnd;
   }
+  //  qDebug() << hypercolumnleftnondata << hypercolumnrightnondata << totalnondata;
 
   // Figure out full extent of each block
   QList<Range> fullextents;
@@ -205,6 +206,7 @@ static void rebalance(Figure &f, QList<QStringList> blocks,
       fe.unionize(wa.rectRange(need.fullextent));
     fullextents << fe;
   }
+  //  qDebug() << "fullextents" << fullextents;
   
   // Figure out the scale of the first block
   QList<double> scales; // will eventually contain scale for each block
@@ -244,8 +246,7 @@ static void rebalance(Figure &f, QList<QStringList> blocks,
     scales << scl;
   }
     
-  if (trivial)
-      return;
+  bool trivextent = trivial;
 
   // Apply the scale to all panels
   for (int b=0; b<B; b++) {
@@ -259,23 +260,37 @@ static void rebalance(Figure &f, QList<QStringList> blocks,
       double xleft = x0 + hypercolumnleftnondata[n];
       for (QString id: groupsbyblock[b][n]) {
         Panel &panel(f.panelRef(id));
-        QRectF ext = wa.rerect(panel.desiredExtent, x0, x1);
-        f.overridePanelExtent(id, ext);
+        if (!trivextent) {
+          QRectF ext = wa.rerect(panel.desiredExtent, x0, x1);
+          //qDebug() << id << panel.desiredExtent << ext;
+          f.overridePanelExtent(id, ext);
+        }
         Axis &axis(wa.axis(panel));
-        axis.setDataRange(dr.min(), dr.max());
         bool rev = wa.point(axis.maprel(1)) < 0;
         double xright = xleft + dr.range()*scale;
         double px0 = rev ? xright : xleft;
         double px1 = rev ? xleft : xright;
-        axis.setPlacement(wa.repoint(axis.minp(), px0),
-                          wa.repoint(axis.maxp(), px1));
+        //qDebug() << b << n << id << rev << x0 << xleft << xright << x1;
+        //qDebug() << " |" << dr.min() << "=>" << px0 << "<=" << wa.point(axis.map(dr.min()));
+        //qDebug() << " |" << dr.max() << "=>" << px1 << "<=" << wa.point(axis.map(dr.max()));
+          
+        if (fabs(wa.point(axis.map(dr.min())) - px0) > SPACETOLERANCE)
+          trivial = false;
+        if (fabs(wa.point(axis.map(dr.max())) - px1) > SPACETOLERANCE)
+          trivial = false;
+        if (!trivial) {
+          axis.setDataRange(dr.min(), dr.max());
+          axis.setPlacement(wa.repoint(axis.minp(), px0),
+                            wa.repoint(axis.maxp(), px1));
+        }
         // qDebug() << id << dr.min() << dr.max() << xleft << xright << rev << ext;
       }
       x0 = x1;
     }
   }
 
-  f.markFudged();
+  if (!trivial)
+    f.markFudged();
 }
 
 void CmdRebalance::render(Statement const &s, Figure &f, bool) {
