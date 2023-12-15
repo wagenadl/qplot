@@ -30,22 +30,87 @@
 static CBuilder<CmdRebalance> cbRebalance("rebalance");
 
 constexpr double SCALETOLERANCE = 2e-3;
-constexpr double SPACETOLERANCE = 1; // pt
+constexpr double SPACETOLERANCE = 1e-2; // pt
 
-constexpr double MINOVERLAP = 5; // pt
+
+struct SpaceNeeds {
+public:
+  QRectF fullextent;
+  QMap<QString, double> leftnondatause; // or top
+  QMap<QString, double> rightnondatause; // or bottom
+  QMap<QString, Range> datarange;
+  QMap<QString, double> oldwidth;
+public:
+  SpaceNeeds();
+  SpaceNeeds(Figure const &f, QStringList ids, WhichAxis const &wa) {
+    // Get space available
+    for (QString id: ids) {
+      Panel const &p(f.panel(id));
+      if (fullextent.isEmpty())
+        fullextent = p.desiredExtent;
+      else
+        fullextent |= p.desiredExtent;
+    }
+
+    for (QString id: ids) {
+      Panel const &p(f.panel(id));
+      Axis const &axis(wa.axis(p));
+      Range fullbb(wa.rectRange(p.fullbbox));
+      Range desibb(wa.rectRange(p.desiredExtent));
+      oldwidth[id] = desibb.range();
+      Range databb(wa.axisPRange(axis));
+      double prespace = databb.min() - fullbb.min();
+      double postspace = fullbb.max() - databb.max();
+      leftnondatause[id] = prespace;
+      rightnondatause[id] = postspace;
+      datarange[id] = Range(axis.min(), axis.max());
+    }
+  }
+  double meanOldWidth() const {
+    double ow = 0;
+    for (double w: oldwidth)
+      ow += w;
+    return ow / oldwidth.size();
+  }
+  double maxNonData() const {
+    return maxLeftNonData() + maxRightNonData();
+  }
+  double maxLeftNonData() const {
+    double x = 0;
+    for (double nd: leftnondatause)
+      if (nd>x)
+        x = nd;
+    return x;
+  }
+  double maxRightNonData() const {
+    double x = 0;
+    for (double nd: rightnondatause)
+      if (nd>x)
+        x = nd;
+    return x;
+  }
+  Range overallDataRange() const { // union of ranges
+    Range dr;
+    for (Range const &r: datarange)
+      dr.unionize(r);
+    return dr;
+  }
+};
+
 
 bool CmdRebalance::usage() {
   return error("Usage: rebalance ID ...\n");
 }
 
-static QList<QStringList> idlists(Statement const &s) {
+static QList<QStringList> blocks(Statement const &s) {
   QList<QStringList> result;
   QStringList current;
-  for (int i=1; i<s.length(); i++) {
+  for (int i=2; i<s.length(); i++) {
     if (s[i].typ==Token::CAPITAL) {
       current << s[i].str;
     } else if (s[i].typ==Token::DASH) {
-      result << current;
+      if (!current.isEmpty())
+        result << current;
       current = QStringList();
     } else {
       return QList<QStringList>(); // fail if unexpected token
@@ -55,154 +120,183 @@ static QList<QStringList> idlists(Statement const &s) {
     result << current; // we tolerate final DASH
   if (result.isEmpty())
     return QList<QStringList>(); // fail if nothing read
-  int N = result[0].size();
-  if (N<2)
-    return QList<QStringList>(); // fail if not at least two IDs in primary list
-  for (int i=1; i<result.size(); ++i)
-    if (result[i].size() != N)
-      return QList<QStringList>(); // fail if length mismatch
+  for (QStringList const &lst: result)
+    if (lst.size() < 2)
+      return QList<QStringList>(); // fail if not at least two IDs in each list
   return result;
 }
   
 
 bool CmdRebalance::parse(Statement const &s) {
-  return idlists(s).isEmpty() ? usage() : true;
+  if (s.length()<3)
+    return usage(); // we could allow this null case, but that might confuse
+
+  if (s[1].typ!=Token::BAREWORD)
+    return usage();
+  if (!(s[1].str=="x" || s[1].str=="y" || s[1].str=="xy"))
+    return usage();
+  if (blocks(s).isEmpty())
+    return usage();
+  return true;
+}
+
+
+static void rebalance(Figure &f, QList<QStringList> blocks,
+                      WhichAxis const &wa) {
+  qDebug() << "rebalance" << blocks;
+
+  /* First step is to measure the "groups" within each block, i.e., the
+     columns if wa=X or rows is wa=Y. There must be an equal number of
+     groups in each block, or the operation does not make sense.
+  */
+
+  int B = blocks.size();
+  if (B==0)
+    return;
+
+  QList<QList<QStringList>> groupsbyblock; // block# -> group# -> ids
+  QList<QList<SpaceNeeds>> groupneedsbyblock;
+  int N = -1; // groups per block
+  for (QStringList block: blocks) {
+    QList<QStringList> groups = wa.orderedGroups(f, block);
+    if (N<0)
+      N = groups.size();
+    if (groups.size()!=N) {
+      Error() << "Group mismatch";
+      return;
+    }
+    groupsbyblock << groups;
+
+    QList<SpaceNeeds> groupneeds;
+    for (QStringList const &group: groups)
+      groupneeds << SpaceNeeds(f, group, wa);
+    groupneedsbyblock << groupneeds;
+  }
+
+  /* Next, the total nondata use within each "hypercolumn", i.e.,
+     stack of columns across blocks. [I'll use "columns" which is
+     correct for X; read "rows" for Y.] Also, total nondatause across
+     all hypercolumns together. The rest is available for data.
+  */
+  QList<double> hypercolumnleftnondata;
+  QList<double> hypercolumnrightnondata;
+  double totalnondata;
+  for (int n=0; n<N; n++) {
+    double lnd = 0;
+    double rnd = 0;
+    for (QList<SpaceNeeds> const &needs: groupneedsbyblock) {
+      double lnd1 = needs[n].maxLeftNonData();
+      if (lnd1>lnd)
+        lnd = lnd1;
+      double rnd1 = needs[n].maxRightNonData();
+      if (rnd1>rnd)
+        rnd = rnd1;
+    }
+    hypercolumnleftnondata << lnd;
+    hypercolumnrightnondata << rnd;
+    totalnondata += lnd + rnd;
+  }
+
+  // Figure out full extent of each block
+  QList<Range> fullextents;
+  for (QList<SpaceNeeds> const &needs: groupneedsbyblock) {
+    Range fe;
+    for (SpaceNeeds const &need: needs)  // loop over columns
+      fe.unionize(wa.rectRange(need.fullextent));
+    fullextents << fe;
+  }
+  
+  // Figure out the scale of the first block
+  QList<double> scales; // will eventually contain scale for each block
+  double totaldata = 0;
+  for (SpaceNeeds const &need: groupneedsbyblock[0]) // loop over columns
+    totaldata += need.overallDataRange().range();
+  scales << (fullextents[0].range() - totalnondata) / totaldata;
+  
+  // Figure out new proposal for sharing space in first block
+  bool trivial = true;
+  QList<double> propwidth; // per column
+  for (int n=0; n<N; n++) {
+    SpaceNeeds const &need(groupneedsbyblock[0][n]);
+    double desired = hypercolumnleftnondata[n] + hypercolumnrightnondata[n] 
+      + need.overallDataRange().range() * scales[0];
+    propwidth << desired;
+    if (fabs(desired - need.meanOldWidth()) > SPACETOLERANCE)
+      trivial = false;
+  }
+
+  // Now figure out scales for other blocks using same space distr
+  for (int b=1; b<B; b++) {
+    QList<SpaceNeeds> const &needs(groupneedsbyblock[b]);
+    double scl = -1;
+    for (int n=0; n<N; n++) { // loop over columns
+      SpaceNeeds const &need(needs[n]);
+      double dr = need.overallDataRange().range();
+      double lnd = hypercolumnleftnondata[n];
+      double rnd = hypercolumnrightnondata[n];
+
+      double s = (propwidth[n] - lnd - rnd) / dr;
+      if (scl<0 || s<scl)
+        scl = s;
+      if (fabs(propwidth[n] - need.meanOldWidth()) > SPACETOLERANCE)
+        trivial = false;
+    }
+    scales << scl;
+  }
+    
+  if (trivial)
+      return;
+
+  // Apply the scale to all panels
+  for (int b=0; b<B; b++) {
+    QList<SpaceNeeds> const &needs(groupneedsbyblock[b]);
+    double x0 = fullextents[b].min();
+    double scale = scales[b];
+    for (int n=0; n<N; n++) {
+      SpaceNeeds const &need(needs[n]);
+      Range dr = need.overallDataRange();
+      double x1 = x0 + propwidth[n];
+      double xleft = x0 + hypercolumnleftnondata[n];
+      for (QString id: groupsbyblock[b][n]) {
+        Panel &panel(f.panelRef(id));
+        QRectF ext = wa.rerect(panel.desiredExtent, x0, x1);
+        f.overridePanelExtent(id, ext);
+        Axis &axis(wa.axis(panel));
+        axis.setDataRange(dr.min(), dr.max());
+        bool rev = wa.point(axis.maprel(1)) < 0;
+        double xright = xleft + dr.range()*scale;
+        double px0 = rev ? xright : xleft;
+        double px1 = rev ? xleft : xright;
+        axis.setPlacement(wa.repoint(axis.minp(), px0),
+                          wa.repoint(axis.maxp(), px1));
+        qDebug() << id << dr.min() << dr.max() << xleft << xright << rev << ext;
+      }
+      x0 = x1;
+    }
+  }
+
+  f.markFudged();
 }
 
 void CmdRebalance::render(Statement const &s, Figure &f, bool) {
-  QList<QStringList> ids = idlists(s);
-  for (QStringList ids1: ids) {
-    for (QString id: ids1) {
+  bool shareX = s[1].str.contains("x");
+  bool shareY = s[1].str.contains("y");
+
+  
+  QList<QStringList> blks = blocks(s);
+  for (QStringList blk: blks) {
+    for (QString id: blk) {
       if (!f.hasPanel(id)) {
         Error() << "Unknown panel: " << id;
         return;
       }
     }
   }
-  // Now we know that all IDS are actual panels.
 
   f.leavePanel();
 
-  // Let's find out if we have paper overlap in x, y 
-  Range px, py;
-  bool first = true;
-  for (QString id: ids[0]) {
-    Panel const &p(f.panelRef(id));
-    Range px1(p.desiredExtent.left(), p.desiredExtent.right());
-    Range py1(p.desiredExtent.top(), p.desiredExtent.bottom());
-    if (first) {
-      px = px1;
-      py = py1;
-      first = false;
-    } else {
-      px.intersect(px1);
-      py.intersect(py1);
-    }
-  }
-
-  if (py.range() > MINOVERLAP) {
-    QList<Range> ranges = scale(f, ids[0], WhichAxis::x());
-    if (!ranges.isEmpty()) 
-      for (int k=1; k<ids.size(); ++k)
-        propagate(f, ids[k], ranges, WhichAxis::x());
-  }
-
-  if (px.range() > MINOVERLAP) {
-    QList<Range> ranges = scale(f, ids[0], WhichAxis::y());
-    if (!ranges.isEmpty()) 
-      for (int k=1; k<ids.size(); ++k)
-        propagate(f, ids[k], ranges, WhichAxis::y());
-  }
+  if (shareX) 
+    rebalance(f, blks, WhichAxis::x());
+  if (shareY) 
+    rebalance(f, blks, WhichAxis::y());
 }
-
-QList<Range> CmdRebalance::scale(Figure &f, QStringList ids,
-                                 WhichAxis const &de) {
-  qDebug() << "rebalance" << ids;
-
-  // Get space available
-  QRectF fullextent;
-  for (QString id: ids) {
-    Panel const &p(f.panelRef(id));
-    if (fullextent.isEmpty())
-      fullextent = p.desiredExtent;
-    else
-      fullextent |= p.desiredExtent;
-  }
-  
-  // Estimate space needs
-  QMap<QString, double> nondatause; // paper coords
-  QMap<QString, double> datarange;
-  QMap<QString, double> oldwidth;
-  for (QString id: ids) {
-    Panel const &p(f.panelRef(id));
-    Axis const &axis(de.axis(p));
-    Range fullbb(de.rectRange(p.fullbbox));
-    Range desibb(de.rectRange(p.desiredExtent));
-    oldwidth[id] = desibb.range();
-    Range databb(de.axisPRange(axis));
-    double prespace = databb.min() - fullbb.min();
-    double postspace = fullbb.max() - databb.max();
-    nondatause[id] = prespace + postspace;
-    datarange[id] = fabs(axis.max() - axis.min());
-  }
-  double totalnondatause = 0;
-  for (double dx: nondatause)
-    totalnondatause += dx;
-  double totaldatarange = 0;
-  for (double dx: datarange)
-    totaldatarange += dx;
-
-  double fullwidth = de.rectRange(fullextent).range();
-  double scale = (fullwidth - totalnondatause) / totaldatarange;
-  qDebug() << "  scale" << scale << "full" << fullwidth;
-  
-  // Figure out new proposal for sharing space
-  bool trivial = true;
-  QMap<QString, double> propwidth;
-  for (QString id: ids) {
-    Panel const &panel(f.panelRef(id));
-    Axis const &axis(panel.xaxis);
-    double desired = nondatause[id] + datarange[id] * scale;
-    propwidth[id] = desired;
-    qDebug() << "  " << id << nondatause[id] << datarange[id] << oldwidth[id] << propwidth[id];
-    if (fabs(desired - oldwidth[id]) > SPACETOLERANCE)
-      trivial = false;
-  }
-  if (trivial)
-    return QList<Range>();
-
-  // Apply the scale to all panels
-  QList<Range> ranges;
-  double x0 = de.rectMin(fullextent);
-  for (QString id: ids) {
-    Panel const &panel(f.panelRef(id));
-    double x1 = x0 + propwidth[id];
-    QRectF ext = de.rerect(fullextent, x0, x1);
-    ranges << Range(x0, x1);
-    f.overridePanelExtent(id, ext);
-    x0 = x1;
-  }
-  qDebug() << "  => " << fullextent << x0;
-  f.markFudged();
-  return ranges;
-}
-
-void CmdRebalance::propagate(Figure &f, QStringList ids, QList<Range> src,
-                             WhichAxis const &de) {
-  QRectF fullextent;
-  for (QString id: ids) {
-    Panel const &p(f.panelRef(id));
-    if (fullextent.isEmpty())
-      fullextent = p.desiredExtent;
-    else
-      fullextent |= p.desiredExtent;
-  }
-
-  for (int n=0; n<ids.size(); n++) {
-    Panel const &panel(f.panelRef(ids[n]));
-    Axis const &axis(de.axis(panel));
-    QRectF ext = de.rerect(fullextent, src[n].min(), src[n].max());
-    f.overridePanelExtent(ids[n], ext);
-  }  
-}
-
