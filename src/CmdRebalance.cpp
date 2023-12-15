@@ -59,8 +59,8 @@ public:
       Range desibb(wa.rectRange(p.desiredExtent));
       oldwidth[id] = desibb.range();
       Range databb(wa.axisPRange(axis));
-      double prespace = databb.min() - fullbb.min();
-      double postspace = fullbb.max() - databb.max();
+      double prespace = databb.min() - desibb.min();
+      double postspace = desibb.max() - databb.max();
       leftnondatause[id] = prespace;
       rightnondatause[id] = postspace;
       datarange[id] = Range(axis.min(), axis.max());
@@ -143,7 +143,7 @@ bool CmdRebalance::parse(Statement const &s) {
 
 static void rebalance(Figure &f, QList<QStringList> blocks,
                       WhichAxis const &wa) {
-  qDebug() << "rebalance" << blocks;
+  //  qDebug() << "rebalance" << blocks;
 
   /* First step is to measure the "groups" within each block, i.e., the
      columns if wa=X or rows is wa=Y. There must be an equal number of
@@ -269,7 +269,7 @@ static void rebalance(Figure &f, QList<QStringList> blocks,
         double px1 = rev ? xleft : xright;
         axis.setPlacement(wa.repoint(axis.minp(), px0),
                           wa.repoint(axis.maxp(), px1));
-        qDebug() << id << dr.min() << dr.max() << xleft << xright << rev << ext;
+        // qDebug() << id << dr.min() << dr.max() << xleft << xright << rev << ext;
       }
       x0 = x1;
     }

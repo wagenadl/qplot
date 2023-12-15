@@ -186,7 +186,7 @@ int main(int argc, char **argv) {
                               "qual", "95");
   QCommandLineOption cli_maxtries("maxtries",
                                   "Override max tries for shrink",
-                                  "N", "50");
+                                  "N", "10");
   QCommandLineOption cli_version(QStringList() << "v" << "version",
                                  "Show version information");
   QCommandLineOption cli_title("title", "Override window title", "title");

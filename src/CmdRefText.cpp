@@ -42,6 +42,8 @@ bool CmdRefText::parse(Statement const &s) {
 void CmdRefText::render(Statement const &s, Figure &f, bool) {
   if (s.length()==1)
     f.setRefText("");
+  else if (s[1].str.startsWith("+"))
+    f.setRefText(f.refText() + s[1].str.mid(1));
   else
     f.setRefText(s[1].str);
 }
