@@ -25,23 +25,22 @@
 
 #include "Command.h"
 
+
 class CmdRebalance: public Command {
   /*:C CmdRebalance
    *:D "rebalance" rearranges the placement of axes so that multiple panels
        have the same data scale.
    *:D Syntax:
-         rebalance ID...
-   *:N This does not yet work for rotated axes, and it assumes that
-       the y-axis runs up.
+         rebalance x ID...
+         rebalance y ID...
+         rebalance xy ID...
+   *:N This does not work for rotated axes.
    */
 public:
   virtual bool parse(Statement const &); 
   virtual void render(Statement const &, Figure &, bool);
 private:
   bool usage();
-  QList<Range> scale(Figure &f, QStringList ids, class WhichAxis const &de);
-  void propagate(Figure &f, QStringList ids, QList<Range> src,
-                 class WhichAxis const &de);
 };
 
 #endif

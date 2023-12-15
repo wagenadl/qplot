@@ -37,6 +37,7 @@ void Renderer::prerender(int upto) {
   }
 
   QMap<int, int> itercount; // organize by line number
+  QMap<int, int> maxitercount; // organize by line number
   bool fail = false;
   while (true) {
     int line = prog.render(fig, true, upto);
@@ -49,7 +50,9 @@ void Renderer::prerender(int upto) {
         if (it.key()<line)
           it.value() = 0;
       itercount[line] += 1;
-      if (itercount[line] > maxtries) {
+      if (itercount[line] > maxitercount[line])
+        maxitercount[line] = itercount[line];
+      if (itercount[line] >= maxtries) {
         fail = true;
         break;
       }
@@ -58,7 +61,7 @@ void Renderer::prerender(int upto) {
     }
   } 
 
-  qDebug() << "Iterations" << itercount;
+  qDebug() << "Iterations" << maxitercount;
 
   if (fail) 
     Error() << QString("\"Shrink\" failed");

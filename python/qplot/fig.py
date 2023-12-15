@@ -261,19 +261,17 @@ def shrink(margin=1, ratio=None):
         out.append('%g' % ratio)
     qi.f.write(out)
 
-def commonscale(axes, ids):
+def commonscale(axis, ids):
     '''COMMONSCALE - Share axis scale between QPlot panels
     COMMONSCALE('xy', ids) shares x and y-axis scales between the named panels.
     COMMONSCALE('x', ids) only shares x-axis scale.
     COMMONSCALE('y', ids) only shares y-axis scale.
     IDS must be a list of panel IDs.'''
     out = ['commonscale']
-    if axes=='x':
-        out.append('x')
-    elif axes=='y':
-        out.append('y')
-    elif axes!='xy':
-        qi.error('Bad axes specification')
+    if axis=='x' or axis=='y' or axis=='xy':
+        out.append(axis)
+    else:
+        qi.error('Bad axis specification')
     out += ids
     qi.ensure()
     qi.f.write(out)
@@ -285,10 +283,8 @@ def alignaxes(axis, ids):
     ALIGNAXES('y', ids) shares y-axis limits between the named panels.
     IDS must be a list of single-letter panel IDs.'''
     out = ['alignaxes']
-    if axis=='x':
-        out.append('x')
-    elif axis=='y':
-        out.append('y')
+    if axis=='x' or axis=='y' or axis=='xy':
+        out.append(axis)
     else:
         qi.error('Bad axis specification')
     out += ids
@@ -296,23 +292,21 @@ def alignaxes(axis, ids):
     qi.f.write(out)
 
 
-def rebalance(ids):
+def rebalance(axis, ids, *args):
     '''REBALANCE - Rebalance space between QPlot panels to achieve common scale
     REBALANCE(ids), where IDS is a list of named panels, rebalances horizontal
     space between the panels if they form a row, or vertical space if they
     form a column.'''
     out = ['rebalance']
-    if type(ids) != list:
-        qi.error("rebalance needs a list of ids")
-    if len(ids)<2:
-        qi.error("rebalance needs at least two ids")
-    if type(ids[0])==list:
-        # rebalancing multiple sets
-        for ids1 in ids:
-            out += ids1
-            out.append("-")
+    if axis=='x' or axis=='y' or axis=='xy':
+        out.append(axis)
     else:
-        out += ids
+        qi.error('Bad axis specification')
+
+    out += ids
+    for arg in args:
+        out.append('-')
+        out += arg
     qi.ensure()
     qi.f.write(out)
     

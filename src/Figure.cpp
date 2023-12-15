@@ -293,10 +293,10 @@ void Figure::overridePanelExtent(QString s, QRectF ext) {
     replaceAxes();
   } else {
     panels[s].desiredExtent = ext;
-    panels[s].xaxis.setPlacement(QPointF(ext.left(),0),
-                                 QPointF(ext.right(),0));
-    panels[s].yaxis.setPlacement(QPointF(0,ext.bottom()),
-                                 QPointF(0,ext.top()));
+//    panels[s].xaxis.setPlacement(QPointF(ext.left(),0),
+//                                 QPointF(ext.right(),0));
+//    panels[s].yaxis.setPlacement(QPointF(0,ext.bottom()),
+//                                 QPointF(0,ext.top()));
   }
 }
 
