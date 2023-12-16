@@ -134,11 +134,13 @@ void CmdTextOnPath::render(Statement const &s, Figure &f, bool dummy) {
   QVector<QRectF> rr(txt.length());
   QVector<double> ww(txt.length());
   xi[0] = 0;
+  // QTextOption opt;
+  // opt.setFlags(QTextOption::IncludeTrailingSpaces);
   for (int i=0; i<txt.length(); i++) {
-    QRectF r = fm.tightBoundingRect(txt.mid(i, 1));
+    QRectF r = fm.tightBoundingRect(txt.mid(i, 1)); //, opt);
     textYRange.extend(r.top());
     textYRange.extend(r.bottom());
-    double w = fm.width(txt.mid(i, 1));
+    double w = fm.horizontalAdvance(txt.mid(i, 1));
     ww[i] = w;
     xi[i+1] = xi[i] + w;
     rr[i] = r;

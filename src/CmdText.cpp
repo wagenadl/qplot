@@ -106,8 +106,8 @@ void CmdText::render(Statement const &s, Figure &f, bool dummy) {
     }
   }
 
-  // work on bbox: (actual, not ref)
-  r = ::rotate(r0.translated(dx, dy), f.anchorAngle());
+  // work on bbox (previously: actual, not ref)
+  r = ::rotate((r0|r).translated(dx, dy), f.anchorAngle());
   r.translate(f.anchor());
   f.setBBox(r);
   f.textShiftAccum().setBase(dx+t.width(), dy);

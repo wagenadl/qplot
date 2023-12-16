@@ -180,9 +180,9 @@ QPointF ScrollWidget::tlDest() const {
 
 void ScrollWidget::wheelEvent(QWheelEvent *e) {
   double delta = e->angleDelta().y() / 120.0;
-  QPointF mousexy_old = tl_world + (e->pos()-tlDest())/scale();
+  QPointF mousexy_old = tl_world + (e->position()-tlDest())/scale();
   setScale(scale() * pow(1.2, delta));
-  QPointF mousexy_new = tl_world + (e->pos()-tlDest())/scale();
+  QPointF mousexy_new = tl_world + (e->position()-tlDest())/scale();
   tl_world += mousexy_old - mousexy_new;
   surePan();
 }

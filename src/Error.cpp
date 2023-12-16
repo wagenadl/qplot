@@ -23,6 +23,7 @@
 
 #include <stdio.h>
 #include <QDebug>
+#include <QIODevice>
 
 QTextStream *Error::dest = 0;
 
