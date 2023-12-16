@@ -64,8 +64,7 @@ def text(s, dx=0, dy=0):
     but the x- and y-axes rotate along with the angle set by the AT 
     command.
     Text between underscore (_) and next space is set as subscript.
-    Text between hat (^) and next space is set as superscript. The
-    space that terminates a sub- or superscript is swallowed. Matched
+    Text between hat (^) and next space is set as superscript. Matched
     parentheses, brackets, and quotes protect spaces. Additionally,
     tilde (~) can be used as a protected space inside sub- or superscripts.
     Words can be /italicized/ or *boldfaced* with slashes and
@@ -78,13 +77,18 @@ def text(s, dx=0, dy=0):
     Examples of valid strings:
     
       "Distance (μm)" - Note unicode support
-      "Coefficient *A*_1 ^2" - Without the space, the 2 would be a nested
-                               superscript.
+      "Coefficient *A*_1^2"
+      "Coefficient *A*_{1^2}" - Nested subscript. Braces are eaten.
+      "Coefficient *A*_{{1}}" - Nested subscript. Extra braces are not eaten.
       "e^-½/x/²/σ²" - Note the use of unicode superscripts for nesting.
-      "e^-½(/x/^2  / σ^2 )" - The first space after each ^2 is eaten up; the
-                              parentheses protect the outer superscript.
-      "frown^:\(  or smile^:\)" - The backslashes prevent unwanted space 
+      "e^-½(/x/^2 / σ^2)" - The parentheses protect the outer superscript,
+                            but terminates the superscript after σ, because
+                            it is not paired within that superscript.
+      "/x/^{2}/2" - Braces help interpret end of superscript
+      "frown^:\( or smile^:\)" - The backslashes prevent unwanted space 
                                   protection.
+      "frown^{:(} or smile^{:)}" - No backslashes needed because of braces.
+
 
     See also AT and ALIGN.
 

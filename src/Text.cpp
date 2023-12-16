@@ -20,7 +20,7 @@
 // Text.C
 
 #include "Text.h"
-#include <QRegExp>
+#include <QRegularExpression>
 #include "Factor.h"
 #include <QFontMetricsF>
 #include <QPainter>
@@ -43,7 +43,7 @@ bool allWord(QString txt) {
   return true;
 }
 
-static int nextUnprotectedSpace(QString const &s, int idx) {
+static int nextUnprotected(QString const &s, int idx) {
   /* Returns the index of the next unprotected space in the string S,
      starting the search from position IDX.
      If none found, returns the length of the string.
@@ -52,6 +52,7 @@ static int nextUnprotectedSpace(QString const &s, int idx) {
      Unpaired parens or quotes do not protect. For instance, the string
      "a{(b, c) d" breaks before "d", because the "{" is not paired,
      as does "a{(b, c} d)" because the {} protect the space before "c".
+     Unpaired closing parens cause a break before.
      Backslashes cause an otherwise pairable character to be ignored. Thus,
      "a\{b, c}" breaks before "c", as does "a\{(b, c} d)", (because the "}"
      mismatches the "("), while "a\{(b, c\} d)" doesn't break.
@@ -65,39 +66,52 @@ static int nextUnprotectedSpace(QString const &s, int idx) {
   // first iteration, find matching pairs
   bool backslash = false;
   for (int i=idx; i<L; i++) {
-    if (backslash) {
+    if (s[i]=='\\') {
+      backslash = !backslash;
+    } else if (backslash) {
       backslash = false;
       continue;
     }
     int what = pairs.indexOf(s[i]);
-    if (what<0) {
-      backslash = s[i]=='\\';
+    if (what<0) 
       continue;
-    }
     if ((what&1)==0) {
       starts << i;
     } else {
-      while (starts.size()) {
-        int start = starts.takeLast();
+      for (int k=starts.size()-1; k>=0; --k) {
+        int start = starts[k];
         if (pairs[what & ~1]==s[start]) {
           matchedstart << start;
           matchedend << i;
+          while (starts.size()>k)
+            starts.takeLast();
           break;
         }
       }
     }
   }
-
-  // second iteration, find unprotected spaces
-  QString space = " \t\n\r";
+  // second iteration, find unprotected stuff
+  QString space = " \t\n\r_^";
   int prot = 0;
+  backslash = false;
   for (int i=idx; i<L; i++) {
-    if (matchedstart.contains(i))
+    if (s[i]=='\\')
+      backslash = !backslash;
+    if (matchedstart.contains(i)) {
       prot ++;
-    else if (matchedend.contains(i))
+    } else if (matchedend.contains(i)) {
       prot --;
-    else if (prot==0 && space.contains(s[i]))
-      return i;
+      if (prot==0)
+        return i+1;
+    } else if (prot==0) {
+      if (space.contains(s[i]))
+        return i;
+      if (!backslash) {
+        int what = pairs.indexOf(s[i]);
+        if (what>0 && (what & 1))
+          return i;
+      }
+    }
   }
   return L;
 }
@@ -117,48 +131,46 @@ void Text::addInterpreted(QString txt) {
   int idx=0;
   while (idx<txt.size()) {
     QString x = txt.mid(idx,1);
-    if (x=="*") {
-      int id1 = txt.indexOf("*", idx+1);
+    if (x=="*" || x=="/") {
+      int id1 = txt.indexOf(x, idx+1);
       if (id1>=0 && allWord(txt.mid(idx+1, id1-idx-1))) {
 	add(bld);
 	bld="";
-	toggleBold();
+        if (x=="*") {
+          toggleBold();
+        } else {
+          italicCorrect();
+          toggleSlant();
+        }          
 	add(txt.mid(idx+1, id1-idx-1));
+        if (x=="/")
+          italicCorrect();
 	restore();
 	idx=id1;
       } else {
-	bld+="*";
+	bld += x;
       }
-    } else if (x=="/") {
-      int id1 = txt.indexOf("/",idx+1);
-      if (id1>=0 && allWord(txt.mid(idx+1, id1-idx-1))) {
-	add(bld);
-	bld="";
-        italicCorrect();
-	toggleSlant();
-	add(txt.mid(idx+1, id1-idx-1));
-        italicCorrect();
-	restore();
-	idx=id1;
-      } else {
-	bld+="/";
-      }
-    } else if (x=="_") {
-      int id1 = nextUnprotectedSpace(txt, idx+1);
+    } else if (x=="_" || x=="^") {
+      int id1 = nextUnprotected(txt, idx+1);
       add(bld);
       bld="";
-      setSub();
-      addInterpreted(txt.mid(idx+1, id1-idx-1));
+      if (x=="^")
+        setSuper();
+      else
+        setSub();
+      QString scrpt = txt.mid(idx+1, id1-idx-1);
+      if (scrpt.startsWith("{") && scrpt.endsWith("}"))
+        scrpt = scrpt.mid(1, scrpt.size()-2);
+      addInterpreted(scrpt);
       restore();
-      idx=id1;
-    } else if (x=="^") {
-      int id1 = nextUnprotectedSpace(txt, idx+1); 
-      add(bld);
-      bld="";
-      setSuper();
-      addInterpreted(txt.mid(idx+1, id1-idx-1));
-      restore();
-      idx=id1;
+      idx=id1 - 1; // do not eat the unprotected thing
+      if (idx+1<txt.size()) {
+        QString cls = txt.mid(idx+1,1);
+        if ((cls=="_" || cls=="^") && cls!=x) {
+          add("\\!");
+          add("\\!");
+        }
+      }
     } else if (x=="\\") {
       if (txt.mid(idx+1,1)=="!") {
 	add(bld);
@@ -277,6 +289,12 @@ Text &Text::operator<<(QString const &txt) {
   return *this;
 }
 
+static QString doublespace(QString s) {
+  if (s.endsWith(" "))
+    return s + " "; // weirdly one space is cut from bbox calc in qt5
+  return s;
+}
+
 void Text::add(QString txt) {
   QString t0 = txt;
   //  txt.replace(QRegExp("  +")," ");
@@ -308,9 +326,10 @@ void Text::add(QString txt) {
   spans.push_back(span);
   if (span.text != "") {
     QFontMetricsF fm(span.font);
-    QRectF r = fm.tightBoundingRect(txt);
+    // QTextOption opt; opt.setFlags(QTextOption::IncludeTrailingSpaces);
+    QRectF r = fm.tightBoundingRect(doublespace(span.text)); //, opt);
     bb |= r.translated(span.startpos);
-    nextx += fm.horizontalAdvance(txt);
+    nextx += fm.horizontalAdvance(span.text);
   }
 }
 

@@ -24,6 +24,7 @@
 #include <QStringList>
 #include "Error.h"
 #include <iostream>
+#include "QRegularExpression"
 
 Statement::Statement() {
   clear();
@@ -95,7 +96,7 @@ int Statement::read(Reader &source, QString label) {
 
   nlines = 1;
   
-  QStringList words = line.split(QRegExp("[ \t\n\r]"));
+  QStringList words = line.split(QRegularExpression("[ \t\n\r]"));
   foreach (QString w, words) 
     if (w.size() || lev || inString)
       process(w);
@@ -105,7 +106,7 @@ int Statement::read(Reader &source, QString label) {
     if (line.isNull() || !line.endsWith('\n'))
       break;
     nlines ++;
-    QStringList words = line.split(QRegExp("[ \t\n\r]"));
+    QStringList words = line.split(QRegularExpression("[ \t\n\r]"));
     foreach (QString w, words)
       if (w.size() || lev || inString)
         process(w);
