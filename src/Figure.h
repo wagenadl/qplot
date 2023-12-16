@@ -108,6 +108,8 @@ public:
   TextShiftAccum &textShiftAccum();
   void showBoundingBoxes(bool b=true);
   bool areBoundingBoxesShown() const { return showbboxes; }
+public:
+  static QPen defaultPen();
 private:
   QRectF figextent;
   Axis xax, yax;

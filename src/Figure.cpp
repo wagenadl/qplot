@@ -64,9 +64,7 @@ void Figure::reset() {
     QFont font("Helvetica");
     font.setPixelSize(pt2iu(10));
     pntr.setFont(font);
-    QPen pen("black");
-    pen.setWidthF(pt2iu(hairline()));
-    pntr.setPen(pen);
+    pntr.setPen(defaultPen());
   }
   fudged = false;
 }
@@ -446,4 +444,10 @@ bool Figure::checkFudgeFailure() const {
 
 void Figure::showBoundingBoxes(bool b) {
   showbboxes = b;
+}
+
+QPen Figure::defaultPen() {
+  QPen pen("black");
+  pen.setWidthF(pt2iu(0.5)); // See note in Python function pen()
+  return pen;
 }

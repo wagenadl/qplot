@@ -1,8 +1,10 @@
 \documentclass[11pt]{article}
 \usepackage{newcent}
+\usepackage{helvet}
 \usepackage[english]{babel}
 \usepackage[letterpaper]{geometry}
 \usepackage{graphicx}
+\usepackage{mathastext}
 
 \def\cmd#1#2{\noindent {\bf #1} #2\par}
 \def\expl#1{\kern-8pt\begin{itemize}\item[]#1\end{itemize}}
@@ -68,6 +70,12 @@ alternatives.\bigskip
 \cmd{align}{left\bar{}right\bar{}center\bar{}top\bar{}bottom\bar{}middle\bar{}base}
 \expl{Sets horizontal and/or vertical alignment for subsequent text.}
 
+\cmd{alignaxes}{(x\bar{}y\bar{}xy) \emph{ID} \ldots}
+\expl{Shrinks the x-axis and/or y-axis of the current panel and the
+  named panel(s) so that they have a common scale. If the panels
+  overlap horizontally (vertically) on the page, the x-axis (y-axis)
+  are additionally aligned.}
+
 \cmd{area}{[ \emph{dx$_1$ dx$_2$ \ldots} ] [ \emph{dy$_1$ dy$_2$ \ldots}
 ]}
 \expl{Draws a polygon, filled using the current brush. 
@@ -98,11 +106,16 @@ alternatives.\bigskip
   a dash. ``at --'' reverts to absolute placement (i.e., relative to
   the top left of the current panel) in both horizontal and vertical
   directions. \cref{at} may also be used to mark a location for later
-  reference, as per the final two syntax forms.}
+  reference, as per the final two syntax forms. Used immediately after
+leaving a panel (i.e., after ``\cref{panel --}''), relative placement
+instructions (``left'', ``right'', ``center'', ``top'', ``bottom'',
+``middle'') are interpreted as relating to the panel's bounding box.}
 
 \cmd{brush}{(\emph{ID}) \emph{color}\bar{}none\bar{}\emph{opacity} \ldots}
 \expl{Selects a brush by \emph{ID}, defines its color (or sets it to
-  ``none''), and/or its \emph{opacity} (as a number between 0 and 1).}
+  ``none''), and/or its \emph{opacity} (as a number between 0 and
+  1). The \emph{color} may be a (quoted) string in ``\#RRGGBB'' form or any color name understood by Qt (see
+  QColor).}
 
 \cmd{caligraph}{[ \emph{x$_1$ x$_2$ \ldots} ] 
                 [ \emph{y$_1$ y$_2$ \ldots} ]
@@ -113,6 +126,11 @@ alternatives.\bigskip
   of the vector \emph{w} must match the length of \emph{x} and
   \emph{y}.) The line is rendered using the color of the current pen;
   dash patterns and join and cap styles are not respected.}
+
+
+\cmd{commonscale}{(x\bar{}y\bar{}xy) \emph{ID} \ldots}
+\expl{Shrinks the x-axis and/or y-axis of the current panel and the
+  named panel(s) so that they have a common scale.}
 
 \cmd{figsize}{\emph{w} \emph{h}}
 \expl{Sets the size of the figure to (\emph{w} x \emph{h})
@@ -178,7 +196,7 @@ they designate optional parameters. For instance:\medskip\\
 
 \cmd{hairline}{\emph{width}} \expl{Specifies a width for lines plotted
   with zero nominal width, in points. If \emph{width} is zero,
-  hairlines are precisely one pixel wide in the output. This is very
+  hairlines are precisely one pixel wide in the output. This is
   useful for raster output but not recommended for pdf or svg output,
   since the resulting file would become device dependent. The default
   is 0 for raster output (including interactive output), and 0.25 pt
@@ -220,7 +238,8 @@ image. \emph{C} must be one of 1 (grayscale), 2 (grayscale + alpha), 3
 
 \cmd{xzimage}{\emph{x z w d y x$_z$ y$_z$ X Z} [ \emph{cdata} ]}
 \expl{Renders an RGB image on a plane projected to the plane of
-  the paper by $x' = x + x_z z$ and $y' = y + y_z z$. The image is
+  the paper according to $\mathit{x' = x + x_{\mathrm z}\, z}$ and
+  $\mathit{y' = y + y_{\mathrm z}\, z}$. The image is
   placed in 3D space at the given y-intercept in a rectangular area
   parallel to the x-z plane defined by \emph{x, z, w, d}. \emph{X} and
   \emph{Z} specify the pixel size of the data. \emph{cdata} is stored
@@ -232,7 +251,8 @@ image. \emph{C} must be one of 1 (grayscale), 2 (grayscale + alpha), 3
 
 \cmd{zyimage}{\emph{z y d h x x$_z$ y$_z$ Z Y} [ \emph{cdata} ]}
 \expl{Renders an RGB image on a plane projected to the plane of
-  the paper by $x' = x + x_z z$ and $y' = y + y_z z$. The image is
+  the paper according to $\mathit{x' = x + x_{\mathrm z}\, z}$ and $\mathit{y' =
+    y + y_{\mathrm z}\, z}$. The image is
   placed in 3D space at the given x-intercept in a rectangular area
   parallel to the z-y plane defined by \emph{z, y, d, h}. \emph{Z} and
   \emph{Y} specify the pixel size of the data.} 
@@ -256,10 +276,8 @@ image. \emph{C} must be one of 1 (grayscale), 2 (grayscale + alpha), 3
   given radius. Final argument 1 switches to vertical displacement.
 }
 
-\cmd{marker}{\emph{size}\bar\emph{fill}\bar\emph{shape} \ldots) (open\bar{}solid\bar{}brush)
-  ()
-  \ldots}
-\expl{Define a marker of the given \emph{size} in points and shape
+\cmd{marker}{\emph{size}\bar\emph{shape}\bar\emph{fill} \ldots}
+\expl{Define a marker of the given \emph{size} in points and \emph{shape}
   (one of
   ``circle'', ``square'', ``diamond'', ``left'', ``right'', ``up'',
   ``down'', ``penta'', ``hexa'', ``hbar'', ``vbar'', ``plus'', or ``cross'')
@@ -271,16 +289,16 @@ image. \emph{C} must be one of 1 (grayscale), 2 (grayscale + alpha), 3
   the current pen and filled with the current brush (which may be ``none''). The fill style
   has no effect on ``hbar'', ``vbar'', ``plus'', or ``cross'' marks.}
 
-\cmd{panel}{\emph{ID}\bar--}
 \cmd{panel}{\emph{ID x$_0$ y$_0$ w h}}
+\cmd{panel}{\emph{ID}}
+\cmd{panel}{--}
 \expl{Defines a new panel with given ID to have its top left corner on
   paper position (\emph{x$_0$}, \emph{y$_0$}), in points, and size
   (\emph{w} x \emph{h}), in points. Or, reenters a previously defined
   panel. Or drops out to the top level. While drawing inside a panel,
-  \cref{figsize} changes the size of the panel, and \cref{shrink}
-  affects the panel rather than the figure as a whole. Also
-  \cref{xlim} and \cref{ylim} affect the axes in the
-  panel. Choices of pen, brush, font, etc., are not local to panels.}
+  \cref{shrink}, \cref{xlim}, and \cref{ylim} 
+  affects the panel rather than the figure as a whole.
+  Choices of pen, brush, font, etc., are not local to panels.}
 
 \cmd{patch}{[ \emph{x$_1$ x$_2$ \ldots} ] [ \emph{y$_1$ y$_2$ \ldots} ]}
 \expl{Draws a polygon, filled using the current brush. \emph{x$_i$}
@@ -290,6 +308,7 @@ image. \emph{C} must be one of 1 (grayscale), 2 (grayscale + alpha), 3
   \emph{color}\bar{}\emph{width}\bar{}%
   \emph{capstyle}\bar{}\emph{joinstyle}\bar{}%
   \emph{linestyle} \ldots}
+\cmd{pen}{(\emph{ID}) --}
 
 \expl{Selects a pen by \emph{ID}, defines its color, its width (in
   points), its join style (one of ``miterjoin'', ``beveljoin'', or ``roundjoin''),
@@ -305,7 +324,9 @@ of the spaces between dots (in points). The default is
   ``none'' automatically switches to ``solid.'' Any number of
   subcommands may be given on one line in any order. A \cref{pen}
   command without an \emph{ID} makes changes to the current pen but
-  doesn't store the result as a named pen.}
+  doesn't store the result as a named pen. ``\cref{pen --}'' resets the
+  pen to default values, i.e., black, 0.5 pt wide, solid, square cap,
+  miter join.}
 
 \cmd{plot}{[ \emph{x$_1$ x$_2$ \ldots} ] [ \emph{y$_1$ y$_2$ \ldots}
 ]}
@@ -318,6 +339,12 @@ of the spaces between dots (in points). The default is
   points and are relative to the position set by \cref{at}. See also
   \cref{mark} and \cref{marker}.}
 
+\cmd{rebalance}{(x\bar{}y\bar{}xy) \emph{ID} \ldots}
+\expl{Adjusts the sizes of several panels to optimize space use while
+  ensuring they have a common scale on the given axis. Also performs
+  alignment as \cref{alignaxes}.}
+
+
 \cmd{reftext}{\emph{string}\bar{}--}
 \expl{Sets or unsets a fixed text that will be used to calculate the
   ascent and descent of text for the ``bottom'' and ``top'' alignment
@@ -328,11 +355,7 @@ of the spaces between dots (in points). The default is
   and is ignored if qplot is called with ``input'' and/or ``output''
   arguments.}
 
-\cmd{sharelim}{(x|y) \emph{ID} \ldots}
-\expl{Shrinks the x-axis and/or y-axis of the current panel and the
-  named panel(s) so that they have a common scale. If the panels
-  overlap horizontally (vertically) on the page, the x-axis (y-axis)
-  are additionally aligned.}
+
 
 \cmd{shrink}{(\emph{margin})}
 \cmd{shrink}{\emph{margin} \emph{ratio}}
@@ -345,16 +368,10 @@ specifies the desired aspect ratio of y:x data units.}
 \cmd{text}{\emph{dx} \emph{dy} \emph{string}}
 \expl{Places the given text \emph{string} at the position (\emph{dx},
   \emph{dy}), specified in points relative to the anchor set by
-  \cref{at}. Underscores and hats make subscripts and superscripts
-  (up to the next space, which is swallowed). Use tilde as a protected
-  space inside subscripts and superscripts.
-  Slashes and asterisks make enclosed words
-  appear in /italics/ and *bold*. Unicode is supported. Backslash
-  protects interpretation of special characters, but backslash + comma
-  and backslash + exclamation point insert and remove space as in
-  TeX equations. The string
+  \cref{at}. The string
   must be enclosed in single or double quotes. Respects alignment
-  options set by \cref{align}.}
+  options set by \cref{align}. See below for typographical
+  interpretation of the string.}
 
 \cmd{ctext}{\emph{dx} \emph{dy} \emph{string}}
 \expl{Places the given text \emph{string} at the position (\emph{dx},
@@ -391,6 +408,37 @@ command. Or you can write ``*uc\emph{n}'' and place \emph{n} binary
 unsigned 8-bit integers directly after the command. The matlab
 functions \cref{qplot.m} and \cref{qimage.m} give examples, as do the
 python functions \cref{plot} (in ``qi.py'') and \cref{image} (in ``img.py'').
+
+\section{Typographical interpretation of text}
+
+Underscores and hats make subscripts and superscripts
+up to the next space or underscore/hat. Paired parentheses, braces,
+etc., or quotation marks protect text inside subscripts and
+superscripts. Unpaired marks do not protect. For example:\medskip
+
+\begin{tabular}{ll}
+  \emph{You type:} & \emph{You get:}\\
+   Acceleration (m/s\^{}2) & \sf Acceleration (m/s$\sf^2$) \\
+   Frequency (s\^{}-1) & \sf Frequency (s$\sf^{-1}$) \\
+    a\^{}2 / 3 & $\sf a^{2}\;/\;3$ \\
+    a\^{}2/3 & $\sf a^{2/3}$ \\
+    a\^{}\{2\}/3 & $\sf a^{2}/3$ \\
+    a\_{}1\^{}2 & $\sf a_1^{\;2}$ \\
+    smile\^{}\{:)\} & \sf smile$\sf^{:)}$ \\
+    e\^{}\{-½x\^{}2 / $\sigma$\^{}2\} & $\sf e^{-{\frac{1}{2}} x^2 / \sigma^2}$\\
+    
+  \end{tabular}\medskip
+
+\noindent (Note the use of unicode ``½'' and ``$\sigma$'' in last example.)
+
+Slashes and asterisks make enclosed words appear in /\emph{italics}/
+and *{\bf bold}*.
+
+Unicode is supported.
+
+Backslash + comma and backslash + exclamation point insert and remove
+space as in TeX equations. Other than that backslash protects
+interpretation of special characters.
 
 \section{Example}
 
