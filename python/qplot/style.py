@@ -34,7 +34,8 @@ def pen(color=None, width=None, join=None, cap=None, pattern=None, \
     '''PEN - Selects a new pen for QPlot
     All arguments are optional.
       COLOR may be a single character matlab color, or a 3- or 6-digit RGB
-      specification or an [r, g, b] triplet, or 'none'. 
+      specification or an [r, g, b] triplet, or 'none'. Color may also be
+      '-' to reset a pen completely.
       WIDTH is linewidth in points, or 0 for hairline.
       JOIN must be one of: 'miter', 'bevel', 'round'.
       CAP must be one of: 'flat', 'square', 'round'.
@@ -49,9 +50,13 @@ def pen(color=None, width=None, join=None, cap=None, pattern=None, \
     out = [ 'pen' ]
     if id is not None:
         out.append(id)
-    color = qi.interpretcolor(color)
-    if color is not None:
-        out.append(color)
+    if type(color)==str and color=='-':
+        out.append('-')
+        qi.f.linewidth = 0.5 # See Figure::defaultPen()
+    else:
+        color = qi.interpretcolor(color)
+        if color is not None:
+            out.append(color)
     if alpha is not None:
         out.append('%g' % -alpha)
     if width is not None:

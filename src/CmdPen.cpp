@@ -29,7 +29,7 @@ static CBuilder<CmdPen> cbPen("pen");
 #define PEN_DEFAULTLENGTH 3
 
 bool CmdPen::usage() {
-  return error("Usage: pen [ID] color | width  -alpha | miterjoin|beveljoin|roundjoin | flatcap|squarecap|roundcap | solid|none | dash [L1 ...] | dot L ...");
+  return error("Usage: pen [ID] - | color | width | -alpha | miterjoin|beveljoin|roundjoin | flatcap|squarecap|roundcap | solid|none | dash [L1 ...] | dot L ...");
 }
 
 static int joinstyle(QString s) {
@@ -60,6 +60,8 @@ bool CmdPen::parse(Statement const &s) {
   for (int k=1; k<s.length(); k++) {
     if (s[k].typ==Token::CAPITAL && k==1) {
       continue; // OK, this is pen choice
+    } else if (s[k].typ==Token::DASH) {
+      continue; // OK, this resets pen
     } else if (s[k].typ==Token::NUMBER) {
       continue; // OK, this is width or alpha
     } else if (s[k].typ==Token::BAREWORD) {
@@ -98,6 +100,9 @@ void CmdPen::render(Statement const &s, Figure &f, bool) {
       f.choosePen(s[k].str);
       p = f.painter().pen();
       namedPen = true;
+    } else if (s[k].typ==Token::DASH) {
+      // reset pen
+      p = Figure::defaultPen();
     } else if (s[k].typ==Token::NUMBER) {
       if (s[k].num==0)
 	p.setWidthF(pt2iu(f.hairline()));
