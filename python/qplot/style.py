@@ -87,9 +87,9 @@ def pen(color=None, width=None, join=None, cap=None, pattern=None, \
             qi.error('Pattern type not understood')
     qi.ensure()
     qi.f.write(out)
-pen.joins = utils.wordset('miter bevel round')
-pen.caps = utils.wordset('flat square round')
-pen.patterns = utils.wordset('solid none dash dot')
+pen.joins = set('miter bevel round'.split(' '))
+pen.caps = set('flat square round'.split(' '))
+pen.patterns = set('solid none dash dot'.split(' '))
     
 def font(family=None, size=None, bold=False, italic=False):
     '''FONT - Select font 
@@ -153,7 +153,7 @@ def marker(shape=None, size=None, fill=None):
             qi.error('Marker fill not understood')
     qi.ensure()
     qi.f.write(out)
-marker.fills = utils.wordset('open solid brush spine')
+marker.fills = set('open solid brush spine'.split(' '))
 
 def hairline(width):
     '''HAIRLINE - Specify hairline width

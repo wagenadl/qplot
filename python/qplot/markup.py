@@ -36,7 +36,7 @@ def align(*args):
             qi.error('Bad argument for align')
     qi.ensure()
     qi.f.write(out)
-align.words = utils.wordset('left right center top bottom middle base')
+align.words = set('left right center top bottom middle base'.split(' '))
 
 def _safetext(s):
     s = s.replace('"', '”')
@@ -138,7 +138,7 @@ def darrow(x, y, phi=None, along=None, l=8, w=5, dist=0, dimple=0):
     arrow(l, w, dl=dist, dimple=dimple)
     
 def at(x=None, y=None, phi=None, deg=None, rad=None,
-       along=None, id=None, notransform=False):
+       along=None, notransform=False):
     '''AT - Specify location for future text
     AT(x, y) specifies that future text will be placed at data location (x,y)
     Optional arguments:
@@ -148,19 +148,21 @@ def at(x=None, y=None, phi=None, deg=None, rad=None,
             (deprecated).
       ALONG - must be a tuple (dx,dy), meaning that the text will be
             rotated s.t. the baseline points in the data direction (dx,dy).
-      ID - coordinates are specified relative to a subplot.
+
     X may also be one of 'left,' 'right,' 'center,' 'abs,' 'absolute.'
     Y may also be one of 'top,' 'bottom,' 'middle,' 'abs,' 'absolute.'
     If X and/or Y is omitted, placements reverts to absolute in those
-    dimensions.
-    '''
+    dimensions.'''
     qi.ensure()
     qi.f.atx = None
     qi.f.aty = None
+
     if x is None and y is None:
         qi.f.write('at -\n')
         return
+    
     cmd = ['at']
+
     if type(x)==str:
         if x in at.xtype:
             cmd.append(x)
@@ -171,6 +173,7 @@ def at(x=None, y=None, phi=None, deg=None, rad=None,
             x = qi.f.xtransform(x)
         cmd.append('%g' % x)
         qi.f.atx = x
+        
     if type(y)==str:
         if y in at.ytype:
             cmd.append(y)
@@ -189,12 +192,40 @@ def at(x=None, y=None, phi=None, deg=None, rad=None,
         cmd.append('%g' % (-rad))
     elif along is not None:
         cmd.append('%g %g' % (along[0], along[1]))
-    if id is not None:
-        cmd.append(id)
     qi.f.write(cmd)
-at.xtype = utils.wordset('left right center abs absolute')
-at.ytype = utils.wordset('top bottom middle abs absolute')
+at.xtype = set('left right center abs absolute -'.split(' '))
+at.ytype = set('top bottom middle abs absolute -'.split(' '))
 
+def memo(id, x, y):
+    '''MEMO - Store a location for later use
+    MEMO(id, x, y) stores the location of the data point (x,y) for
+    later use by RECALL.'''
+    qi.ensure()
+    qi.f.write(f'at {x} {y} {id}\n')
+
+def recall(ids, deg=None, rad=None, along=None):
+    '''RECALL - Revisit a previously stored location
+    RECALL(id) revisits the previously named location. 
+    RECALL([ids]) revisits the center of several previously named locations.
+    Optional arguments DEG, RAD, ALONG work as in AT.
+    Locations are stored on a per-figure basis, not on a per-subplot basis.
+    This is useful, e.g., to place text that spans across panels after 
+    shrinking.
+    '''
+    cmd = ['at']
+    if type(ids)==str:
+        cmd.append(ids)
+    else:
+        for id in ids:
+            cmd.append(id) # allow list or numpy array
+    if deg is not None:
+        cmd.append(f"{-deg*np.pi/180}")
+    elif rad is not None:
+        cmd.append(f"{-rad}")
+    elif along is not None:
+        cmd.append(f"{along[0]} {along[1]}")
+    qi.f.write(cmd)
+    
 def title(ttl):
     '''TITLE - Render a title on the current QPlot
     TITLE(text) renders the given text centered along the top of the

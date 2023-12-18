@@ -247,6 +247,7 @@ def _qaxis(orient='x', lim_d=None,
     # Draw labels if desired
     if callable(tick_lbl):
         tick_lbl = [ tick_lbl(x) for x in tick_d ]
+
     if not utils.isempty(tick_lbl):
         fig.group()
         [xa, ya] = _align(ishori, lbllx, lblly)
@@ -327,10 +328,10 @@ def xaxis(title='', ticks=None, labels=None, y=0, lim=None, flip=False,
         inferred using SENSIBLETICKS. If [], no ticks are drawn.
       LABELS specifies labels to put by ticks. If None, tick coordinates
         are used. If [], no labels are drawn.
-      Y specifies intersect with y-axis in data coordinates. Default is zero.
-        Set to None to automatically position below the data.
-      LIM specifies left and right edges as a tuple or list. If None,
-        LIM is determined from TICKS. If [], no line is drawn.
+      Y specifies intersect with y-axis in data coordinates. Default is 
+        zero. Set to None to automatically position below the data.
+      LIM specifies left and right edges as a tuple or list. If None, LIM
+        is determined from TICKS. If [], no line is drawn.
       FLIP, if True, inverts the sign of the settings from TICKLEN, TEXTDIST,
         and AXSHIFT.
       TICKLEN and AXSHIFT override the values from the 
@@ -390,10 +391,10 @@ def yaxis(title='', ticks=None, labels=None, x=0, lim=None, flip=False,
         inferred using SENSIBLETICKS. If [], no ticks are drawn.
       LABELS specifies labels to put by ticks. If None, tick coordinates
         are used. If [], no labels are drawn.
-      X specifies intersect with x-axis in data coordinates. Default is zero. 
-        Set to None to automatically position to the left of the data.
-      LIM specifies bottom and top edges as a tuple or list. If None,
-        LIM is determined from TICKS. If [], no line is drawn.
+      X specifies intersect with x-axis in data coordinates. Default is 
+        zero. Set to None to automatically position to the left of the data.
+      LIM specifies bottom and top edges as a tuple or list. If None, LIM
+        is determined from TICKS. If [], no line is drawn.
       FLIP, if nonzero, inverts the sign of the settings from TICKLEN, TEXTDIST,
         and AXSHIFT. If FLIP=2, the title is flipped as well.
       TICKLEN and AXSHIFT override the values from the 

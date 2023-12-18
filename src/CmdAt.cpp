@@ -26,7 +26,7 @@
 static CBuilder<CmdAt> cbAt("at");
 
 bool CmdAt::usage() {
-  return error("Usage: at x y [dx dy]|phi | - | x y ID | ID");
+  return error("Usage: at x y (dx dy)|phi | - | x y ID | ID ... (phi)");
 }
 
 static bool isAbs(QString s) {
@@ -66,54 +66,60 @@ bool CmdAt::parse(Statement const &s) {
   if (s.length()<2)
     return usage();
   if (s[1].typ==Token::CAPITAL) {
-    switch (s.length()) {
-    case 2:
-      return true;
-    case 3:
-      return s[2].typ==Token::NUMBER ? true : usage();
-    case 4:
-      return (s[2].typ==Token::NUMBER && s[3].typ==Token::NUMBER)
-	? true : usage();
-    default:
-      return usage();
-    }
-  }
-  if (s.length()==2 && s[1].typ==Token::DASH)
-    return true;
-  else if (s.length()<3)
+    int i1 = 2;
+    while (i1<s.length() && s[i1].typ==Token::CAPITAL)
+      i1++;
+    int di = s.length() - i1;
+    if (di==0)
+      return true; // at ID ...
+    if (di==1)
+      return s[i1].typ==Token::NUMBER ? true : usage(); // at ID ... phi 
+    if (di==2)
+      return (s[i1].typ==Token::NUMBER && s[i1+1].typ==Token::NUMBER)
+	? true : usage(); // at ID ... dx dy
     return usage();
-  
-  if (!(s[1].typ==Token::NUMBER || s[1].typ==Token::DASH ||
-	(s[1].typ==Token::BAREWORD &&
-	 (horiAlign(s[1].str)>=0 || isAbs(s[1].str)))))
+  }
+  if (s.length()==2)
+    return s[1].typ==Token::DASH ? true : usage(); // at -
+
+  bool horiok =
+    s[1].typ==Token::NUMBER
+    || s[1].typ==Token::DASH
+    || (s[1].typ==Token::BAREWORD && (horiAlign(s[1].str)>=0
+                                      || isAbs(s[1].str)));
+  if (!horiok)
     return usage();
 
-  if (!(s[2].typ==Token::NUMBER || s[2].typ==Token::DASH ||
-	(s[2].typ==Token::BAREWORD
-	 && (vertAlign(s[2].str)>=0 || isAbs(s[2].str)))))
+  bool vertok = 
+    s[2].typ==Token::NUMBER
+    || s[2].typ==Token::DASH
+    ||(s[2].typ==Token::BAREWORD && (vertAlign(s[2].str)>=0
+                                     || isAbs(s[2].str)));
+  if (!vertok)
     return usage();
 
   if (s.length()==3)
-    return true;
+    return true; // at x y
 
   if (s[3].typ==Token::CAPITAL && s.length()==4)
-    return true;
+    return true; // at x y ID
 
   if (s[3].typ!=Token::NUMBER)
     return usage();
 
   if (s.length()==4)
-    return true;
+    return true; // at x y phi
 
   if (s[4].typ!=Token::NUMBER)
     return usage();
 
-  return s.length()==5 ? true : usage();
+  return s.length()==5 ? true : usage(); // at x y dx dy
 }
 
     
 
 QRectF CmdAt::dataRange(Statement const &s) {
+  // at x y => bbox around (x,y), else empty
   if (s.length()<3)
     return QRectF();
   
@@ -128,28 +134,31 @@ QRectF CmdAt::dataRange(Statement const &s) {
 }
   
 void CmdAt::render(Statement const &s, Figure &f, bool dryrun) {
-  if (s[1].typ==Token::CAPITAL) {
-    switch (s.length()) {
-    case 2:
-      f.setAnchor(f.getLocation(s[1].str));
-      return;
-    case 3:
-      f.setAnchor(f.getLocation(s[1].str), s[2].num);
-      return;
-    case 4:
-      f.setAnchor(f.getLocation(s[1].str), f.angle(s[2].num,s[3].num));
-      return;
-    }
-    qDebug() << "Unexpected syntax in AT";
-  } 
+  if (s[1].typ==Token::CAPITAL) { // at ID ...
+    int i1 = 2;
+    while (i1<s.length() && s[i1].typ==Token::CAPITAL) 
+      i1++;
+    QPointF p(0,0);
+    for (int i=1; i<i1; i++)
+      p += f.getLocation(s[i].str);
+    p /= (i1 - 1);
+    int di = s.length() - i1;
+    if (di==0)
+      f.setAnchor(p);
+    else if (di==1)
+      f.setAnchor(p, s[i1].num);
+    else if (di==2)
+      f.setAnchor(p, f.angle(s[i1].num, s[i1+1].num));
+    // other options excluded by parse()
+    return; 
+  }
 
-  if (s.length()<=2) {
+  if (s.length()<=2) { // at -
     f.setAnchor(f.extent().topLeft());
     return;
   }
 
   QPointF oldAnc = f.anchor();
-  //  qDebug() << oldAnc;
   
   double x = s[1].typ==Token::NUMBER ? s[1].num : f.xAxis().min(); 
   double y = s[2].typ==Token::NUMBER ? s[2].num : f.yAxis().min(); 
@@ -166,7 +175,6 @@ void CmdAt::render(Statement const &s, Figure &f, bool dryrun) {
     }
   } else if (s[1].typ==Token::DASH) {
     anchor.setX(oldAnc.x());
-    //    qDebug() << "using old X";
   }
   
   if (s[2].typ==Token::BAREWORD) {
@@ -180,21 +188,20 @@ void CmdAt::render(Statement const &s, Figure &f, bool dryrun) {
     }
   } else if (s[2].typ==Token::DASH) {
     anchor.setY(oldAnc.y());
-    //    qDebug() << "using old Y";
   }
 
   switch (s.length()) {
-  case 5:
-    f.setAnchor(anchor, f.angle(s[3].num,s[4].num));
+  case 3: 
+    f.setAnchor(anchor); // at x y
     break;
   case 4:
     if (s[3].typ==Token::CAPITAL)
-      f.setLocation(s[3].str, anchor);
+      f.setLocation(s[3].str, anchor); // at x y ID
     else
-      f.setAnchor(anchor, s[3].num);
+      f.setAnchor(anchor, s[3].num); // at x y phi
     break;
-  case 3: 
-    f.setAnchor(anchor);
+  case 5:
+    f.setAnchor(anchor, f.angle(s[3].num,s[4].num)); // at x y dx dy
     break;
   default:
     qDebug() << "Unexpected syntax in AT";

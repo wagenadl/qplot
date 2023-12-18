@@ -165,16 +165,20 @@ def pydoc(doc, func, kww):
                     nobr = True
                 else:
                     if lst.endswith('.') or lst.endswith(':') \
-                       or sbit.startswith('     '):
+                       or (sbit.startswith(' '*5) and not \
+                           (sbit.startswith(' '*8) and nxt[:1]==nxt[:1].lower())):
                         if not nobr:
                             out.append('<br>\n')
                     else:
                         out.append(' ')
-                    if not sbit.startswith('    '):
-                        print('Expected at least spaces at start of line.')
+                    if not sbit.startswith(' '*4):
+                        print('Expected at least  4 spaces at start of line.')
                         print('Got: "%s"' % sbit)
                         sys.exit(1)
-                    sbit = sbit[4:]
+                    if sbit.startswith(' '*8) and nxt[:1]==nxt[:1].lower():
+                        sbit = sbit[8:]
+                    else:
+                        sbit = sbit[4:]
                     while sbit.startswith(' '):
                         out.append('&nbsp;')
                         sbit = sbit[1:]
