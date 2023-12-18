@@ -70,7 +70,7 @@ alternatives.\bigskip
 \cmd{align}{left\bar{}right\bar{}center\bar{}top\bar{}bottom\bar{}middle\bar{}base}
 \expl{Sets horizontal and/or vertical alignment for subsequent text.}
 
-\cmd{alignaxes}{(x\bar{}y\bar{}xy) \emph{ID} \ldots}
+\cmd{alignaxes}{x\bar{}y\bar{}xy \emph{ID} \ldots}
 \expl{Shrinks the x-axis and/or y-axis of the current panel and the
   named panel(s) so that they have a common scale. If the panels
   overlap horizontally (vertically) on the page, the x-axis (y-axis)
@@ -84,12 +84,14 @@ alternatives.\bigskip
   the ``['' and ``]'' are literal brackets that separate the x- and 
   y-coordinates. See also \cref{patch}.}
 
-\cmd{at}{\emph{x} \emph{y}}
+\cmd{at}{\emph{x} \emph{y} (\emph{ID})}
 \cmd{at}{\emph{x} \emph{y} \emph{$\xi$} \emph{$\eta$}}
 \cmd{at}{\emph{x} \emph{y} \emph{$\phi$}}
 \cmd{at}{--}
 \cmd{at}{\emph{x} \emph{y} \emph{ID}}
-\cmd{at}{\emph{ID}}
+\cmd{at}{\emph{ID} ...}
+\cmd{at}{\emph{ID} ... \emph{$\xi$} \emph{$\eta$}}
+\cmd{at}{\emph{ID} ... \emph{$\phi$}}
 \expl{Places subsequent text and lines at graph position (\emph{x},
   \emph{y}). If (\emph{$\xi$}, \emph{$\eta$}) are given, this
   specifies a rotation such that the baseline of the text is in the
@@ -105,11 +107,14 @@ alternatives.\bigskip
   of {``top''}, {``bottom''}, {``middle''}, ``abs'', ``absolute'', or
   a dash. ``at --'' reverts to absolute placement (i.e., relative to
   the top left of the current panel) in both horizontal and vertical
-  directions. \cref{at} may also be used to mark a location for later
-  reference, as per the final two syntax forms. Used immediately after
+  directions.  Used immediately after
 leaving a panel (i.e., after ``\cref{panel --}''), relative placement
 instructions (``left'', ``right'', ``center'', ``top'', ``bottom'',
-``middle'') are interpreted as relating to the panel's bounding box.}
+``middle'') are interpreted as relating to the panel's bounding box.
+Adding an \emph{ID} to the end of an \cref{at} command stores the
+location for later use. The final forms recall a previously stored
+location. If more than one \emph{ID} is mentioned, the center of the
+set is used.}
 
 \cmd{brush}{(\emph{ID}) \emph{color}\bar{}none\bar{}\emph{opacity} \ldots}
 \expl{Selects a brush by \emph{ID}, defines its color (or sets it to
@@ -128,7 +133,7 @@ instructions (``left'', ``right'', ``center'', ``top'', ``bottom'',
   dash patterns and join and cap styles are not respected.}
 
 
-\cmd{commonscale}{(x\bar{}y\bar{}xy) \emph{ID} \ldots}
+\cmd{commonscale}{x\bar{}y\bar{}xy \emph{ID} \ldots}
 \expl{Shrinks the x-axis and/or y-axis of the current panel and the
   named panel(s) so that they have a common scale.}
 
@@ -339,7 +344,7 @@ of the spaces between dots (in points). The default is
   points and are relative to the position set by \cref{at}. See also
   \cref{mark} and \cref{marker}.}
 
-\cmd{rebalance}{(x\bar{}y\bar{}xy) \emph{ID} \ldots}
+\cmd{rebalance}{x\bar{}y\bar{}xy \emph{ID} \ldots}
 \expl{Adjusts the sizes of several panels to optimize space use while
   ensuring they have a common scale on the given axis. Also performs
   alignment as \cref{alignaxes}.}

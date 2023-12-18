@@ -153,8 +153,8 @@ def panel(id=None, rect=None):
     Relative means (X, Y, W, H) are specified relative to figure size.
     Coordinates are understood to be relative if all are ≤ 1.
     In either case (X, Y) are measured from top left.
-    PANEL(id) revisits a previously defined panel. ID must be a single
-    capital or None to revert to the top level.
+    PANEL(id) revisits a previously defined panel. 
+    PANEL() reverts to the top level.
     If ID is None but a rectangle is specified, a new ID is automatically
     assigned and returned.
     See also SUBPLOT.'''

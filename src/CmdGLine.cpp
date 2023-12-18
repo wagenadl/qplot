@@ -83,13 +83,11 @@ bool CmdGLine::parse(Statement const &s) {
     if (s[k].typ!=Token::OPENPAREN)
       return usage("expected '('" + got(s,k));
     k++;
-    //qDebug() << "gline got OPENPAREN";
     if (k>=s.length())
       usage();
     while (s[k].typ!=Token::CLOSEPAREN) {
       if (s[k].typ!=Token::BAREWORD)
         return usage("expected ')' or keyword" + got(s,k));
-      //qDebug() << "gline got " << s[k].str;
       GLineKW kw = glineKW(s[k].str);
       if (kw==KW_ERROR)
         return usage("unknown keyword: '" + s[k].str + "'");
@@ -110,7 +108,6 @@ bool CmdGLine::parse(Statement const &s) {
 	  return usage("expected number");
         break;
       }
-      //qDebug() << "gline got arg1: " << s[k].str;
       k++;
       if (k>=s.length())
         return usage("missing 2nd argument to '" + s[k].str + "'");
@@ -133,12 +130,10 @@ bool CmdGLine::parse(Statement const &s) {
 	  return usage("expected number after '" + s[k-2].str + "'");
         break;
       }
-      //qDebug() << "gline got arg2: " << s[k].str;
       k++;
       if (k>=s.length())
         return usage("unexpected end of line");
     }
-    //qDebug() << "gline got CLOSEPAREN";
     k++;
   }
 
@@ -300,7 +295,8 @@ void CmdGLine::render(Statement const &s, Figure &f, bool dryrun) {
   }
 
   double w = f.painter().pen().widthF();
- 
+
+
   if (w>0)
     bbox.adjust(-w/2, -w/2, w/2, w/2);
 

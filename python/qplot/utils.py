@@ -47,11 +47,6 @@ def isnvector(x):
     except TypeError:
         return False
 
-def wordset(s):
-    '''WORDSET splits a string up at spaces and returns a dict pointing
-each word to 1.'''
-    return { k: 1 for k in s.split() }
-
 def unix(s):
     os.system(s)
 

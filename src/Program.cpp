@@ -152,9 +152,8 @@ QRectF Program::dataRange(QString p, int upto) {
         continue;
       } 
       QRectF r1 = cmds[k]->dataRange(s);
-      if (r1.isValid()) {
+      if (r1.width() || r1.height()) 
         r |= r1;
-      }
     }
   }
   return r;

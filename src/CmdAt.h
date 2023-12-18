@@ -27,7 +27,15 @@
 
 class CmdAt: public Command {
 public:
-  virtual bool parse(Statement const &); 
+  virtual bool parse(Statement const &);
+  // at -
+  // at x y
+  // at x y phi
+  // at x y dx dy
+  // at x y ID
+  // at ID ...
+  // at ID ... phi
+  // at ID ... dx dy
   virtual QRectF dataRange(Statement const &);
   virtual void render(Statement const &, Figure &, bool);
 private:
