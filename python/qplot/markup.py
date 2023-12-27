@@ -82,11 +82,11 @@ def text(s, dx=0, dy=0):
       "Coefficient *A*_{{1}}" - Nested subscript. Extra braces are not eaten.
       "e^-½/x/²/σ²" - Note the use of unicode superscripts for nesting.
       "e^-½(/x/^2 / σ^2)" - The parentheses protect the outer superscript,
-                            but terminates the superscript after σ, because
-                            it is not paired within that superscript.
+        but terminates the superscript after σ, because
+        it is not paired within that superscript.
       "/x/^{2}/2" - Braces help interpret end of superscript
       "frown^:\( or smile^:\)" - The backslashes prevent unwanted space 
-                                  protection.
+        protection.
       "frown^{:(} or smile^{:)}" - No backslashes needed because of braces.
 
 
