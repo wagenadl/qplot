@@ -18,10 +18,10 @@ qp.text('And a third line', dy=30)
 qp.endgroup()
 
 # Leave bread crumbs at four corners
-qp.at('left', 'top', id='A')
-qp.at('right', 'top', id='B')
-qp.at('left', 'bottom', id='C')
-qp.at('right', 'bottom', id='D')
+qp.memo('A', 'left', 'top')
+qp.memo('B', 'right', 'top')
+qp.memo('C', 'left', 'bottom')
+qp.memo('D', 'right', 'bottom')
 
 # Use them to draw lines
 qp.gline([[qp.At('C'), qp.RelPaper(-5,5)], [qp.At('A'), qp.RelPaper(-5,-5)]])

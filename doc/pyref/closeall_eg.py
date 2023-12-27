@@ -7,4 +7,5 @@ qp.figure('', 3, 3)
 qp.figure('', 3, 3)
 qp.figure('', 3, 3)
 time.sleep(1)
+
 qp.closeall()
