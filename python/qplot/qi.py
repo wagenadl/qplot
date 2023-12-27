@@ -71,9 +71,9 @@ class Figure:
             s = ' '.join(s) + '\n'
         self.flushcounter = len(self.flushwaitre.findall(s))
         self.fd.write(bytes(s, 'utf8'))
-        if True or self.flushcounter==0:
+        if self.flushcounter==0:
             self.fd.flush()
-    flushcounter=0
+
     flushwaitre = re.compile(r' \*(uc)?\d')
 
     def writedbl(self, v):
@@ -118,7 +118,7 @@ class Figure:
     def __init__(self, fn=None, w=5, h=None):
         self.is_interactive = Figure.global_interactive
         self.is_pipe = False
-        self.pipe = None
+        self.pid = None
         self.is_tempfile = False
         if h is None:
             h = .75 * w
@@ -131,25 +131,25 @@ class Figure:
         self.reset()
 
         if self.is_interactive:
-            if not utils.isempty(fn) and fn.startswith("/"):
+            if fn is not None and fn.startswith("/"):
                 # Create a file
                 if not fn.endswith('.qpt'):
                     fn = fn + '.qpt'
                 self.fn = fn
                 self.fd = open(fn, 'wb')
-                self.pipe = subprocess.Popen([exe, fn])
-                # We use the "pipe" as a pid
+                self.pid = subprocess.Popen([exe, fn])
+                # We use the "pipe" as a pid, but is_pipe is False
             else:
                 # Create a pipe
                 if utils.isempty(fn):
                     fn = tempfile.mktemp(dir='')
                 self.fn = fn
-                self.pipe = subprocess.Popen([exe, "--title", fn, "-"],
+                self.pid = subprocess.Popen([exe, "--title", fn, "-"],
                                             stdin=subprocess.PIPE)
-                self.fd = self.pipe.stdin
+                self.fd = self.pid.stdin
                 self.is_pipe = True
         else:
-            if utils.isempty(fn):
+            if fn is None or fn=='':
                 (fd, self.fn) = tempfile.mkstemp(suffix='.qpt')
                 self.is_tempfile = True
             else:
@@ -169,22 +169,20 @@ class Figure:
         self.write('figsize %g %g\n' % (self.extent[2], self.extent[3]))
 
     def close(self):
-        if self.is_pipe:
+        if self.fd is not None:
             self.fd.close()
+            self.fd = None
+        if self.pid is not None and self.is_pipe:
             try:
-                self.pipe.wait(2)
+                self.pid.wait(2)
+                self.pid = None
             except subprocess.TimeoutExpired:
                 print("timeout", time.time())
-                self.pipe.terminate()
-                self.pipe.wait()
-            self.is_pipe = False
-            self.fd = None
-            self.pipe is None
-        elif self.fd is not None:
-            self.fd.close()
-            self.fd = None
-            if self.pipe is not None:
-                self.pipe.terminate()
+        if self.pid is not None:
+            self.pid.terminate()
+            self.pid.wait()
+            self.pid = None
+        self.is_pipe = False
 
     def tofront(self):
         pass
@@ -230,7 +228,13 @@ def ensure():
     if f is None:
         for fn in figs:
             f = figs[fn]
-            return
+            if f.pid is None:
+                return # Non-interactive figure, hope for the best
+            if f.pid.poll() is None: # hopefully this is fast??
+                return # Figure still open
+            else:
+                f.close() # User has closed it; close it from our end
+
         f = Figure()
         figs[f.fn] = f
 
