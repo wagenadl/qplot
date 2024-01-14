@@ -67,6 +67,7 @@ void Figure::reset() {
     pntr.setPen(defaultPen());
   }
   fudged = false;
+  fudgefailure = false;
 }
 
 void Figure::setDashScale(double s) {
