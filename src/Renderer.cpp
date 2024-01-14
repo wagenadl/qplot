@@ -39,6 +39,7 @@ void Renderer::prerender(int upto) {
   QMap<int, int> itercount; // organize by line number
   QMap<int, int> maxitercount; // organize by line number
   bool fail = false;
+  int totaliter = 0;
   while (true) {
     int line = prog.render(fig, true, upto);
     // renderer to determine paper bbox & fudge
@@ -50,6 +51,7 @@ void Renderer::prerender(int upto) {
         if (it.key()<line)
           it.value() = 0;
       itercount[line] += 1;
+      totaliter += 1;
       if (itercount[line] > maxitercount[line])
         maxitercount[line] = itercount[line];
       if (itercount[line] >= maxtries) {
@@ -63,8 +65,9 @@ void Renderer::prerender(int upto) {
 
 
   if (fail) {
-    qDebug() << "Iterations" << maxitercount;
-    Error() << QString("\"Shrink\" failed");
+    Error() << QString("\"Shrink\" failed after %1 iterations").arg(totaliter);
+    qDebug() << "Iteration detail: " << itercount;
+    qDebug() << "Max iteration detail: " << maxitercount;
   }
 
   fig.painter().end();

@@ -390,7 +390,7 @@ def figisopen(fn):
     if f1 is None:
         return False
     try:
-        f1.pipe.wait(0)
+        f1.pid.wait(0)
     except subprocess.TimeoutExpired:
         return True # Still open
     # We're here, so evidently, the figure got closed externally

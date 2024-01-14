@@ -81,6 +81,7 @@ void CmdShrink::render(Statement const &s, Figure &f, bool) {
 
   if (newdx*olddx<0 || newdy*olddy<0) {
     // failure
+    Error() << QString("Fudge failure (%1,%2) -> (%3,%4)").arg(olddx).arg(olddy).arg(newdx).arg(newdy);
     f.markFudgeFailure();
     return;
   }
