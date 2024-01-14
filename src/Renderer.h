@@ -27,11 +27,11 @@ public:
 private:
   Program prog;
   Figure fig;
-  int maxtries = 1000;
-  double bitmapres = 300;
-  int bitmapqual = 95;
-  double overridewidth = 0;
-  double overrideheight = 0;
+  int maxtries;
+  double bitmapres;
+  int bitmapqual;
+  double overridewidth;
+  double overrideheight;
 };
   
 #endif

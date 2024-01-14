@@ -15,6 +15,11 @@
 #include <QTemporaryFile>
 
 Renderer::Renderer() {
+  maxtries = 1000;
+  bitmapres = 300;
+  bitmapqual = 95;
+  overridewidth = 0;
+  overrideheight = 0;
 }
 
 void Renderer::prerender(int upto) {
@@ -55,6 +60,8 @@ void Renderer::prerender(int upto) {
       if (itercount[line] > maxitercount[line])
         maxitercount[line] = itercount[line];
       if (itercount[line] >= maxtries) {
+        Error() << QString("Shrink iterations exceeded at %1: %2 >= %3")
+          .arg(line).arg(itercount[line]).arg(maxtries);
         fail = true;
         break;
       }
