@@ -72,6 +72,7 @@ void Renderer::prerender(int upto) {
 
 
   if (fail) {
+    Error() << "!??";
     Error() << QString("\"Shrink\" failed after %1 iterations").arg(totaliter);
     qDebug() << "Iteration detail: " << itercount;
     qDebug() << "Max iteration detail: " << maxitercount;
