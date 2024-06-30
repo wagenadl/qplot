@@ -127,16 +127,16 @@ def patch(xx, yy):
 
 def rectangle(x, y, w, h):
     '''RECTANGLE - Draw a rectangle in data space
-    RECTANGLE(x, y, w, h) draws a rectangle in paper space with given
+    RECTANGLE(x, y, w, h) draws a rectangle in data space with given
     coordinates. The rectangle is drawn with the current pen and filled
-    with the current brush. See also PATCH.'''
+    with the current brush. See also PATCH and PRECTANGLE.'''
     patch([x, x+w, x+w, x], [y, y, y+h, y+h])
 
 def hatch(xx, yy, pattern="|", angle=0, spacing=10, offset=0):
     '''HATCH - Hatch a polygonal patch in data space
     HATCH(xx, yy, pattern) hatches a polygon with vertices at (XX,YY) using
     the given pattern. PATTERN is a single character from the following:
-      | / - \  : lines at the angle suggested angle
+      | / - \\  : lines at the angle suggested angle
       + x      : combination of either orthogonal or diagonal lines
       : *      : marks in an orthogonal or hexagonal pattern.
     Lines are rendered with the current PEN.
