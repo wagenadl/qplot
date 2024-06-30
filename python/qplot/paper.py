@@ -103,12 +103,18 @@ def area(xx, yy):
     See also PATCH and GAREA.'''
     qi.plot(xx, yy, cmd='area')
 
+def prectangle(x, y, w, h):
+    '''PRECTANGLE - Draw a rectangle in paper space
+    PRECTANGLE(x, y, w, h) draws a rectangle in paper space with given
+    coordinates. The rectangle is drawn with the current pen and filled
+    with the current brush. See also AREA and RECTANGLE.'''
+    area([x, x+w, x+w, x], [y, y, y+h, y+h])    
 
 def phatch(xx, yy, pattern="|", angle=0, spacing=10, offset=0):
     '''PHATCH - Hatch a polygonal patch in paper space
     PATCH(xx, yy, angle) hatches a polygon with vertices at (XX,YY) using
     the given pattern. PATTERN is a single character from the following:
-      | / - \  : lines at the angle suggested angle
+      | / - \\  : lines at the angle suggested angle
       + x      : combination of either orthogonal or diagonal lines
       : *      : marks in an orthogonal or hexagonal pattern.
     Lines are rendered with the current PEN.
