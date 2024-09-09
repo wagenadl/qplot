@@ -43,20 +43,28 @@ def pen(color=None, width=None, join=None, cap=None, pattern=None, \
       PATTERN may also be a tuple ('dash', vec) where VEC is a vector of 
         stroke and space lengths, or it may be a tuple ('dot', vec) where
         VEC is a vector of space lengths.
-      ALPHA specifies transparency between 0 and 1.
+      ALPHA specifies transparency between 0 (transparent) and 1 (opaque).
       ID must be a single capital letter.
     Note that the string 'none' is different from the Python constant None,
-    the latter meaning "do not change."'''
+    the latter meaning "do not change."
+    PEN() without any arguments restores the default pen, i.e., black, 
+    0.5 pt wide, miter join, square cap, solid pattern, fully opaque.
+'''
+    if (color is None or (type(color==str) and color=='-')) \
+       and width is None and join is None and cap is None \
+       and pattern is None and alpha is None and id is None:
+        color = 'k'
+        width = 0.5
+        join = 'miter'
+        cap = 'square'
+        pattern = 'solid'
+        alpha = 1
     out = [ 'pen' ]
     if id is not None:
         out.append(id)
-    if type(color)==str and color=='-':
-        out.append('-')
-        qi.f.linewidth = 0.5 # See Figure::defaultPen()
-    else:
-        color = qi.interpretcolor(color)
-        if color is not None:
-            out.append(color)
+    color = qi.interpretcolor(color)
+    if color is not None:
+        out.append(color)
     if alpha is not None:
         out.append('%g' % -alpha)
     if width is not None:

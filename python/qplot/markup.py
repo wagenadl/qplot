@@ -242,20 +242,10 @@ def title(ttl):
     text(ttl, dx=xywh[0] + xywh[2]/2, dy=xywh[1] + 5)
     
 class LegOpt:
-    x0 = 0
-    y0 = 0
-    skip = 15
-    n = 0
-    drop = 3
-    height = 9
-    width = 18
-    indent = 9
-    color = 'k'
-    dx = 0
-    dy = 0
+    pass
 
-def legopt(x0=None, y0=None, skip=None, height=None, width=None,
-           indent=None, color=None, drop=None, dx=None, dy=None):
+def legopt(x0=None, y0=None, skip=15, height=9, width=18,
+           indent=9, color='k', drop=3, dx=0, dy=0):
     '''LEGOPT - Set options for LEGEND and friends
     LEGOPT specifies options for legend rendering.
     All arguments are optional:
@@ -274,29 +264,18 @@ def legopt(x0=None, y0=None, skip=None, height=None, width=None,
     qi.ensure()
     if qi.f.legopt is None:
         qi.f.legopt = LegOpt()
-    if x0 is not None:
-        qi.f.legopt.x0 = x0
-    if y0 is not None:
-        qi.f.legopt.y0 = y0
-        qi.f.legopt.n = 0
-    if skip is not None:
-        qi.f.legopt.skip = skip
-    if height is not None:
-        qi.f.legopt.height = height
-    if width is not None:
-        qi.f.legopt.width = width
-    if indent is not None:
-        qi.f.legopt.indent = indent
-    if color is not None:
-        qi.f.legopt.color = color
-    if drop is not None:
-        qi.f.legopt.drop = drop
-    if indent is not None:
-        qi.f.legopt.indent = indent 
-    if dx is not None:
-        qi.f.legopt.dx = dx
-    if dy is not None:
-        qi.f.legopt.dy = dy
+    qi.f.legopt.x0 = x0
+    qi.f.legopt.y0 = y0
+    qi.f.legopt.n = 0
+    qi.f.legopt.skip = skip
+    qi.f.legopt.height = height
+    qi.f.legopt.width = width
+    qi.f.legopt.indent = indent
+    qi.f.legopt.color = color
+    qi.f.legopt.drop = drop
+    qi.f.legopt.indent = indent 
+    qi.f.legopt.dx = dx
+    qi.f.legopt.dy = dy
 
 def legend(s):
     '''LEGEND - Render legend element for plotted line
@@ -304,7 +283,6 @@ def legend(s):
     at the location set by LEGOPT and writes the given string
     next to it.
     See also MLEGEND and PLEGEND.'''
-    legopt()
     opt = qi.f.legopt
     at(opt.x0, opt.y0)
     paper.line(np.array([0, 1])*opt.width + opt.dx,
@@ -325,7 +303,6 @@ def mlegend(s=None):
     MLEGEND() without a string renders the most recently used mark
     over a previously rendered (line) legend.
     See also LEGEND and PLEGEND.'''
-    legopt()
     opt = qi.f.legopt
     at(opt.x0, opt.y0)
     if s is None:
@@ -347,8 +324,6 @@ def plegend(s):
     next to it.
     See also LEGEND and MLEGEND.'''
     
-    
-    legopt()
     opt = qi.f.legopt
     
     at(opt.x0, opt.y0)
