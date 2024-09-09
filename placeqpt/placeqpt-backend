@@ -100,11 +100,14 @@ while (<>) {
     my $h = 0;
     my $dx = 0;
     my $dy = 0;
+    my $factor = 0;
     while (@bits) {
       my $k1 = uc(shift @bits);
       if ($k1 eq "SIZE") {
 	$w = interpretDim(shift @bits);
 	$h = interpretDim(shift @bits);
+      } elsif ($k1 eq "SCALE") {
+        $factor = shift @bits;
       } elsif ($k1 eq "SHIFTED") {
 	$dx += interpretDim(shift @bits);
 	$dy += interpretDim(shift @bits);
@@ -113,7 +116,7 @@ while (<>) {
       }
     }
     syntax() if @bits;
-    writeInclude($fn, $X+$dx, $Y+$dy, $w, $h);
+    writeInclude($fn, $X+$dx, $Y+$dy, $w, $h, $factor);
     if ($w>0 && $h>0) {
       $W = $w;
       $H = $h;
@@ -129,6 +132,10 @@ while (<>) {
       my $wh = getSize($fn);
       $W = $wh->[0];
       $H = $wh->[1];
+    }
+    if ($factor) {
+        $W *= $factor;
+        $H *= $factor;
     }
   } else {
     syntax();
@@ -195,6 +202,7 @@ sub writeInclude {
   my $y = shift;
   my $w = shift;
   my $h = shift;
+  my $factor = shift;
   $y = -$y;
 
   ensureStarted();
@@ -209,6 +217,7 @@ sub writeInclude {
     my @cmt;
     push @cmt, "width=${w}pt" if $w;
     push @cmt, "height=${h}pt" if $h;
+    push @cmt, "scale=${factor}" if $factor;
     my $cmt = "";
     $cmt = "[" . join(",", @cmt) . "]" if @cmt;
     print "\\path (${x}pt,${y}pt) node {\\includegraphics${cmt}{$pdf}};\n";

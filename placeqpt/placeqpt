@@ -18,7 +18,6 @@
 
 use strict;
 
-
 my $doc = <<"EOF";
 Commands are:
 
@@ -27,10 +26,12 @@ Commands are:
   FONTSTYLE   latex-commands
   PANEL       x y
   LABEL       text [SHIFTED dx dy]
-  GRAPHICS    filename [SIZE w h] [SHIFTED dx dy]
+  GRAPHICS    filename [SIZE w h] [SCALE factor] [SHIFTED dx dy]
   INCLUDE     source.txt
 
 Dimensions may be specified in pt, mm, cm, or in.
+X may be "SAME" or "RIGHT"
+Y may be "SAME" or "BELOW"
 
 EOF
   
