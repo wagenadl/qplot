@@ -37,8 +37,11 @@ public:
   void setScale(double factor);
   void scaleToFit();
   QRectF const &extent() const; // world size
-  QPointF const &topLeft() const; // world coords of current topleft
-  QPointF tlDest() const; // screen coords for tl (=(0,0) except at low zoom)
+  QPointF const &topLeft() const; // world coords of current top left
+  QPointF tlDest() const; // screen coords for top left
+  // Note: tlDest is (0,0) except at low zoom
+  QPointF brDest() const; // screen coords for bottom right
+  // Note: brDest is (widget-width, widget-bottom) except at low zoom
   double scale() const;
 protected:
   void keyPressEvent(QKeyEvent *);

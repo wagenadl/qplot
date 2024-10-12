@@ -133,12 +133,12 @@ def endgroup():
 
 def _autoid():
     for k in range(26):
-        id = '%c' % (65 + k)
+        id = "%c" % (65 + k)
         if id not in qi.f.panels:
             return id
     for k in range(26):
         for l in range(26):
-            id = '%c%c' % (65 + k, 65 + l)
+            id = "%cZ%c" % (65 + k, 65 + l)
             if id not in qi.f.panels:
                 return id
     qi.error('Too many panels')
@@ -217,7 +217,14 @@ def subplot(rows, cols, r=None, c=None):
     x = c*w
     y = r*h
     qi.ensure()
-    id = '%c%c' % (65+r, 65+c)
+    if r > 26 or c > 26:
+        r1 = r // 26
+        r2 = r % 26
+        c1 = c // 26
+        c2 = c % 26
+        id = "%c%c%c%" % (65 + r1, 65 + r2, 65 + c1, 65 + c2)
+    else:
+        id = "%c%c" % (65 + r, 65 + c)
     relpanel(id, (x,y,w,h))
     return id
     

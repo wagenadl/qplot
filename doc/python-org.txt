@@ -90,6 +90,7 @@ line
 mm
 pmark
 phatch
+prectangle
 
 Mixed coordinate plotting:
 shiftedline

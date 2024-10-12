@@ -11,7 +11,7 @@ qp.save('pytut-02-01.png', 96);
 
 qp.xaxis(ticks=np.arange(-10, 10, 5), y=-1.1)
 qp.xaxis('Time', lim=[-10, 10], y=-1.4)
-qp.xaxis('Angle', ticks=[-2*np.pi, 0, 2*np.pi], labels=['-2π', '0', '2π'], lim=[-10, 10], y=-1.7)
+qp.xaxis('Angle', ticks=[-2*np.pi, 0, 2*np.pi], labels=['-2π', '0', '2π'], lim=[-10, 10], y=-1.8)
 
 
 qp.shrink()

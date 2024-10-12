@@ -318,7 +318,7 @@ def _qaxis(orient='x', lim_d=None,
             markup.text(ttl, dx=ttlpx + ttllx, dy=ttlpy + ttlly)
     fig.endgroup()
 
-def xaxis(title='', ticks=None, labels=None, y=0, lim=None, flip=False,
+def xaxis(title='', ticks=None, labels=None, y=None, lim=None, flip=False,
           ticklen=None, axshift=None, lbldist=None, ttldist=None,
           microshift=False):
     '''XAXIS - Draw x-axis
@@ -332,15 +332,16 @@ def xaxis(title='', ticks=None, labels=None, y=0, lim=None, flip=False,
         zero. Set to None to automatically position below the data.
       LIM specifies left and right edges as a tuple or list. If None, LIM
         is determined from TICKS. If [], no line is drawn.
-      FLIP, if True, inverts the sign of the settings from TICKLEN, TEXTDIST,
-        and AXSHIFT.
+      FLIP, if True, inverts the sign of the settings from TICKLEN,
+        TEXTDIST, and AXSHIFT.
       TICKLEN and AXSHIFT override the values from the 
         corresponding command.
       LBLDIST and TTLDIST override the values from TEXTDIST.
       MICROSHIFT, if True, specifies that the ticks are to be shifted by
         up to half a linewidth so they don't protrude horizontally past the
-        ends of an image. May also be a 2-ple specifying behavior for the
-        left and right ends separately.
+        ends of the range. This is useful when drawing an axis by an image.
+        May also be a 2-ple specifying behavior for the left and right
+        ends separately.
     Either TICKS or LABELS (but not both) may be a function, in which case
     the labels are calculated from the tick positions (or vice versa). For
     example:
@@ -350,12 +351,15 @@ def xaxis(title='', ticks=None, labels=None, y=0, lim=None, flip=False,
     Without any arguments or with just a title as an argument, XAXIS tries
     to determine sensible defaults based on previous calls to PLOT and
     friends. Your mileage may vary.'''
+    
     qi.ensure()
     if y is None:
-        yy = utils.sensibleticks(qi.f.datarange[2:4], 1)
-        y = yy[0]
+        y = utils.sensibleticks(qi.f.datarange[2:], 1, inc=True)[0]
+    if lim is None and ticks is None:
+        # If neither lim nor ticks given, lim is inclusive of range
+        lim = qi.f.datarange[:2]
     if ticks is None:
-        ticks = utils.sensibleticks(qi.f.datarange[0:2], inc=True)
+        ticks = utils.sensibleticks(qi.f.datarange[:2])
     if lim is None:
         if callable(ticks):
             lim = [ticks(labels[0]), ticks(labels[-1])]
@@ -381,9 +385,9 @@ def xaxis(title='', ticks=None, labels=None, y=0, lim=None, flip=False,
             ticklen=ticklen, lbldist=lbldist, ttldist=ttldist, 
             coord_d=y, coord_p=axshift, microshift=microshift)
 
-def yaxis(title='', ticks=None, labels=None, x=0, lim=None, flip=False,
-          ticklen=None, axshift=None, lbldist=None, ttldist=None, titlerot=None,
-          microshift=False):
+def yaxis(title='', ticks=None, labels=None, x=None, lim=None, flip=False,
+          ticklen=None, axshift=None, lbldist=None, ttldist=None,
+          titlerot=None, microshift=False):
     '''YAXIS - Draw y-axis
     All arguments are optional.
       TITLE specifies title for axis.
@@ -395,8 +399,8 @@ def yaxis(title='', ticks=None, labels=None, x=0, lim=None, flip=False,
         zero. Set to None to automatically position to the left of the data.
       LIM specifies bottom and top edges as a tuple or list. If None, LIM
         is determined from TICKS. If [], no line is drawn.
-      FLIP, if nonzero, inverts the sign of the settings from TICKLEN, TEXTDIST,
-        and AXSHIFT. If FLIP=2, the title is flipped as well.
+      FLIP, if nonzero, inverts the sign of the settings from TICKLEN,
+        TEXTDIST, and AXSHIFT. If FLIP=2, the title is flipped as well.
       TICKLEN and AXSHIFT override the values from the 
         corresponding command.
       LBLDIST and TTLDIST override the values from TEXTDIST.
@@ -416,10 +420,12 @@ def yaxis(title='', ticks=None, labels=None, x=0, lim=None, flip=False,
     friends. Your mileage may vary.'''
     qi.ensure()
     if x is None:
-        xx = utils.sensibleticks(qi.f.datarange[0:2], 1)
-        x = xx[0]
+        x = utils.sensibleticks(qi.f.datarange[:2], 1, inc=True)[0]
+    if lim is None and ticks is None:
+        # If neither lim nor ticks given, lim is inclusive of range
+        lim = qi.f.datarange[2:]
     if ticks is None:
-        ticks = utils.sensibleticks(qi.f.datarange[2:4], inc=True)
+        ticks = utils.sensibleticks(qi.f.datarange[2:])
     if lim is None:
         if callable(ticks):
             lim = [ticks(labels[0]), ticks(labels[-1])]

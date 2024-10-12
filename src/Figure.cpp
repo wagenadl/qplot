@@ -405,14 +405,17 @@ void Figure::endGroup() {
 }
 
 QString Figure::panelAt(QPointF const &xy) {
-  if (currentPanel!="-") 
+  if (currentPanel != "-") 
     if (figextent.contains(xy))
       return currentPanel;
   foreach (QString p, panels.keys())
-    if (p!=currentPanel)
+    if (p != currentPanel)
       if (panels[p].desiredExtent.contains(xy))
 	return p;
-  return "-";
+  if (currentPanel == "-")
+    if (figextent.contains(xy))
+      return "-";
+  return ""; // no panel, not even outer
 }
 
 void Figure::setLocation(QString id, QPointF const &xy) {

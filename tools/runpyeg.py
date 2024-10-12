@@ -19,7 +19,7 @@ with open(ifn) as f:
     if qp.qi.f:
         if txt.find('shrink')<0:
             qp.shrink(2)
-        qp.save(ofn + '.png', reso=100)
+        qp.save(ofn + '.png', reso=300)
         qp.save(ofn + '.pdf')
         qp.close()
     else:

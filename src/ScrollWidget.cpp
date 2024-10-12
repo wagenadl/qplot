@@ -178,6 +178,15 @@ QPointF ScrollWidget::tlDest() const {
   return QPointF(x>0 ? x : 0, y>0 ? y : 0);
 }
 
+QPointF ScrollWidget::brDest() const {
+  QSizeF ws = extent_world.size() * scale();
+  double w = width();
+  double h = height();
+  double x = (w + ws.width())/2;
+  double y = (h + ws.height())/2;
+  return QPointF(x<w ? x : w, y<h ? y : h);
+}
+
 void ScrollWidget::wheelEvent(QWheelEvent *e) {
   double delta = e->angleDelta().y() / 120.0;
   QPointF mousexy_old = tl_world + (e->position()-tlDest())/scale();
