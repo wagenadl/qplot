@@ -27,7 +27,7 @@ debug:
 clean:; rm -rf build build-dbg build-doc
 
 DOCS: build-doc/Makefile QPLOT
-	make -C build-doc
+	+make -C build-doc
 	make -C build-doc cleanup
 
 build-doc/Makefile: doc/Makefile.doc

@@ -27,6 +27,8 @@
 #include <QApplication>
 #include <QClipboard>
 #include <iostream>
+#include <QFont>
+#include <QFontMetrics>
 
 #define MARGPIX 15
 
@@ -38,10 +40,17 @@ QPWidget::QPWidget(QWidget *parent): ScrollWidget(parent) {
   margindecor = NONE;
   coord = new QLabel(this);
   coord->hide();
-  coord->resize(width()/2, 24);
+  QFont f = font();
+  QFontMetrics fm(f);
+  QRect r = fm.boundingRect("AZ09");
+  f.setPointSize(14);
+  coord->setFont(f);
+  coord->resize(width()/2, r.height() + 5);
   coord->move(5, height() - coord->height() - 5);
   trackpanel = "-";
   ruler = false;
+  coords = false;
+  setMouseTracking(true);
 }
 
 QPWidget::~QPWidget() {
@@ -80,13 +89,9 @@ void QPWidget::paintEvent(QPaintEvent *) {
   QPainter &p(fig->painter());
   p.begin(this); // resets state of pen
 
-  if (margindecor!=GRAY) {
-    p.save();
-    p.setBrush(QColor("white"));
-    p.setPen(Qt::NoPen);
-    p.drawRect(rect());
-    p.restore();
-  }
+  p.setBrush(margindecor==GRAY ? QColor(200, 200, 200) : QColor("white"));
+  p.setPen(Qt::NoPen);
+  p.drawRect(rect());
   
   QPointF tld = tlDest();
   p.translate(tld.x(), tld.y());
@@ -107,13 +112,13 @@ void QPWidget::paintEvent(QPaintEvent *) {
 
 static QString coordtext(double x, double dx) {
   // represents X so that a difference of DX is clear.
-  if (x==0)
+  if (x == 0)
     return "0";
-  if (dx<=0)
-    return QString::fromUtf8("–");
+  if (dx <= 0)
+    return QString::fromUtf8("—");
   int k = floor(log(dx)/log(10));
-  if (k<=0)
-    return QString("%1").arg(x, 0, 'f', -k);
+  if (k <= 0)
+    return QString("%1").arg(x, 0, 'f', -k).replace("-", "−");
   int l = floor(log(abs(x))/log(10));
   // I will show l-k digits, with exponentiation (XXXeN where N is l).
   // I could also show just l digits. If that is more compact, I will do it.
@@ -122,7 +127,7 @@ static QString coordtext(double x, double dx) {
   k = l-k+1;
   if (k<1)
     k=1;
-  return QString("%1").arg(x, 0, 'e', k);
+  return QString("%1").arg(x, 0, 'e', k).replace("-", "−");
 }
 
 static QString coordtext(double x, double x0, double x1) {
@@ -145,6 +150,9 @@ static double sensibleStep(double range) {
 }
 
 void QPWidget::renderRuler(QPainter &p) {
+  if (trackpanel=="")
+    return;
+  
   p.save();
 
   QRectF world = fig->extent();
@@ -163,50 +171,59 @@ void QPWidget::renderRuler(QPainter &p) {
   y0 = ceil(y0/dy)*dy;
   y1 = floor(y1/dy)*dy;
 
-  p.setPen("#aaaaaa");
+  p.setPen(QPen(QColor(0,0,0), 1/scale()));
 
-  for (double x=x0; x<=x1+dx/2; x+=dx) {
-    double xw = xax->map(x).x();
-    p.drawLine(xw, world.top()-pt2iu(2), xw, world.top()-pt2iu(5));
-    p.drawLine(xw, world.bottom()+pt2iu(2), xw, world.bottom()+pt2iu(5));
-  }
+  //double ytop_near = world.top() - pt2iu(1);
+  //double ytop_far = world.top() - pt2iu(4);
+  double ytop_text = world.top() - pt2iu(1);
+  //double ybot_near = world.bottom() + pt2iu(1);
+  //double ybot_far = world.bottom() + pt2iu(4);
+  double ybot_text = world.bottom() + pt2iu(1);
+  //for (double x=x0; x<=x1+dx/2; x+=dx) {
+  //  double xw = xax->map(x).x();
+  //  p.drawLine(xw, ytop_near, xw, ytop_far);
+  //  p.drawLine(xw, ybot_near, xw, ybot_far);
+  //}
 
-  for (double y=y0; y<=y1+dy/2; y+=dy) {
-    double yw = yax->map(y).y();
-    p.drawLine(world.left()-pt2iu(2), yw, world.left()-pt2iu(5), yw);
-    p.drawLine(world.right()+pt2iu(2), yw, world.right()+pt2iu(5), yw);
-  }
+  //double xleft_near = world.left() - pt2iu(1);
+  //double xleft_far = world.left() - pt2iu(4);
+  double xleft_text = world.left() - pt2iu(1);
+  //double xright_near = world.right() + pt2iu(1);
+  //double xright_far = world.right() + pt2iu(4);
+  double xright_text = world.right() + pt2iu(1);
+  //for (double y=y0; y<=y1+dy/2; y+=dy) {
+  //  double yw = yax->map(y).y();
+  //  p.drawLine(xleft_near, yw, xleft_far, yw);
+  //  p.drawLine(xright_near, yw, xright_far, yw);
+  //}
   
-  p.setPen("#666666");
+  //  p.setPen("#666666");
   QFont f("Helvetica");
-  f.setPointSize(10/scale());
+  f.setPointSize(12 / scale());
   p.setFont(f);
 
   double s = 1/scale();
   for (double x=x0; x<=x1+dx/2; x+=dx) {
     double xw = xax->map(x).x();
-    p.drawText(QRectF(xw-200*s, world.top()-50*s,
-		      400*s, 50*s),
+    QString txt = coordtext(x, dx);
+    p.drawText(QRectF(xw - 200*s, ytop_text - 50*s, 400*s, 50*s),
 	       Qt::AlignHCenter | Qt::AlignBottom,
-	       coordtext(x, dx));
-    p.drawText(QRectF(xw-200*s, world.bottom(),
-		      400*s, 50*s),
-	       Qt::AlignCenter | Qt::AlignTop,
-	       coordtext(x, dx));
+               txt);
+    p.drawText(QRectF(xw - 200*s, ybot_text, 400*s, 100*s),
+	       Qt::AlignHCenter | Qt::AlignTop,
+               txt);
   }
   
   for (double y=y0; y<=y1+dy/2; y+=dy) {
     double yw = yax->map(y).y();
-    p.drawText(QRectF(world.left()-400*s, yw-20*s,
-		      400*s, 40*s), 
+    QString txt = coordtext(y, dy);
+    p.drawText(QRectF(xleft_text - 400*s, yw - 20*s, 400*s, 40*s),
 	       Qt::AlignRight | Qt::AlignVCenter,
-	       coordtext(y, dy) + "  ");
-    p.drawText(QRectF(world.right(), yw-20*s,
-		      400*s, 40*s),
+	       txt);
+    p.drawText(QRectF(xright_text, yw - 20*s, 400*s, 40*s),
 	       Qt::AlignLeft | Qt::AlignVCenter,
-	       "  " + coordtext(y, dy));
+	       txt);
   }
-  
   
   p.restore();
 }
@@ -221,24 +238,24 @@ void QPWidget::renderMargin(QPainter &p) {
     p.drawRect(world);
   } else if (margindecor==CROP) {
     // draw crop marks
-    p.setPen(QColor("black"));
-    double yy[] = { world.top(), world.bottom() };
-    double xx[] = { world.left(), world.right() };
-    double dm = MARGPIX/scale();
-    if (dm>.25*marg)
-      dm = .25*marg;
-    double ddm = .75*marg;
+    p.setPen(QPen(QColor("black"), 2 / scale()));
+    double yy[]{ world.top(), world.bottom() };
+    double xx[]{ world.left(), world.right() };
+    double dm = MARGPIX / scale();
+    if (dm > .25 * marg)
+      dm = .25 * marg;
+    double ddm = .75 * marg;
     for (int k=0; k<2; k++) {
       double x = xx[k];
       double y = yy[0];
-      p.drawLine(QPointF(x,y-ddm), QPointF(x,y-dm));
+      p.drawLine(QPointF(x, y - ddm), QPointF(x, y - dm));
       y = yy[1];
-      p.drawLine(QPointF(x,y+ddm), QPointF(x,y+dm));
+      p.drawLine(QPointF(x, y + ddm), QPointF(x, y + dm));
       y = yy[k];
       x = xx[0];
-      p.drawLine(QPointF(x-ddm,y), QPointF(x-dm,y));
+      p.drawLine(QPointF(x - ddm, y), QPointF(x - dm, y));
       x = xx[1];
-      p.drawLine(QPointF(x+ddm,y), QPointF(x+dm,y));
+      p.drawLine(QPointF(x + ddm, y), QPointF(x + dm, y));
     }
   }
   p.restore();
@@ -249,9 +266,14 @@ void QPWidget::mousePressEvent(QMouseEvent *e) {
   if (fig) {
     QPointF xy = e->pos();
     QPointF world = (xy-tlDest()) / scale() + topLeft();
-    trackpanel = fig->panelAt(world);
+    QString tp = fig->panelAt(world);
+    if (tp != trackpanel)
+      if (ruler)
+        update();
+    trackpanel = tp;
     reportTrack(xy, e->button(), "press");
   }
+  setCursor(Qt::OpenHandCursor);
 }
 
 void QPWidget::keyPressEvent(QKeyEvent *e) {
@@ -259,12 +281,12 @@ void QPWidget::keyPressEvent(QKeyEvent *e) {
   case Qt::Key_G:
     switch (margindecor) {
     case NONE:
-      margindecor = CROP;
-      break;
-    case CROP:
       margindecor = GRAY;
       break;
     case GRAY:
+      margindecor = CROP;
+      break;
+    case CROP:
       margindecor = NONE;
       break;
     }
@@ -274,8 +296,8 @@ void QPWidget::keyPressEvent(QKeyEvent *e) {
     if (e->modifiers() & Qt::ControlModifier) {
       takeScreenShot();
     } else {
-      setMouseTracking(!hasMouseTracking());
-      if (hasMouseTracking())
+      coords = !coords;
+      if (coords)
 	coord->show();
       else
 	coord->hide();
@@ -318,9 +340,9 @@ bool QPWidget::hasRuler() const {
 }
 
 void QPWidget::setRuler(bool r) {
-  if (r==ruler)
+  if (r == ruler)
     return;
-  ruler=r;
+  ruler = r;
   update();
 }
 
@@ -338,17 +360,40 @@ void QPWidget::resizeEvent(QResizeEvent *e) {
 
 void QPWidget::mouseMoveEvent(QMouseEvent *e) {
   ScrollWidget::mouseMoveEvent(e);
-  reportTrack(e->pos(), e->buttons(), "move");
+  if (fig) {
+    QPointF xy = e->pos();
+    if (e->buttons() == 0) {
+      QPointF world = (xy-tlDest()) / scale() + topLeft();
+      QString tp = fig->panelAt(world);
+      if (tp != trackpanel) {
+        trackpanel = tp;
+        if (trackpanel=="")
+          setCursor(Qt::ArrowCursor);
+        else
+          setCursor(Qt::CrossCursor);
+        if (ruler)
+          update();
+      }
+    }
+    reportTrack(xy, e->button(), "move");
+  }
 }
 
 void QPWidget::mouseReleaseEvent(QMouseEvent *e) {
   ScrollWidget::mouseReleaseEvent(e);
-  reportTrack(e->pos(), e->button(), "release");
+  if (trackpanel=="")
+    setCursor(Qt::ArrowCursor);
+  else
+    setCursor(Qt::CrossCursor);
+    
+  if (fig)
+    reportTrack(e->pos(), e->button(), "release");
 }
 
 void QPWidget::mouseDoubleClickEvent(QMouseEvent *e) {
   ScrollWidget::mouseDoubleClickEvent(e);
-  reportTrack(e->pos(), e->button(), "double");
+  if (fig) 
+    reportTrack(e->pos(), e->button(), "double");
 }
 
 void QPWidget::closeEvent(QCloseEvent *e) {
@@ -370,25 +415,34 @@ Axis *QPWidget::findYAxis() {
 }
 
 void QPWidget::reportTrack(QPointF xy, int button, QString what) {
-  if (!fig)
+  if (!fig || trackpanel=="") {
+    coord->setText("");
     return;
+  }
+
   QPointF world = (xy-tlDest()) / scale() + topLeft();
+  QRectF we = extent();
+
   Axis *xax = findXAxis();
   Axis *yax = findYAxis();
-  
   QString x = coordtext(xax->rev(world), xax->min(), xax->max());
   QString y = coordtext(yax->rev(world), yax->min(), yax->max());
-  QRectF we = extent();
-  if (world.x()<we.left()+marg || world.x()>we.right()-marg)
-    x = QString::fromUtf8("–");
-  if (world.y()<we.top()+marg || world.y()>we.bottom()-marg)
-    y = QString::fromUtf8("–");
-
+  
   QString c = QString("(%1, %2)").arg(x).arg(y);
+  c.replace("-", "−"); // proper minus sign
+  QString tptxt = "";
   if (trackpanel != "-")
-    c = "[" + trackpanel + "] " + c;
-  coord->setText(c);
-  if (button || what!="move")
+    tptxt = "[" + trackpanel + "] ";
+  if (trackpanel.length()==2) {
+    // simple subplots, interpret pyqplot's AA style naming
+    int row = trackpanel[0].unicode() - 'A';
+    int col = trackpanel[1].unicode() - 'A';
+    if (row >= 0 && row <= 26 && col>=0 && col <= 26)
+      tptxt = QString("[%1,%2] ").arg(row).arg(col);
+  }
+  coord->setText(tptxt + c);
+  
+  if (button || what != "move")
     feedback(QString("%1 %2 %3 %4 %5").
 	     arg(what).arg(trackpanel).arg(x).arg(y).arg(button));
 }

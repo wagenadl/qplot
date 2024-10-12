@@ -69,6 +69,7 @@ private:
   QString trackpanel;
   class QLabel *coord;
   bool ruler;
+  bool coords;
   bool brandnew;
 };
 
