@@ -273,7 +273,6 @@ void QPWidget::mousePressEvent(QMouseEvent *e) {
     trackpanel = tp;
     reportTrack(xy, e->button(), "press");
   }
-  setCursor(Qt::OpenHandCursor);
 }
 
 void QPWidget::keyPressEvent(QKeyEvent *e) {

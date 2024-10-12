@@ -33,6 +33,7 @@ ScrollWidget::ScrollWidget(QWidget *parent): QWidget(parent) {
   tl_world = QPointF(0,0);
   scalefactor = iu2pt(1);
   scaletofit = true;
+  dragging = false;
 }
 
 ScrollWidget::~ScrollWidget() {
@@ -87,12 +88,16 @@ double ScrollWidget::scale() const {
 }    
 
 void ScrollWidget::mousePressEvent(QMouseEvent *e) {
+  dragging = e->modifiers() & Qt::ControlModifier;
+  if (dragging)
+    setCursor(Qt::OpenHandCursor);
+    
   pos_press = e->pos();
   tl_press = tl_world;
 }
 
 void ScrollWidget::mouseMoveEvent(QMouseEvent *e) {
-  if (e->buttons()==0)
+  if (!dragging)
     return;
   
   QPointF pos_now = e->pos();
@@ -194,4 +199,10 @@ void ScrollWidget::wheelEvent(QWheelEvent *e) {
   QPointF mousexy_new = tl_world + (e->position()-tlDest())/scale();
   tl_world += mousexy_old - mousexy_new;
   surePan();
+}
+
+void ScrollWidget::mouseReleaseEvent(QMouseEvent *) {
+  if (dragging)
+    setCursor(Qt::ArrowCursor);
+  dragging = false;
 }

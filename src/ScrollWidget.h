@@ -47,6 +47,7 @@ protected:
   void keyPressEvent(QKeyEvent *);
   void mousePressEvent(QMouseEvent *);
   void mouseMoveEvent(QMouseEvent *);
+  void mouseReleaseEvent(QMouseEvent *);
   void wheelEvent(QWheelEvent *);
 private:
   void surePan();
@@ -59,6 +60,7 @@ private:
   double scalefactor;
   QPointF pos_press;
   QPointF tl_press;
+  bool dragging;
 };
 
 #endif
