@@ -49,7 +49,7 @@ QPWidget::QPWidget(QWidget *parent): ScrollWidget(parent) {
   //  coord->move(5, height() - coord->height() - 5);
   coord->setAutoFillBackground(true);
   QPalette p = coord->palette();
-  p.setColor(QPalette::Window, QColor(220, 220, 220, 200));
+  p.setColor(QPalette::Window, QColor(255, 255, 255, 200));
   coord->setMargin(5);
   coord->setPalette(p);
   trackpanel = "-";
@@ -301,10 +301,7 @@ void QPWidget::keyPressEvent(QKeyEvent *e) {
       takeScreenShot();
     } else {
       coords = !coords;
-      if (coords)
-	coord->show();
-      else
-	coord->hide();
+      reportTrack(mapFromGlobal(QCursor::pos(screen())), 0, "move");
     }
     break;
   case Qt::Key_R:
@@ -419,8 +416,8 @@ Axis *QPWidget::findYAxis() {
 }
 
 void QPWidget::reportTrack(QPointF xy, int button, QString what) {
-  if (!fig || trackpanel=="") {
-    coord->setText("");
+  if (!fig || trackpanel=="" || !coords) {
+    coord->hide();
     return;
   }
 
@@ -453,6 +450,7 @@ void QPWidget::reportTrack(QPointF xy, int button, QString what) {
   if (yc + coord->height() > height() - 5)
     yc = xy.y() - coord->height() - 10;
   coord->move(xc, yc);
+  coord->show();
   
   if (button || what != "move")
     feedback(QString("%1 %2 %3 %4 %5").
