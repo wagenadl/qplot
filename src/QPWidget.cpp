@@ -45,8 +45,13 @@ QPWidget::QPWidget(QWidget *parent): ScrollWidget(parent) {
   QRect r = fm.boundingRect("AZ09");
   f.setPointSize(14);
   coord->setFont(f);
-  coord->resize(width()/2, r.height() + 5);
-  coord->move(5, height() - coord->height() - 5);
+  //  coord->resize(width()/2, r.height() + 5);
+  //  coord->move(5, height() - coord->height() - 5);
+  coord->setAutoFillBackground(true);
+  QPalette p = coord->palette();
+  p.setColor(QPalette::Window, QColor(220, 220, 220, 200));
+  coord->setMargin(5);
+  coord->setPalette(p);
   trackpanel = "-";
   ruler = false;
   coords = false;
@@ -419,7 +424,7 @@ void QPWidget::reportTrack(QPointF xy, int button, QString what) {
     return;
   }
 
-  QPointF world = (xy-tlDest()) / scale() + topLeft();
+  QPointF world = (xy - tlDest()) / scale() + topLeft();
   QRectF we = extent();
 
   Axis *xax = findXAxis();
@@ -439,7 +444,15 @@ void QPWidget::reportTrack(QPointF xy, int button, QString what) {
     if (row >= 0 && row <= 26 && col>=0 && col <= 26)
       tptxt = QString("[%1,%2] ").arg(row).arg(col);
   }
-  coord->setText(tptxt + c);
+  coord->setText(c);
+  coord->resize(coord->sizeHint());
+  int xc = xy.x() + 10;
+  if (xc + coord->width() > width() - 5)
+    xc = xy.x() - coord->width() - 10;
+  int yc = xy.y() + 10;
+  if (yc + coord->height() > height() - 5)
+    yc = xy.y() - coord->height() - 10;
+  coord->move(xc, yc);
   
   if (button || what != "move")
     feedback(QString("%1 %2 %3 %4 %5").
