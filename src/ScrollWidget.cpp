@@ -88,9 +88,7 @@ double ScrollWidget::scale() const {
 }    
 
 void ScrollWidget::mousePressEvent(QMouseEvent *e) {
-  dragging = e->modifiers() & Qt::ControlModifier;
-  if (dragging)
-    setCursor(Qt::OpenHandCursor);
+  dragging = (!requirectrl) || (e->modifiers() & Qt::ControlModifier);
     
   pos_press = e->pos();
   tl_press = tl_world;
@@ -202,7 +200,9 @@ void ScrollWidget::wheelEvent(QWheelEvent *e) {
 }
 
 void ScrollWidget::mouseReleaseEvent(QMouseEvent *) {
-  if (dragging)
-    setCursor(Qt::ArrowCursor);
   dragging = false;
+}
+
+void ScrollWidget::setRequireControl(bool b) {
+  requirectrl = b;
 }

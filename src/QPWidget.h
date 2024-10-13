@@ -52,6 +52,7 @@ private:
   void reportTrack(QPointF xy, int button, QString what);
   void renderMargin(QPainter &);
   void renderRuler(QPainter &);
+  void pickCursor();
   Axis *findXAxis();
   Axis *findYAxis();
   void feedback(QString);
