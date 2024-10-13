@@ -45,11 +45,11 @@ public:
   // Note: brDest is (widget-width, widget-bottom) except at low zoom
   double scale() const;
 protected:
-  void keyPressEvent(QKeyEvent *);
-  void mousePressEvent(QMouseEvent *);
-  void mouseMoveEvent(QMouseEvent *);
-  void mouseReleaseEvent(QMouseEvent *);
-  void wheelEvent(QWheelEvent *);
+  void keyPressEvent(QKeyEvent *) override;
+  void mousePressEvent(QMouseEvent *) override;
+  void mouseMoveEvent(QMouseEvent *) override;
+  void mouseReleaseEvent(QMouseEvent *) override;
+  void wheelEvent(QWheelEvent *) override;
 protected:
   bool isDragging() const { return dragging; }
 private:

@@ -1,4 +1,4 @@
-# CMakeLists.txt - Part of QPlot, (C) Daniel Wagenaar 2021
+# CMakeLists.txt - Part of QPlot, (C) Daniel Wagenaar 2013-2024
 
 
 ######################################################################
@@ -31,6 +31,7 @@ find_package(Qt5 COMPONENTS Widgets Svg PrintSupport REQUIRED)
 add_executable(qplot WIN32 MACOSX_BUNDLE)
 
 include(src/CMakeLists.txt)
+target_sources(qplot PRIVATE src/qplot.qrc )
 
 # Libraries to link to - Qt must be mentioned
 target_link_libraries(qplot Qt5::Widgets)

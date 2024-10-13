@@ -41,9 +41,10 @@ void CmdEndGroup::render(Statement const &, Figure &f, bool dryrun) {
     return;
   if (!f.areBoundingBoxesShown())
     return;
-  QPen p = f.painter().pen();
+  f.painter().save();
+  f.painter().setBrush(Qt::NoBrush);
   f.painter().setPen(QPen(QColor(0, 180, 0), 8, Qt::DotLine, Qt::RoundCap));
   f.painter().drawRect(f.lastBBox());
-  f.painter().setPen(p);
+  f.painter().restore();
 }
 
