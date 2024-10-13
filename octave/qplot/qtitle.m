@@ -28,7 +28,7 @@ pid = qp_data.info(idx).panel;
 if pid=='-'
   xywh = qp_data.info(idx).extent;
 else
-  oldidx = strmatch(pid, qp_data.info(idx).panels, 'exact');
+  oldidx = find(strcmp(pid, qp_data.info(idx).panels));
   if isempty(oldidx)
     error('Confused about panels');
   end

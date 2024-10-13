@@ -26,8 +26,7 @@ end
 
 txt = 'align';
 for k=1:nargin
-  if isempty(strmatch(varargin{k}, ...
-	strtoks('left right center top bottom middle base')))
+  if ~any(strcmp(varargin{k}, strtoks('left right center top bottom middle base')))
     error('Usage: qalign left|right|center|top|bottom|middle|base ...');
   end
   txt = [ txt ' ' varargin{k} ];

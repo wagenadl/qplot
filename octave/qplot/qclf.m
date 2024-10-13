@@ -10,7 +10,7 @@ l0 = fgets(fd);
 fclose(fd);
 fd = fopen(fn, 'w');
 fprintf(fd, '%s', l0);
-idx = strmatch(fn, qp_data.fns, 'exact');
+idx = find(strcmp(fn, qp_data.fns));
 qp_data.info(idx).fd = fd;
 
 % QPlot - Publication quality 2D graphs with dual coordinate systems

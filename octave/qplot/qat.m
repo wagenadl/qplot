@@ -70,9 +70,9 @@ else
     elseif isnscalar(a) && isreal(a) && ~isnan(a)
       str = sprintf('%s %g', str, a);
       atcoord(k) = a;
-    elseif k==1 && ischar(a) && ~isempty(strmatch(a, strtoks('left right center abs absolute'), 'exact'))
+    elseif k==1 && ischar(a) && any(strcmp(a, strtoks('left right center abs absolute')))
       str = sprintf('%s %s', str, a);
-    elseif k==2 && ischar(a) && ~isempty(strmatch(a, strtoks('top bottom middle abs absolute'), 'exact'))
+    elseif k==2 && ischar(a) && any(strcmp(a, strtoks('top bottom middle abs absolute')))
       str = sprintf('%s %s', str, a);
     elseif k<=2 && ((ischar(a) && strcmp(a, '-')) || (isnscalar(a) && isnan(a)))
       str = sprintf('%s -', str);

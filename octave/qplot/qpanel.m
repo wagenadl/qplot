@@ -70,7 +70,7 @@ fprintf(fd, '%s\n', str);
 
 idx = qp_idx;
 global qp_data;
-oldidx = strmatch(id, qp_data.info(idx).panels, 'exact');
+oldidx = find(strcmp(id, qp_data.info(idx).panels));
 if isempty(oldidx)
   qp_data.info(idx).panels{end+1} = id;
   oldidx = length(qp_data.info(idx).panels);

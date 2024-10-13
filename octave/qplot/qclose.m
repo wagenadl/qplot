@@ -43,7 +43,7 @@ if isempty(fn)
 end
 
 fn = qp_ensureqpt(fn);
-idx = strmatch(fn, qp_data.fns, 'exact');
+idx = find(strcmp(fn, qp_data.fns));
 if isempty(idx)
   warning('No such window');
   return;
