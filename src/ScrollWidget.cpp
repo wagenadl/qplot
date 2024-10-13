@@ -24,6 +24,7 @@
 #include <QMouseEvent>
 #include <QKeyEvent>
 #include <QDebug>
+#include <QScreen>
 #include <QCursor>
 #include "Factor.h"
 #include <math.h>
@@ -71,6 +72,7 @@ void ScrollWidget::autoSize() {
   tl_world = extent_world.topLeft();
   QSizeF s = extent_world.size();
   s *= scale();
+  s *= screen()->logicalDotsPerInch() / 96;
   resize(s.toSize());
   update();
 }

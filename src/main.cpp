@@ -166,6 +166,7 @@ int showVersion() {
 
 
 int main(int argc, char **argv) {
+  QApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
   QApplication app(argc, argv);
   app.setApplicationName("QPlot");
   app.setApplicationVersion(QPLOT_VERSION);
