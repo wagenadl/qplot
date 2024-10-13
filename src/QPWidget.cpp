@@ -95,11 +95,11 @@ void QPWidget::setContents(Figure *f, Program *p) {
 void QPWidget::clickMenu() {
   QMenu menu;
 
-  QAction about{"&About…"};
+  QAction about{"&About QPlot…"};
   menu.addAction(&about);
 
   QMenu showhide("&Show/hide");
-  QAction coordinates{"Coordinates"};
+  QAction coordinates{"&Coordinates"};
   coordinates.setShortcut(Qt::Key_C);
   coordinates.setCheckable(true);
   coordinates.setChecked(showcoords);
@@ -111,8 +111,8 @@ void QPWidget::clickMenu() {
   margin.setChecked(graymargin);
   showhide.addAction(&margin);
   
-  QAction crops{"&Crop marks"};
-  coordinates.setShortcut(Qt::Key_M);
+  QAction crops{"Crop &marks"};
+  crops.setShortcut(Qt::Key_M);
   crops.setCheckable(true);
   crops.setChecked(showcropmarks);
   showhide.addAction(&crops);
