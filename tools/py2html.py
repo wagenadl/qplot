@@ -23,14 +23,16 @@ import inspect
 sys.path.append('..')
 import qplot as qp
 
-ofn = sys.argv[1]
-dr, fn = os.path.split(sys.argv[1])
-func, xt = os.path.splitext(fn)
+#ofn = sys.argv[1]
+#dr, fn = os.path.split(sys.argv[1])
+#func, xt = os.path.splitext(fn)
 
-funcs = {k for k,v in qp.__dict__.items() if callable(v)}
+
+funcs = {k for k, v in qp.__dict__.items() if callable(v) and not k.startswith("_")}
 for k, v in qp.luts.__dict__.items():
-    if callable(v):
+    if callable(v) and not k.startswith("_"):
         funcs.add("luts." + k)
+funcs = { k for k in funcs if k==k.lower()}
 
 
 def writeheader(f, func):
@@ -52,6 +54,7 @@ QPlot Documentation — (C) <a href="http://www.danielwagenaar.net">Daniel Wagen
 </body>
 </html>
 ''')
+    
 
 def indextext(f):
     f.write('''<div class="toindex">
@@ -73,10 +76,12 @@ def extracttitle(func, doc):
         sys.exit(1)
     return title
 
+
 def extractbody(doc):
     lines = doc.split('\n')
     lines.pop(0)
     return '\n'.join(lines)
+
 
 def pyeg(doc, func):
     out = []
@@ -97,6 +102,7 @@ def pyeg(doc, func):
         else:
             out.append(bit)
     return ''.join(out)
+
 
 def pydoc(doc, func, kww):
     r = re.compile(r'((?<!LUTS)\W+)')
@@ -187,6 +193,7 @@ def pydoc(doc, func, kww):
         column += len(bit)
     return ''.join(out) + '\n'
 
+
 def titletext(f, func, tagline):
     f.write('''<div class="titlehead">
 <span class="title mefunc">%s</span>
@@ -194,6 +201,7 @@ def titletext(f, func, tagline):
 </div>
 ''' % (func, tagline))
 
+    
 def submoduletext(f, func, body):
     f.write('''<div class="pysighead">Contained functions:</div>
 <div class="pyhelp">
@@ -231,7 +239,8 @@ def sigline(f, func, obj):
     f.write(''')</p></div>
 ''')
     return kww
-    
+
+
 def bodytext(f, body, func, kww):
     f.write('''<div class="pyhelphead">Help text:</div>
 <div class="pyhelp">
@@ -240,6 +249,7 @@ def bodytext(f, body, func, kww):
     f.write('''</div>
 ''')
 
+    
 def egimage(f, func):
     f.write('''<div class="egimage">
 <image class="egimg" src="%s.png" width="300px">
@@ -247,6 +257,7 @@ def egimage(f, func):
 </div>
 ''' % (func, func))
 
+    
 def egtext(f, func, example):
     f.write('''<div class="egcontainer">
 <div class="eghead">Example:</div>
@@ -268,32 +279,47 @@ Download <a href="%s_eg.py">source</a>.
 </div>
 ''' % func)
 
-obj = qp
-for fn in func.split("."):
-    obj = obj.__dict__[fn]
-doc = obj.__doc__
-title = extracttitle(func, doc)
-body = extractbody(doc)
-with open('html/pyref/%s_eg.py' % func) as f:
-    example = f.read().split('\n')
 
-with open(ofn, 'w') as f:
-    writeheader(f, func)
-    indextext(f)
-    titletext(f, func, title)
-    if func=="luts":
-        submoduletext(f, func, body)
-    else:
-        kww = sigline(f, func, obj)
-        bodytext(f, body, func, kww)
-    if os.path.exists('html/pyref/%s.png' % func):
-        s = os.stat('html/pyref/%s.png' % func)
-        if s.st_size>0:
-            egimage(f, func)
-    if example is not None:
-        egtext(f, func, example)
+def document(func, outpath):
+    obj = qp
+    for fn in func.split("."):
+        obj = obj.__dict__[fn]
+        doc = obj.__doc__
+        
+    title = extracttitle(func, doc)
+    body = extractbody(doc)
+    try:
+        with open(f"{outpath}/{func}_eg.py") as f:
+            example = f.read().split('\n')
+    except FileNotFoundError:
+        print("Not documented by example:", func)
+        example = None
 
-    if func.startswith("luts."):
-        f.write('''<p>The full collection of available colormaps is shown <a href="lutdemo.html">here</a>.''')
-    writetrailer(f)
+    with open(f"{outpath}/{func}.html", "w") as f:
+        writeheader(f, func)
+        indextext(f)
+        titletext(f, func, title)
+        if func=="luts":
+            submoduletext(f, func, body)
+        else:
+            kww = sigline(f, func, obj)
+            bodytext(f, body, func, kww)
+        if os.path.exists(f"{outpath}/{func}.png"):
+            s = os.stat(f"{outpath}/{func}.png")
+            if s.st_size>0:
+                egimage(f, func)
+        if example is not None:
+            egtext(f, func, example)
 
+        if func.startswith("luts."):
+            f.write('''<p>The full collection of available colormaps is shown <a href="lutdemo.html">here</a>.''')
+        writetrailer(f)
+
+    
+def main():
+    outpath = "html/pyref"
+    for func in funcs:
+        document(func, outpath)
+
+
+main()        

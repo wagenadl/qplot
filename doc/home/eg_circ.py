@@ -12,14 +12,14 @@ xy = np.array([
   [.53813,   0.46068]])
 
 phi = qp.arange(0, 2*np.pi, 0.01)
-qp.pen('777', 0, pattern='dash')
+qp.pen('777', pattern='dash')
 qp.plot(.5*np.cos(phi), .5*np.sin(phi))
 qp.pen(pattern='solid')
 qp.plot(np.cos(phi), np.sin(phi))
 qp.plot(1.05*np.array([-1, 1]), [0, 0])
 qp.plot([0, 0], 1.05*np.array([-1, 1]))
 
-qp.pen('k')
+qp.pen()
 
 
 qp.marker('o', 4, 'solid')

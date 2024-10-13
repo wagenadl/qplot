@@ -9,7 +9,7 @@ yy = np.cos(xx)
 qp.marker('o', 3, 'solid')
 qp.mark(xx, yy)
 
-qp.pen('777')
+qp.pen('777', 1)
 for n in range(len(xx)-1):
     qp.gline([[qp.AbsData(xx[n],yy[n]), qp.Retract(5)],
               [qp.AbsData(xx[n+1],yy[n+1]), qp.Retract(5)]])
