@@ -116,10 +116,12 @@ void CmdText::render(Statement const &s, Figure &f, bool dummy) {
     return;
 
   if (f.areBoundingBoxesShown()) {
-    QPen p = f.painter().pen();
+    f.painter().save();
     f.painter().setPen(QPen(QColor(255, 0, 0), 8));
+    f.painter().setBrush(Qt::NoBrush);
     f.painter().drawRect(r);
-    f.painter().setPen(p);
+    f.painter().restore();
+    
   }
 
   f.painter().save();

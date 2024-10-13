@@ -23,28 +23,50 @@
 #include <QDebug>
 #include <QKeyEvent>
 #include <QLabel>
+#include <QIcon>
 #include <math.h>
 #include <QApplication>
 #include <QClipboard>
 #include <iostream>
 #include <QFont>
 #include <QFontMetrics>
+#include <QMenu>
+#include <QAction>
+#include <QMessageBox>
+#include "config.h"
+
 
 #define MARGPIX 15
+
 
 QPWidget::QPWidget(QWidget *parent): ScrollWidget(parent) {
   brandnew = true;
   fig=0;
   prog=0;
   marg = 20;
-  margindecor = NONE;
+  showcropmarks = false;
+  graymargin = false;
+  prepCoord();
+  showcoords = true;
+  trackpanel = "-";
+  ruler = false;
+  pickCursor();
+  setMouseTracking(true);
+  showmenu = true;
+  placeMenuButton();
+}
+
+QPWidget::~QPWidget() {
+}
+
+void QPWidget::prepCoord() {
   coord = new QLabel(this);
   coord->hide();
   QFont f = font();
-  QFontMetrics fm(f);
-  QRect r = fm.boundingRect("AZ09");
   f.setPointSize(14);
   coord->setFont(f);
+  QFontMetrics fm(f);
+  QRect r = fm.boundingRect("AZ09");
   //  coord->resize(width()/2, r.height() + 5);
   //  coord->move(5, height() - coord->height() - 5);
   coord->setAutoFillBackground(true);
@@ -52,15 +74,7 @@ QPWidget::QPWidget(QWidget *parent): ScrollWidget(parent) {
   p.setColor(QPalette::Window, QColor(255, 255, 255, 200));
   coord->setMargin(5);
   coord->setPalette(p);
-  trackpanel = "-";
-  ruler = false;
-  coords = true;
-  pickCursor();
-  setMouseTracking(true);
-}
-
-QPWidget::~QPWidget() {
-}
+}  
 
 void QPWidget::setMargin(double m) {
   marg = m;
@@ -76,6 +90,90 @@ void QPWidget::setContents(Figure *f, Program *p) {
   } else {
     update();
   }
+}
+
+void QPWidget::clickMenu() {
+  QMenu menu;
+
+  QAction about{"&About…"};
+  menu.addAction(&about);
+
+  QMenu showhide("&Show/hide");
+  QAction coordinates{"Coordinates"};
+  coordinates.setShortcut(Qt::Key_C);
+  coordinates.setCheckable(true);
+  coordinates.setChecked(showcoords);
+  showhide.addAction(&coordinates);
+
+  QAction margin{"&Gray margin"};
+  margin.setShortcut(Qt::Key_G);
+  margin.setCheckable(true);
+  margin.setChecked(graymargin);
+  showhide.addAction(&margin);
+  
+  QAction crops{"&Crop marks"};
+  coordinates.setShortcut(Qt::Key_M);
+  crops.setCheckable(true);
+  crops.setChecked(showcropmarks);
+  showhide.addAction(&crops);
+
+  QAction ruler{"&Rulers"};
+  ruler.setShortcut(Qt::Key_R);
+  ruler.setCheckable(true);
+  ruler.setChecked(hasRuler());
+  showhide.addAction(&ruler);
+
+  QAction boxes{"&Boxes (debug)"};
+  boxes.setShortcut(Qt::Key_B);
+  boxes.setCheckable(true);
+  boxes.setChecked(fig->areBoundingBoxesShown());
+  showhide.addAction(&boxes);
+  
+  menu.addMenu(&showhide);
+
+  QAction shot({"Screensho&t"});
+  shot.setShortcut(Qt::CTRL + Qt::Key_C);
+  menu.addAction(&shot);
+  
+  QAction close{"&Close"};
+  menu.addAction(&close);
+
+  menu.move(QCursor::pos(screen()));
+  QAction *act = menu.exec();
+
+  if (act==&shot) {
+    takeScreenShot();
+  } else if (act==&about) {
+    aboutAction();
+  } else if (act==&close) {
+    this->close();
+  } else if (act==&margin) {
+    graymargin = margin.isChecked();
+    update();
+  } else if (act==&crops) {
+    showcropmarks = crops.isChecked();
+    update();
+  } else if (act==&ruler) {
+    setRuler(ruler.isChecked());
+  } else if (act==&boxes) {
+    fig->showBoundingBoxes(boxes.isChecked());
+  } else if (act==&coordinates) {
+    showcoords = coordinates.isChecked();
+    update(); // this doesn't actually do it
+  }  
+}
+
+void QPWidget::paintMenuButton() {
+  QPainter p(this);
+  p.setPen(QPen(QColor(100, 100, 100), 2));
+  int w = menurect.width();
+  int h = menurect.height();
+  int x0 = menurect.left() + w / 4;
+  int y0 = menurect.top() + h / 2;
+  w = w/2;
+  int dy = h / 4;
+  for (int k=-1; k<=1; k++)
+    p.drawLine(x0, y0 + k*dy, x0+w, y0 + k*dy);
 }
 
 
@@ -95,7 +193,7 @@ void QPWidget::paintEvent(QPaintEvent *) {
   QPainter &p(fig->painter());
   p.begin(this); // resets state of pen
 
-  p.setBrush(margindecor==GRAY ? QColor(200, 200, 200) : QColor("white"));
+  p.setBrush(graymargin ? QColor(200, 200, 200) : QColor("white"));
   p.setPen(Qt::NoPen);
   p.drawRect(rect());
   
@@ -114,6 +212,10 @@ void QPWidget::paintEvent(QPaintEvent *) {
   prog->render(*fig);
   
   p.end();
+
+  if (showmenu)
+    paintMenuButton();
+ 
 }
 
 static QString coordtext(double x, double dx) {
@@ -236,38 +338,45 @@ void QPWidget::renderRuler(QPainter &p) {
 
 void QPWidget::renderMargin(QPainter &p) {
   p.save();
-  QRectF world = fig->extent();
-  if (margindecor==GRAY) {
-    // draw background
+  if (graymargin) {
     p.setBrush(QColor("white"));
     p.setPen(Qt::NoPen);
-    p.drawRect(world);
-  } else if (margindecor==CROP) {
-    // draw crop marks
-    p.setPen(QPen(QColor("black"), 2 / scale()));
-    double yy[]{ world.top(), world.bottom() };
-    double xx[]{ world.left(), world.right() };
-    double dm = MARGPIX / scale();
-    if (dm > .25 * marg)
-      dm = .25 * marg;
-    double ddm = .75 * marg;
-    for (int k=0; k<2; k++) {
-      double x = xx[k];
-      double y = yy[0];
-      p.drawLine(QPointF(x, y - ddm), QPointF(x, y - dm));
-      y = yy[1];
-      p.drawLine(QPointF(x, y + ddm), QPointF(x, y + dm));
-      y = yy[k];
-      x = xx[0];
-      p.drawLine(QPointF(x - ddm, y), QPointF(x - dm, y));
-      x = xx[1];
-      p.drawLine(QPointF(x + ddm, y), QPointF(x + dm, y));
-    }
+    p.drawRect(fig->extent());
   }
+  if (showcropmarks)
+    drawCropMarks(p);
   p.restore();
+}
+
+void QPWidget::drawCropMarks(QPainter &p) {
+  QRectF world = fig->extent();
+  p.setPen(QPen(QColor("black"), 2 / scale()));
+  double yy[]{ world.top(), world.bottom() };
+  double xx[]{ world.left(), world.right() };
+  double dm = MARGPIX / scale();
+  if (dm > .25 * marg)
+    dm = .25 * marg;
+  double ddm = .75 * marg;
+  for (int k=0; k<2; k++) {
+    double x = xx[k];
+    double y = yy[0];
+    p.drawLine(QPointF(x, y - ddm), QPointF(x, y - dm));
+    y = yy[1];
+    p.drawLine(QPointF(x, y + ddm), QPointF(x, y + dm));
+    y = yy[k];
+    x = xx[0];
+    p.drawLine(QPointF(x - ddm, y), QPointF(x - dm, y));
+    x = xx[1];
+    p.drawLine(QPointF(x + ddm, y), QPointF(x + dm, y));
+  }
 }  
 
 void QPWidget::mousePressEvent(QMouseEvent *e) {
+  if (menurect.contains(e->pos())) {
+    clickMenu();
+    return;
+  }
+      
   ScrollWidget::mousePressEvent(e);
   if (fig) {
     QPointF xy = e->pos();
@@ -285,24 +394,18 @@ void QPWidget::mousePressEvent(QMouseEvent *e) {
 void QPWidget::keyPressEvent(QKeyEvent *e) {
   switch (e->key()) {
   case Qt::Key_G:
-    switch (margindecor) {
-    case NONE:
-      margindecor = GRAY;
-      break;
-    case GRAY:
-      margindecor = CROP;
-      break;
-    case CROP:
-      margindecor = NONE;
-      break;
-    }
+    graymargin = !graymargin;
+    update();
+    break;
+  case Qt::Key_M:
+    showcropmarks = !showcropmarks;
     update();
     break;
   case Qt::Key_C:
     if (e->modifiers() & Qt::ControlModifier) {
       takeScreenShot();
     } else {
-      coords = !coords;
+      showcoords = !showcoords;
       pickCursor();
       reportTrack(mapFromGlobal(QCursor::pos(screen())), 0, "move");
     }
@@ -324,6 +427,10 @@ void QPWidget::takeScreenShot() {
   if (!fig || !prog)
     return;
 
+  bool coordseen = showcoords;
+  bool menuseen = showmenu;
+  showmenu = false;
+  coord->hide();
   QRect r0(QPoint(0,0), size());
   QRectF world = fig->extent();
   QPointF tld = tlDest();
@@ -337,6 +444,10 @@ void QPWidget::takeScreenShot() {
   QPixmap pm = grab(r.toRect());
   QClipboard *cb = QApplication::clipboard();
   cb->setPixmap(pm);
+  if (coordseen)
+    coord->show();
+  if (menuseen)
+    showmenu = true;
 }
 
 bool QPWidget::hasRuler() const {
@@ -355,10 +466,17 @@ void QPWidget::setWindowTitle(QString t) {
   ScrollWidget::setWindowTitle(t);
 }
 
+void QPWidget::placeMenuButton() {
+  int w = 24;
+  int h = 20;
+  menurect = QRect(0, 0, w, h); // QRect(width() - w, 0, w, h);
+}
+
 void QPWidget::resizeEvent(QResizeEvent *e) {
   ScrollWidget::resizeEvent(e);
-  coord->resize(width()/2, 24);
-  coord->move(5, height() - coord->height() - 5);
+  //coord->resize(width()/2, 24);
+  //coord->move(5, height() - coord->height() - 5);
+  placeMenuButton();
 }
 
 
@@ -384,7 +502,7 @@ void QPWidget::pickCursor() {
   if (trackpanel=="") {
     setCursor(Qt::ArrowCursor);
     setRequireControl(true);
-  } else if (coords && !isDragging()) {
+  } else if (showcoords && !isDragging()) {
     setCursor(Qt::CrossCursor);
     setRequireControl(true);
   } else {
@@ -426,7 +544,7 @@ Axis *QPWidget::findYAxis() {
 }
 
 void QPWidget::reportTrack(QPointF xy, int button, QString what) {
-  if (!fig || trackpanel=="" || !coords) {
+  if (!fig || trackpanel=="" || !showcoords) {
     coord->hide();
     return;
   }
@@ -470,4 +588,50 @@ void QPWidget::reportTrack(QPointF xy, int button, QString what) {
 void QPWidget::feedback(QString s) {
   std::cout << s.toUtf8().data() << "\n";
   std::cout.flush();
+}
+
+void QPWidget::leaveEvent(QEvent *e) {
+  ScrollWidget::leaveEvent(e);
+  coord->hide();
+}
+
+void QPWidget::aboutAction() {
+  QString msg = "<b>QPlot</b> ";
+  msg += QPLOT_VERSION;
+  msg += "<br>";
+  msg += "(C) 2013–2024  Daniel A. Wagenaar<br><br>";
+  msg +=
+    "<b>QPlot</b> is is an alternative 2D plotting library for"
+    " Python, Matlab, and Octave that facilitates beautiful typography"
+    " and precise axis scaling.<br>"
+    "<br>"
+    "<b>QPlot</b> is free software: you can redistribute it and/or"
+    " modify it under the terms of the GNU General Public License as"
+    " published by the Free Software Foundation, either version 3 of"
+    " the License, or (at your option) any later"
+    " version.<br>"
+    "<br>"
+    "<b>QPlot</b> is distributed in the hope"
+    " that it will be useful, but WITHOUT ANY WARRANTY; without even"
+    " the implied warranty of MERCHANTABILITY or FITNESS FOR A"
+    " PARTICULAR PURPOSE. See the GNU General Public License for"
+    " more details.<br>"
+    "<br>"
+    "You should have received a copy of the GNU"
+    " General Public License along with this program. If not, see <a"
+    " href=\"http://www.gnu.org/licenses/gpl-3.0.en.html\">www.gnu.org/licenses/gpl-3.0.en.html</a>.";
+  
+  QMessageBox box;
+  box.setWindowTitle("About QPlot");
+  box.setTextFormat(Qt::RichText);
+  box.setText(msg);
+  box.setIcon(QMessageBox::Information);
+  int iconwidth = box.iconPixmap().width() * 128/48;
+  if (iconwidth>128)
+    iconwidth = 128;
+  box.setIconPixmap(QPixmap(":qplot.png")
+                    .scaled(QSize(iconwidth,iconwidth),
+                            Qt::KeepAspectRatio,
+                            Qt::SmoothTransformation));
+  box.exec();
 }

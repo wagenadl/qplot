@@ -40,14 +40,15 @@ public:
   bool hasRuler() const;
   void takeScreenShot();
 protected:
-  virtual void keyPressEvent(QKeyEvent *);
-  virtual void paintEvent(QPaintEvent *);
-  virtual void resizeEvent(QResizeEvent *);
-  virtual void mouseReleaseEvent(QMouseEvent *);
-  virtual void mouseMoveEvent(QMouseEvent *);
-  virtual void mousePressEvent(QMouseEvent *);
-  virtual void mouseDoubleClickEvent(QMouseEvent *);
-  virtual void closeEvent(QCloseEvent *);
+  void keyPressEvent(QKeyEvent *) override;
+  void paintEvent(QPaintEvent *) override;
+  void resizeEvent(QResizeEvent *) override;
+  void mouseReleaseEvent(QMouseEvent *) override;
+  void mouseMoveEvent(QMouseEvent *) override;
+  void mousePressEvent(QMouseEvent *) override;
+  void mouseDoubleClickEvent(QMouseEvent *) override;
+  void closeEvent(QCloseEvent *) override;
+  void leaveEvent(QEvent *) override;
 private:
   void reportTrack(QPointF xy, int button, QString what);
   void renderMargin(QPainter &);
@@ -56,22 +57,27 @@ private:
   Axis *findXAxis();
   Axis *findYAxis();
   void feedback(QString);
+  void placeMenuButton();
+  void prepCoord();
+  void paintMenuButton();
+  void clickMenu();
+  void drawCropMarks(QPainter &);
+  void aboutAction();
 private:
   Figure *fig;
   Program *prog;
   double marg;
-  enum MarginDecor {
-    NONE,
-    GRAY,
-    CROP,
-  } margindecor;
   QRectF worldextent;
   QString winttl;
   QString trackpanel;
   class QLabel *coord;
   bool ruler;
-  bool coords;
   bool brandnew;
+  QRect menurect;
+  bool showmenu;
+  bool showcoords;
+  bool showcropmarks;
+  bool graymargin;
 };
 
 #endif

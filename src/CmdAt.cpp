@@ -211,8 +211,9 @@ void CmdAt::render(Statement const &s, Figure &f, bool dryrun) {
     return;
   if (!f.areBoundingBoxesShown())
     return;
-  QPen p = f.painter().pen();
+  f.painter().save();
   f.painter().setPen(QPen(QColor(255, 0, 0), 10));
+  f.painter().setBrush(Qt::NoBrush);
   f.painter().drawEllipse(anchor, 30, 30);
-  f.painter().setPen(p);
+  f.painter().restore();
 }
