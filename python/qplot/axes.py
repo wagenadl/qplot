@@ -354,7 +354,10 @@ def xaxis(title='', ticks=None, labels=None, y=None, lim=None, flip=False,
     
     qi.ensure()
     if y is None:
-        y = utils.sensibleticks(qi.f.datarange[2:], 1, inc=True)[0]
+        if qi.f.datarange is None:
+            y = 0
+        else:
+            y = utils.sensibleticks(qi.f.datarange[2:], 1, inc=True)[0]
     if lim is None and ticks is None:
         # If neither lim nor ticks given, lim is inclusive of range
         lim = qi.f.datarange[:2]
@@ -420,7 +423,10 @@ def yaxis(title='', ticks=None, labels=None, x=None, lim=None, flip=False,
     friends. Your mileage may vary.'''
     qi.ensure()
     if x is None:
-        x = utils.sensibleticks(qi.f.datarange[:2], 1, inc=True)[0]
+        if qi.f.datarange is None:
+            x = 0
+        else:
+            x = utils.sensibleticks(qi.f.datarange[:2], 1, inc=True)[0]
     if lim is None and ticks is None:
         # If neither lim nor ticks given, lim is inclusive of range
         lim = qi.f.datarange[2:]

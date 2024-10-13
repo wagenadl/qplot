@@ -89,6 +89,8 @@ def line(xx, yy):
     LINE(xx, yy) draws a line series between the points (XX,YY).
     XX and YY are given in postscript points. 
 
+    If you draw right up to any edge of the panel, SHRINK may fail.
+
     See also PLOT and GLINE.'''
     qi.plot(xx, yy, cmd='line')
 
@@ -100,6 +102,8 @@ def area(xx, yy):
     The polygon is filled with the current brush.
     XX and YY are given in postscript points. 
 
+    If you draw right up to any edge of the panel, SHRINK may fail.
+
     See also PATCH and GAREA.'''
     qi.plot(xx, yy, cmd='area')
 
@@ -107,7 +111,11 @@ def prectangle(x, y, w, h):
     '''PRECTANGLE - Draw a rectangle in paper space
     PRECTANGLE(x, y, w, h) draws a rectangle in paper space with given
     coordinates. The rectangle is drawn with the current pen and filled
-    with the current brush. See also AREA and RECTANGLE.'''
+    with the current brush.
+
+    If you draw right up to any edge of the panel, SHRINK may fail.
+
+    See also AREA and RECTANGLE.'''
     area([x, x+w, x+w, x], [y, y, y+h, y+h])    
 
 def phatch(xx, yy, pattern="|", angle=0, spacing=10, offset=0):
@@ -127,13 +135,19 @@ def phatch(xx, yy, pattern="|", angle=0, spacing=10, offset=0):
     OFFSET shifts this center by the given number of points.
     NaN values in XX or YY may be used to separate multiple polygons to be
     drawn with common line pattern alignment.
+
+    If you draw right up to any edge of the panel, SHRINK may fail.
+
+    
     See also HATCH.'''
     qi.hatch(xx, yy, pattern, angle, spacing, offset, cmd="phatch")
         
 
 def pmark(xx, yy):
     '''PMARK - Draw on the current graph with the current marker
-    PMARK(xx, yy) draws marks at the given location in paper space. 
+    PMARK(xx, yy) draws marks at the given location in paper space.
+  
+    If you draw right up to any edge of the panel, SHRINK may fail.
 
     See also MARKER and MARK.'''
 

@@ -9,9 +9,9 @@ xx = qp.arange(0, 20, .1)
 xx = xx.reshape(1, len(xx))
 yy = xx.T
 
-zz = np.cos(xx/2) + np.sin(yy/2)
+zz = np.cos(xx/2 - xx*yy/40) + np.sin(yy/2 + xx*yy/11)
 
-cc = qp.luts.get('qpjet', 100)
+cc = qp.luts.get('PiYG', 100)
 
 qp.lut(cc)
 

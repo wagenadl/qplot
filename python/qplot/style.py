@@ -50,7 +50,7 @@ def pen(color=None, width=None, join=None, cap=None, pattern=None, \
     PEN() without any arguments restores the default pen, i.e., black, 
     0.5 pt wide, miter join, square cap, solid pattern, fully opaque.
 '''
-    if (color is None or (type(color==str) and color=='-')) \
+    if (color is None or (type(color)==str and color=='-')) \
        and width is None and join is None and cap is None \
        and pattern is None and alpha is None and id is None:
         color = 'k'
