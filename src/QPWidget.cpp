@@ -21,6 +21,9 @@
 
 #include "QPWidget.h"
 #include <QDebug>
+#include <QSpacerItem>
+#include <QGridLayout>
+#include <QScreen>
 #include <QKeyEvent>
 #include <QLabel>
 #include <QIcon>
@@ -165,7 +168,8 @@ void QPWidget::clickMenu() {
 
 void QPWidget::paintMenuButton() {
   QPainter p(this);
-  p.setPen(QPen(QColor(100, 100, 100), 2));
+  float dpi = screen()->logicalDotsPerInch();
+  p.setPen(QPen(QColor(100, 100, 100), 2 * dpi/96));
   int w = menurect.width();
   int h = menurect.height();
   int x0 = menurect.left() + w / 4;
@@ -350,7 +354,8 @@ void QPWidget::renderMargin(QPainter &p) {
 
 void QPWidget::drawCropMarks(QPainter &p) {
   QRectF world = fig->extent();
-  p.setPen(QPen(QColor("black"), 2 / scale()));
+  float dpi = screen()->logicalDotsPerInch();
+  p.setPen(QPen(QColor("black"), 1 * dpi/96 / scale()));
   double yy[]{ world.top(), world.bottom() };
   double xx[]{ world.left(), world.right() };
   double dm = MARGPIX / scale();
@@ -467,8 +472,9 @@ void QPWidget::setWindowTitle(QString t) {
 }
 
 void QPWidget::placeMenuButton() {
-  int w = 24;
-  int h = 20;
+  float dpi = screen()->logicalDotsPerInch();
+  int w = 24 * dpi / 96;
+  int h = 20 * dpi / 96;
   menurect = QRect(0, 0, w, h); // QRect(width() - w, 0, w, h);
 }
 
@@ -625,13 +631,17 @@ void QPWidget::aboutAction() {
   box.setWindowTitle("About QPlot");
   box.setTextFormat(Qt::RichText);
   box.setText(msg);
-  box.setIcon(QMessageBox::Information);
-  int iconwidth = box.iconPixmap().width() * 128/48;
-  if (iconwidth>128)
-    iconwidth = 128;
+  float dpi = screen()->logicalDotsPerInch();
+  int iconwidth = 128 * dpi / 96;
   box.setIconPixmap(QPixmap(":qplot.png")
-                    .scaled(QSize(iconwidth,iconwidth),
+                    .scaled(QSize(iconwidth, iconwidth),
                             Qt::KeepAspectRatio,
                             Qt::SmoothTransformation));
+  QGridLayout *layout = dynamic_cast<QGridLayout *>(box.layout());
+  if (layout) 
+    layout->addItem(new QSpacerItem(8*dpi, 0,
+                                    QSizePolicy::Fixed,
+                                    QSizePolicy::Expanding),
+                    layout->rowCount(), 0, 1, layout->columnCount());
   box.exec();
 }
