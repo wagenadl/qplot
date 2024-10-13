@@ -33,7 +33,7 @@ for k=1:nargin
   end
 end
 for k=2:nargin-1
-  if isempty(strmatch(tolower(varargin{k}),strtoks('bold italic'), 'exact'))
+  if ~any(strcmp(tolower(varargin{k}), strtoks('bold italic')))
     qfont_usage;
   end
 end

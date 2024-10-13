@@ -38,9 +38,9 @@ while n<=nargin
   if ischar(a)
     if length(a)==1 && a>='A' && a<='Z' && n==1
       cmd = [ cmd ' ' a ];
-    elseif strmatch(a, strtoks('miterjoin beveljoin roundjoin flatcap squarecap roundcap solid none'), 'exact')
+    elseif any(strcmp(a, strtoks('miterjoin beveljoin roundjoin flatcap squarecap roundcap solid none')))
       cmd = [ cmd ' ' a ];
-    elseif strmatch(a, strtoks('dash dot'), 'exact')
+    elseif any(strcmp(a, strtoks('dash dot')))
       cmd = [ cmd ' ' a ];
       vec=[];
       while n<nargin

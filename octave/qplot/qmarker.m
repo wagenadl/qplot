@@ -33,7 +33,7 @@ fd = qp_fd(1);
 for n=1:nargin
   a = varargin{n};
   if ischar(a)
-    if strmatch(a, strtoks('open solid brush'), 'exact')
+    if any(strcmp(a, strtoks('open solid brush')))
       ; % This is a known keyword, so good
     elseif ~isempty(qp_mapmarker(a))
       ; % This is a good marker

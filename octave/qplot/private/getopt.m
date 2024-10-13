@@ -111,10 +111,9 @@ for n=1:2:length(varargin)
     kv.(k) = v;
     %kv = setfield(kv,k,v);
   else
-    idx = strmatch(k,opts,'exact');
+    idx = find(strcmp(k, opts));
     if isempty(idx)
-      idx = strmatch(k,opts);
-    end
+      idx = find(strncmp(k, opts, length(k)));
     if isempty(idx)
       if accept_any
 	kv.(k) = v;%	kv = setfield(kv,k,v);

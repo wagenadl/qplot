@@ -33,11 +33,9 @@ while k<=K
     error('Expecting a command');
   end
   narg = [];
-  if ~isempty(strmatch(tolower(subcmd), ...
-	strtoks('absdata reldata abspaper relpaper'), 'exact'))
+  if any(strcmp(tolower(subcmd), strtoks('absdata reldata abspaper relpaper')))
     narg = 2;
-  elseif ~isempty(strmatch(tolower(subcmd), ...
-	strtoks('rotdata rotpaper'), 'exact'))
+  elseif any(strcmp(tolower(subcmd), strtoks('rotdata rotpaper'))
     narg = 1;
   elseif strcmp(tolower(subcmd), 'retract')
     if k+2 <= K && isnvector(args{k+2})

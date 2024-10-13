@@ -30,7 +30,7 @@ if isempty(dotidx)
   fn = [ fn '.qpt' ];
 end
 
-idx = strmatch(fn, qp_data.fns, 'exact');
+idx = find(strcmp(fn, qp_data.fns));
 
 if isempty(idx)
   % Let's see if we can match on partial file names
@@ -39,7 +39,7 @@ if isempty(idx)
   for f=1:F
     leaf{f} = basename(qp_data.fns{f});
   end
-  idx = strmatch(fn, leaf, 'exact');  
+  idx = find(strcmp(fn, leaf));
 end
 
 if isempty(idx)
@@ -49,11 +49,11 @@ if isempty(idx)
       leaf{f} = leaf{f}(1:idx(end)-1);
     end
   end
-  idx = strmatch(fn, leaf, 'exact');  
+  idx = find(strcmp(fn, leaf));
 end
 
 if isempty(idx)
-  idx = strmatch(fn, leaf);  
+  idx = find(strncmp(fn, leaf, length(fn)));  
 end
 
 if isempty(idx)

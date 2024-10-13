@@ -60,7 +60,7 @@ if w>THRESH || h>THRESH
   h=h/72;
 end
 
-idx = strmatch(fn, qp_data.fns, 'exact');
+idx = find(strcmp(fn, qp_data.fns));
 if ~isempty(idx)
   if qp_data.info(idx).fd>=0
     fclose(qp_data.info(idx).fd);

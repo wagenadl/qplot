@@ -62,7 +62,7 @@ h = extent(4)*h;
 subno = 1;
 while 1
   id = qp_id(subno);
-  oldidx = strmatch(id, qp_data.info(idx).panels, 'exact');
+  oldidx = find(strcmp(id, qp_data.info(idx).panels));
   if isempty(oldidx)
     break;
   else
