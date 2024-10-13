@@ -54,7 +54,8 @@ QPWidget::QPWidget(QWidget *parent): ScrollWidget(parent) {
   coord->setPalette(p);
   trackpanel = "-";
   ruler = false;
-  coords = false;
+  coords = true;
+  pickCursor();
   setMouseTracking(true);
 }
 
@@ -276,6 +277,7 @@ void QPWidget::mousePressEvent(QMouseEvent *e) {
       if (ruler)
         update();
     trackpanel = tp;
+    pickCursor();
     reportTrack(xy, e->button(), "press");
   }
 }
@@ -301,6 +303,7 @@ void QPWidget::keyPressEvent(QKeyEvent *e) {
       takeScreenShot();
     } else {
       coords = !coords;
+      pickCursor();
       reportTrack(mapFromGlobal(QCursor::pos(screen())), 0, "move");
     }
     break;
@@ -368,10 +371,7 @@ void QPWidget::mouseMoveEvent(QMouseEvent *e) {
       QString tp = fig->panelAt(world);
       if (tp != trackpanel) {
         trackpanel = tp;
-        if (trackpanel=="")
-          setCursor(Qt::ArrowCursor);
-        else
-          setCursor(Qt::CrossCursor);
+        pickCursor();
         if (ruler)
           update();
       }
@@ -380,12 +380,22 @@ void QPWidget::mouseMoveEvent(QMouseEvent *e) {
   }
 }
 
+void QPWidget::pickCursor() {
+  if (trackpanel=="") {
+    setCursor(Qt::ArrowCursor);
+    setRequireControl(true);
+  } else if (coords && !isDragging()) {
+    setCursor(Qt::CrossCursor);
+    setRequireControl(true);
+  } else {
+    setCursor(Qt::OpenHandCursor);
+    setRequireControl(false);
+  }
+}
+
 void QPWidget::mouseReleaseEvent(QMouseEvent *e) {
   ScrollWidget::mouseReleaseEvent(e);
-  if (trackpanel=="")
-    setCursor(Qt::ArrowCursor);
-  else
-    setCursor(Qt::CrossCursor);
+  pickCursor();
     
   if (fig)
     reportTrack(e->pos(), e->button(), "release");

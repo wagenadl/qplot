@@ -31,6 +31,7 @@ public:
   ScrollWidget(QWidget *parent);
   virtual ~ScrollWidget();
 public:
+  void setRequireControl(bool);
   void setExtent(QRectF const &);
   void autoSize();
   void setTopLeft(QPointF tl);
@@ -49,6 +50,8 @@ protected:
   void mouseMoveEvent(QMouseEvent *);
   void mouseReleaseEvent(QMouseEvent *);
   void wheelEvent(QWheelEvent *);
+protected:
+  bool isDragging() const { return dragging; }
 private:
   void surePan();
   void sureScale();
@@ -61,6 +64,7 @@ private:
   QPointF pos_press;
   QPointF tl_press;
   bool dragging;
+  bool requirectrl;
 };
 
 #endif
