@@ -284,7 +284,7 @@ def document(func, outpath):
     obj = qp
     for fn in func.split("."):
         obj = obj.__dict__[fn]
-        doc = obj.__doc__
+    doc = obj.__doc__
         
     title = extracttitle(func, doc)
     body = extractbody(doc)

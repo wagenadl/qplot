@@ -1,0 +1,132 @@
+Figures and subplots:
+clf
+close
+closeall
+figure
+panel
+relpanel
+select
+subplot
+save
+current
+ion
+ioff
+
+Data plotting:
+plot
+mark
+xmark
+ymark
+bars
+hbars
+skyline
+ecoplot
+errorbar
+herrorbar
+errorpatch
+rectangle
+patch
+hatch
+
+Image rendering:
+image
+imsc
+xzimage
+zyimage
+
+Axes for graphs and colorbars:
+xaxis
+yaxis
+xcaxis
+ycaxis
+zaxis
+arange
+caxis
+minorticks
+overline
+
+Textual annotations:
+arrow
+at
+darrow
+text
+title
+memo
+recall
+
+Generating legends:
+legend
+legopt
+mlegend
+plegend
+
+Generating color bars:
+cbar
+hcbar
+
+Graphics styling:
+brush
+lut
+marker
+pen
+
+Text styling:
+align
+font
+reftext
+
+Tick axis styling:
+axshift
+numformat
+textdist
+ticklen
+ytitlerot
+overlinedist
+overlinemin
+
+Paper coordinate plotting:
+area
+line
+mm
+pmark
+phatch
+prectangle
+
+Mixed coordinate plotting:
+shiftedline
+garea
+garea2
+gimage
+gline
+gline2
+
+Grouping:
+endgroup
+group
+
+Scale to fit:
+shrink
+xlim
+ylim
+clipy
+commonscale
+alignaxes
+rebalance
+
+Color lookup tables:
+luts.get
+luts.set
+luts.names
+luts.families
+luts.family
+luts.demo
+
+Specialized functions:
+caligraph
+ctext
+hairline
+textonpath
+xtransform
+ytransform
+degrees
+radians

@@ -1,0 +1,205 @@
+#!/usr/bin/python3
+
+#!/usr/bin/python3
+
+# QPlot - Publication quality 2D graphs with dual coordinate systems
+# Copyright (C) 2014-2023  Daniel Wagenaar
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import sys
+import os
+import re
+import inspect
+
+sys.path.append("../python")
+import qplot as qp
+
+sys.path.append("./code")
+import qpdoclib as qpd
+import qphtmllib as qph
+
+
+outpath = "build/pyref"
+egpath = "../doc/pyref"
+
+
+def hasimage(func):
+    if not os.path.exists(f"{outpath}/{func}.png"):
+        return False
+    s = os.stat(f"{outpath}/{func}.png")
+    return s.st_size>0
+
+
+def lutline():
+    return """<p>The full collection of available colormaps is shown
+    <a href="lutdemo.html">here</a>.</p>
+    """
+
+
+def findinorg(func, org):
+    for k, vv in org.items():
+        if func in vv:
+            return k
+    return None
+
+
+def safesection(section):
+    return section.lower().replace(" ", "-")
+
+
+def document(func, org):
+    title = qpd.tagline(func)
+    body = qpd.docbody(func)
+    example = qpd.loadexample(func, egpath)
+    html = qph.doctype()
+    html += "<html>"
+    html += qph.head(func)
+    html += "<body>"
+    html += '<div class="contents">'
+    crumbs = {"Python functions": "index.html"}
+    section = findinorg(func, org)
+    if section is not None:
+        crumbs[section] = f"sec-{safesection(section)}.html"
+    crumbs[func] = None
+    html += qph.sidebar(crumbs)
+    html += '<div class="central">'
+    html += qph.header()
+    html += qph.titleblock(func, title)
+    html += '<div class="funcdoc">'
+    if func=="luts":
+        html += qph.submoduletext(func, body)
+    else:
+        sig, kww = qph.sigline(func, qpd.qpfunction(func))
+        html += sig
+        html += qph.bodytext(body, func, kww)
+    if hasimage(func):
+        html += qph.egimage(func)
+    if example is not None:
+        html += qph.egtext(func, example)
+    if func.startswith("luts."):
+        html += lutline()
+    html += '</div>\n' # funcdoc
+    html += qph.footer()
+    html += '</div>\n' # central
+    html += '</div>\n' # contents
+    return html
+
+
+def funcsastable(funcs):
+    html += "<table>"
+    for func in funcs:
+        tagline = qpd.tagline(func)
+        html += f"""<tr class="funclistitem">
+        <th class="fli-name"><a href="{func}.html">{func}</a></th>
+        <td class="fli-tagline">{tagline}</td>
+        </tr>
+        """
+    html += "</table>"    
+
+
+def funcsaslist(funcs):
+    html = ""
+    for func in funcs:
+        tagline = qpd.tagline(func)
+        html += f"""<div class="funclistitem">
+        <span class="fli-name"><a href="{func}.html">{func}</a></span>
+        —
+        <span class="fli-tagline">{tagline}</span>
+        </div>
+        """
+    return html
+
+        
+def sectiondoc(sec, funcs):
+    html = qph.doctype()
+    html += "<html>"
+    html += qph.head(sec)
+    html += "<body>"
+    html += '<div class="contents">'
+    crumbs = {"Python functions": "index.html"}    
+    crumbs[sec] = None
+    html += qph.sidebar(crumbs)
+    html += '<div class="central">'
+    html += qph.header()
+    html += qph.sectitleblock(sec)
+    html += '<div class="secdoc">'
+    html += funcsaslist(funcs)
+    html += '</div>\n' # secdoc
+    html += qph.footer()
+    html += '</div>\n' # central
+    html += '</div>\n' # contents
+    return html
+
+
+
+
+def indexdoc(org):
+    html = qph.doctype()
+    html += "<html>"
+    html += qph.head("Python functions")
+    html += "<body>"
+    html += '<div class="contents">'
+    crumbs = {"Python functions": None}
+    html += qph.sidebar(crumbs)
+    html += '<div class="central">'
+    html += qph.header()
+    html += qph.idxtitleblock("Python functions")
+    html += '<div class="idxdoc">'
+
+    for section, funcs in org.items():
+        html += f"""<div class="indexsection">
+        <div class="indexheader">
+        <a href="sec-{safesection(section)}.html">{section}</a>
+        </div>
+        <div class="indexcontent">
+        """
+        #html += "("
+        html += ", ".join([f"""<a href="{func}.html">{func}</a>"""
+                           for func in funcs])
+        #html += ")"
+        html += "</div>" # indexcontent
+        html += "</div>" # indexsection
+        
+
+    html += '</div>\n' # secdoc
+    html += qph.footer()
+    html += '</div>\n' # central
+    html += '</div>\n' # contents
+    return html
+
+
+    
+def main():
+    org = qpd.organization()
+
+    for func in qpd.qplotfunctions():
+        print(func)
+        html = document(func, org)
+        with open(f"{outpath}/{func}.html", "w") as f:
+            f.write(html)
+
+    for sec, funcs in org.items():
+        print(sec)
+        html = sectiondoc(sec, funcs)
+        with open(f"{outpath}/sec-{safesection(sec)}.html", "w") as f:
+            f.write(html)
+
+    html = indexdoc(org)
+    with open(f"{outpath}/index.html", "w") as f:
+        f.write(html)
+    
+
+            
+main()
