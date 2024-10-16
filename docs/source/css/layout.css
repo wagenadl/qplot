@@ -1,21 +1,53 @@
-body { 
-  margin: 0px;
-  padding: 0px;
+body {
+    margin: 0px;
+    padding: 0px;
 }
 
 .contents {
     padding-top: 0px;
+    display: flex;
 }
 
-.sidebar {
-    position: fixed;
-    top: 0px;
-    left: 0px;
+#sidebar {
+    display: block;
+    flex-shrink: 0;
     width: 150px;
     min-height: 100%;
     overflow-x: hidden;
     overflow-y: hidden;
 }
+
+#central {
+    display: block;
+    padding: 0px;
+    flex-grow: 1;
+    max-width: 720px;
+}
+
+.menubutton {
+    display: inline-block;
+    width: 0px;
+    margin: 0px;
+    padding: 5px 0px 0px 0px;
+    vertical-align: top;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+@media screen and (max-width: 600px) {
+    #sidebar {
+        width: 0px;
+    }
+    #sidebar.alwaysshow {
+        width: 150px;
+    }
+    .menubutton {
+        width: auto;
+        flex-shrink: 0;
+        padding: 5px 5px 0px 5px;
+    }
+}
+
 
 .logography {
     padding: 10px;
@@ -80,47 +112,34 @@ body {
     width: 65px;
 }
 
-.central {
-    padding: 0px;
-    margin-left: 150px;
-    margin-right: auto;
-    max-width: 900px;
-    min-width: 400px;
-}    
-
-
-.titleblock {
+.titleblock, .sectitleblock, .idxtitleblock {
     margin-top: 0px;
     margin-bottom: 15px;
-    min-height: 40px;
+    min-height: 50px;
+    display: flex;
 }
 
-.funcname {
-    display: inline-block;
+.funcname, .idxtitle, .sectitle {
     padding: 0px;
     margin: 0px;
-    height: inherit;
+    padding-top: 5px;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-bottom: 5px;
+    vertical-align: middle;
 }
 
 .funcname .mefunc {
-    display: inline-block;
-    padding: 5px 15px 10px 15px;
+    display: inline;
 }
 
 .tagline {
     display: inline-block;
     margin: 0px;
     padding-left: 15px;
-    padding-top: 10px;
-    vertical-align: center;
-}
-
-
-.sectitleblock, .idxtitleblock {
-    margin-top: 0px;
-    margin-bottom: 15px;
-    min-height: 40px;
-    padding: 5px 15px 5px 15px;
+    padding-bottom: 10px;
+    padding-top: 13px;
+    vertical-align: middle;
 }
 
 
@@ -198,4 +217,18 @@ p.empty {
 .indexcontent {
     padding-left: 15px;
     margin-bottom: 10px;
+}
+
+.fli-name {
+    display: block;
+}
+
+.fli-spacer {
+    display: none;
+}
+
+.fli-tagline {
+    display: block;
+    margin-left: 1.5em;
+    margin-bottom: 5px;
 }

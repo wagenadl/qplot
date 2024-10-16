@@ -4,22 +4,21 @@ body {
 }
 
 
-.sidebar {
+#sidebar {
     background-color: #333333;
     color: white;
 }
 
-.sidebar a:link {
+#sidebar a:link {
     color: white;
 }
 
 
-.sidebar a:visited {
+#sidebar a:visited {
     color: white;
 }
 
-
-.sidebar a:hover {
+#sidebar a:hover {
     color: #ccddff;
 }
 
@@ -37,12 +36,19 @@ body {
     font-style: italic;
 }
 
-.central {
+#central {
   background-color: white;
 }
 
-.titleblock {
+.titleblock, .sectitleblock, .idxtitleblock {
     background-color: #eeeeee;
+}
+
+.menubutton {
+    font-size: 160%; 
+    font-weight: bold;
+    color: black;
+    background-color: #cccccc;
 }
 
 .funcname {
@@ -56,19 +62,10 @@ body {
     font-size: 110%;
 }
 
-.sectitleblock {
-    background-color: #eeeeee;
+.sectitle, .idxtitle {
     font-size: 160%;
     font-weight: bold;
     font-style: italic;
-    color: #bb0000;
-}
-
-
-.idxtitleblock {
-    background-color: #eeeeee;
-    font-size: 160%;
-    font-weight: bold;
     color: #bb0000;
 }
 
