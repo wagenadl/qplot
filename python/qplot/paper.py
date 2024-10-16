@@ -146,7 +146,7 @@ def phatch(xx, yy, pattern="|", angle=0, spacing=10, offset=0):
 def pmark(xx, yy):
     '''PMARK - Draw on the current graph with the current marker
     PMARK(xx, yy) draws marks at the given location in paper space.
-  
+
     If you draw right up to any edge of the panel, SHRINK may fail.
 
     See also MARKER and MARK.'''
