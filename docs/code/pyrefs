@@ -74,7 +74,7 @@ def document(func, org):
         crumbs[section] = f"sec-{safesection(section)}.html"
     crumbs[func] = None
     html += qph.sidebar(crumbs)
-    html += '<div class="central">'
+    html += '<div id="central">'
     html += qph.header()
     html += qph.titleblock(func, title)
     html += '<div class="funcdoc">'
@@ -115,7 +115,7 @@ def funcsaslist(funcs):
         tagline = qpd.tagline(func)
         html += f"""<div class="funclistitem">
         <span class="fli-name"><a href="{func}.html">{func}</a></span>
-        —
+        <span class="fli-spacer">—</span>
         <span class="fli-tagline">{tagline}</span>
         </div>
         """
@@ -131,7 +131,7 @@ def sectiondoc(sec, funcs):
     crumbs = {"Python functions": "index.html"}    
     crumbs[sec] = None
     html += qph.sidebar(crumbs)
-    html += '<div class="central">'
+    html += '<div id="central">'
     html += qph.header()
     html += qph.sectitleblock(sec)
     html += '<div class="secdoc">'
@@ -153,7 +153,7 @@ def indexdoc(org):
     html += '<div class="contents">'
     crumbs = {"Python functions": None}
     html += qph.sidebar(crumbs)
-    html += '<div class="central">'
+    html += '<div id="central">'
     html += qph.header()
     html += qph.idxtitleblock("Python functions")
     html += '<div class="idxdoc">'

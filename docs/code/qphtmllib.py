@@ -18,8 +18,10 @@ def doctype():
 
 def head(ttl, depth=1):
     csspath = ("../" * depth) + "css"
+    jspath = ("../" * depth) + "js"
     return f"""<head>
       <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <script src="{jspath}/docs.js"></script>
       <link rel="stylesheet" href="{csspath}/layout.css" type="text/css">
       <link rel="stylesheet" href="{csspath}/color.css" type="text/css">
       <title>QPlot: {ttl}</title>
@@ -47,7 +49,7 @@ def footer():
 
 def sidebar(breadcrumbs):
     txt = """
-    <div class="sidebar">
+    <div id="sidebar">
       <div class="logography">
         <div class="project">QPlot</div>
         <div class="ptagline">Beautifully typeset graphs for science</div>
@@ -172,20 +174,30 @@ def bodytext(body, func, kww):
     """
 
 
+def menubutton():
+    return """<div class="menubutton" onclick="menuclick()">≡</div>"""
+
+
 def titleblock(func, tagline):
     return f"""<div class="titleblock">
-<div class="funcname"><span class="mefunc">{func}</span></div>
-<div class="tagline">{tagline}</div>
-</div>
+    {menubutton()}<div class="funcname"><span
+    class="mefunc">{func}</span></div>
+    <div class="tagline">{tagline}</div>
+    </div>
 """
 
 
 def sectitleblock(section):
-    return f"""<div class="sectitleblock">{section}</div>
+    return f"""<div class="sectitleblock">
+    {menubutton()}<div class="sectitle">{section}</div>
+    </div>
     """
 
+
 def idxtitleblock(section):
-    return f"""<div class="idxtitleblock">{section}</div>
+    return f"""<div class="idxtitleblock">
+    {menubutton()}<div class="idxtitle">{section}</div>
+    </div>
     """
 
 
