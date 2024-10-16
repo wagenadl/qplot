@@ -1,0 +1,201 @@
+body { 
+  margin: 0px;
+  padding: 0px;
+}
+
+.contents {
+    padding-top: 0px;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 150px;
+    min-height: 100%;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+.logography {
+    padding: 10px;
+}
+
+.project {
+}
+
+.ptagline {
+    padding-left: 15px;
+}
+
+.breadcrumbs {
+    padding-top: 10px;
+    padding-left: 5px;
+}
+
+
+.bcleft {
+    display: inline-block;
+    width: 10px;
+    height: inherit;
+    padding: 0px;
+    margin: 0px;
+    vertical-align: top;
+}
+
+.bcmark:before {
+    font-family: garamond, palatino, times, serif ;
+    font-size: 118%;
+    content: "»";
+}
+
+.bcinner {
+    display: inline-block;
+}
+
+.breadcrumb-1 {
+    display: block;
+    padding-left: 10px;
+}
+
+.breadcrumb-1 .bcinner {
+    width: 100px;
+}
+
+.breadcrumb-2 {
+    padding-left: 25px;
+    margin-top: 5px;
+}
+
+.breadcrumb-2 .bcinner {
+    width: 80px;
+}
+
+.breadcrumb-3 {
+    padding-left: 40px;
+    margin-top: 1px;
+}
+
+.breadcrumb-3 .bcinner {
+    width: 65px;
+}
+
+.central {
+    padding: 0px;
+    margin-left: 150px;
+    margin-right: auto;
+    max-width: 900px;
+    min-width: 400px;
+}    
+
+
+.titleblock {
+    margin-top: 0px;
+    margin-bottom: 15px;
+    min-height: 40px;
+}
+
+.funcname {
+    display: inline-block;
+    padding: 0px;
+    margin: 0px;
+    height: inherit;
+}
+
+.funcname .mefunc {
+    display: inline-block;
+    padding: 5px 15px 10px 15px;
+}
+
+.tagline {
+    display: inline-block;
+    margin: 0px;
+    padding-left: 15px;
+    padding-top: 10px;
+    vertical-align: center;
+}
+
+
+.sectitleblock, .idxtitleblock {
+    margin-top: 0px;
+    margin-bottom: 15px;
+    min-height: 40px;
+    padding: 5px 15px 5px 15px;
+}
+
+
+.funcdoc,.secdoc,.idxdoc {
+    padding: 0px 15px 15px 15px;
+}
+
+.pysighead {
+    padding-left: 15px;
+    margin-top: 10px;
+}
+
+.pysig {
+    padding-left: 30px;
+}
+
+.pyhelphead {
+    padding-left: 15px;
+    margin-top: 10px;
+
+}
+
+.pyhelp {
+    padding-left: 30px;
+}
+
+.eghead {
+    padding-left: 15px;
+    padding-top: 10px;
+    padding-bottom: 5px;
+}
+
+.example {
+    padding-left: 30px;
+    margin-bottom: 15px;
+}
+
+.egcontainer {
+    padding: 0px;
+    margin: 0px;
+    min-height: 400px;
+}
+
+.egimage {
+    padding: 25px;
+    margin-right: -15px;
+    padding-top: 30px;
+    float: right;
+}
+
+
+.footer {
+    padding: 15px;
+    background-color: #eeeeee;
+}
+
+.eglink {
+    padding-left: 15px;
+}
+
+p.eg {
+    padding-top: 0px;
+    padding-bottom: 0px;
+    margin-top: 2px;
+    margin-bottom: 1px;
+}
+
+p.empty {
+    padding-top: 0px;
+    padding-bottom: 0px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.indexcontent {
+    padding-left: 15px;
+    margin-bottom: 10px;
+}

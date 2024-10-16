@@ -1,0 +1,193 @@
+body { 
+  background-color: #dddddd;
+  color: black;
+}
+
+
+.sidebar {
+    background-color: #333333;
+    color: white;
+}
+
+.sidebar a:link {
+    color: white;
+}
+
+
+.sidebar a:visited {
+    color: white;
+}
+
+
+.sidebar a:hover {
+    color: #ccddff;
+}
+
+.logography {
+    background-color: #660000;
+}
+
+.project {
+    font-size: 140%;
+    font-weight: bold;
+}
+
+.ptagline {
+    font-size: 100%;
+    font-style: italic;
+}
+
+.central {
+  background-color: white;
+}
+
+.titleblock {
+    background-color: #eeeeee;
+}
+
+.funcname {
+    font-size: 160%;
+    font-weight: bold;
+    background-color: #e2e2e2;
+}
+
+.tagline {
+    font-style: italic;
+    font-size: 110%;
+}
+
+.sectitleblock {
+    background-color: #eeeeee;
+    font-size: 160%;
+    font-weight: bold;
+    font-style: italic;
+    color: #bb0000;
+}
+
+
+.idxtitleblock {
+    background-color: #eeeeee;
+    font-size: 160%;
+    font-weight: bold;
+    color: #bb0000;
+}
+
+.breadcrumb-2 .bcinner {
+    font-style: italic;
+}
+
+.mefunc {
+    font-weight: bold;
+    color: #bb0000;
+}
+
+.arg {
+    font-style: italic;
+    font-weight: bold;
+    color: #bb6600;
+}
+
+.pysighead {
+    font-size: 120%;
+    font-weight: bold;
+}
+    
+.pyhelphead {
+    font-size: 120%;
+    font-weight: bold;
+}
+
+.dochead {
+    font-size: 120%;
+    font-weight: bold;
+}
+
+.eghead {
+    font-size: 120%;
+    font-weight: bold;
+}
+
+.inlineeg {
+    font-family: ubuntu, sans;
+    font-size: 85%;
+}
+
+.inlineeg:before {
+    font-family: garamond, palatino, times, serif ;
+    font-size: 118%;
+    content: "“";
+}
+
+.inlineeg:after {
+    font-family: garamond, palatino, times, serif ;
+    font-size: 118%;
+    content: "”";
+}
+
+.example {
+    font-family: ubuntu, sans;
+    font-size: 85%;
+}
+
+.egimage {
+    background-color: white;
+}
+
+.egimg {
+    border: 5px;
+    border-style: outset;
+    border-color: #aaaaaa;
+    padding: 5px;
+    background-color: white;
+}
+
+.egimg:hover {
+    color: black;
+}
+
+.footer {
+    background-color: #eeeeee;
+}
+
+
+a:link {
+    background-color: inherit; color: #0000dd; text-decoration: none;
+}
+
+a:visited {
+    background-color: inherit; color: #0000dd; text-decoration: none;
+}
+
+a:hover {
+    background-color: inherit; color: #ff0000; text-decoration: none;
+}
+
+.tmlink:link {
+    font-weight: bold;
+}
+
+.tmlink:visited {
+    font-weight: bold;
+}
+
+.tmlink:hover {
+    font-weight: bold;
+}
+
+.indexheader {
+    font-weight: bold;
+    font-style: italic;
+    color: #bb0000;
+    font-size: 120%;
+}
+
+.indexheader a:link {
+    color: #bb0000;
+}    
+.indexheader a:visited {
+    color: #bb0000;
+}    
+.indexheader a:hover {
+    color: #ff0000;
+}    
+
