@@ -75,6 +75,7 @@ static void rendermark(QPainter &p, QPointF const &xy,
       p.drawLine(xy, pf[1]);
       p.drawLine(xy, pf[2]);
     } else {
+      //      pf.append(pf[0]);
       p.drawConvexPolygon(pf);
     }
     break;
@@ -354,6 +355,8 @@ void CmdMark::draw(QPolygonF const &pp, Figure &f) {
 
   Marker::Type t = f.marker().type;
   double r = f.marker().radius;
+  if (t==Marker::CIRCLE && asSpine)
+    ptr.setBrush(Qt::NoBrush);
 
   for (QPointF const &p: pp)
     rendermark(ptr, p, r, t, asSpine);
