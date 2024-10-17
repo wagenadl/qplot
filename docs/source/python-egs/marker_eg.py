@@ -3,7 +3,7 @@ import numpy as np
 
 qp.figure('marker', 3, 3)
 
-sty = [ 'open', 'solid', 'brush' ]
+sty = [ 'open', 'solid', 'brush', 'spine' ]
 shp = '+x-|osd<>^vph'
 
 qp.pen('k')
@@ -14,3 +14,4 @@ for x in range(len(shp)):
         qp.marker(shp[x], fill=sty[y])
         qp.mark(x, y)
 
+qp.ylim(-3, 6)
