@@ -346,7 +346,7 @@ def xaxis(title='', ticks=None, labels=None, y=None, lim=None, flip=False,
     the labels are calculated from the tick positions (or vice versa). For
     example:
 
-      XAXIS('Value (%)', labels=np.arange(0,101,25), ticks=lambda x: x/100)
+      «XAXIS('Value (%)', labels=np.arange(0,101,25), ticks=lambda x: x/100)»
 
     Without any arguments or with just a title as an argument, XAXIS tries
     to determine sensible defaults based on previous calls to PLOT and
@@ -477,9 +477,7 @@ def minorticks(xx, ticklen=None):
     
     kv = qi.f.lastax
     if ticklen is None:
-        ticklen = qi.f.ticklen * 2./3
-    if kv['orient']=='y':
-        ticklen = -ticklen
+        ticklen = qi.f.lastax['ticklen'] * 2./3
     if kv['cbar'] is not None:
         xx = kv['cbar'].ctodat(xx)
     _qaxis(orient=kv['orient'], tick_d=xx, tick_lbl=[], ticklen=ticklen,
