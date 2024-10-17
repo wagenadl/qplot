@@ -452,6 +452,9 @@ void Figure::showBoundingBoxes(bool b) {
 
 QPen Figure::defaultPen() {
   QPen pen("black");
+  pen.setCapStyle(Qt::SquareCap);
+  pen.setJoinStyle(Qt::MiterJoin);
   pen.setWidthF(pt2iu(0.5)); // See note in Python function pen()
+  pen.setMiterLimit(4);
   return pen;
 }
