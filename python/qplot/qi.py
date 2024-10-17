@@ -43,7 +43,7 @@ class Figure:
         self.cbar = None
         self.overlinedist = 7
         self.overlinemin = 3
-        self.linewidth = 0
+        self.linewidth = 0.5 # match with default in style.pen()
         self.fontfamily = 'Helvetica'
         self.fontsize = 10
         self._xtransform = None # lambda x: x
