@@ -135,6 +135,8 @@ bool Renderer::renderImage(QString ofn, int upto) {
 	     QImage::Format_ARGB32);
   img.fill(0xffffffff);
   fig.painter().begin(&img);
+  fig.painter().setRenderHint(QPainter::Antialiasing);
+  fig.painter().setRenderHint(QPainter::TextAntialiasing);
   fig.setHairline(0);
 
   fig.setDashScale(1);

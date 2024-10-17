@@ -196,6 +196,8 @@ void QPWidget::paintEvent(QPaintEvent *) {
   
   QPainter &p(fig->painter());
   p.begin(this); // resets state of pen
+  p.setRenderHint(QPainter::Antialiasing);
+  p.setRenderHint(QPainter::TextAntialiasing);
 
   p.setBrush(graymargin ? QColor(200, 200, 200) : QColor("white"));
   p.setPen(Qt::NoPen);
