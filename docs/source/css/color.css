@@ -84,6 +84,11 @@ body {
     color: #bb6600;
 }
 
+.pykw {
+    font-weight: bold;
+    color: #bb6600;
+}
+
 .pysighead {
     font-size: 120%;
     font-weight: bold;
@@ -126,17 +131,10 @@ body {
     font-size: 85%;
 }
 
-.egimage {
-    background-color: white;
+.egtopline, .egbottomline {
+    background-color: #aaaaaa;
 }
 
-.egimg {
-    border: 5px;
-    border-style: outset;
-    border-color: #aaaaaa;
-    padding: 5px;
-    background-color: white;
-}
 
 .egimg:hover {
     color: black;
