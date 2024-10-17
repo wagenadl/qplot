@@ -142,7 +142,10 @@ bool Renderer::renderImage(QString ofn, int upto) {
 			  -fig.extent().top());
   prog.render(fig, false, upto); 
   fig.painter().end();
-  return img.save(ofn, 0, bitmapqual);
+  if (ofn.endsWith("jpg") || ofn.endsWith("jpeg"))
+    return img.save(ofn, 0, bitmapqual);
+  else
+    return img.save(ofn);
 }
 
 
