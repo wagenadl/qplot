@@ -158,6 +158,7 @@ def imsc(data, rect=None, c0=None, c1=None, xx=None, yy=None, hard=False):
     The color axis limits default to the min and max of the data.
     Optional arguments C0 and C1 override those limits.'''
 
+    qi.ensure()
     lut = qi.f.lut
     nanc = qi.f.lut_nan
     if c0 is None:
@@ -312,7 +313,7 @@ class CBarInfo:
             dw = -dw
         return d0 + dw*crel
 
-def cbar(x0=None, y0=None, y1=None, width=5, dist=10):
+def cbar(x0=None, y0=None, y1=None, width=10, dist=10):
     '''CBAR - Add a vertical color bar to a figure
     CBAR() without arguments creates a color bar to the right of the
     latest IMSC.
@@ -320,7 +321,7 @@ def cbar(x0=None, y0=None, y1=None, width=5, dist=10):
     (X0, Y0) and (X0, Y1), expressed in data coordinates.
     If Y1>Y0, the color bar runs up, otherwise it runs down.
     Optional argument WIDTH specifies the width of the color bar in points 
-    (default: 5 points). If WIDTH is positive, the bar extends to the right
+    (default: 10 points). If WIDTH is positive, the bar extends to the right
     of X0, otherwise to the left.
     Optional argument DIST creates distance between X0 and the color bar by
     shifting the color bar to the right. (Negative DIST shifts it to the left.)
