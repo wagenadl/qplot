@@ -39,6 +39,7 @@ def header():
 def footer():
     year = thisyear()
     return f"""
+    <div class="footerspace"></div>
     <div class="footer">
       QPlot Documentation — (C)
       <a href="http://www.danielwagenaar.net">Daniel A. Wagenaar</a>,
@@ -163,14 +164,29 @@ class PyDoc:
                 self.parse_para(parg)
         return self.out
 
+
+    def countparens(self, bit):
+        nopen = len(self.re_pareno.findall(bit))
+        nclose = len(self.re_parenc.findall(bit))
+        return nopen - nclose
+
+    def clearquote(self, bit):
+        if bit[:1]=="«" and bit[-1:]=="»":
+            return bit[1:-1]
+        else:
+            return bit
+
+    
     def parse_listitem(self, item):
         self.out += '<div class="pylistitem">'
         bits = re.split(self.re_itemsplit, item)
-        if len(bits) >= 3:
+        if len(bits) >= 3 and self.countparens(bits[0])==0:
             # Study first bit specially
             self.out += '<span class="pli-key">'
-            if bits[0].startswith('"'):
-                self.out += bits[0]
+            if bits[0][:1] in ['"', "«"]:
+                self.out += '<span class="doceg">'           
+                self.renderpara(self.clearquote(bits[0]), False)
+                self.out += '</span>'
             else:
                 obits = []
                 for kw in bits[0].split(" "):
@@ -179,17 +195,22 @@ class PyDoc:
                     obits.append(f'<span class="pykw">{lobit}</span>')
                 self.out += " ".join(obits)
             self.out += "</span>"
-            self.out += f'<span class="pli-sep">{bits[1]}</span>'
+            self.out += f'<span class="pli-sep">{bits[1].replace("-", "—")}</span>'
             self.out += '<span pclass="pli-val">'
             self.renderpara("".join(bits[2:]))
             self.out += "</span>"
         else:
             self.out += '<span class="pli-key">'
-            self.renderpara(item)
+            if item[:1] in ['"', "«"]:
+                self.out += '<span class="doceg">'           
+                self.renderpara(self.clearquote(item), False)
+                self.out += '</span>'
+            else:
+                self.renderpara(item, False)
             self.out += '</span>'
         self.out += "</div>"
 
-    def renderpara(self, parg):
+    def renderpara(self, parg, collectargs=True):
         bits = re.split(self.re_split, parg)
         prevbits = [""] + bits[:-1]
         nextbits = bits[1:] + [""]
@@ -205,7 +226,7 @@ class PyDoc:
             lobit = bit.lower()
             ishigh = bit == bit.upper()
             ispluhigh = bit.endswith("s") and bit[:-1] == bit[:-1].upper()
-            if prv==self.func.upper() or inargs:
+            if (prv==self.func.upper() or inargs) and collectargs:
                 nopen = len(self.re_pareno.findall(bit))
                 nclose = len(self.re_parenc.findall(bit))
                 if nopen > nclose:
@@ -247,102 +268,6 @@ class PyDoc:
 def pydoc(doc, func, kww):
     pyd = PyDoc(func, kww)
     return pyd.parse(doc)
-    
-        
-def pydoc1(doc, func, kww):
-    r = re.compile(r"((?<!LUTS)\W+)")
-    wrd = re.compile(r"(?:LUTS\.)?[a-zA-Z]+")
-    nl = re.compile(r"\n")
-    paren = re.compile(r"\(")
-    parenc = re.compile(r"\)")
-    bits = r.split(doc)
-    out = ""
-    gotfunc = False
-    depth = 0
-    inargs = False
-    myargs = { kw for kw in kww }
-    column = 0
-    prevbits = [""] + bits[:-1]
-    nextbits = bits[1:] + [""]
-    for prv, bit, nxt in zip(prevbits, bits, nextbits):
-        lobit = bit.lower()
-        ishigh = bit == bit.upper()
-        ishighplural = bit.endswith("s") and bit[:-1] == bit[:-1].upper()
-        if wrd.match(bit):
-            # This bit is word-like
-            if (prv.endswith('"') or prv.endswith("'")) \
-                   and nxt.startswith(prv[-1]):
-                out += bit # don't mess with text in quotes
-            elif prv.endswith("-") or nxt.startswith("-"):
-                out += bit # hyphenated words are not func/var names
-            elif ishigh and lobit==self.func:
-                out += f'<span class="mefunc">{lobit}</span>'
-                if column<=4:
-                    gotfunc = True
-            elif inargs and (gotfunc or lobit in myargs):
-                out += f'<span class="arg">{lobit}</span>'
-                if gotfunc:
-                    myargs.add(lobit)
-            elif ishigh and lobit in myargs:
-                out += f'<span class="arg">{lobit}</span>'
-            elif ishigh and lobit in funcs:
-                out += f'<a class="tmlink" href="{lobit}.html">{lobit}</a>'
-            elif ishighplural and lobit[:-1] in funcs:
-                out += f'<a class="tmlink" href="{lobit[:-1]}.html">{lobit[:-1]}</a>s'
-            elif ishigh and len(bit)>1:
-                out += f'<span class="arg">{lobit}</span>'
-                gotfunc = False
-            else:
-                out += bit
-        else:
-            # This bit is punctuation-like
-            biglike = len(bit) > 10
-            if biglike:
-                print(f"*BIG* [{prv}] [{[ord(c) for c in bit]}] [{nxt}]")
-            if bit.startswith('(') and prv.lower() in funcs:
-                inargs = True
-            depth += len(paren.findall(bit)) - len(parenc.findall(bit))
-            if depth<=0:
-                inargs = False
-                gotfunc = False
-            if "\n" in bit:
-                inargs = False
-                gotfunc = False
-                depth = 0
-            sub = nl.split(bit)
-            if biglike:
-                print(len(sub))
-            lst = sub.pop(0)
-            out += lst
-            nobr = False
-            for sbit in sub:
-                if sbit == '':
-                    out += '\n<p>'
-                    nobr = True
-                else:
-                    if lst.endswith('.') or lst.endswith(':') \
-                       or (sbit.startswith(' ' * 5) \
-                           and not (sbit.startswith(' ' * 8) \
-                                    and nxt[:1]==nxt[:1].lower())):
-                        if not nobr:
-                            out += '<br>\n'
-                    else:
-                        out += ' '
-                    if not sbit.startswith(' ' * 4) and len(sbit.strip()):
-                        print('Expected at least  4 spaces at start of line.')
-                        print('Got: "%s"' % sbit)
-                        raise Exception("Input format error")
-                    if sbit.startswith(' '*8) and nxt[:1]==nxt[:1].lower():
-                        sbit = sbit[8:]
-                    else:
-                        sbit = sbit[4:]
-                    while sbit.startswith(' '):
-                        out += '&nbsp;'
-                        sbit = sbit[1:]
-                    out += sbit
-                    nobr = False
-        column += len(bit)
-    return out                   
 
 
 def bodytext(body, func, kww):
@@ -423,8 +348,12 @@ def sigline(func, obj):
 def egimage(func):
     return f"""<div class="egimageblock">
     <div class="egimage">
-    <image class="egimg" src="{func}.png" width="300px">
-    </div></div>
+    <div class="egimagetopline"></div><image class="egimg" src="{func}.png" width="300px"><div class="egimagebottomline"></div>
+    </div>
+    <div class="pdflink">
+    Download <a href="{func}.pdf">pdf</a>.
+    </div>
+    </div>
     """
 
 
@@ -469,23 +398,15 @@ def egtext(func, example):
 
     out += f"""
     </div>
-    </div>
-    """
-    return out
-
-
-def eglinks(func):
-    out = f"""
-    <div class="eglinks">
+    <div class="pylinkline"></div>
     <div class="pylink">
     Download <a href="{func}_eg.py">source</a>.
-    </div>
-    <div class="pdflink">
-    Download <a href="{func}.pdf">pdf</a>.
-    </div>
+    </div>    
     </div>
     """
     return out
+
+
 
 
 def example(func, example):
@@ -496,6 +417,5 @@ def example(func, example):
     out += egimage(func)
     out += '</div>' # egouterblock
     out += '<div class="egbottomline"></div>'
-    out += eglinks(func)
     return out
 

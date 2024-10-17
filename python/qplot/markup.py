@@ -76,18 +76,17 @@ def text(s, dx=0, dy=0):
     
     Examples of valid strings:
     
-      "Distance (μm)" - Note unicode support
-      "Coefficient *A*_1^2"
+      "Distance (μm)" - Unicode is fully supported.
+      "Coefficient *A*_1^2" - Boldface, subscript, superscript.
       "Coefficient *A*_{1^2}" - Nested subscript. Braces are eaten.
       "Coefficient *A*_{{1}}" - Nested subscript. Extra braces are not eaten.
-      "e^-½/x/²/σ²" - Note the use of unicode superscripts for nesting.
-      "e^-½(/x/^2 / σ^2)" - The parentheses protect the outer superscript,
-        but terminates the superscript after σ, because
-        it is not paired within that superscript.
-      "/x/^{2}/2" - Braces help interpret end of superscript
-      "frown^:\\( or smile^:\\)" - The backslashes prevent unwanted space 
+      "/x/^{2}/2" - Braces help interpret end of superscript.
+      "e^-½(/x/^2 + /y/^2)" - The parentheses protect the outer superscript.
+      "e^-½{(/x/^2 + /y/^2) / σ^2}" - Braces are needed to protect
+         spaces not protected by parentheses.
+      "frown^:\\( or smile^:\\)" - Backslashes prevent unwanted space 
         protection.
-      "frown^{:(} or smile^{:)}" - No backslashes needed because of braces.
+      "frown^{:(} or smile^{:)}" - Braces obviate the need for backslashes.
 
 
     See also AT and ALIGN.

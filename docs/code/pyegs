@@ -62,12 +62,12 @@ def build(func):
             qp.save(pngfn, reso=300)
             qp.close()
         else:
-            print("No figure - unlinking files and making empty")
+            print("No figure - unlinking files")
             if os.path.exists(pngfn):
                 os.unlink(pngfn)
             if os.path.exists(pdffn):
                 os.unlink(pdffn)
-            os.system(f"touch {pngfn}")
+            #os.system(f"touch {pngfn}")
         
 
 def main():
