@@ -139,13 +139,13 @@ def marker(shape=None, size=None, fill=None):
         instead of drawing the shape.
     The mark is always outlined with the current pen (which may be 'none',
     of course).
-    Marks are: o: circle/disk
-               + x: horizontal+vertical or diagonal crosses
-               - |: horizontal or vertical lines
-               s d p h: square, diamond, pentagon, or hexagon
-               < > ^ v: left / right / up / down pointing triangles
-    The fill style has no effect on +|x|-|| marks; SPINE is like BRUSH 
-    for circle.'''
+    Marks are:
+      o: circle/disk
+      + x: horizontal+vertical or diagonal crosses
+      - |: horizontal or vertical lines
+      s d p h: square, diamond, pentagon, or hexagon
+      < > ^ v: left / right / up / down pointing triangles
+    The fill style has no effect on +|x|-|| marks.'''
     out = [ 'marker' ]
     if shape is not None:
         if shape in qi.markermap:

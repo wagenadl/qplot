@@ -71,7 +71,7 @@ def text(s, dx=0, dy=0):
     asterisks. “Words” in this context means a sequence of letters
     and/or numbers. Slashes and asterisks that do not form pairs
     around a word are not interpreted specially. 
-    As in TeX math, \, inserts a thin space, and \! inserts a thin
+    As in TeX math, \\, inserts a thin space, and \\! inserts a thin
     negative space.
     
     Examples of valid strings:
@@ -85,7 +85,7 @@ def text(s, dx=0, dy=0):
         but terminates the superscript after σ, because
         it is not paired within that superscript.
       "/x/^{2}/2" - Braces help interpret end of superscript
-      "frown^:\( or smile^:\)" - The backslashes prevent unwanted space 
+      "frown^:\\( or smile^:\\)" - The backslashes prevent unwanted space 
         protection.
       "frown^{:(} or smile^{:)}" - No backslashes needed because of braces.
 
