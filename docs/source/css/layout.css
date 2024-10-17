@@ -6,6 +6,7 @@ body {
 .contents {
     padding-top: 0px;
     display: flex;
+    min-height: 100vh;
 }
 
 #sidebar {
@@ -22,6 +23,7 @@ body {
     padding: 0px;
     flex-grow: 1;
     max-width: 720px;
+    position: relative;
 }
 
 .menubutton {
@@ -32,6 +34,7 @@ body {
     vertical-align: top;
     overflow-x: hidden;
     overflow-y: hidden;
+    cursor: pointer;
 }
 
 @media screen and (max-width: 600px) {
@@ -172,32 +175,61 @@ body {
     padding-bottom: 5px;
 }
 
+.egtopline, .egbottomline {
+    height: 1px;
+}
+
+.egtextblock {
+    flex-shrink: 1;
+    flex-grow: 1;
+    padding-left: 15px;
+}
+
 .example {
     padding-left: 30px;
-    margin-bottom: 15px;
+    min-height: 300px;
 }
 
 .egcontainer {
     padding: 0px;
     margin: 0px;
-    min-height: 400px;
+    min-height: 348px;
+    vertical-align: bottom;
+}
+
+.egouterblock {
+    display: flex;
+    align-items: bottom;
+}
+
+.egimageblock {
+    width: 340px;
+    flex-shrink: 0;
+    flex-grow: 0;
 }
 
 .egimage {
-    padding: 25px;
-    margin-right: -15px;
-    padding-top: 30px;
-    float: right;
+    padding-right: 10px;
 }
 
+.egimg {
+    padding: 0px;
+    margin: 0px;
+}    
 
 .footer {
     padding: 15px;
     background-color: #eeeeee;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
 }
 
 .eglink {
-    padding-left: 15px;
+    margin-top: -5px;
+    padding-top: 4px;
+    padding-left: 18px;
 }
 
 p.eg {
@@ -213,6 +245,12 @@ p.empty {
     margin-top: 10px;
     margin-bottom: 10px;
 }
+
+.egpdflink {
+    margin-top: -5px;
+    padding-left: 3px;
+}
+
 
 .indexcontent {
     padding-left: 15px;
@@ -231,4 +269,9 @@ p.empty {
     display: block;
     margin-left: 1.5em;
     margin-bottom: 5px;
+}
+
+.pylistitem {
+    padding-left: 3em;
+    text-indent: -1.5em;
 }

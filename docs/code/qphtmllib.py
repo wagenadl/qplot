@@ -75,7 +75,181 @@ def sidebar(breadcrumbs):
     return txt
 
 
+def _countspaces(text):
+    k = 0
+    K = len(text)
+    while k < K and text[k] == ' ':
+        k += 1
+    return k
+
+
+_re_upper = re.compile(r"^[A-Z][A-Z_]*$")
+
+def _isupper(text):
+    return _re_upper.match(text)
+
+
+def _splittopargs(text):
+    '''Our standard is that each line should start with four spaces.
+    We also support LIST ITEMs and CONTINUATION LINEs.
+    A line that starts with X>4 spaces is a LIST ITEM if either:
+      X <= 6
+      X = same as previous lines space count
+      X<10 and previous line was empty or had 4 spaces.
+    A line with >X spaces is a CONTINUATION LINE.
+    A line with 4 spaces starts a new paragraph if:
+       Previous line had a different space count or was empty
+       Previous line ended with "."
+           and this line starts with capital.
+    The above features examples of both types of special lines
+    '''
+    lines = text.split("\n")
+    lastends = False
+    lastx = 4
+    para = []
+    pargs = []
+    first = True
+    for line in lines:
+        x = _countspaces(line)
+        line = line.strip()
+        if line == "":
+            pargs.append(para)
+            para = []
+            lastx = 4 # pretend
+        elif x < 4 and not first:
+            raise ValueError("Must have ≥ 4 spaces")
+        elif x <= 4:
+            # regular text line
+            if (lastends and _isupper(line[:1])) or lastx > 4:
+                # Start new paragraph
+                pargs.append(para)
+                para = [line]
+            else:
+                para.append(line)
+            lastx = 4
+        elif x<=6 or x==lastx or (x<=10 and lastx==4):
+            # list item
+            pargs.append(para)
+            para = ["  " + line]
+            lastx = x
+        else:
+            # continuation line
+            para.append(line)
+        first = False
+        lastends = line.endswith(".") or line.endswith(".)")
+    pargs.append(para)
+    pargs = [" ".join(para) for para in pargs if para]
+    return pargs
+
+
+class PyDoc:
+    def __init__(self, func, args):
+        self.func = func
+        self.myargs = {arg for arg in args}
+        #self.re_call = re.compile(f"{func.upper()}\\(([^)]*)\\)")
+        self.re_split = re.compile(r"((?<!LUTS)\W+)")
+        self.re_itemsplit = re.compile("( - |: )")
+        self.re_pareno = re.compile(r"\(")
+        self.re_parenc = re.compile(r"\)")
+        self.re_word = re.compile(r"(?:LUTS\.)?[a-zA-Z]+")
+        self.out = ""
+        self.mykeywords = set()
+
+    def parse(self, doc):
+        for parg in _splittopargs(doc):
+            if parg.startswith("  "):
+                self.parse_listitem(parg[2:])
+            else:
+                self.parse_para(parg)
+        return self.out
+
+    def parse_listitem(self, item):
+        self.out += '<div class="pylistitem">'
+        bits = re.split(self.re_itemsplit, item)
+        if len(bits) >= 3:
+            # Study first bit specially
+            self.out += '<span class="pli-key">'
+            if bits[0].startswith('"'):
+                self.out += bits[0]
+            else:
+                obits = []
+                for kw in bits[0].split(" "):
+                    lobit = kw.lower()
+                    self.mykeywords.add(lobit)
+                    obits.append(f'<span class="pykw">{lobit}</span>')
+                self.out += " ".join(obits)
+            self.out += "</span>"
+            self.out += f'<span class="pli-sep">{bits[1]}</span>'
+            self.out += '<span pclass="pli-val">'
+            self.renderpara("".join(bits[2:]))
+            self.out += "</span>"
+        else:
+            self.out += '<span class="pli-key">'
+            self.renderpara(item)
+            self.out += '</span>'
+        self.out += "</div>"
+
+    def renderpara(self, parg):
+        bits = re.split(self.re_split, parg)
+        prevbits = [""] + bits[:-1]
+        nextbits = bits[1:] + [""]
+        inargs = False
+        for bit, prv, nxt in zip(bits, prevbits, nextbits):
+            if prv.endswith("-") or nxt.startswith("-"):
+                self.out += bit # don't mess with hyphenated words
+                continue
+            if prv[-1:] in ['"', "'"] and nxt.startswith(prv[-1]):
+                self.out += bit # don't mess with text in quotes
+                continue
+            
+            lobit = bit.lower()
+            ishigh = bit == bit.upper()
+            ispluhigh = bit.endswith("s") and bit[:-1] == bit[:-1].upper()
+            if prv==self.func.upper() or inargs:
+                nopen = len(self.re_pareno.findall(bit))
+                nclose = len(self.re_parenc.findall(bit))
+                if nopen > nclose:
+                    inargs = True
+                elif nopen < nclose:
+                    inargs = False
+
+            if ishigh and lobit==self.func:
+                self.out += f'<span class="mefunc">{lobit}</span>'
+                gotfunc = True
+            elif ishigh and lobit in self.mykeywords:
+                self.out += f'<span class="pykw">{lobit}</span>'
+            elif ishigh and lobit in self.myargs:
+                self.out += f'<span class="arg">{lobit}</span>'
+            elif ispluhigh and lobit[:-1] in self.myargs:
+                self.out += f'<span class="arg">{lobit}</span>'
+            elif ishigh and lobit in funcs:
+                self.out += f'<a class="tmlink" href="{lobit}.html">{lobit}</a>'
+            elif ispluhigh and lobit[:-1] in funcs:
+                self.out += f'<a class="tmlink" href="{lobit[:-1]}.html">{lobit[:-1]}</a>s'
+            elif inargs and self.re_word.match(bit):
+                self.out += f'<span class="arg">{lobit}</span>'
+                self.myargs.add(lobit)
+            else:
+                self.out += bit
+        
+            
+    def parse_para(self, parg):
+        #moreargs = self.re_call.findall(parg)
+        #for args in moreargs:
+        #    args = args.split(",")
+        #    for arg in args:
+        #        self.myargs.add(arg.split("=")[0].strip())
+        
+        self.out += '<div class="pypara">'
+        self.renderpara(parg)
+        self.out += "</div>"
+
 def pydoc(doc, func, kww):
+    pyd = PyDoc(func, kww)
+    return pyd.parse(doc)
+    
+        
+def pydoc1(doc, func, kww):
     r = re.compile(r"((?<!LUTS)\W+)")
     wrd = re.compile(r"(?:LUTS\.)?[a-zA-Z]+")
     nl = re.compile(r"\n")
@@ -101,7 +275,7 @@ def pydoc(doc, func, kww):
                 out += bit # don't mess with text in quotes
             elif prv.endswith("-") or nxt.startswith("-"):
                 out += bit # hyphenated words are not func/var names
-            elif ishigh and lobit==func:
+            elif ishigh and lobit==self.func:
                 out += f'<span class="mefunc">{lobit}</span>'
                 if column<=4:
                     gotfunc = True
@@ -122,6 +296,9 @@ def pydoc(doc, func, kww):
                 out += bit
         else:
             # This bit is punctuation-like
+            biglike = len(bit) > 10
+            if biglike:
+                print(f"*BIG* [{prv}] [{[ord(c) for c in bit]}] [{nxt}]")
             if bit.startswith('(') and prv.lower() in funcs:
                 inargs = True
             depth += len(paren.findall(bit)) - len(parenc.findall(bit))
@@ -133,6 +310,8 @@ def pydoc(doc, func, kww):
                 gotfunc = False
                 depth = 0
             sub = nl.split(bit)
+            if biglike:
+                print(len(sub))
             lst = sub.pop(0)
             out += lst
             nobr = False
@@ -241,11 +420,11 @@ def sigline(func, obj):
     return out, kww
 
     
-def egimage(f, func):
-    return f"""<div class="egimage">
+def egimage(func):
+    return f"""<div class="egimageblock">
+    <div class="egimage">
     <image class="egimg" src="{func}.png" width="300px">
-    <div class="eglink">Download <a href="{func}.pdf">pdf</a></div>
-    </div>
+    </div></div>
     """
 
 
@@ -276,8 +455,8 @@ def pyegline(line, func):
 
     
 def egtext(func, example):
-    out = """<div class="egcontainer">
-    <div class="eghead">Example:</div>
+    out = """
+    <div class="egtextblock">
     <div class="example">
     """
     
@@ -288,10 +467,35 @@ def egtext(func, example):
         else:
             out += f"""<p class="eg">{pyegline(line, func)}</p>"""
 
-    out += f"""</div>
-    <div class="eglink">
-    Download <a href="{func}_eg.py">source</a>.
+    out += f"""
     </div>
-</div>
+    </div>
     """
     return out
+
+
+def eglinks(func):
+    out = f"""
+    <div class="eglinks">
+    <div class="pylink">
+    Download <a href="{func}_eg.py">source</a>.
+    </div>
+    <div class="pdflink">
+    Download <a href="{func}.pdf">pdf</a>.
+    </div>
+    </div>
+    """
+    return out
+
+
+def example(func, example):
+    out = '<div class="eghead">Example:</div>'
+    out += '<div class="egtopline"></div>'
+    out += '<div class="egouterblock">'
+    out += egtext(func, example)
+    out += egimage(func)
+    out += '</div>' # egouterblock
+    out += '<div class="egbottomline"></div>'
+    out += eglinks(func)
+    return out
+

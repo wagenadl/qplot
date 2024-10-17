@@ -32,14 +32,7 @@ import qphtmllib as qph
 
 
 outpath = "build/pyref"
-egpath = "../doc/pyref"
-
-
-def hasimage(func):
-    if not os.path.exists(f"{outpath}/{func}.png"):
-        return False
-    s = os.stat(f"{outpath}/{func}.png")
-    return s.st_size>0
+egpath = "source/python-egs"
 
 
 def lutline():
@@ -84,12 +77,10 @@ def document(func, org):
         sig, kww = qph.sigline(func, qpd.qpfunction(func))
         html += sig
         html += qph.bodytext(body, func, kww)
-    if hasimage(func):
-        html += qph.egimage(func)
-    if example is not None:
-        html += qph.egtext(func, example)
     if func.startswith("luts."):
         html += lutline()
+    if example is not None:
+        html += qph.example(func, example)
     html += '</div>\n' # funcdoc
     html += qph.footer()
     html += '</div>\n' # central
