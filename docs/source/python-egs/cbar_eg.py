@@ -10,5 +10,5 @@ qp.imsc(zz, [0, 0, 1, 1], c0=-1, c1=1)
 
 qp.cbar()
 
-qp.caxis('', [-1, 0, 1], ['negative', '0', 'positive'])
+qp.caxis('', [-1, 0, 1], ['negative', '0', 'positive'], axshift=2, ticklen=4)
 qp.minorticks(np.arange(-.75, 1, .25))
