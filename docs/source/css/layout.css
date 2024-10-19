@@ -169,6 +169,11 @@ body {
     padding-left: 30px;
 }
 
+.lutline {
+    padding-left: 30px;
+    margin-top: 0px;
+}
+
 .eghead {
     padding-left: 15px;
     padding-top: 10px;
@@ -178,44 +183,100 @@ body {
 .egtopline, .egbottomline {
     height: 1px;
 }
+.pylinkline {
+    height: 0px;
+}
+.egimagetopline, .egimagebottomline {
+    display: inline-block;
+    height: 25px;
+    width: 6px;
+    padding: 0px;
+}
+.egimagetopline {
+    margin-bottom: 275px;
+}
+.egimagebottomline {
+    margin-top: 275px;
+}
+                       
 
 .egtextblock {
+    display: flex;
+    flex-direction: column;
     flex-shrink: 1;
     flex-grow: 1;
-    padding-left: 15px;
+    padding-left: 0px;
 }
 
 .example {
     padding-left: 30px;
-    min-height: 300px;
+    min-height: 312px;
 }
 
 .egcontainer {
     padding: 0px;
     margin: 0px;
-    min-height: 348px;
-    vertical-align: bottom;
 }
 
 .egouterblock {
     display: flex;
-    align-items: bottom;
 }
 
 .egimageblock {
-    width: 340px;
     flex-shrink: 0;
     flex-grow: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: right;
 }
 
 .egimage {
-    padding-right: 10px;
+    display: block;
+    padding: 0px;
+    margin: auto 0px 6px auto;
+    line-height: 0px;
 }
 
 .egimg {
+    display: inline-block;
     padding: 0px;
     margin: 0px;
-}    
+}
+
+.pylink, .pdflink {
+    display: block;
+    height: 0px;
+    overflow: visible;
+    position: relative;
+    top: 0px;
+}
+.pylink {
+    padding-left: 30px;
+}
+.pdflink {
+    padding-left: 5px;
+    width: 308px;
+}
+
+@media screen and (max-width: 760px) {
+    .egouterblock {
+        display: block;
+    }
+    .egimageblock {
+        margin-top: 30px;
+    }
+    .pdflink {
+        margin: auto 0px 0px auto;
+    }
+    .pylinkline {
+        height: 1px;
+    }
+}
+
+
+.footerspace {
+    height: 60px;
+}
 
 .footer {
     padding: 15px;
@@ -226,11 +287,7 @@ body {
     right: 0;
 }
 
-.eglink {
-    margin-top: -5px;
-    padding-top: 4px;
-    padding-left: 18px;
-}
+    
 
 p.eg {
     padding-top: 0px;
@@ -244,11 +301,6 @@ p.empty {
     padding-bottom: 0px;
     margin-top: 10px;
     margin-bottom: 10px;
-}
-
-.egpdflink {
-    margin-top: -5px;
-    padding-left: 3px;
 }
 
 

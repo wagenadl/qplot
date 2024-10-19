@@ -126,20 +126,23 @@ body {
     content: "”";
 }
 
-.example {
+.example, .doceg {
     font-family: ubuntu, sans;
-    font-size: 85%;
+    font-size: 100%;
 }
+.doceg {
+    color: #660000; }
 
-.egtopline, .egbottomline {
+.egtopline, .egbottomline, .pylinkline {
     background-color: #aaaaaa;
 }
-
-
-.egimg:hover {
-    color: black;
+.egimagetopline {
+    background-color: #bb0000;
 }
-
+.egimagebottomline {
+    background-color: #bb0000;
+}
+    
 .footer {
     background-color: #eeeeee;
 }
