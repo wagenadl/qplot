@@ -651,7 +651,7 @@ def overline(xx, yy, txt=None, datadist=None, textdist=None, minlen=None):
         markup.align('center', 'bottom')
         markup.text(txt, dy=-(datadist + minlen + td))
 
-def xcaxis(title='', xx=None, labels=None, y=None, lim=None, flip=False,
+def xcaxis(title='', ticks=None, labels=None, y=None, lim=None, flip=False,
            ticklen=None, axshift=None, lbldist=None, ttldist=None,
            microshift=False):
     '''XCAXIS - Plot x-axis with labels between ticks
@@ -660,7 +660,7 @@ def xcaxis(title='', xx=None, labels=None, y=None, lim=None, flip=False,
     last tick positions are extrapolated.
     All arguments are optional.
       TITLE specifies title for axis.
-      XX specifies locations for the labels.
+      TICKS specifies locations for the labels.
       LABELS specifies the label texts.
       Y specifies intersect with y-axis. If None, defaults to a reasonable
         position below the data.
@@ -690,15 +690,15 @@ def xcaxis(title='', xx=None, labels=None, y=None, lim=None, flip=False,
         lbldist = -lbldist
         ttldist = -ttldist
     
-    btwnx = (xx[0:-1] + xx[1:])/2
+    btwnx = (ticks[0:-1] + ticks[1:])/2
     if lim is None:
-        avg = np.mean(np.diff(xx))
+        avg = np.mean(np.diff(ticks))
         lim = (btwnx[0]-avg, btwnx[-1]+avg)
 
     tickx = np.concatenate(([lim[0]], btwnx, [lim[1]]))
 
     # Place labels, do not draw bar
-    _qaxis(orient='x', tick_d=xx, tick_lbl=labels, ttl=title,
+    _qaxis(orient='x', tick_d=ticks, tick_lbl=labels, ttl=title,
             ticklen=0, lbldist=lbldist+ticklen, ttldist=ttldist,
             coord_d=y, coord_p=axshift)
     # Place ticks, draw bar
@@ -706,7 +706,7 @@ def xcaxis(title='', xx=None, labels=None, y=None, lim=None, flip=False,
             ticklen=ticklen,
             coord_d=y, coord_p=axshift, microshift=microshift)
 
-def ycaxis(title='', yy=None, labels=None, x=None, lim=None, flip=False,
+def ycaxis(title='', ticks=None, labels=None, x=None, lim=None, flip=False,
            ticklen=None, axshift=None, lbldist=None, ttldist=None,
            microshift=False):
     '''YCAXIS - Plot y-axis with labels between ticks
@@ -715,7 +715,7 @@ def ycaxis(title='', yy=None, labels=None, x=None, lim=None, flip=False,
     last tick positions are extrapolated.
     All arguments are optional.
       TITLE specifies title for axis.
-      YY specifies locations for the labels.
+      TICKS specifies locations for the labels.
       LABELS specifies the label texts.
       X specifies intersect with x-axis. If None, defaults to a reasonable
         position left of the data.
@@ -748,16 +748,16 @@ def ycaxis(title='', yy=None, labels=None, x=None, lim=None, flip=False,
     elif flip==2:
         lblrot = -lblrot
 
-    yy = np.array(yy)
-    btwnx = (yy[0:-1] + yy[1:])/2
+    ticks = np.array(ticks)
+    btwnx = (ticks[0:-1] + ticks[1:])/2
     if lim is None:
-        avg = np.mean(np.diff(yy))
+        avg = np.mean(np.diff(ticks))
         lim = (btwnx[0]-avg, btwnx[-1]+avg)
 
     ticky = np.concatenate(([lim[0]], btwnx, [lim[1]]))
 
     # Place labels, do not draw bar
-    _qaxis(orient='y', tick_d=yy, tick_lbl=labels, ttl=title,
+    _qaxis(orient='y', tick_d=ticks, tick_lbl=labels, ttl=title,
             ticklen=0, lbldist=lbldist+ticklen, ttldist=ttldist,
             coord_d=x, coord_p=axshift, ttlrot=lblrot)
     # Place ticks, draw bar
@@ -765,6 +765,7 @@ def ycaxis(title='', yy=None, labels=None, x=None, lim=None, flip=False,
            ticklen=ticklen,
            coord_d=x, coord_p=axshift, ttlrot=lblrot,
            microshift=microshift)
+
     
 def zaxis(title, ticks, proj, labels=None, x=0, y=0, lim=None, below=False):
     '''ZAXIS - Draw a z-axis.
