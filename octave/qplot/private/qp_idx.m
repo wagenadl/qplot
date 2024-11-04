@@ -31,7 +31,7 @@ if isempty(qp_data.curfn)
   end
 end
 
-idx = find(strcmp(qp_data.curfn, qp_data.fns);
+idx = find(strcmp(qp_data.curfn, qp_data.fns));
 if isempty(idx)
   error('No open window');
 end
