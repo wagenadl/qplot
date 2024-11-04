@@ -1,0 +1,99 @@
+Figures:
+qclf
+qclose
+qfigure
+qpanel
+qprint
+qselect
+qsubplot
+qsave
+qcurrent
+
+Plotting:
+qbars
+qecoplot
+qerrorbar
+qerrorpatch
+qmark
+qpatch
+qplot
+qskyline
+
+Images:
+qimage
+qimsc
+
+Tick axes:
+qcaxis
+qmticks
+qoverline
+qxaxis
+qxcaxis
+qyaxis
+
+Annotations:
+qarrow
+qat
+qdarrow
+qtext
+qtitle
+
+Legends:
+qlegend
+qlegopt
+qmlegend
+qplegend
+
+Color bars:
+qhcbar
+qvcbar
+
+Graphics styling:
+qbrush
+qlut
+qmarker
+qpen
+
+Text styling:
+qalign
+qfont
+qreftext
+
+Tick axis styling:
+qaxshift
+qnumfmt
+qtextdist
+qticklen
+qytitlerot
+qoverlinedist
+qoverlinemin
+
+Paper coordinate plotting:
+qarea
+qline
+qmm
+qpmark
+
+Mixed coordinate plotting:
+qshiftedline
+qgarea
+qgarea2
+qgimage
+qgline
+qgline2
+
+Grouping:
+qendgroup
+qgroup
+
+Scale to fit:
+qsharelim
+qshrink
+qxlim
+qylim
+
+Specialized functions:
+qcaligraph
+qctext
+qhairline
+qtextonpath

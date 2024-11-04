@@ -19,19 +19,15 @@
 import sys
 import os
 import re
-import inspect
-
-sys.path.append("../python")
-import qplot as qp
 
 sys.path.append("./code")
-import qpdoclib as qpd
+import qpoctdoc as qpd
 import qphtmllib as qph
 
 qph.setfuncs(qpd.qplotfunctions())
 
-outpath = "build/pyref"
-egpath = "source/python-egs"
+outpath = "build/octref"
+egpath = "source/octave-egs"
 
 
 def lutline():
@@ -60,7 +56,7 @@ def document(func, org):
     html += qph.head(func)
     html += "<body>"
     html += '<div class="contents">'
-    crumbs = {"Python functions": "index.html"}
+    crumbs = {"Octave functions": "index.html"}
     section = findinorg(func, org)
     if section is not None:
         crumbs[section] = f"sec-{safesection(section)}.html"
@@ -79,7 +75,7 @@ def document(func, org):
     if func.startswith("luts."):
         html += lutline()
     if example is not None:
-        html += qph.example(func, example)
+        html += qph.example(func, example, "m")
     html += '</div>\n' # funcdoc
     html += qph.footer()
     html += '</div>\n' # central
@@ -118,7 +114,7 @@ def sectiondoc(sec, funcs):
     html += qph.head(sec)
     html += "<body>"
     html += '<div class="contents">'
-    crumbs = {"Python functions": "index.html"}    
+    crumbs = {"Octave functions": "index.html"}    
     crumbs[sec] = None
     html += qph.sidebar(crumbs)
     html += '<div id="central">'
@@ -138,14 +134,14 @@ def sectiondoc(sec, funcs):
 def indexdoc(org):
     html = qph.doctype()
     html += "<html>"
-    html += qph.head("Python functions")
+    html += qph.head("Octave functions")
     html += "<body>"
     html += '<div class="contents">'
-    crumbs = {"Python functions": None}
+    crumbs = {"Octave functions": None}
     html += qph.sidebar(crumbs)
     html += '<div id="central">'
     html += qph.header()
-    html += qph.idxtitleblock("Python functions")
+    html += qph.idxtitleblock("Octave functions")
     html += '<div class="idxdoc">'
 
     for section, funcs in org.items():

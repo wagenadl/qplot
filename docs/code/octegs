@@ -1,0 +1,25 @@
+#!/usr/bin/python3
+
+import os
+import glob
+
+if not os.path.exists("build"):
+    os.mkdir("build")
+os.chdir("build")
+if not os.path.exists("octref"):
+    os.mkdir("octref")
+os.chdir("octref")
+
+egpath = "../../source/octave-egs"
+egs = glob.glob(f"{egpath}/q*eg.m")
+qplotpath = "../../../octave/qplot"
+codepath = "../../code"
+
+for eg in egs:
+    os.system(f"cp -a {eg} .")
+    os.system(f"""/usr/bin/octave --no-gui --path {egpath} --path {qplotpath} --path {codepath} --eval "octeg('{eg}')" """)
+    qpt = eg.split("/")[-1][:-5] + ".qpt"
+    try:
+        os.unlink(qpt)
+    except FileNotFoundError:
+        pass

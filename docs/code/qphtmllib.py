@@ -2,10 +2,11 @@ import inspect
 import re
 import time
 
-import qpdoclib as qpd
 
-
-funcs = qpd.qplotfunctions()
+funcs = []
+def setfuncs(fu):
+    global funcs
+    funcs = fu
 
 
 def thisyear():
@@ -52,7 +53,7 @@ def sidebar(breadcrumbs):
     txt = """
     <div id="sidebar">
       <div class="logography">
-        <div class="project">QPlot</div>
+        <div class="project"><a href="../index.html">QPlot</a></div>
         <div class="ptagline">Beautifully typeset graphs for science</div>
       </div>
       <div class="breadcrumbs">
@@ -93,11 +94,11 @@ def _isupper(text):
 def _splittopargs(text):
     '''Our standard is that each line should start with four spaces.
     We also support LIST ITEMs and CONTINUATION LINEs.
-    A line that starts with X>4 spaces is a LIST ITEM if either:
+    A line that starts with X > 4 spaces is a LIST ITEM if either:
       X <= 6
       X = same as previous lines space count
-      X<10 and previous line was empty or had 4 spaces.
-    A line with >X spaces is a CONTINUATION LINE.
+      X < 10 and previous line was empty or had 4 spaces.
+    A line with > X spaces is a CONTINUATION LINE.
     A line with 4 spaces starts a new paragraph if:
        Previous line had a different space count or was empty
        Previous line ended with "."
@@ -106,6 +107,7 @@ def _splittopargs(text):
     '''
     lines = text.split("\n")
     lastends = False
+    four = 4
     lastx = 4
     para = []
     pargs = []
@@ -116,19 +118,21 @@ def _splittopargs(text):
         if line == "":
             pargs.append(para)
             para = []
-            lastx = 4 # pretend
-        elif x < 4 and not first:
+            lastx = four # pretend
+        elif x < four and not first:
             raise ValueError("Must have ≥ 4 spaces")
-        elif x <= 4:
+        elif x <= four:
+            if first:
+                four = x
             # regular text line
-            if (lastends and _isupper(line[:1])) or lastx > 4:
+            if (lastends and _isupper(line[:1])) or lastx > four:
                 # Start new paragraph
                 pargs.append(para)
                 para = [line]
             else:
                 para.append(line)
-            lastx = 4
-        elif x<=6 or x==lastx or (x<=10 and lastx==4):
+            lastx = four
+        elif x<=6 or x==lastx or (x<=10 and lastx==four):
             # list item
             pargs.append(para)
             para = ["  " + line]
@@ -322,6 +326,17 @@ def submoduletext(func, body):
     return out                   
 
 
+def octpars(s):
+    try:
+        oidx = s.index('(')
+        cidx = s.index(')')
+        if cidx > oidx:
+            bits = s[oidx+1:cidx-1].split(",")
+            return { k.strip():k.strip() for k in bits }
+    except:
+        return {}
+
+
 def sigline(func, obj):
     # This should be improved to print annotations in the future,
     # but for now, we don't use them, so it's OK.
@@ -329,8 +344,11 @@ def sigline(func, obj):
     <div class="pysig">
     <span class="mefunc">{func}</span>("""
     first = True
-    sig = inspect.signature(obj)
-    pp = sig.parameters
+    if type(obj)==list:
+        pp = octpars(obj[0])
+    else:
+        sig = inspect.signature(obj)
+        pp = sig.parameters
     kww = []
     for k in pp.keys():
         if not first:
@@ -356,6 +374,22 @@ def egimage(func):
     </div>
     """
 
+
+def octegline(line, func):
+    gr = re.compile(r"(\W)")
+    bits = gr.split(line)
+    out = ""
+    quot = False
+    for bit in bits:
+        if "'" in bit:
+            quot = not quot
+        if bit==func and not quot:
+            out += f'<span class="mefunc">{func}</span>'
+        elif bit in funcs and not quot:
+            out += f'<a href="{bit}.html">{bit}</a>'
+        else:
+            out += bit
+    return out
 
 def pyegline(line, func):
     """Construct a line from a python example
@@ -383,7 +417,7 @@ def pyegline(line, func):
     return out
 
     
-def egtext(func, example):
+def egtext(func, example, typ="py"):
     out = """
     <div class="egtextblock">
     <div class="example">
@@ -393,6 +427,8 @@ def egtext(func, example):
         line = line.rstrip()
         if line == "":
             out +=  """<p class="empty"></p>"""
+        elif typ=="m":
+            out += f"""<p class="eg">{octegline(line, func)}</p>"""
         else:
             out += f"""<p class="eg">{pyegline(line, func)}</p>"""
 
@@ -400,7 +436,7 @@ def egtext(func, example):
     </div>
     <div class="pylinkline"></div>
     <div class="pylink">
-    Download <a href="{func}_eg.py">source</a>.
+    Download <a href="{func}_eg.{typ}">source</a>.
     </div>    
     </div>
     """
@@ -409,11 +445,11 @@ def egtext(func, example):
 
 
 
-def example(func, example):
+def example(func, example, typ="py"):
     out = '<div class="eghead">Example:</div>'
     out += '<div class="egtopline"></div>'
     out += '<div class="egouterblock">'
-    out += egtext(func, example)
+    out += egtext(func, example, typ)
     out += egimage(func)
     out += '</div>' # egouterblock
     out += '<div class="egbottomline"></div>'

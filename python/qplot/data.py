@@ -109,7 +109,7 @@ def plot(xx, yy=None):
     '''PLOT - Draw a line series in data space
     PLOT(xx, yy) plots the data YY vs XX. XX and YY are given in data
     coordinates.
-    PLOT(yy) plots the data against x = 1..N.
+    PLOT(yy) plots the data against x = 0..N-1.
     See also LINE and GLINE.'''
     if yy is None:
         yy = xx
