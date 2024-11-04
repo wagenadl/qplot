@@ -35,7 +35,7 @@ while k<=K
   narg = [];
   if any(strcmp(tolower(subcmd), strtoks('absdata reldata abspaper relpaper')))
     narg = 2;
-  elseif any(strcmp(tolower(subcmd), strtoks('rotdata rotpaper'))
+  elseif any(strcmp(tolower(subcmd), strtoks('rotdata rotpaper')))
     narg = 1;
   elseif strcmp(tolower(subcmd), 'retract')
     if k+2 <= K && isnvector(args{k+2})

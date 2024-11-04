@@ -114,6 +114,7 @@ for n=1:2:length(varargin)
     idx = find(strcmp(k, opts));
     if isempty(idx)
       idx = find(strncmp(k, opts, length(k)));
+    end
     if isempty(idx)
       if accept_any
 	kv.(k) = v;%	kv = setfield(kv,k,v);

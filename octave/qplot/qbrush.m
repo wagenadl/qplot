@@ -28,7 +28,7 @@ for n=1:nargin
   if ischar(a)
     if length(a)==1 && a>='A' && a<='Z' && n==1
       ; % This is ID, so good
-    elseif strcmp(a, 'none'')
+    elseif strcmp(a, 'none')
       ; % This is a known keyword, so good
     elseif ~isempty(qp_mapcolor(a))
       ; % This is a good color
