@@ -21,7 +21,7 @@ import os
 import re
 
 sys.path.append("./code")
-import qpoctdoc as qpd
+import qpoctdoclib as qpd
 import qphtmllib as qph
 
 qph.setfuncs(qpd.qplotfunctions())

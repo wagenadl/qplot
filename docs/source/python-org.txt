@@ -75,7 +75,7 @@ align
 font
 reftext
 
-Tick axis styling:
+Axis styling:
 axshift
 numformat
 textdist

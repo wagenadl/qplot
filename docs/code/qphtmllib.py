@@ -3,6 +3,22 @@ import re
 import time
 
 
+sections = [("Home", "../home/index.html"),
+            ("Gallery", "../gallery/index.html"),
+            ("Python functions", "../pyref/index.html"),
+            ("Octave functions", "../octref/index.html"),
+            ]
+
+lbldict = {"Generating legends": "Legends",
+           "Generating color bars": "Color bars",
+           "Graphics styling": "Styling",
+           "Textual annotations": "Annotations",
+           "Text styling": "Text styling",
+           "Axis styling": "Axis styling",
+           "Color lookup tables": "LUTs",
+           "Scale to fit": "Scale to fit",
+           }
+
 funcs = []
 def setfuncs(fu):
     global funcs
@@ -48,8 +64,51 @@ def footer():
     </div>
 """
 
+def breadcrumbs(crumbs, sibs, level=0):
+    txt = ""
+    if crumbs:
+        label, url = crumbs[0]
+    else:
+        label, url = "", None
+    if sibs:
+        heresibs = sibs[0]
+        childsibs = sibs[1:]
+    else:
+        heresibs = [(label, url)]
+        childsibs = None
+    childcrumbs = crumbs[1:]
+    for lbl, ur1 in heresibs:
+        if lbl==label:
+            mark = """<span class="bcmark"></span>"""
+            cls = "bchere"
+        else:
+            mark = ""
+            if lbl in lbldict:
+                lbl = lbldict[lbl]
+            else:
+                lbl = lbl.split(" ")[0]
+            cls = ""
+        txt += f"""<div class="breadcrumb-{level+1}">"""
+        txt += f"""<div class="bcheader  {cls}">"""
+        txt += f"""<div class="bcleft">{mark}</div>"""
+        if ur1 is None:
+            cont1 = lbl
+        else:
+            cont1 = f'<a href="{ur1}">{lbl}</a>'
+        txt += f"""<div class="bcinner">{cont1}</div></div>"""
+        if lbl==label:
+            if childsibs or childcrumbs:
+                txt += breadcrumbs(childcrumbs, childsibs, level + 1)
+        txt += "</div>"
 
-def sidebar(breadcrumbs):
+    return txt
+
+
+def sidebar(crumbs, sibs=None):
+    if sibs is None:
+        sibs = [sections]
+    else:
+        sibs.insert(0, sections)
     txt = """
     <div id="sidebar">
       <div class="logography">
@@ -58,18 +117,7 @@ def sidebar(breadcrumbs):
       </div>
       <div class="breadcrumbs">
     """
-
-    for k, (label, url) in enumerate(breadcrumbs.items()):
-        if url is None:
-            content = label
-        else:
-            content = f'<a href="{url}">{label}</a>'
-        txt += f"""
-        <div class="breadcrumb-{k+1}">
-        <div class="bcleft"><span class="bcmark"></span></div>        
-        <div class="bcinner">{content}</div>
-        </div>
-        """
+    txt += breadcrumbs(crumbs, sibs)
     txt += """
       </div>
     </div>

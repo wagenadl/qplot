@@ -25,7 +25,7 @@ sys.path.append("../python")
 import qplot as qp
 
 sys.path.append("./code")
-import qpdoclib as qpd
+import qppydoclib as qpd
 import qphtmllib as qph
 
 qph.setfuncs(qpd.qplotfunctions())
@@ -51,7 +51,7 @@ def safesection(section):
     return section.lower().replace(" ", "-")
 
 
-def document(func, org):
+def document(func, org, secsibs, funcsibs):
     title = qpd.tagline(func)
     body = qpd.docbody(func)
     example = qpd.loadexample(func, egpath)
@@ -60,12 +60,12 @@ def document(func, org):
     html += qph.head(func)
     html += "<body>"
     html += '<div class="contents">'
-    crumbs = {"Python functions": "index.html"}
+    crumbs = [("Python functions", "index.html")]
     section = findinorg(func, org)
     if section is not None:
-        crumbs[section] = f"sec-{safesection(section)}.html"
-    crumbs[func] = None
-    html += qph.sidebar(crumbs)
+        crumbs.append((section, f"sec-{safesection(section)}.html"))
+    crumbs.append((func, None))
+    html += qph.sidebar(crumbs, [secsibs, funcsibs])
     html += '<div id="central">'
     html += qph.header()
     html += qph.titleblock(func, title)
@@ -112,15 +112,15 @@ def funcsaslist(funcs):
     return html
 
         
-def sectiondoc(sec, funcs):
+def sectiondoc(sec, funcs, sibs, subsibs):
     html = qph.doctype()
     html += "<html>"
     html += qph.head(sec)
     html += "<body>"
     html += '<div class="contents">'
-    crumbs = {"Python functions": "index.html"}    
-    crumbs[sec] = None
-    html += qph.sidebar(crumbs)
+    crumbs = [("Python functions", "index.html")]
+    crumbs.append((sec, None))
+    html += qph.sidebar(crumbs, [sibs, subsibs])
     html += '<div id="central">'
     html += qph.header()
     html += qph.sectitleblock(sec)
@@ -135,14 +135,14 @@ def sectiondoc(sec, funcs):
 
 
 
-def indexdoc(org):
+def indexdoc(org, sibs):
     html = qph.doctype()
     html += "<html>"
     html += qph.head("Python functions")
     html += "<body>"
     html += '<div class="contents">'
-    crumbs = {"Python functions": None}
-    html += qph.sidebar(crumbs)
+    crumbs = [("Python functions", None)]
+    html += qph.sidebar(crumbs, [sibs])
     html += '<div id="central">'
     html += qph.header()
     html += qph.idxtitleblock("Python functions")
@@ -174,19 +174,19 @@ def indexdoc(org):
 def main():
     org = qpd.organization()
 
-    for func in qpd.qplotfunctions():
-        print(func)
-        html = document(func, org)
-        with open(f"{outpath}/{func}.html", "w") as f:
-            f.write(html)
-
+    secsibs = [(sec, f"sec-{safesection(sec)}.html") for sec in org]
     for sec, funcs in org.items():
-        print(sec)
-        html = sectiondoc(sec, funcs)
+        funcsibs = [(func, f"{func}.html") for func in funcs]
+        for func in funcs:
+            html = document(func, org, secsibs, funcsibs)
+            with open(f"{outpath}/{func}.html", "w") as f:
+                f.write(html)
+
+        html = sectiondoc(sec, funcs, secsibs, funcsibs)
         with open(f"{outpath}/sec-{safesection(sec)}.html", "w") as f:
             f.write(html)
 
-    html = indexdoc(org)
+    html = indexdoc(org, secsibs)
     with open(f"{outpath}/index.html", "w") as f:
         f.write(html)
     
