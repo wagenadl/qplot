@@ -1,7 +1,7 @@
 import qplot as qp
 import numpy as np
 
-qp.figure('luts.names', 3.5, 3)
+qp.figure('luts.names', 3.5, 3.5)
 
 names = qp.luts.names()
 N = len(names)

@@ -1,4 +1,4 @@
-Figures and subplots:
+Figures and subplots:Figures:
 clf
 close
 closeall
@@ -12,7 +12,7 @@ current
 ion
 ioff
 
-Data plotting:
+Data plotting:Data:
 plot
 mark
 xmark
@@ -28,13 +28,13 @@ rectangle
 patch
 hatch
 
-Image rendering:
+Image rendering:Images:
 image
 imsc
 xzimage
 zyimage
 
-Axes for graphs and colorbars:
+Axes for graphs and colorbars:Axes:
 xaxis
 yaxis
 xcaxis
@@ -45,7 +45,7 @@ caxis
 minorticks
 overline
 
-Textual annotations:
+Textual annotations:Text:
 arrow
 at
 darrow
@@ -54,17 +54,17 @@ title
 memo
 recall
 
-Generating legends:
+Generating legends:Legends:
 legend
 legopt
 mlegend
 plegend
 
-Generating color bars:
+Generating colorbars:Colorbars:
 cbar
 hcbar
 
-Graphics styling:
+Graphics styling:Styling:
 brush
 lut
 marker
@@ -84,7 +84,7 @@ ytitlerot
 overlinedist
 overlinemin
 
-Paper coordinate plotting:
+Paper coordinate plotting:Paper coords:
 area
 line
 mm
@@ -92,7 +92,7 @@ pmark
 phatch
 prectangle
 
-Mixed coordinate plotting:
+Mixed coordinate plotting:Mixed coords:
 shiftedline
 garea
 garea2
@@ -113,7 +113,7 @@ commonscale
 alignaxes
 rebalance
 
-Color lookup tables:
+Color lookup tables:LUTs:
 luts.get
 luts.set
 luts.names
@@ -121,7 +121,7 @@ luts.families
 luts.family
 luts.demo
 
-Specialized functions:
+Specialized functions:Specialized:
 caligraph
 ctext
 hairline

@@ -9,7 +9,7 @@ sys.path.append("../python")
 import qplot as qp
 
 sys.path.append("./code")
-import qpdoclib as qpd
+import qppydoclib as qpd
 
 
 egpath = "source/python-egs"
@@ -53,6 +53,8 @@ def build(func):
     ifn, pngfn, pdffn = fns
     with open(ifn) as f:
         txt = f.read()
+        txt = "\n".join([line for line in txt.split("\n")
+                         if "qp.close" not in line]) # cheat
         exec(txt) # we control these files, so this is safe
         if qp.qi.f:
             if txt.find('shrink')<0:

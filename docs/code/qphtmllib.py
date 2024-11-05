@@ -17,6 +17,9 @@ lbldict = {"Generating legends": "Legends",
            "Axis styling": "Axis styling",
            "Color lookup tables": "LUTs",
            "Scale to fit": "Scale to fit",
+           "Image rendering": "Images",
+           "Paper coordinate plotting": "Paper coords",
+           "Mixed coordinate plotting": "Mixed coords",
            }
 
 funcs = []
@@ -83,19 +86,16 @@ def breadcrumbs(crumbs, sibs, level=0):
             cls = "bchere"
         else:
             mark = ""
-            if lbl in lbldict:
-                lbl = lbldict[lbl]
-            else:
-                lbl = lbl.split(" ")[0]
             cls = ""
-        txt += f"""<div class="breadcrumb-{level+1}">"""
+        uselbl = lbl.split(":")[-1]
+        txt += f"""<div class="breadcrumb-{level+1} {cls}">"""
         txt += f"""<div class="bcheader  {cls}">"""
         txt += f"""<div class="bcleft">{mark}</div>"""
         if ur1 is None:
-            cont1 = lbl
+            cont1 = uselbl
         else:
-            cont1 = f'<a href="{ur1}">{lbl}</a>'
-        txt += f"""<div class="bcinner">{cont1}</div></div>"""
+            cont1 = f'<a href="{ur1}">{uselbl}</a>'
+        txt += f"""<div class="bcinner {cls}">{cont1}</div></div>"""
         if lbl==label:
             if childsibs or childcrumbs:
                 txt += breadcrumbs(childcrumbs, childsibs, level + 1)

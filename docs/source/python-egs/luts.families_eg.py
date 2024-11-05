@@ -1,7 +1,7 @@
 import qplot as qp
 import numpy as np
 
-qp.figure('luts.families', 4.5, 3)
+qp.figure('luts.families', 4.5, 4.5)
 
 fams = qp.luts.families()
 y = 0

@@ -48,7 +48,7 @@ def findinorg(func, org):
 
 
 def safesection(section):
-    return section.lower().replace(" ", "-")
+    return section.split(":")[0].lower().replace(" ", "-")
 
 
 def document(func, org, secsibs, funcsibs):
@@ -113,9 +113,10 @@ def funcsaslist(funcs):
 
         
 def sectiondoc(sec, funcs, sibs, subsibs):
+    usesec = sec.split(":")[0]
     html = qph.doctype()
     html += "<html>"
-    html += qph.head(sec)
+    html += qph.head(usesec)
     html += "<body>"
     html += '<div class="contents">'
     crumbs = [("Python functions", "index.html")]
@@ -123,7 +124,7 @@ def sectiondoc(sec, funcs, sibs, subsibs):
     html += qph.sidebar(crumbs, [sibs, subsibs])
     html += '<div id="central">'
     html += qph.header()
-    html += qph.sectitleblock(sec)
+    html += qph.sectitleblock(usesec)
     html += '<div class="secdoc">'
     html += funcsaslist(funcs)
     html += '</div>\n' # secdoc

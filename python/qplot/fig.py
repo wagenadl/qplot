@@ -31,6 +31,7 @@ def figure(fn=None, w=5, h=None):
     FIGURE(fn, w, h) opens a new QPLOT figure with given filename and size
     in inches. If H is omitted, H defaults to 3/4 W. If W is also omitted,
     W defaults to 5 inches.
+
     fn = FIGURE('', w, h) opens a new QPlot figure of given size (in inches)
     with a temporary filename.'''
     if qi.figisopen(fn):
