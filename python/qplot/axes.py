@@ -580,7 +580,7 @@ def numformat(fmt=None):
     return qi.f.numfmt
 
 def overlinedist(x=None):
-    '''OVERLINEDIST - Specifies distance between OVERLINEs and data
+    '''OVERLINEDIST - Distance between OVERLINEs and data
     OVERLINEDIST(dist) specifies the distance between OVERLINEs and 
     the data, in points.
     dist = OVERLINEDIST() returns current settings.'''
@@ -602,7 +602,7 @@ def overlinemin(x=None):
 def overline(xx, yy, txt=None, datadist=None, textdist=None, minlen=None):
     '''OVERLINE - Draw a line above data with a text above it
     OVERLINE(xx, y, text), where XX is a 2-vector and Y a scalar, draws
-    a horizontal line just above (XX(1), Y) to (XX(2), Y) and places the
+    a horizontal line just above (XX₀, Y) to (XX₁, Y) and places the
     given TEXT over it.
     OVERLINE(xx, yy, text), where both XX and YY are 2-vectors, draws the
     line just above the larger YY value and extends a vertical line down 
