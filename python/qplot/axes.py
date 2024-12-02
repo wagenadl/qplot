@@ -318,7 +318,7 @@ def _qaxis(orient='x', lim_d=None,
             markup.text(ttl, dx=ttlpx + ttllx, dy=ttlpy + ttlly)
     fig.endgroup()
 
-def xaxis(title='', ticks=None, labels=None, y=None, lim=None, flip=False,
+def xaxis(title='', ticks=None, labels=None, y=0, lim=None, flip=False,
           ticklen=None, axshift=None, lbldist=None, ttldist=None,
           microshift=False):
     '''XAXIS - Draw x-axis
@@ -346,7 +346,7 @@ def xaxis(title='', ticks=None, labels=None, y=None, lim=None, flip=False,
     the labels are calculated from the tick positions (or vice versa). For
     example:
 
-      «XAXIS('Value (%)', labels=np.arange(0,101,25), ticks=lambda x: x/100)»
+      XAXIS('Value (%)', labels=np.arange(0,101,25), ticks=lambda x: x/100)
 
     Without any arguments or with just a title as an argument, XAXIS tries
     to determine sensible defaults based on previous calls to PLOT and
@@ -388,7 +388,7 @@ def xaxis(title='', ticks=None, labels=None, y=None, lim=None, flip=False,
             ticklen=ticklen, lbldist=lbldist, ttldist=ttldist, 
             coord_d=y, coord_p=axshift, microshift=microshift)
 
-def yaxis(title='', ticks=None, labels=None, x=None, lim=None, flip=False,
+def yaxis(title='', ticks=None, labels=None, x=0, lim=None, flip=False,
           ticklen=None, axshift=None, lbldist=None, ttldist=None,
           titlerot=None, microshift=False):
     '''YAXIS - Draw y-axis
@@ -651,7 +651,7 @@ def overline(xx, yy, txt=None, datadist=None, textdist=None, minlen=None):
         markup.align('center', 'bottom')
         markup.text(txt, dy=-(datadist + minlen + td))
 
-def xcaxis(title='', ticks=None, labels=None, y=None, lim=None, flip=False,
+def xcaxis(title='', ticks=None, labels=None, y=0, lim=None, flip=False,
            ticklen=None, axshift=None, lbldist=None, ttldist=None,
            microshift=False):
     '''XCAXIS - Plot x-axis with labels between ticks
@@ -662,11 +662,11 @@ def xcaxis(title='', ticks=None, labels=None, y=None, lim=None, flip=False,
       TITLE specifies title for axis.
       TICKS specifies locations for the labels.
       LABELS specifies the label texts.
-      Y specifies intersect with y-axis. If None, defaults to a reasonable
-        position below the data.
+      Y specifies intersect with y-axis. Default is zero.
+        If None, defaults to a reasonable position below the data.
       LIM overrides the default positions of the first and last ticks.
-      FLIP, if True, inverts the sign of the settings from TICKLEN, TEXTDIST,
-        and AXSHIFT.
+      FLIP, if True, inverts the sign of the settings from TICKLEN, 
+        TEXTDIST, and AXSHIFT.
     XCAXIS obeys settings from TICKLEN, TEXTDIST, and AXSHIFT.'''
     qi.ensure()
     if y is None:
@@ -706,7 +706,7 @@ def xcaxis(title='', ticks=None, labels=None, y=None, lim=None, flip=False,
             ticklen=ticklen,
             coord_d=y, coord_p=axshift, microshift=microshift)
 
-def ycaxis(title='', ticks=None, labels=None, x=None, lim=None, flip=False,
+def ycaxis(title='', ticks=None, labels=None, x=0, lim=None, flip=False,
            ticklen=None, axshift=None, lbldist=None, ttldist=None,
            microshift=False):
     '''YCAXIS - Plot y-axis with labels between ticks
@@ -717,8 +717,8 @@ def ycaxis(title='', ticks=None, labels=None, x=None, lim=None, flip=False,
       TITLE specifies title for axis.
       TICKS specifies locations for the labels.
       LABELS specifies the label texts.
-      X specifies intersect with x-axis. If None, defaults to a reasonable
-        position left of the data.
+      X specifies intersect with x-axis. Default is zero.
+        If None, defaults to a reasonable position left of the data.
       LIM overrides the default positions of the first and last ticks.
       FLIP, if True, inverts the sign of the settings from TICKLEN, TEXTDIST,
         and AXSHIFT.

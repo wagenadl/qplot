@@ -48,7 +48,7 @@ def findinorg(func, org):
 
 
 def safesection(section):
-    return section.split(":")[0].lower().replace(" ", "-")
+    return section.split(":")[-1].lower().replace(" ", "-")
 
 
 def document(func, org, secsibs, funcsibs):
@@ -150,9 +150,10 @@ def indexdoc(org, sibs):
     html += '<div class="idxdoc">'
 
     for section, funcs in org.items():
+        sec = section.split(":")[0]
         html += f"""<div class="indexsection">
         <div class="indexheader">
-        <a href="sec-{safesection(section)}.html">{section}</a>
+        <a href="sec-{safesection(section)}.html">{sec}</a>
         </div>
         <div class="indexcontent">
         """

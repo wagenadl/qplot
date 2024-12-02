@@ -136,9 +136,9 @@ def hatch(xx, yy, pattern="|", angle=0, spacing=10, offset=0):
     '''HATCH - Hatch a polygonal patch in data space
     HATCH(xx, yy, pattern) hatches a polygon with vertices at (XX,YY) using
     the given pattern. PATTERN is a single character from the following:
-      | / - \\  : lines at the angle suggested angle
-      + x      : combination of either orthogonal or diagonal lines
-      : *      : marks in an orthogonal or hexagonal pattern.
+      | / - \\ :: lines at the angle suggested by the shape of the character
+      + x      :: combination of either orthogonal or diagonal lines
+      : *      :: marks in an orthogonal or hexagonal pattern.
     Lines are rendered with the current PEN.
     Marks are rendereded as by MARK, i.e., with the current MARKER (and PEN
     and BRUSH).
@@ -189,18 +189,24 @@ def mark(xx, yy):
 
 
 def xmark(xx, yy, rx, ry=None):
-    '''XMARK - Like mark, but with horizontal collision avoidance
-    XMARK(xx, yy, rx, ry) tries to draw marks at (XX, YY), but displaces marks
-    horizontally in steps of RX points to avoid collision within an ellipse
-    with radii RX and RY. (Leaving out RY uses a circle with radius RX.)'''
+    '''XMARK - Marks with horizontal collision avoidance
+    XMARK(xx, yy, rx, ry) tries to draw marks at (XX, YY), but
+    displaces marks horizontally in steps of RX points to avoid
+    collision within a circle with radius RX. (If RY is given,
+    an ellipse with radii RX and RY is avoided.)    
+    See also MARK and YMARK.
+    '''
     _mark(xx, yy, rx, ry, 0)
 
     
-def ymark(xx, yy, rx, ry=None):
-    '''YMARK - Like mark, but with vertical collision avoidance
-    YMARK(xx, yy, rx, ry) tries to draw marks at (XX, YY), but displaces marks
-    vertically in steps of RX points to avoid collision within an ellipse
-    with radii RX and RY. (Leaving out RY uses a circle with radius RX.)'''
+def ymark(xx, yy, ry, rx=None):
+    '''YMARK - Marks with vertical collision avoidance
+    YMARK(xx, yy, ry, rx) tries to draw marks at (XX, YY), but
+    displaces marks vertically in steps of RY points to avoid
+    collision within a circle with radius RY. (If RX is given,
+    an ellipse with radii RX and RY is avoided.)
+    See also MARK and XMARK.
+    '''
     _mark(xx, yy, rx, ry, 1)
 
     

@@ -228,22 +228,27 @@ def gimage(img, drect=None, prect=None, aspect=1, anchor=0):
     '''GIMAGE - Place an image with data and paper coordinates
     GIMAGE(img, drect, prect) places an image on a location in
     the graph specified by both data coordinates and image coordinates.
-    For example: GIMAGE(img, [5, 5, 0, 0], [0, 0, 36, 72]) creates an 
-    image of 0.5x1" at data location (5,5). 
-    GIMAGE(img, [5, np.nan, 0, 5], [0, 36, 72, 0]) creates an 
-    image 1" wide, 5 data units high, at x=5, 1" below the top of the graph.
-    Etc.
+    DRECT and PRECT each contain (xleft, ytop, width, height).
+    For example:
+    
+      GIMAGE(img, [5, 5, 0, 0], [0, 0, 36, 72])
+
+    creates an image of 0.5x1" at data location (5,5). 
     GIMAGE may also be used to create an image with explicitly square
     pixels. To do that, specify h_data=0 and h_paper=0 to let w_data
     and/or w_paper define the image size, or specify w_data=0 and w_paper=0
-    to let h_data and/or h_paper define the image size. Specify aspect>1
-    to make the pixels taller or aspect<1 to make them wider.
+    to let h_data and/or h_paper define the image size.
+
+    Specify aspect>1 to make the pixels taller or aspect<1 to make
+    them wider.
+
     If height is automatic, then the image descends from the given point,
     unless anchor>0, in which case it is lifted by the given fraction of
     image height. Similarly, if width is automatic, the image extends to
     the right of the given point, unless anchor>0, in which case it is
     shifted to the left by the given fraction.
-'''
+
+    '''
     
     S = img.shape
     Y = S[0]
@@ -292,6 +297,7 @@ def gimage(img, drect=None, prect=None, aspect=1, anchor=0):
         img = img.astype('uint8')
     qi.f.writeuc(img)
 
+    
 class CBarInfo:
     def __init__(self, clim, orient, drect, prect, rev):
         self.clim = clim

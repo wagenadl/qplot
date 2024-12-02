@@ -122,9 +122,9 @@ def phatch(xx, yy, pattern="|", angle=0, spacing=10, offset=0):
     '''PHATCH - Hatch a polygonal patch in paper space
     PATCH(xx, yy, angle) hatches a polygon with vertices at (XX,YY) using
     the given pattern. PATTERN is a single character from the following:
-      | / - \\  : lines at the angle suggested angle
-      + x      : combination of either orthogonal or diagonal lines
-      : *      : marks in an orthogonal or hexagonal pattern.
+      | / - \\ :: lines at the angle suggested by the shape of the character
+      + x      :: combination of either orthogonal or diagonal lines
+      : *      :: marks in an orthogonal or hexagonal pattern.
     Lines are rendered with the current PEN.
     Marks are rendereded as by MARK, i.e., with the current MARKER (and PEN
     and BRUSH).

@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-ALL: QPLOT DOCS
+ALL: QPLOT 
 
 QPLOT:
 	+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
@@ -26,12 +26,4 @@ debug:
 
 clean:; rm -rf build build-dbg build-doc
 
-DOCS: build-doc/Makefile QPLOT
-	+make -C build-doc
-	make -C build-doc cleanup
-
-build-doc/Makefile: doc/Makefile.doc
-	mkdir -p build-doc
-	cp doc/Makefile.doc build-doc/Makefile
-
-.PHONY: ALL QPLOT DOCS clean debug
+.PHONY: ALL QPLOT clean debug

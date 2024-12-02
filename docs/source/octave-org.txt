@@ -59,7 +59,7 @@ qalign
 qfont
 qreftext
 
-Tick axis styling:
+Axis styling:
 qaxshift
 qnumfmt
 qtextdist
@@ -68,13 +68,13 @@ qytitlerot
 qoverlinedist
 qoverlinemin
 
-Paper coordinate plotting:
+Paper coordinate plotting:Paper coords:
 qarea
 qline
 qmm
 qpmark
 
-Mixed coordinate plotting:
+Mixed coordinate plotting:Mixed coords:
 qshiftedline
 qgarea
 qgarea2
@@ -92,7 +92,7 @@ qshrink
 qxlim
 qylim
 
-Specialized functions:
+Miscellaneous functions:Miscellaneous:
 qcaligraph
 qctext
 qhairline

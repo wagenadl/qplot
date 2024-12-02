@@ -3,24 +3,11 @@ import re
 import time
 
 
-sections = [("Home", "../home/index.html"),
-            ("Gallery", "../gallery/index.html"),
-            ("Python functions", "../pyref/index.html"),
-            ("Octave functions", "../octref/index.html"),
+sections = [("Installation", "installation.html"),
+            ("Gallery", "gallery/index.html"),
+            ("Python functions", "pyref/index.html"),
+            ("Octave functions", "octref/index.html"),
             ]
-
-lbldict = {"Generating legends": "Legends",
-           "Generating color bars": "Color bars",
-           "Graphics styling": "Styling",
-           "Textual annotations": "Annotations",
-           "Text styling": "Text styling",
-           "Axis styling": "Axis styling",
-           "Color lookup tables": "LUTs",
-           "Scale to fit": "Scale to fit",
-           "Image rendering": "Images",
-           "Paper coordinate plotting": "Paper coords",
-           "Mixed coordinate plotting": "Mixed coords",
-           }
 
 funcs = []
 def setfuncs(fu):
@@ -98,21 +85,25 @@ def breadcrumbs(crumbs, sibs, level=0):
         txt += f"""<div class="bcinner {cls}">{cont1}</div></div>"""
         if lbl==label:
             if childsibs or childcrumbs:
+                txt += f"""<div class="bcchildren">"""
                 txt += breadcrumbs(childcrumbs, childsibs, level + 1)
+                txt += f"""</div>"""
         txt += "</div>"
 
     return txt
 
 
-def sidebar(crumbs, sibs=None):
+def sidebar(crumbs, sibs=None, dirlevel=1):
+    up = "../" * dirlevel
+    secs = [(k, up + v) for k, v in sections]
     if sibs is None:
-        sibs = [sections]
+        sibs = [secs]
     else:
-        sibs.insert(0, sections)
-    txt = """
+        sibs.insert(0, secs)
+    txt = f"""
     <div id="sidebar">
       <div class="logography">
-        <div class="project"><a href="../index.html">QPlot</a></div>
+        <div class="project"><a href="{up}index.html">QPlot</a></div>
         <div class="ptagline">Beautifully typeset graphs for science</div>
       </div>
       <div class="breadcrumbs">
@@ -201,14 +192,24 @@ class PyDoc:
         self.myargs = {arg for arg in args}
         #self.re_call = re.compile(f"{func.upper()}\\(([^)]*)\\)")
         self.re_split = re.compile(r"((?<!LUTS)\W+)")
-        self.re_itemsplit = re.compile("( - |: )")
+        self.re_itemsplit = re.compile("(::+ )")
+        self.re_itemsplit1 = re.compile("( - )")
         self.re_pareno = re.compile(r"\(")
         self.re_parenc = re.compile(r"\)")
         self.re_word = re.compile(r"(?:LUTS\.)?[a-zA-Z]+")
+        self.re_specialarg = re.compile("«([a-z]+)»")
         self.out = ""
         self.mykeywords = set()
 
+    def extractspecialargs(self, doc):
+        bits = self.re_specialarg.split(doc)
+        for k in range(1, len(bits), 2):
+            self.myargs.add(bits[k])
+            bits[k] = bits[k].upper()
+        return "".join(bits)
+        
     def parse(self, doc):
+        doc = self.extractspecialargs(doc)
         for parg in _splittopargs(doc):
             if parg.startswith("  "):
                 self.parse_listitem(parg[2:])
@@ -228,38 +229,52 @@ class PyDoc:
         else:
             return bit
 
-    
+
+    def listitem_tripartite(self, key, sep, value):
+        if sep == " - ":
+            sep = " — "
+            cls = "pykw"
+        else:
+            sep = ": "
+            cls = "pylit"
+        self.out += '<span class="pli-key">'
+        if key[:1]=='"':
+            self.out += '<span class="doceg">'           
+            self.renderpara(self.clearquote(key), False)
+            self.out += '</span>'
+        else:
+            obits = []
+            for kw in key.split(" "):
+                lobit = kw.lower()
+                #if cls == "pykw":
+                self.mykeywords.add(lobit)
+                obits.append(f'<span class="{cls}">{lobit}</span>')
+            self.out += " ".join(obits)
+        self.out += "</span>"
+        self.out += f'<span class="pli-sep">{sep}</span>'
+        self.out += '<span pclass="pli-val">'
+        self.renderpara(value)
+        self.out += "</span>"
+
+    def listitem_simple(self, item):
+        self.out += '<span class="pli-key">'
+        if False: #self.isexample:
+            self.out += '<span class="doceg">'           
+            self.renderpara(self.clearquote(item), False)
+            self.out += '</span>'
+        else:
+            self.renderpara(item, False)
+        self.out += '</span>'
+        
     def parse_listitem(self, item):
         self.out += '<div class="pylistitem">'
         bits = re.split(self.re_itemsplit, item)
+        if len(bits) == 1:
+            bits = re.split(self.re_itemsplit1, item)
         if len(bits) >= 3 and self.countparens(bits[0])==0:
-            # Study first bit specially
-            self.out += '<span class="pli-key">'
-            if bits[0][:1] in ['"', "«"]:
-                self.out += '<span class="doceg">'           
-                self.renderpara(self.clearquote(bits[0]), False)
-                self.out += '</span>'
-            else:
-                obits = []
-                for kw in bits[0].split(" "):
-                    lobit = kw.lower()
-                    self.mykeywords.add(lobit)
-                    obits.append(f'<span class="pykw">{lobit}</span>')
-                self.out += " ".join(obits)
-            self.out += "</span>"
-            self.out += f'<span class="pli-sep">{bits[1].replace("-", "—")}</span>'
-            self.out += '<span pclass="pli-val">'
-            self.renderpara("".join(bits[2:]))
-            self.out += "</span>"
+            self.listitem_tripartite(bits[0], bits[1], "".join(bits[2:]))
         else:
-            self.out += '<span class="pli-key">'
-            if item[:1] in ['"', "«"]:
-                self.out += '<span class="doceg">'           
-                self.renderpara(self.clearquote(item), False)
-                self.out += '</span>'
-            else:
-                self.renderpara(item, False)
-            self.out += '</span>'
+            self.listitem_simple(item)
         self.out += "</div>"
 
     def renderpara(self, parg, collectargs=True):
@@ -268,7 +283,8 @@ class PyDoc:
         nextbits = bits[1:] + [""]
         inargs = False
         for bit, prv, nxt in zip(bits, prevbits, nextbits):
-            if prv.endswith("-") or nxt.startswith("-"):
+            if (prv.endswith("-") and len(prv)>1) \
+               or (nxt.startswith("-") and len(nxt)>1):
                 self.out += bit # don't mess with hyphenated words
                 continue
             if prv[-1:] in ['"', "'"] and nxt.startswith(prv[-1]):
@@ -299,9 +315,11 @@ class PyDoc:
                 self.out += f'<a class="tmlink" href="{lobit}.html">{lobit}</a>'
             elif ispluhigh and lobit[:-1] in funcs:
                 self.out += f'<a class="tmlink" href="{lobit[:-1]}.html">{lobit[:-1]}</a>s'
-            elif inargs and self.re_word.match(bit):
+            elif inargs and self.re_word.match(bit) and nxt != "." and prv != ".":
                 self.out += f'<span class="arg">{lobit}</span>'
                 self.myargs.add(lobit)
+            elif self.re_word.match(bit) and prv == "" and nxt == " = ":
+                self.out += f'<span class="arg">{lobit}</span>'
             else:
                 self.out += bit
         

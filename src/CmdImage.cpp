@@ -163,11 +163,11 @@ void CmdImage::render_complex(Statement const &s, Figure &f, bool dryrun) {
   }
   
   if (s.data(idataxywh)[2]==0 && s.data(ipaperxywh)[2]==0) {
-    double w = (p2.y()-p1.y())*X/ratio/Y;
+    double w = fabs((p2.y()-p1.y())*X/ratio/Y);
     p2 += QPointF((1-anchor)*w, 0);
     p1 -= QPointF(anchor*w, 0);
   } else if (s.data(idataxywh)[3]==0 && s.data(ipaperxywh)[3]==0) {
-    double h = (p2.x()-p1.x())*Y*ratio/X;
+    double h = fabs((p2.x()-p1.x())*Y*ratio/X);
     p2 += QPointF(0, (1-anchor)*h);
     p1 -= QPointF(0, anchor*h);
   }

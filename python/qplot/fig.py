@@ -201,6 +201,7 @@ def subplot(rows, cols, r=None, c=None):
     SUBPLOT(rows, cols, idx) defines a new subpanel in Matlab/Octave style.
     Note that idx counts from 0, unlike in Matlab/Octave.
     SUBPLOT(rows, cols, r, c) specifies row and column.
+    
     id = SUBPLOT(...) returns the ID of the subpanel, for use with PANEL.'''
     h = 1./rows
     w = 1./cols
@@ -346,11 +347,16 @@ def current():
 
 
 def ion():
-    '''ION - Enable interactive rendering'''
+    '''ION - Enable interactive rendering
+    Subsequently created figures will show on screen.
+    See also IOFF.'''
     qi.Figure.interactive(True)
 
 def ioff():
-    '''IOFF - Disable interactive rendering'''
+    '''IOFF - Disable interactive rendering
+    Subsequently created figures will not show on screen, but
+    are still available to SAVE.
+    See also ION.'''
     qi.Figure.interactive(False)
 
 def degrees():

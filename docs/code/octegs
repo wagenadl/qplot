@@ -11,15 +11,38 @@ if not os.path.exists("octref"):
 os.chdir("octref")
 
 egpath = "../../source/octave-egs"
-egs = glob.glob(f"{egpath}/q*eg.m")
+egs = glob.glob(f"{egpath}/q*_eg.m")
 qplotpath = "../../../octave/qplot"
 codepath = "../../code"
 
-for eg in egs:
-    os.system(f"cp -a {eg} .")
-    os.system(f"""/usr/bin/octave --no-gui --path {egpath} --path {qplotpath} --path {codepath} --eval "octeg('{eg}')" """)
-    qpt = eg.split("/")[-1][:-5] + ".qpt"
-    try:
-        os.unlink(qpt)
-    except FileNotFoundError:
-        pass
+def needrebuild(eg):
+    leaf = eg.split("/")[-1]
+    func = leaf[:-5]
+    pdffn = f"./{func}.pdf"
+    pngfn = f"./{func}.png"
+    if not os.path.exists(pngfn) or not os.path.exists(pdffn):
+        return True
+    stm = os.stat(eg)
+    stpng = os.stat(pngfn)
+    stpdf = os.stat(pdffn)
+    return stpng.st_size==0 or stpdf.st_size==0 \
+           or stm.st_mtime > stpng.st_mtime \
+           or stm.st_mtime > stpdf.st_mtime
+
+def buildall(egs):
+    for eg in egs:
+        if not needrebuild(eg):
+            continue
+        os.system(f"cp -a {eg} .")
+        os.system(f"""/usr/bin/octave --no-gui --path {egpath} --path {qplotpath} --path {codepath} --eval "octeg('{eg}')" """)
+
+
+
+def hidedisplay():
+    with os.popen("ensurexvfb") as f:
+        txt = f.read()
+        os.environ["DISPLAY"] = txt.strip()
+
+
+hidedisplay()        
+buildall(egs)        

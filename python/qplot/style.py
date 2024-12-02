@@ -34,19 +34,19 @@ def pen(color=None, width=None, join=None, cap=None, pattern=None, \
     '''PEN - Selects a new pen for QPlot
     All arguments are optional.
       COLOR may be a single character matlab color, or a 3- or 6-digit RGB
-      specification or an [r, g, b] triplet, or 'none'. Color may also be
-      '-' to reset a pen completely.
+      specification or an [«r», «g», «b»] triplet, or 'none'.
       WIDTH is linewidth in points, or 0 for hairline.
       JOIN must be one of: 'miter', 'bevel', 'round'.
       CAP must be one of: 'flat', 'square', 'round'.
       PATTERN must be one of: 'solid', 'dash', 'dot', 'none'.
-      PATTERN may also be a tuple ('dash', vec) where VEC is a vector of 
-        stroke and space lengths, or it may be a tuple ('dot', vec) where
+      PATTERN may also be a tuple ('dash', «vec») where VEC is a vector of 
+        stroke and space lengths, or it may be a tuple ('dot', «vec») where
         VEC is a vector of space lengths.
       ALPHA specifies transparency between 0 (transparent) and 1 (opaque).
       ID must be a single capital letter.
     Note that the string 'none' is different from the Python constant None,
     the latter meaning "do not change."
+    
     PEN() without any arguments restores the default pen, i.e., black, 
     0.5 pt wide, miter join, square cap, solid pattern, fully opaque.
 '''
@@ -140,12 +140,12 @@ def marker(shape=None, size=None, fill=None):
     The mark is always outlined with the current pen (which may be 'none',
     of course).
     Marks are:
-      o: circle/disk
-      + x: horizontal+vertical or diagonal crosses
-      - |: horizontal or vertical lines
-      s d p h: square, diamond, pentagon, or hexagon
-      < > ^ v: left / right / up / down pointing triangles
-    The fill style has no effect on +|x|-|| marks.'''
+      o       :: circle/disk
+      + x     :: upright or diagonal crosses
+      - |     :: horizontal or vertical lines
+      s d p h :: square, diamond, pentagon, or hexagon
+      < > ^ v :: left / right / up / down pointing triangles
+    The fill style has no effect on + x - | marks.'''
     out = [ 'marker' ]
     if shape is not None:
         if shape in qi.markermap:

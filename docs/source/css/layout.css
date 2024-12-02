@@ -12,7 +12,7 @@ body {
 #sidebar {
     display: block;
     flex-shrink: 0;
-    width: 150px;
+    width: 180px;
     min-height: 100%;
     overflow-x: hidden;
     overflow-y: hidden;
@@ -68,7 +68,6 @@ body {
     padding-left: 5px;
 }
 
-
 .bcleft {
     display: inline-block;
     width: 10px;
@@ -76,12 +75,6 @@ body {
     padding: 0px;
     margin: 0px;
     vertical-align: top;
-}
-
-.bcmark:before {
-    font-family: garamond, palatino, times, serif ;
-    font-size: 118%;
-    content: "»";
 }
 
 .bcinner {
@@ -93,26 +86,37 @@ body {
     padding-left: 10px;
 }
 
-.breadcrumb-1 .bcinner {
-    width: 100px;
+.breadcrumb-1 > .bcinner {
+    width: 110px;
 }
 
 .breadcrumb-2 {
-    padding-left: 25px;
-    margin-top: 5px;
+    padding-left: 2px;
+    margin-top: 0px;
+    padding-top: 0px;
+    margin-bottom: 2px;
 }
 
-.breadcrumb-2 .bcinner {
-    width: 80px;
+.breadcrumb-2 > .bcinner {
+    width: 100px;
 }
 
 .breadcrumb-3 {
-    padding-left: 40px;
-    margin-top: 1px;
+    padding-left: 2px;
+    margin-top: 0px;
+    margin-bottom: 1px;
 }
 
-.breadcrumb-3 .bcinner {
-    width: 65px;
+.breadcrumb-3 > .bcinner {
+    width: 80px;
+}
+
+.bchere > .bcchildren {
+    border-left-style: solid;
+    padding-left: 0px;
+    margin-left: 18px;
+    margin-top: 5px;
+    padding-top: 0px;
 }
 
 .titleblock, .sectitleblock, .idxtitleblock {
@@ -146,7 +150,7 @@ body {
 }
 
 
-.funcdoc,.secdoc,.idxdoc {
+.funcdoc,.secdoc,.idxdoc,.rst {
     padding: 0px 15px 15px 15px;
 }
 
@@ -326,4 +330,29 @@ p.empty {
 .pylistitem {
     padding-left: 3em;
     text-indent: -1.5em;
+}
+
+.pypara {
+    margin-bottom: 5px;
+}
+
+.pylistitem + .pypara {
+    margin-top: 5px;
+}
+
+p {
+    margin-top: 0px;
+    margin-bottom: 5px;
+}
+
+h1 {
+    padding: 0px;
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
+h2 {
+    padding: 0px;
+    margin-top: 8px;
+    margin-bottom: 5px;
 }

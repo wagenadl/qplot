@@ -19,7 +19,11 @@ body {
 }
 
 #sidebar a:hover {
-    color: #ccddff;
+    color: #ff0000;
+}
+
+#sidebar .project a:hover {
+    color: #ffbb88;
 }
 
 .logography {
@@ -65,12 +69,12 @@ body {
 .sectitle, .idxtitle {
     font-size: 160%;
     font-weight: bold;
-    font-style: italic;
+    /* font-style: italic; */
     color: #bb0000;
 }
 
-.breadcrumb-2 .bcinner {
-    font-style: italic;
+.breadcrumb-2 > .bcheader {
+    /* font-style: italic; */
 }
 
 .mefunc {
@@ -88,6 +92,12 @@ body {
     font-weight: bold;
     color: #bb6600;
 }
+
+.pylit {
+    font-weight: bold;
+    color: #bb6600;
+}
+    
 
 .pysighead {
     font-size: 120%;
@@ -174,18 +184,55 @@ a:hover {
 
 .indexheader {
     font-weight: bold;
-    font-style: italic;
-    color: #bb0000;
+    /* font-style: italic; */
     font-size: 120%;
 }
 
+h1 {
+    font-weight: bold;
+    font-size: 150%;
+}
+
+h2 {
+    font-weight: bold;
+    font-size: 130%;
+}
+
+
 .indexheader a:link {
-    color: #bb0000;
+    color: #660000;
 }    
 .indexheader a:visited {
-    color: #bb0000;
+    color: #660000;
 }    
 .indexheader a:hover {
     color: #ff0000;
 }    
 
+.fli-name {
+    font-weight: bold;
+}
+
+.bcmark {
+    color: #ffff00;
+}
+
+#sidebar .bchere > a:visited {
+    color: #ffffaa;
+}
+#sidebar .bchere > a:link {
+    color: #ffffaa;
+}
+
+.breadcrumb-3 .bcheader {
+    font-family: ubuntu, sans
+}
+
+.breadcrumb-2 > .bcchildren {
+    border-color: #ffffaa;
+}
+
+.breadcrumb-1 > .bcchildren {
+    border-color: #eeeecc;
+}
+    

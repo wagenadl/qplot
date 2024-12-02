@@ -1,0 +1,78 @@
+#!/usr/bin/python3
+
+# QPlot - Publication quality 2D graphs with dual coordinate systems
+# Copyright (C) 2014-2023  Daniel Wagenaar
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import sys
+import os
+import re
+import subprocess
+
+sys.path.append("../python")
+import qplot as qp
+
+sys.path.append("./code")
+import qppydoclib as qpd
+import qphtmllib as qph
+
+
+def readrst(ifn):
+    with subprocess.Popen(["rst2html", ifn],
+                          stdout=subprocess.PIPE) as proc:
+        orightml = proc.stdout.read()
+
+    orightml = str(orightml, "utf-8")    
+    idx1 = orightml.index("<body>")
+    idx2 = orightml.index("</body>")
+    body = orightml[idx1+6:idx2]
+    return body
+
+
+
+def document(body, title):
+    html = qph.doctype()
+    html += "<html>"
+    html += qph.head(title, 0)
+    html += "<body>"
+    html += '<div class="contents">'
+    crumbs = [(title, None)]
+    html += qph.sidebar(crumbs, dirlevel=0)
+    html += '<div id="central">'
+    html += qph.header()
+    html += qph.idxtitleblock(title)
+    html += '<div class="rst">'
+    html += body
+    html += '</div>\n' # rst
+    html += qph.footer()
+    html += '</div>\n' # central
+    html += '</div>\n' # contents
+    return html
+
+
+
+def main():
+    ifn = sys.argv[1]
+    ofn = sys.argv[2]
+    title = " ".join(sys.argv[3:])
+    body = readrst(ifn)
+    html = document(body, title)
+    with open(ofn, "w") as fd:
+        fd.write(html)
+
+        
+main()
+
+    

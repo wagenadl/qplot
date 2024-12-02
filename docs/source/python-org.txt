@@ -121,7 +121,7 @@ luts.families
 luts.family
 luts.demo
 
-Specialized functions:Specialized:
+Miscellaneous functions:Miscellaneous:
 caligraph
 ctext
 hairline
