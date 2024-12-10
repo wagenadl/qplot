@@ -4,12 +4,14 @@ PYREFS: PYEGS
 	code/pyrefs
 
 PYEGS:
+	mkdir -p build/pyref
 	code/pyegs
 
 OCTREFS: OCTEGS
 	code/octrefs
 
 OCTEGS:
+	mkdir -p build/octref
 	code/octegs
 
 CSS:

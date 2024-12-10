@@ -46,6 +46,7 @@ body {
 .ptagline {
     font-size: 100%;
     font-style: italic;
+    font-weight: 465;
 }
 
 #central {
@@ -72,6 +73,7 @@ body {
 .tagline {
     font-style: italic;
     font-size: 110%;
+    font-weight: 450;
 }
 
 .sectitle, .idxtitle {
@@ -149,7 +151,7 @@ body {
 .example, .doceg {
     font-family: "Noto Sans", sans-serif;
     font-optical-sizing: auto;
-    font-weight: 410;
+    font-weight: 420;
     font-size: 100%;
     font-style: normal;
 }
@@ -237,8 +239,13 @@ h2 {
     color: #aa0000;
 }
 
+.bcheader {
+    font-weight: 465;
+}
+
 .breadcrumb-3 .bcheader {
     font-family: "Noto Sans", sans-serif;
+    font-weight: 450;
 }
 
 .breadcrumb-2 > .bcchildren {
@@ -268,4 +275,11 @@ cite {
     font-weight: 450;
     font-size: 110%;
     font-style: normal;
+}
+
+u {
+    font-family: "Noto Mono";
+    text-decoration: none;
+    margin-left: -1px;
+    margin-right: -1px;
 }

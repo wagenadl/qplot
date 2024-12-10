@@ -3,7 +3,7 @@ import numpy as np
 
 qp.figure('font', 3, 3)
 
-qp.patch([0, 1, 1, 0], [0, 0, 1, 1])
+qp.fill([0, 1, 1, 0], [0, 0, 1, 1])
 
 qp.font('Helvetica', 10)
 

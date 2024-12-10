@@ -81,8 +81,8 @@ def _imagehard(data, rect, X, Y, C):
             color(x,y)
             xa = x0 + dx*x
             ya = y0 + dy*y
-            qpdata.patch((xa, xa+dx, xa+dx, xa),
-                       (ya, ya, ya+dy, ya+dy))
+            qpdata.fill((xa, xa+dx, xa+dx, xa),
+                        (ya, ya, ya+dy, ya+dy))
 
 def _imagenormal(data, rect, X, Y, C):
     if C==1:
@@ -112,7 +112,7 @@ def image(data, rect=None, xx=None, yy=None, hard=False):
     bin centers. Only the first and last elements of the vectors are
     actually used.
     Optional argument HARD, if true, specifies that pixels should be
-    individually drawn with PATCH rather than as a pixmap. This ensures
+    individually drawn with FILL rather than as a pixmap. This ensures
     sharpness in pdf output for some viewers.'''
     S = data.shape
     rect = _getrect(S, rect, xx, yy)
@@ -147,10 +147,10 @@ def image(data, rect=None, xx=None, yy=None, hard=False):
                      [rect[1], rect[1]+rect[3]])
 
 def imsc(data, rect=None, c0=None, c1=None, xx=None, yy=None, hard=False):
-    '''IMSC - Plot 2D data as an image using lookup table
+    '''IMSC - Plot two-dimensional data as an image using lookup table
     IMSC(data) plots the DATA as an image using a lookup previously
     set by QLUT. 
-    IMSC(data, rect) specifies (x, y, w, h) rectangle for placement
+    IMSC(data, rect) specifies a (x, y, w, h) rectangle for placement
     as for IMAGE. 
     Alternatively, IMSC(data, XX, YY) specifies X and Y coordinates for 
     each column and row of the image. (Only the first and last coordinates

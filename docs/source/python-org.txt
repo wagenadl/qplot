@@ -22,8 +22,8 @@ bars
 hbars
 skyline
 ecoplot
-errorbar
-herrorbar
+errorbars
+herrorbars
 errorfill
 rectangle
 hatch
@@ -86,7 +86,7 @@ overlinemin
 
 Paper coordinate plotting:Paper coords:
 line
-patch
+poly
 mm
 pmark
 phatch
@@ -94,11 +94,11 @@ prectangle
 
 Mixed coordinate plotting:Mixed coords:
 shiftedline
-garea
-garea2
-gimage
 gline
 gline2
+gpoly
+gpoly2
+gimage
 
 Grouping:
 endgroup

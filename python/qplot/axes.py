@@ -23,24 +23,25 @@ from . import utils
 from . import data
 import numpy as np
 
-def ytitlerot(pt=None):
+def ytitlerot(phi=None):
     '''YTITLEROT - Specifies the rotation of y-axis titles.
-    YTITLEROT(phi) specifies the rotation of y-axis titles, in degrees:
-    phi=0 means upright,
-    phi>0 means rotated 90 degrees to the left,
-    phi<0 means rotated 90 degrees to the right.
+    YTITLEROT(phi) specifies the rotation of y-axis titles:
+    Positive PHI means rotated 90 degrees counterclockwise.
+    Negative PHI means rotated 90 degrees clockwise.
+    Zero means upright.
+    Rotation at angles other than 0 and ±90° is not supported.
     phi = YTITLEROT() returns current value.'''
     qi.ensure()
-    if pt is None:
-        pt = qi.f.ytitlerot
+    if phi is None:
+        phi = qi.f.ytitlerot
     else:
-        qi.f.ytitlerot = np.sign(pt)*np.pi/2
-    return pt
+        qi.f.ytitlerot = np.sign(phi)*np.pi/2
+    return phi
 
 
 def axshift(pt=None):
     '''AXSHIFT - Specifies shift of drawn axis for XAXIS and YAXIS
-    AXSHIFT(len) specifies shift (in points) for XAXIS and
+    AXSHIFT(pt) specifies shift (in points) for XAXIS and
     YAXIS. Positive means down or left, negative means up or right.
     pt = AXSHIFT() returns current setting.'''
     qi.ensure()
@@ -51,10 +52,10 @@ def axshift(pt=None):
     return pt
 
 def textdist(lbl=None, ttl=None):
-    '''TEXTDIST - Specifies distance to text labels for XAXIS and YAXIS
-    QTEXTDIST(lbldist, ttldist) specifies distance between ticks and
+    '''TEXTDIST - Specify distance to text labels for XAXIS and YAXIS
+    TEXTDIST(lbldist, ttldist) specifies distance between ticks and
     tick labels and between tick labels and axis title, in points.
-    QTEXTDIST(dist) uses DIST for both distances.
+    TEXTDIST(dist) uses DIST for both distances.
     Positive numbers are to the left and down; negative numbers are to the
     right and up.
     (lbl, ttl) = TEXTDIST() returns current settings.'''

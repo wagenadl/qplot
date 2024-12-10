@@ -14,9 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-ALL: QPLOT 
+all: qplot 
 
-QPLOT:
+qplot:
 	+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 	+cmake --build build --config=Release
 
@@ -24,6 +24,9 @@ debug:
 	+cmake -S . -B build-dbg -DCMAKE_BUILD_TYPE=Debug
 	+cmake --build build-dbg --config=Debug
 
+deb: qplot
+	(cd build; cpack)
+
 clean:; rm -rf build build-dbg build-doc
 
-.PHONY: ALL QPLOT clean debug
+.PHONY: all qplot clean debug deb

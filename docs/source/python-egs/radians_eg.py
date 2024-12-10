@@ -3,7 +3,7 @@ import numpy as np
 
 qp.figure('radians', 3, 3)
 
-qp.patch([-1, 1, 1, -1], [-1, -1, 1, 1])
+qp.fill([-1, 1, 1, -1], [-1, -1, 1, 1])
 
 qp.radians()
 

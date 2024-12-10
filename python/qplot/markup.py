@@ -112,7 +112,7 @@ def arrow(l=8, w=None, dl=0, dimple=0, dw=0):
     For most use cases, DARROW is easier.'''
     if w is None:
         w = .6 * l
-    paper.area(np.array([0, -l, dimple-l, -l]) - dl,
+    paper.poly(np.array([0, -l, dimple-l, -l]) - dl,
                np.array([0, w, 0, -w])/2+dw)
 
 def darrow(x, y, phi=None, along=None, l=8, w=5, dist=0, dimple=0):
@@ -326,7 +326,7 @@ def plegend(s):
     opt = qi.f.legopt
     
     at(opt.x0, opt.y0)
-    paper.area(np.array([0, 1, 1, 0])*opt.width + opt.dx,
+    paper.poly(np.array([0, 1, 1, 0])*opt.width + opt.dx,
                opt.n*opt.skip + np.array([-.5, -.5, .5, .5])*opt.height + opt.dy)
     fig.group()
     style.pen(opt.color)

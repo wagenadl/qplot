@@ -122,7 +122,7 @@ def fill(xx, yy):
     is automatically closed (i.e., it is not necessary for xx[-1] to equal
     xx[0]).
     The polygon is filled with the current brush.
-    XX and YY are given in data coordinates. See also PATCH and GAREA.'''
+    XX and YY are given in data coordinates. See also POLY and GPOLY.'''
     qi.plot(xx, yy, cmd='patch')
 
 def rectangle(x, y, w, h):
@@ -134,8 +134,9 @@ def rectangle(x, y, w, h):
 
 def hatch(xx, yy, pattern="|", angle=0, spacing=10, offset=0):
     '''HATCH - Hatch a polygonal patch in data space
-    HATCH(xx, yy, pattern) hatches a polygon with vertices at (XX,YY) using
-    the given pattern. PATTERN is a single character from the following:
+    HATCH(xx, yy, pattern) hatches a polygon with vertices at (XX, YY) using
+    the given pattern.
+    PATTERN is a single character from the following:
       | / - \\ :: lines at the angle suggested by the shape of the character
       + x      :: combination of either orthogonal or diagonal lines
       : *      :: marks in an orthogonal or hexagonal pattern.
@@ -145,8 +146,8 @@ def hatch(xx, yy, pattern="|", angle=0, spacing=10, offset=0):
     Instead of a pattern, a numeric ANGLE may be specified, clockwise from
     vertical (in radians, but see DEGREES).
     Optional argument SPACING specifies space between lines, in points.
-    By default, the line pattern is aligned with the center of the polygon.
-    OFFSET shifts this center by the given number of points.
+    By default, the line pattern is aligned with the center of the polygon,
+    but OFFSET shifts this center by the given number of points.
     NaN values in XX or YY may be used to separate multiple polygons to be
     drawn with common line pattern alignment.
     See also PHATCH.
@@ -215,14 +216,16 @@ def bars(xx, yy, w=None, y0=0):
     BARS(xx, yy, w) draws a bar graph of YY vs XX with bars
     of width W specified in data coordinates.
     BARS(xx, yy, w, y0) specifies a nonzero baseline of the plot.
-    Y0 may also be a vector, which must be the same length as XX and YY. 
-    This is useful for creating stacked bar graphs. Note that YY is never
-    relative to Y0.
-    If W is not given, it defaults to mean(diff(xx)).
+    Y0 may also be a vector, which must then be the same length
+    as YY. This is useful for creating stacked bar graphs. Note that
+    YY is never relative to Y0.
+    If W is not given, it defaults to mean(diff(XX)).
     If the length of the XX vector is one greater than the length
     of the YY vector, the XX vector is taken to represent the edges
     of the bins.
-    See also HBARS and SKYLINE.'''
+    See also HBARS and SKYLINE.
+
+    '''
     xx = np.array(xx).flatten()
     yy = np.array(yy).flatten()
     if utils.isnscalar(y0):
@@ -232,16 +235,16 @@ def bars(xx, yy, w=None, y0=0):
         if w is None:
             w = np.mean(np.diff(xx))
         for k in range(yy.size):
-            patch(np.array([-.5, .5, .5, -.5])*w + xx[k],
+            fill(np.array([-.5, .5, .5, -.5])*w + xx[k],
                   np.array([0, 0, 1, 1])*yy[k] + y0[k])
     elif xx.size == yy.size + 1:
         if w is None:
             for k in range(yy.size):
-                patch(np.array([xx[k], xx[k+1], xx[k+1], xx[k]]),
+                fill(np.array([xx[k], xx[k+1], xx[k+1], xx[k]]),
                       np.array([0, 0, 1, 1])*yy[k] + y0[k])
         else:
             for k in range(yy.size):
-                patch(np.array([-.5, .5, .5, -.5])*w + (xx[k]+xx[k+1])/2,
+                fill(np.array([-.5, .5, .5, -.5])*w + (xx[k]+xx[k+1])/2,
                       np.array([0, 0, 1, 1])*yy[k] + y0[k])
     else:
         raise ValueError('Inconsistent array sizes')
@@ -252,13 +255,14 @@ def hbars(yy, xx, h=None, x0=0):
     HBARS(yy, xx, h) draws a horizontal bar graph of data XX at YY with bars
     of width H (in the vertical direction), specified in data coordinates.
     HBARS(yy, xx, h, x0) specifies a nonzero baseline of the plot.
-    X0 may also be a vector, which must be the same length as XX 
-    and YY. This is useful for creating stacked bar graphs. Note that XX is
-    never relative to X0.
-    If H is not given, it defaults to mean(diff(yy)).
+    X0 may also be a vector, which must then be the same length
+    as XX. This is useful for creating stacked bar graphs. Note that
+    XX is never relative to X0.
+    If H is not given, it defaults to mean(diff(YY)).
     If the length of the YY vector is one greater than the length
     of the XX vector, the YY vector is taken to represent the edges
-    of the bins.'''
+    of the bins.
+    See also BARS.'''
     xx = np.array(xx).flatten()
     yy = np.array(yy).flatten()
     if utils.isnscalar(x0):
@@ -268,16 +272,16 @@ def hbars(yy, xx, h=None, x0=0):
         if h is None:
             h = np.mean(np.diff(yy))
         for k in range(xx.size):
-            patch(np.array([0, 0, 1, 1]) * xx[k] + x0[k],
+            fill(np.array([0, 0, 1, 1]) * xx[k] + x0[k],
             np.array([-.5, .5, .5, -.5]) * h + yy[k])
     elif xx.size == yy.size - 1:
         if h is None:
             for k in range(xx.size):
-                patch(np.array([0, 0, 1, 1]) * xx[k] + x0[k],
+                fill(np.array([0, 0, 1, 1]) * xx[k] + x0[k],
                 np.array([yy[k], yy[k + 1], yy[k + 1], yy[k]]))
         else:
             for k in range(xx.size):
-                patch(np.array([0, 0, 1, 1]) * xx[k] + x0[k],
+                fill(np.array([0, 0, 1, 1]) * xx[k] + x0[k],
                     np.array([-.5, .5, .5, -.5]) * h + (yy[k] + yy[k + 1]) / 2)
 
     else:
@@ -288,7 +292,7 @@ def ecoplot(x0, dx, yy, N=100):
     '''ECOPLOT - Economically plot large datasets
     ECOPLOT(x0, dx, yy, N) plots the data (xx,yy) using SAMPLEMINMAX to
     reduce data length to the given number of points.
-    The results are plotted as a PATCH.
+    The results are plotted as a FILL.
     X-coordinates are implied to be [X0, X0+DX, X0+2*DX, ...], along YY.
     If N is omitted, it defaults to 100.
     Note: This is the kind of plot that MEABench calls "TrueBlue".'''
@@ -300,20 +304,23 @@ def ecoplot(x0, dx, yy, N=100):
     ym, yM = utils.sampleminmax(yy, ii)
     xx = (ii[0:-1].astype(float) + ii[1:].astype(float))/2
     
-    patch(x0+dx*np.concatenate((xx, np.flip(xx,0))),
-          np.concatenate((ym, np.flip(yM,0))))
+    fill(x0+dx*np.concatenate((xx, np.flip(xx,0))),
+         np.concatenate((ym, np.flip(yM,0))))
 
-def errorbar(xx, yy, dy, w=None, dir='both'):
-    '''ERRORBAR - Draw error bars
-    ERRORBAR(xx, yy, dy) plots error bars at (XX, YY ± DY).
-    Normally, XX, YY, and DY have the same shape. However, it is permissible
-    for DY to be shaped Nx2, or for DY to be a 2-tuple, in which case
-    lower and upper error bounds are different. (DY should always be positive).
-    ERRORBAR(xx, yy, dy, w) adorns the error bars with horizontal lines of
-    given width (W in points).
-    ERRORBAR(..., 'up') only plots upward; ERRORBAR(..., 'down') only plots
-    downward.
-    See also ERRORPATCH and HERRORBAR'''
+def errorbars(xx, yy, dy, w=None, dir='both'):
+    '''ERRORBARS - Draw error bars
+    ERRORBARS(xx, yy, dy) plots error bars at (XX, YY ± DY).
+    Normally, XX, YY, and DY have the same shape. However, it is
+    permissible for DY to be shaped Nx2, or for DY to be a 2-tuple, in
+    which case lower and upper error bounds are different. (DY should
+    always be positive).
+    ERRORBARS(xx, yy, dy, w) adorns the error bars with horizontal
+    lines of given width (W in points).
+    ERRORBARS(..., dir='up') only plots upward;
+    ERRORBARS(..., dir='down') only plots downward.
+    See also ERRORFILL and HERRORBARS.
+
+    '''
 
     N = len(xx)
     if type(dy)==tuple:
@@ -349,16 +356,19 @@ def errorbar(xx, yy, dy, w=None, dir='both'):
                 paper.line(np.array([-1, 1])*w/2, np.array([0, 0]))
 
                 
-def herrorbar(yy, xx, dx, w=None, dir='both'):
-    '''HERRORBAR - Draw horizontal error bars
-    HERRORBAR(yy, xx, dx) plots horizontal error bars at (XX ± DX, YY).
-    Normally, YY, XX, and DX have the same shape. However, it is permissible
-    for DX to be shaped Nx2, or for DX to be a 2-tuple, in which case
-    lower and upper error bounds are different. (DX should always be positive).
-    HERRORBAR(yy, xx, dx, w) adorns the error bars with vertical lines of
-    given extent (W in points).
-    HERRORBAR(..., 'left') only plots to the left; HERRORBAR(..., 'right')
-    only plots to the right.'''
+def herrorbars(yy, xx, dx, w=None, dir='both'):
+    '''HERRORBARS - Draw horizontal error bars
+    HERRORBARS(yy, xx, dx) plots horizontal error bars at (XX ± DX, YY).
+    Normally, YY, XX, and DX have the same shape. However, it is
+    permissible for DX to be shaped Nx2, or for DX to be a 2-tuple, in
+    which case lower and upper error bounds are different. (DX should
+    always be positive).
+    HERRORBARS(yy, xx, dx, w) adorns the error bars with vertical
+    lines of given extent (W in points).
+    HERRORBARS(..., dir='left') only plots to the left;
+    HERRORBARS(..., dir='right') only plots to the right.
+    See also ERRORBARS and ERRORFILL.
+    '''
 
     N = len(xx)
     if type(dx)==tuple:

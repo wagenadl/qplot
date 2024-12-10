@@ -360,10 +360,13 @@ def ioff():
     qi.Figure.interactive(False)
 
 def degrees():
-    '''DEGREES - Specify future angles to AT and HATCH in degrees'''
+    '''DEGREES - Specify future angles to AT and HATCH in degrees
+    See also RADIANS.'''
     qi.Figure.use_degrees()
 
 def radians():
-    '''RADIANS - Specify future angles to AT and HATCH in radians (default)'''
+    '''RADIANS - Specify future angles to AT and HATCH in radians
+    Radians are the default.
+    See also DEGREES.'''
     qi.Figure.use_radians()
     
