@@ -83,6 +83,7 @@ def document(func, org, secsibs, funcsibs):
     html += '</div>\n' # funcdoc
     html += qph.footer()
     html += '</div>\n' # central
+    html += '<div id="rightspace"></div>'
     html += '</div>\n' # contents
     return html
 
@@ -130,6 +131,7 @@ def sectiondoc(sec, funcs, sibs, subsibs):
     html += '</div>\n' # secdoc
     html += qph.footer()
     html += '</div>\n' # central
+    html += '<div id="rightspace"></div>'
     html += '</div>\n' # contents
     return html
 
@@ -168,6 +170,7 @@ def indexdoc(org, sibs):
     html += '</div>\n' # secdoc
     html += qph.footer()
     html += '</div>\n' # central
+    html += '<div id="rightspace"></div>'
     html += '</div>\n' # contents
     return html
 

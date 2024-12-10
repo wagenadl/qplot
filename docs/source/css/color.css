@@ -1,5 +1,5 @@
 body { 
-  background-color: #dddddd;
+  background-color: #d8d8d8;
   color: black;
   font-family: "Noto Serif", serif;
   font-size: 12pt;
@@ -7,30 +7,35 @@ body {
 
 
 #sidebar {
-    background-color: #333333;
-    color: white;
+    background-color: #e2e2e2;
+    color: black;
 }
 
 #sidebar a:link {
-    color: white;
+    color: black;
 }
 
 
 #sidebar a:visited {
-    color: white;
+    color: black;
 }
 
 #sidebar a:hover {
     color: #ff0000;
 }
 
-#sidebar .project a:hover {
-    xxcolor: #ffbb88;
-    color: #ffcccc;
-}
 
 .logography {
     background-color: #660000;
+    color: white;
+}
+
+#sidebar .project a:visited, #sidebar .project a:link {
+    color: white;
+}
+
+#sidebar .project a:hover {
+    color: #ffcccc;
 }
 
 .project {
@@ -222,14 +227,14 @@ h2 {
 }
 
 .bcmark {
-    color: #ffff00;
+    color: #440000;
 }
 
 #sidebar .bchere > a:visited {
-    color: #ffffaa;
+    color: #aa0000;
 }
 #sidebar .bchere > a:link {
-    color: #ffffaa;
+    color: #aa0000;
 }
 
 .breadcrumb-3 .bcheader {
@@ -237,11 +242,15 @@ h2 {
 }
 
 .breadcrumb-2 > .bcchildren {
-    border-color: #ffffaa;
+    border-color: #660000;
 }
 
 .breadcrumb-1 > .bcchildren {
-    border-color: #eeeecc;
+    border-color: #660000;
+}
+
+.breadcrumb-3 .bchere {
+    font-weight: 700;
 }
     
 .literal-block {

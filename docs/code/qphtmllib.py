@@ -109,15 +109,15 @@ def sidebar(crumbs, sibs=None, dirlevel=1):
         sibs.insert(0, secs)
     txt = f"""
     <div id="sidebar">
-      <div class="logography">
+      <div class="logography"><div class="centered">
         <div class="project"><a href="{up}index.html">QPlot</a></div>
         <div class="ptagline">Beautifully typeset graphs for science</div>
-      </div>
-      <div class="breadcrumbs">
+      </div></div>
+      <div class="breadcrumbs"><div class="centered">
     """
     txt += breadcrumbs(crumbs, sibs)
     txt += """
-      </div>
+      </div></div>
     </div>
     """
     return txt

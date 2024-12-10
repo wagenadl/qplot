@@ -58,6 +58,7 @@ def document(body, title, level):
     html += '</div>\n' # rst
     html += qph.footer()
     html += '</div>\n' # central
+    html += '<div id="rightspace"></div>'
     html += '</div>\n' # contents
     return html
 

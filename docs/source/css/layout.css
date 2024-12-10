@@ -7,22 +7,49 @@ body {
     padding-top: 0px;
     display: flex;
     min-height: 100vh;
-    justify-content: center;
+    justify-content: left;
 }
 
 #sidebar {
     display: block;
     flex-shrink: 0;
     width: 180px;
+    flex-grow: 1;
     min-height: 100%;
     overflow-x: hidden;
     overflow-y: hidden;
 }
 
+#rightspace {
+    width: 180px;
+    flex-grow: 1;
+}
+
+@media screen and (max-width: 1160px) {
+    #sidebar {
+        width: 180px;
+        flex-grow: 0;
+    }
+    #rightspace {
+        width: 0px;
+    }
+}
+
+.centered {
+    width: fit-content;
+ }
+
+@media screen and (max-width: 980px) {
+    .rightspace {
+        display: hidden
+    }
+}
+
+
 #central {
     display: block;
     padding: 0px;
-    flex-grow: 1;
+    flex-grow: 100;
     max-width: 800px;
     position: relative;
 }
@@ -55,6 +82,8 @@ body {
 
 .logography {
     padding: 10px;
+    display: flex;
+    justify-content: center;
 }
 
 .project {
@@ -67,6 +96,8 @@ body {
 .breadcrumbs {
     padding-top: 10px;
     padding-left: 5px;
+    display: grid;
+    justify-content: center;
 }
 
 .bcleft {
@@ -85,10 +116,11 @@ body {
 .breadcrumb-1 {
     display: block;
     padding-left: 10px;
+    width: 200px;
 }
 
 .breadcrumb-1 > .bcinner {
-    width: 110px;
+    xxwidth: 110px;
 }
 
 .breadcrumb-2 {
@@ -99,7 +131,7 @@ body {
 }
 
 .breadcrumb-2 > .bcinner {
-    width: 100px;
+    xxwidth: 100px;
 }
 
 .breadcrumb-3 {
@@ -109,7 +141,7 @@ body {
 }
 
 .breadcrumb-3 > .bcinner {
-    width: 80px;
+    xxwidth: 80px;
 }
 
 .bchere > .bcchildren {
