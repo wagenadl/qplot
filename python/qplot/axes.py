@@ -208,15 +208,15 @@ def _qaxis(orient='x', lim_d=None,
         limpx[1] -= qi.f.linewidth/2
     limpy = coord_p + np.zeros((2))
     
-    if lim_d is not None and lim_d is not []:
+    if lim_d is not None and len(lim_d):
         ttldx = np.mean(xf(limdx))
-    elif tick_d is not None and tick_d is not []:
+    elif tick_d is not None and len(tick_d):
         ttldx = np.mean(xf([tickdx[0], tickdx[-1]]))
     else:
         ttldx = np.nan
     ttldy = yf(coord_d)
         
-    if tick_p is not None:
+    if tick_p is not None and len(tick_p):
         ttlpx = np.mean([tickpx[0], tickpx[-1]])
     else:
         ttlpx = 0
