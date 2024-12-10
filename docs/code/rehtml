@@ -29,27 +29,21 @@ import qppydoclib as qpd
 import qphtmllib as qph
 
 
-def readrst(ifn):
-    with subprocess.Popen(["rst2html", ifn],
-                          stdout=subprocess.PIPE) as proc:
-        orightml = proc.stdout.read()
-
-    orightml = str(orightml, "utf-8")    
-    idx1 = orightml.index("<body>")
-    idx2 = orightml.index("</body>")
-    body = orightml[idx1+6:idx2]
+def readhtml(ifn):
+    with open(ifn, "r") as fd:
+        body = fd.read()
     return body
 
 
 
-def document(body, title, level):
+def document(body, title):
     html = qph.doctype()
     html += "<html>"
-    html += qph.head(title, level)
+    html += qph.head(title, 0)
     html += "<body>"
     html += '<div class="contents">'
     crumbs = [(title, None)]
-    html += qph.sidebar(crumbs, dirlevel=level)
+    html += qph.sidebar(crumbs, dirlevel=0)
     html += '<div id="central">'
     html += qph.header()
     html += qph.idxtitleblock(title)
@@ -66,10 +60,9 @@ def document(body, title, level):
 def main():
     ifn = sys.argv[1]
     ofn = sys.argv[2]
-    level = len(ofn.split("/")) - 2
     title = " ".join(sys.argv[3:])
-    body = readrst(ifn)
-    html = document(body, title, level)
+    body = readhtml(ifn)
+    html = document(body, title)
     with open(ofn, "w") as fd:
         fd.write(html)
 

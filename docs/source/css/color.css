@@ -1,6 +1,8 @@
 body { 
   background-color: #dddddd;
   color: black;
+  font-family: "Noto Serif", serif;
+  font-size: 12pt;
 }
 
 
@@ -23,7 +25,8 @@ body {
 }
 
 #sidebar .project a:hover {
-    color: #ffbb88;
+    xxcolor: #ffbb88;
+    color: #ffcccc;
 }
 
 .logography {
@@ -120,25 +123,30 @@ body {
 }
 
 .inlineeg {
-    font-family: ubuntu, sans;
-    font-size: 85%;
+    font-family: "Noto Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
 }
 
 .inlineeg:before {
-    font-family: garamond, palatino, times, serif ;
+    font-family:  "Noto Serif", serif;
     font-size: 118%;
     content: "“";
 }
 
 .inlineeg:after {
-    font-family: garamond, palatino, times, serif ;
+    font-family:  "Noto Serif", serif;
     font-size: 118%;
     content: "”";
 }
 
 .example, .doceg {
-    font-family: ubuntu, sans;
+    font-family: "Noto Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 410;
     font-size: 100%;
+    font-style: normal;
 }
 .doceg {
     color: #660000; }
@@ -225,7 +233,7 @@ h2 {
 }
 
 .breadcrumb-3 .bcheader {
-    font-family: ubuntu, sans
+    font-family: "Noto Sans", sans-serif;
 }
 
 .breadcrumb-2 > .bcchildren {
@@ -236,3 +244,19 @@ h2 {
     border-color: #eeeecc;
 }
     
+.literal-block {
+    font-family: "Noto Sans", sans-serif;
+    font-weight: 410;
+    font-size: 100%;
+    font-style: normal;
+    background-color: #ffffdd;
+    border-bottom: 1px solid #cccccc;
+    border-top: 1px solid #cccccc;
+}
+
+cite {
+    font-family: "Noto Sans", sans-serif;
+    font-weight: 450;
+    font-size: 110%;
+    font-style: normal;
+}

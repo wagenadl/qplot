@@ -1,0 +1,85 @@
+#!/usr/bin/python3
+
+import sys
+import os
+import time
+import numpy as np
+
+sys.path.append("../python")
+import qplot as qp
+
+sys.path.append("./code")
+import qppydoclib as qpd
+
+
+egpath = "source/homepage-egs"
+outpath = "build/home"
+
+
+def imagefns(name):
+    '''Returns pyfn, pngfn, pdffn
+    Returns None if no need/ability to build
+    '''
+    ifn = f"{egpath}/eg_{name}.py"
+    obase = f"{outpath}/eg_{name}"
+    pngfn = f"{obase}.png"
+    pdffn = f"{obase}.pdf"
+    if not os.path.exists(ifn):
+        print("No example for", name)
+        return None
+    if not os.path.exists(pngfn) or not os.path.exists(pdffn):
+        return ifn, pngfn, pdffn
+    stpy = os.stat(ifn)
+    stpng = os.stat(pngfn)
+    stpdf = os.stat(pdffn)
+    if stpng.st_size==0 or stpdf.st_size==0 \
+           or stpy.st_mtime > stpng.st_mtime \
+           or stpy.st_mtime > stpdf.st_mtime:
+       return ifn, pngfn, pdffn
+    return None
+
+
+def hidedisplay():
+    with os.popen("ensurexvfb") as f:
+        txt = f.read()
+        os.environ["DISPLAY"] = txt.strip()
+
+
+def build(name):
+    fns = imagefns(name)
+    if fns is None:
+        return
+    print("building example", name)
+    ifn, pngfn, pdffn = fns
+    with open(ifn) as f:
+        txt = f.read()
+        txt = "\n".join([line for line in txt.split("\n")
+                         if "qp.close" not in line]) # cheat
+        exec(txt) # we control these files, so this is safe
+        if qp.qi.f:
+            if txt.find('shrink')<0:
+                qp.shrink(2)
+            qp.save(pdffn)
+            print("pdf", pdffn)
+            qp.save(pngfn, reso=300)
+            qp.close()
+        else:
+            print("No figure - unlinking files")
+            if os.path.exists(pngfn):
+                os.unlink(pngfn)
+            if os.path.exists(pdffn):
+                os.unlink(pdffn)
+            #os.system(f"touch {pngfn}")
+        
+
+def main():
+    if not os.path.exists(outpath):
+        os.mkdir(outpath)
+    hidedisplay()
+    
+    names = ["bars", "circ", "ephys", "gline", "imsc"]
+    for name in names:
+        build(name)
+
+
+main()        

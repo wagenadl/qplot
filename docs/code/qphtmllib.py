@@ -22,16 +22,23 @@ def thisyear():
 def doctype():
     return "<!DOCTYPE html>\n"
 
+def headfonts():
+    return """
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Noto+Serif:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+"""
 
 def head(ttl, depth=1):
     csspath = ("../" * depth) + "css"
     jspath = ("../" * depth) + "js"
     return f"""<head>
-      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <script src="{jspath}/docs.js"></script>
-      <link rel="stylesheet" href="{csspath}/layout.css" type="text/css">
-      <link rel="stylesheet" href="{csspath}/color.css" type="text/css">
-      <title>QPlot: {ttl}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script src="{jspath}/docs.js"></script>
+    <link rel="stylesheet" href="{csspath}/layout.css" type="text/css">
+    <link rel="stylesheet" href="{csspath}/color.css" type="text/css">
+    {headfonts()}
+    <title>QPlot: {ttl}</title>
     </head>
     """
 
