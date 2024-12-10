@@ -6,7 +6,7 @@
 # errorbar
 # errorpatch
 # mark
-# patch
+# fill
 # plot
 # skyline
 
@@ -23,7 +23,7 @@ def xtransform(foo=None):
     XTRANSFORM(None) reverts to linear plotting.
 
     The transformation applies to coordinates passed into commands like
-    PLOT, PATCH, AT, XAXIS, LEGOPT, IMAGE, etc. It also applies to the 
+    PLOT, FILL, AT, XAXIS, LEGOPT, IMAGE, etc. It also applies to the 
     ABSDATA subcommand for GLINE and friends. However, it does not apply
     to the RELDATA or ROTDATA subcommands.
 
@@ -116,21 +116,21 @@ def plot(xx, yy=None):
         xx = range(len(yy))
     qi.plot(xx, yy, cmd='plot')
 
-def patch(xx, yy):
-    '''PATCH - Draw a polygonal patch in data space
-    PATCH(xx, yy) draws a polygon with vertices at (XX,YY). The polygon
+def fill(xx, yy):
+    '''FILL - Fill a polygonal area in data space
+    FILL(xx, yy) draws a polygon with vertices at (XX,YY). The polygon
     is automatically closed (i.e., it is not necessary for xx[-1] to equal
     xx[0]).
     The polygon is filled with the current brush.
-    XX and YY are given in data coordinates. See also AREA and GAREA.'''
+    XX and YY are given in data coordinates. See also PATCH and GAREA.'''
     qi.plot(xx, yy, cmd='patch')
 
 def rectangle(x, y, w, h):
     '''RECTANGLE - Draw a rectangle in data space
     RECTANGLE(x, y, w, h) draws a rectangle in data space with given
     coordinates. The rectangle is drawn with the current pen and filled
-    with the current brush. See also PATCH and PRECTANGLE.'''
-    patch([x, x+w, x+w, x], [y, y, y+h, y+h])
+    with the current brush. See also FILL and PRECTANGLE.'''
+    fill([x, x+w, x+w, x], [y, y, y+h, y+h])
 
 def hatch(xx, yy, pattern="|", angle=0, spacing=10, offset=0):
     '''HATCH - Hatch a polygonal patch in data space
@@ -394,16 +394,16 @@ def herrorbar(yy, xx, dx, w=None, dir='both'):
                 paper.line(np.array([0, 0]), np.array([-1, 1])*w/2)
 
                 
-def errorpatch(xx, yy, dy=None, dir='both'):
-    '''ERRORPATCH - Draw error patch
-    ERRORPATCH(xx, yy, dy) plots an error patch at (XX, YY ± DY).
+def errorfill(xx, yy, dy=None, dir='both'):
+    '''ERRORFILL - Fill between error bounds
+    ERRORFILL(xx, yy, dy) fills the area defined by (XX, YY ± DY).
     Normally, XX, YY, and DY all are N-vectors. 
-    ERRORPATCH(..., 'up') only plots upward; ERRORPATCH(..., 'down') only 
+    ERRORFILL(..., 'up') only plots upward; ERRORFILL(..., 'down') only 
     plots downward.
     To specify downward and upward errors separately,  DY may be shaped Nx2.
     DY must be positive, even for the downward error.
     
-    ERRORPATCH(xx, yy), where YY is shaped Nx2, directly specifies the bounds
+    ERRORFILL(xx, yy), where YY is shaped Nx2, directly specifies the bounds
     as (XX, YY[:,0]) and (XX, YY[:,1]), much like matplotlib's fill_between.
     '''
 
@@ -425,8 +425,8 @@ def errorpatch(xx, yy, dy=None, dir='both'):
         elif dir!='both':
             qi.error('Bad direction name')
     
-    patch(np.concatenate((xx, np.flip(xx, 0))),
-          np.concatenate((yy_dn, np.flip(yy_up, 0))))
+    fill(np.concatenate((xx, np.flip(xx, 0))),
+         np.concatenate((yy_dn, np.flip(yy_up, 0))))
 
 def skyline(xx, yy, y0=0):
     '''SKYLINE - Skyline plot (bar plot)
@@ -448,8 +448,8 @@ def skyline(xx, yy, y0=0):
         xxx = np.reshape(xxx,(2*N))
         yyy = np.reshape(yyy,(2*N))
     
-    patch(np.concatenate((xxx[[0]], xxx ,xxx[[-1]]), 0),
-          np.concatenate(([y0], yyy, [y0])))
+    fill(np.concatenate((xxx[[0]], xxx ,xxx[[-1]]), 0),
+         np.concatenate(([y0], yyy, [y0])))
     
 def caligraph(xx, yy, ww):
     '''CALIGRAPH - Draw a variable-width line series in data space

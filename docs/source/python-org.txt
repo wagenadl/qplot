@@ -17,15 +17,15 @@ plot
 mark
 xmark
 ymark
+fill
 bars
 hbars
 skyline
 ecoplot
 errorbar
 herrorbar
-errorpatch
+errorfill
 rectangle
-patch
 hatch
 
 Image rendering:Images:
@@ -85,8 +85,8 @@ overlinedist
 overlinemin
 
 Paper coordinate plotting:Paper coords:
-area
 line
+patch
 mm
 pmark
 phatch

@@ -1,7 +1,7 @@
 # Everything in the Paper coordinate plotting and Mixed coordinate plotting
 # QGIMAGE is in img
 
-# area
+# patch
 # line
 # mm
 # pmark
@@ -94,9 +94,9 @@ def line(xx, yy):
     See also PLOT and GLINE.'''
     qi.plot(xx, yy, cmd='line')
 
-def area(xx, yy):
-    '''AREA - Draw a polygon in paper space
-    AREA(xx, yy) draws a polygon with vertices at (XX,YY). The polygon
+def patch(xx, yy):
+    '''PATCH - Draw a polygon in paper space
+    PATCH(xx, yy) draws a polygon with vertices at (XX,YY). The polygon
     is automatically closed (i.e., it is not necessary for xx[-1] to equal
     xx[0]).
     The polygon is filled with the current brush.
@@ -104,7 +104,7 @@ def area(xx, yy):
 
     If you draw right up to any edge of the panel, SHRINK may fail.
 
-    See also PATCH and GAREA.'''
+    See also FILL and GAREA.'''
     qi.plot(xx, yy, cmd='area')
 
 def prectangle(x, y, w, h):
@@ -115,12 +115,12 @@ def prectangle(x, y, w, h):
 
     If you draw right up to any edge of the panel, SHRINK may fail.
 
-    See also AREA and RECTANGLE.'''
-    area([x, x+w, x+w, x], [y, y, y+h, y+h])    
+    See also PATCH and RECTANGLE.'''
+    patch([x, x+w, x+w, x], [y, y, y+h, y+h])    
 
 def phatch(xx, yy, pattern="|", angle=0, spacing=10, offset=0):
     '''PHATCH - Hatch a polygonal patch in paper space
-    PATCH(xx, yy, angle) hatches a polygon with vertices at (XX,YY) using
+    PHATCH(xx, yy, angle) hatches a polygon with vertices at (XX,YY) using
     the given pattern. PATTERN is a single character from the following:
       | / - \\ :: lines at the angle suggested by the shape of the character
       + x      :: combination of either orthogonal or diagonal lines
@@ -229,7 +229,7 @@ def gline(ptspecs):
     toward the top.)
     
     Note: The rather cumbersome syntax of GLINE makes LINE and PLOT more
-    attractive for general usage. The same applies to GAREA versus AREA 
+    attractive for general usage. The same applies to GAREA versus FILL 
     and PATCH. 
     
     See also SHIFTEDLINE and GLINE2.'''
@@ -253,7 +253,7 @@ def gline2(vglcs):
 
 def garea(ptspecs):
     '''GAREA - Generalized area drawing
-    GAREA is to PATCH and AREA as GLINE is to PLOT and LINE.
+    GAREA is to FILL and PATCH as GLINE is to PLOT and LINE.
     
     See GLINE for supported commands.'''
 
@@ -261,7 +261,7 @@ def garea(ptspecs):
 
 def garea2(vglcs):
     '''GAREA2 - Generalized area drawing
-    GAREA2 is to PATCH and AREA as GLINE2 is to PLOT and LINE.
+    GAREA2 is to FILL and PATCH as GLINE2 is to PLOT and LINE.
     
     See GLINE2 for supported commands.'''
     _gline2('garea', vglcs)

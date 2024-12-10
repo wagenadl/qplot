@@ -2,12 +2,14 @@ import qplot as qp
 import numpy as np
 
 qp.figure('patch', 3, 3)
-qp.brush('g')
 
-xx = np.linspace(0, 2*np.pi, 7)
-qp.patch(np.cos(xx), np.sin(xx))
+qp.marker('o', 3)
+qp.mark([1, 3], [2, 1])
+qp.at(1, 2)
 
-qp.brush('r', .5)
+qp.patch([10, 20, 20, 10], [10, 10, 20, 20])
 
-qp.patch(np.sin(xx), np.cos(xx))
+qp.at(3, 1)
+qp.patch([10, 20, 30, 20], [-10, 0, -10, -20])
 
+qp.shrink()
