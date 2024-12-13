@@ -134,7 +134,7 @@ void QPWidget::clickMenu() {
   
   menu.addMenu(&showhide);
 
-  QAction shot({"Screensho&t"});
+  QAction shot{"Screensho&t"};
   shot.setShortcut(Qt::CTRL + Qt::Key_C);
   menu.addAction(&shot);
   
