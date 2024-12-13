@@ -1,0 +1,51 @@
+on: 
+  push:
+    branches: [ "main" ]
+
+  workflow_dispatch:
+
+
+
+name: Create documentation
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  
+jobs:
+  build:
+    name: Build documentation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@master
+      - name: Install requirements for building binary
+        run: .github/get-build-requirements
+      - name: Install requirements for building docs
+        run: .github/get-docs-requirements
+      - name: Build binary
+        run: make
+      - name: Build .deb
+        run: make deb
+      - name: Install .deb
+        run: sudo apt-get install ./build/qplot*deb
+      - name: Build docs
+        run: make -C docs
+      - name: Upload docs
+        id: deployment
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: docs/build
+
+  deploy:
+    name: Deploy to github pages
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
