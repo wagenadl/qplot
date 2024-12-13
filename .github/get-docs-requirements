@@ -3,4 +3,5 @@
 sudo apt-get update -qq || exit 1
 sudo apt-get install xvfb || exit 1
 sudo apt-get install -y python3-numpy python3-matplotlib python3-plotly python3-colorcet python3-docutils || exit 1
+pip3 install ppersist
 
