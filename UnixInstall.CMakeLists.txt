@@ -1,8 +1,8 @@
 # Install QPLOT
 install(TARGETS qplot DESTINATION bin)
-install(FILES scripts/qpclient DESTINATION bin)
-install(FILES scripts/qpclose DESTINATION bin)
-install(FILES scripts/qplotml DESTINATION bin)
+install(FILES octave/scripts/qpclient DESTINATION bin)
+install(FILES octave/scripts/qpclose DESTINATION bin)
+install(FILES octave/scripts/qplotml DESTINATION bin)
 
 # Install octave
 set(OCTPATH "share/octave/packages/${OCTPKG}")
