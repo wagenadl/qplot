@@ -36,7 +36,7 @@ egpath = "source/python-egs"
 
 def lutline():
     return """<div class="lutline">The full collection of available colormaps is shown
-    <a href="lutdemo.html">here</a>.</div>
+    <a href="../luts/index.html">here</a>.</div>
     """
 
 

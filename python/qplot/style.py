@@ -11,7 +11,7 @@ from . import qi
 import numpy as np
 
 def brush(color=None, alpha=None, id=None):
-    '''BRUSH - Set brush for QPlot
+    '''BRUSH - Set brush parameters
     All arguments are optional.
       COLOR may be a named color (i.e., one of krgbcmyw), or a 3-digit or
         a 6-digit string, or 'none' or '' for none.
@@ -31,7 +31,7 @@ def brush(color=None, alpha=None, id=None):
 
 def pen(color=None, width=None, join=None, cap=None, pattern=None, \
         alpha=None, id=None):
-    '''PEN - Selects a new pen for QPlot
+    '''PEN - Set pen parameters
     All arguments are optional.
       COLOR may be a single character matlab color, or a 3- or 6-digit RGB
       specification or an [«r», «g», «b»] triplet, or 'none'.

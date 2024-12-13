@@ -184,7 +184,7 @@ def imsc(data, rect=None, c0=None, c1=None, xx=None, yy=None, hard=False):
     image(data, rect, xx, yy, hard)
 
 def lut(cc=None, nanc=None):
-    '''LUT - Set lookup table for future IMSC.
+    '''LUT - Set lookup table for IMSC.
     LUT(cc) where CC is Nx3 sets a new lookup table for IMSC.
     LUT(cc, nanc) where NANC is a 3-tuple sets a special color to use
     for NaN values. (The default is white.)
@@ -192,11 +192,15 @@ def lut(cc=None, nanc=None):
     CC must contain RGB values in the range 0 to 1, or, if of type uint8,
     in the range 0 to 255.
 
-    If you have Matplotlib installed, CC may also be a Matplotlib Colormap,
-    e.g., from MATPLOTLIB.PYPLOT.CM.GET_CMAP(). See also 
+    If you have Matplotlib installed, CC may also be a Matplotlib
+    Colormap, e.g., from «matplotlib.pyplot.cm.get_cmap()».  See also
     https://matplotlib.org/stable/tutorials/colors/colormaps.html.
 
-    lut, nanc = LUT() returns current values.'''
+    lut, nanc = LUT() returns current values.
+
+    See also LUTS.SET.
+
+    '''
 
     qi.ensure()
     ret = True

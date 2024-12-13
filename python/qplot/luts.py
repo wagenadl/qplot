@@ -401,12 +401,12 @@ def demo(fam=None, N=None):
             fig.panel(chr(65+int(c)))
             rgb = get(names[q], N)
             N1 = rgb.shape[0]
-            rgb = np.reshape(rgb, (1,N1,3))
-            if N1 < 20 and N is None:
+            rgb = rgb.reshape(1, N1, 3)
+            if N1 <= 20 and N is None:
                 img.image(rgb, rect=(0, -r-.15, 1, .3))
-                rgb = get(names[q], 256)
+                rgb = get(names[q], (256//N1)*N1) 
                 N1 = rgb.shape[0]
-                rgb = np.reshape(rgb, (1,N1,3))
+                rgb = rgb.reshape(1, N1, 3)
                 img.image(rgb, rect=(0, -r+.25, 1, .3))
             else:
                 img.image(rgb, rect=(0, -r, 1, .5))

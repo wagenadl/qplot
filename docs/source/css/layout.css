@@ -420,3 +420,23 @@ h2 {
     height: 250px;
 }
 
+img.lut-full, img.lut-half {
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+img.lut-full {
+    width: 100%;
+}
+
+img.lut-half {
+    width: 50%;
+}
+
+.lutfamily {
+    margin-top: 15px;
+}
+
+p {
+    margin-top: 10px;
+}

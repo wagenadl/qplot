@@ -2,85 +2,113 @@
 
 import sys
 import os
-sys.path.append('..')
+
+os.chdir("build")
+
+sys.path.append("../../python")
 import qplot as qp
 
-
-def header(f, title):
-    f.write('''
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <link rel="stylesheet" href="../css/doc.css" type="text/css">
-    <title>QPlot: %s</title>
-  </head>
-<body class="mloct"><div class="main">
-    ''' % title)
-
-    
-def trailer(f): 
-    f.write('''</div>
-<div class="tail">
-(C) <a href="http://www.danielwagenaar.net">Daniel Wagenaar</a>, 2014–2019. This web page is licensed under the <a href="http://www.gnu.org/copyleft/fdl.html">GNU Free Documentation License</a>.
-</div>
-</body>
-</html>
-    ''')
+sys.path.append("../code")
+import qphtmllib as qph
 
 
-def indextext(f):
-    f.write('''<div class="toindex">
-<span class="toidx"><a href="alpha.html">Alphabetical list</a></span>
-<span class="toidx"><a href="catg.html">Categories</a></span>
-</div>
-''')
+def create(fam):
+    qp.luts.demo(fam)
+    qp.save(f"html/luts/{fam}.png", 300)
+    qp.close()
 
-
-def titletext(f, func, tagline):
-    f.write('''<div class="titlehead">
-<span class="title">%s</span>
-<span class="tagline">%s</span>
-</div>
-''' % (func, tagline))
-
-func = "luts"
- 
-ofn = sys.argv[1]
-with open(ofn, 'w') as f:
-    header(f, func)
-    indextext(f)
-    titletext(f, "luts", "Look-up tables for image rendering")
-
+def createall():
     for fam in qp.luts.families():
         if len(qp.luts.family(fam)):
-            f.write(f'''<h3>{fam}</h3>\n''')
-            qp.luts.demo(fam)
-            qp.save(f"html/pyref/lutdemo-{fam}.png", 120)
-            qp.close()
-            f.write(f'''<div class="qpt"><img src="lutdemo-{fam}.png"></div>''')
+            create(fam)
 
-    f.write('''<p>Only the “native” colormaps are strictly part of QPlot.
-The “sequential,” “diverging,” “cyclic,” “qualitative,” and “misc”
-colormaps are from <a href="https://matplotlib.org/">Matplotlib</a>.
-The “plotly,” “carto,” “cmocean,” and “colorbrewer” colormaps are from
-<a href="https://plotly.com/">plotly</a>. 
-The “cet” colormaps are from 
-<a href="https://colorcet.holoviz.org/"/>colorcet</a>.
-Non-native colormaps are only
-available if the respective libraries are installed on your computer.
-For copyright information on non-native colormaps, please refer to
-<a href="https://matplotlib.org/">matplotlib.org</a>,
-<a href="https://plotly.com/">plotly.com</a>, and
-<a href="https://colorcet.holoviz.org/"/>colorcet</a>.\n''')
+def body(title):
+    html = """
+    <h2>Look-up tables for image rendering</h2>
+    
+    <p>The following colormaps are available for use with
+    <a href="../pyref/luts.set.html">luts.set()</a> and <a
+    href="../pyref/luts.get.html">luts.get()</a>.
 
-    f.write('''<p>In a few instances, multiple families offer like-named colormaps. In that case, you can prefix the name with the family in GET and SET, e.g., “cm = qp.get("cet.rainbow")”.''')
+    <p>In a few instances, multiple families offer like-named
+    colormaps. In that case, you can prefix the name with the family,
+    e.g., <span class="inlineeg">cm = qp.luts.get("misc.rainbow")</span>.
 
-    f.write('''<p>Colormaps from other sources can also be used with QPlot.
-Excellent colormaps are provided, e.g., by the 
-<a href="https://cmasher.readthedocs.io/index.html">CMasher</a>,
-<a href="https://github.com/callumrollo/cmcrameri">cmcrameri</a>, and
-<a href="https://github.com/yt-project/cmyt">cmyt</a>
-projects. See also <a href="lut.html">lut()</a>.\n''')
+    <p>Most color maps are continuous, i.e., comprise an
+    infinitesimally fine range of shades. Some are categorical, i.e.,
+    define a strictly finite number of shades, such as the
+    “qualitative” family from Matplotlib. There are also colormaps
+    that are categorical by default but may be used as continuous maps
+    by asking for a specific number of shadings, such as the “carto”
+    family from Plotly.
 
-    trailer(f)
+    """
+    
+    for fam in qp.luts.families():
+        luts = qp.luts.family(fam)
+        N = len(luts)
+        if N > 0:
+            if N==1:
+                cls = "lut-half"
+            else:
+                cls = "lut-full"
+            html += f"""
+            <h2 class="lutfamily">{fam}</h2>
+            <div class="qpt"><img class="{cls}" src="{fam}.png"></div>
+            """
+
+    html += """
+    <p>Only the “native” colormaps are strictly part of QPlot.
+    The “sequential,” “diverging,” “cyclic,” “qualitative,” and “misc”
+    colormaps are from <a href="https://matplotlib.org/">Matplotlib</a>.
+    The “plotly,” “carto,” “cmocean,” and “colorbrewer” colormaps are from
+    <a href="https://plotly.com/">plotly</a>. 
+    The “cet” colormaps are from 
+    <a href="https://colorcet.holoviz.org/"/>colorcet</a>.
+    Non-native colormaps are only
+    available if the respective libraries are installed on your computer.
+    For copyright information on non-native colormaps, please refer to
+    <a href="https://matplotlib.org/">matplotlib.org</a>,
+    <a href="https://plotly.com/">plotly.com</a>, and
+    <a href="https://colorcet.holoviz.org/"/>colorcet</a>.
+
+    <p>Colormaps from other sources can also be used with QPlot.
+    Excellent colormaps are provided, e.g., by the <a
+    href="https://cmasher.readthedocs.io/index.html">CMasher</a>, <a
+    href="https://github.com/callumrollo/cmcrameri">cmcrameri</a>, and
+    <a href="https://github.com/yt-project/cmyt">cmyt</a>
+    projects. See also <a href="../pyref/lut.html">lut()</a>.
+    """
+    return html
+
+
+def document(title="Color maps"):
+    html = qph.doctype()
+    html += "<html>"
+    html += qph.head(title, 1)
+    html += "<body>"
+    html += '<div class="contents">'
+    crumbs = [(title, None)]
+    html += qph.sidebar(crumbs, dirlevel=1)
+    html += '<div id="central">'
+    html += qph.header()
+    html += qph.idxtitleblock(title)
+    html += '<div class="rst"><div class="document">'
+    html += body(title)
+    html += '</div></div>\n' # document rst
+    html += qph.footer()
+    html += '</div>\n' # central
+    html += '<div id="rightspace"></div>'
+    html += '</div>\n' # contents
+    return html
+
+def createindex():
+    with open("html/luts/index.html", 'w') as f:
+        f.write(document())
+   
+def main():
+    createindex()
+    createall()
+
+
+main()

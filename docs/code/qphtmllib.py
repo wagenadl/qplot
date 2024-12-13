@@ -7,6 +7,7 @@ sections = [("Installation", "installation.html"),
             ("Gallery", "gallery/index.html"),
             ("Python functions", "pyref/index.html"),
             ("Octave functions", "octref/index.html"),
+            ("Color maps", "luts/index.html"),
             ]
 
 funcs = []
@@ -289,6 +290,7 @@ class PyDoc:
         prevbits = [""] + bits[:-1]
         nextbits = bits[1:] + [""]
         inargs = False
+        inlink = None
         for bit, prv, nxt in zip(bits, prevbits, nextbits):
             if (prv.endswith("-") and len(prv)>1) \
                or (nxt.startswith("-") and len(nxt)>1):
@@ -297,6 +299,23 @@ class PyDoc:
             if prv[-1:] in ['"', "'"] and nxt.startswith(prv[-1]):
                 self.out += bit # don't mess with text in quotes
                 continue
+
+            if bit.endswith("«"):
+                self.out += bit[:-1] + '<span class="inlineeg">'
+                continue
+            elif "»" in bit:
+                idx = bit.index("»")
+                self.out += bit[:idx] + "</span>" + bit[idx+1:]
+                continue
+            elif bit=="https" and nxt == "://":
+                self.out += '<a href="'
+                inlink = bit
+            elif inlink:
+                inlink += bit
+                if bit=="html":
+                    self.out += bit + '">' + inlink[8:] + '</a>'
+                    inlink = None
+                    continue
             
             lobit = bit.lower()
             ishigh = bit == bit.upper()
