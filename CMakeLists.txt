@@ -30,8 +30,8 @@ find_package(Qt5 COMPONENTS Widgets Svg PrintSupport REQUIRED)
 # Add the executables
 add_executable(qplot WIN32 MACOSX_BUNDLE)
 
-include(src/CMakeLists.txt)
-target_sources(qplot PRIVATE src/qplot.qrc )
+include(backend/src/CMakeLists.txt)
+target_sources(qplot PRIVATE backend/src/qplot.qrc )
 
 # Libraries to link to - Qt must be mentioned
 target_link_libraries(qplot Qt5::Widgets)
@@ -43,7 +43,7 @@ if (WIN32)
 endif()
 
 # Produce configuration files
-configure_file(src/config.h.in config.h)
+configure_file(backend/src/config.h.in config.h)
 ##configure_file(doc/version.tex.in version.tex)
 
 # Include paths - Qt must be mentioned
