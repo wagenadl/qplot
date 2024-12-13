@@ -8,7 +8,8 @@ os.chdir("build")
 sys.path.append("../../python")
 import qplot as qp
 
-sys.path.append("../code")
+codepath = "../code"
+sys.path.append(codepath)
 import qphtmllib as qph
 
 
@@ -105,8 +106,19 @@ def document(title="Color maps"):
 def createindex():
     with open("html/luts/index.html", 'w') as f:
         f.write(document())
-   
+
+        
+def hidedisplay():
+    with os.popen(f"{codepath}/ensurexvfb") as f:
+        txt = f.read().strip()
+        if txt:
+            os.environ["DISPLAY"] = txt
+        else:
+            raise RuntimeError("Cannot create X11 display")
+
+        
 def main():
+    hidedisplay()
     createindex()
     createall()
 
