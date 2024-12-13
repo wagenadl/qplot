@@ -160,6 +160,16 @@ class Figure:
     
         self.write('figsize %g %g\n' % (w,h))
 
+    def raise_on_stopped(self):
+        if self.pid is None:
+            return
+        try:
+            ret = self.pid.wait(0)
+            if ret < 0:
+                raise BrokenPipeError("QPlot subprocess died")
+        except subprocess.TimeoutExpired:
+            pass
+            
 
     def clf(self):
         if not self.is_pipe:
@@ -169,12 +179,13 @@ class Figure:
         self.write('figsize %g %g\n' % (self.extent[2], self.extent[3]))
 
     def close(self):
+        self.raise_on_stopped()
         if self.fd is not None:
             self.fd.close()
             self.fd = None
         if self.pid is not None and self.is_pipe:
             try:
-                self.pid.wait(2)
+                ret = self.pid.wait(2)
                 self.pid = None
             except subprocess.TimeoutExpired:
                 print("timeout", time.time())
@@ -187,6 +198,19 @@ class Figure:
     def tofront(self):
         pass
 
+    def check_save_success(self, stt, ofn):
+        t0 = time.time()
+        while time.time() < t0 + 5:
+            self.raise_on_stopped()
+            if os.path.exists(ofn):
+                if stt is None:
+                    return # New file created, happy
+                stt1 = os.stat(ofn)
+                if stt1.st_mtime > stt.st_mtime:
+                    return # File updated, happy
+        raise BrokenPipeError("QPlot failed to save")
+
+
     def save(self, ofn, reso=None, qual=None):
         if self.is_pipe:
             cmd = f'save "{ofn}"'
@@ -194,7 +218,12 @@ class Figure:
                 cmd += f' {reso}'
                 if qual is not None:
                     cmd += f' {qual}'
+            if os.path.exists(ofn):
+                stt = os.stat(ofn)
+            else:
+                stt = None
             self.write(cmd + '\n')
+            self.check_save_success(stt, ofn)
         else:
             cmd = ['qplot']
             if reso is not None:
@@ -207,7 +236,8 @@ class Figure:
             cmd.append(ofn)
             s = utils.unix(' '.join(cmd))
             if s:
-                error('qplot failed')
+                raise BrokenPipeError('qplot failed')
+
         
 figs = {} # map from filename to Figure
 f = None

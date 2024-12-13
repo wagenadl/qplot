@@ -388,7 +388,7 @@ def demo(fam=None, N=None):
             return
         R = int(np.ceil(Q/2))
         C = int(np.ceil(Q/R))
-        figname = f'/tmp/luts-{fam}'
+        figname = f'luts-{fam}'
         fig.figure(figname, 3*C, R/4)
         style.pen('none')
         for c in range(C):
