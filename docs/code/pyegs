@@ -5,15 +5,17 @@ import os
 import time
 import numpy as np
 
-sys.path.append("../python")
+os.chdir("build")
+
+sys.path.append("../../python")
 import qplot as qp
 
-sys.path.append("./code")
+egpath = "../source/python-egs"
+outpath = "html/pyref"
+codepath = "../code"
+
+sys.path.append(codepath)
 import qppydoclib as qpd
-
-
-egpath = "source/python-egs"
-outpath = "build/pyref"
 
 
 def imagefns(func):
@@ -40,9 +42,12 @@ def imagefns(func):
 
 
 def hidedisplay():
-    with os.popen("ensurexvfb") as f:
-        txt = f.read()
-        os.environ["DISPLAY"] = txt.strip()
+    with os.popen(f"{codepath}/ensurexvfb") as f:
+        txt = f.read().strip()
+        if txt:
+            os.environ["DISPLAY"] = txt
+        else:
+            raise RuntimeError("Cannot create X11 display")
 
 
 def build(func):

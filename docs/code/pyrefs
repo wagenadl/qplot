@@ -30,7 +30,7 @@ import qphtmllib as qph
 
 qph.setfuncs(qpd.qplotfunctions())
 
-outpath = "build/pyref"
+outpath = "build/html/pyref"
 egpath = "source/python-egs"
 
 

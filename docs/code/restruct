@@ -67,7 +67,7 @@ def document(body, title, level):
 def main():
     ifn = sys.argv[1]
     ofn = sys.argv[2]
-    level = len(ofn.split("/")) - 2
+    level = len(ofn.split("/")) - 3
     title = " ".join(sys.argv[3:])
     body = readrst(ifn)
     html = document(body, title, level)

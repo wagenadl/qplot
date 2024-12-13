@@ -2,7 +2,7 @@ import ppersist
 import numpy as np
 import qplot as qp
 
-I_nA, V_mV, fs_Hz = ppersist.load("data/ephys.pkl")
+I_nA, V_mV, fs_Hz = ppersist.load("../data/ephys.pkl")
 N = len(I_nA)
 tt_ms = np.arange(N) * 1000 / fs_Hz
 
