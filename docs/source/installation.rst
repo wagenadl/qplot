@@ -27,7 +27,7 @@ If you are reading this on a Linux system, chances are you can get
 all of these through your distribution's package manager. For
 instance, on Ubuntu::
 
-     sudo apt install g++ cmake git qt6-tools-dev 
+     sudo apt install g++ cmake git  qtbase5-dev qtbase5-dev-tools libqt5svg5-dev
 
 On Windows you may have to install the software from the websites
 provided above.
@@ -56,7 +56,7 @@ After downloading, enter into the downloaded folder::
 
 Then, let CMake figure out whether it has all prerequisites::
 
-    cmake -S . -B build
+    cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
 
 (but first see the `Critical note for Windows users <crit-note-win>`_, below, if you
 are using Windows).
@@ -81,8 +81,8 @@ different versions were used during different steps of the process. To
 be safe, it is best to define a few system variables before the first
 `cmake` command, by typing::
 
-    export CMAKE_PREFIX_PATH=/c/Qt6/6.4.1/msvc2019_64/lib/cmake/Qt6
-    export PATH=/c/Qt6/6.4.1/msvc2019_64/bin:$PATH
+    export CMAKE_PREFIX_PATH=/c/Qt/5.15.2/msvc2019_64/lib/cmake/Qt5
+    export PATH=/c/Qt/5.15.2/msvc2019_64/bin:$PATH
     export VCINSTALLDIR="/c/Program Files (x86)/Microsoft Visual Studio/2019/Community/VC"
       
 Of course, you may have to adjust those to point to the appropriate
@@ -106,9 +106,16 @@ installation package::
 On Ubuntu, that creates a `.deb`; on Windows, a
 `.exe`. The `.deb` may be installed like::
 
-    sudo dpkg -i qplot_0.5.1-1_amd64.deb
+    sudo dpkg -i qplot_0.6.0-1_amd64.deb
 
-And the `.exe` may be installed by double-clicking it.    
+And the `.exe` may be installed by double-clicking it.
+
+Development
+^^^^^^^^^^^
+
+Development of QPlot occurs on `github
+<https://github.com/wagenadl/qplot>`_. I welcome bug reports, feature
+requests, as well as pull requests and constructive comments.
 
 Closing words
 ^^^^^^^^^^^^^
