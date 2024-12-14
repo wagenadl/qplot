@@ -1,6 +1,6 @@
 on: 
   push:
-    branches: [ "main" ]
+    branches: [ "nomain" ]
 
   workflow_dispatch:
 
