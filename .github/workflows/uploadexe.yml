@@ -1,8 +1,14 @@
-on: 
+on:
   push:
-    branches: [ "nomain" ]
+    tags:
+      - "v*"
+      
+name: Upload .exe
 
-name: Build backend on Windows
+permissions:
+  contents: write
+  id-token: write
+
 
 
 jobs:
@@ -27,5 +33,10 @@ jobs:
       - name: Create installer
         working-directory: ./build
         run: cpack
-        
+      - name: Upload .exe
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/QPlot*exe
+          token: ${{github.TOKEN}}
+                  
     

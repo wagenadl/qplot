@@ -1,15 +1,8 @@
-build*
-release*
-build-doc
-build-web
-octave-core
+build
 *~
-doc/html
-doc/*.pdf
 debian/qqplot
 debian/*.substvars
 debian/files
 *debhelper*
 __pycache__
-hello.qpt
 .idea
