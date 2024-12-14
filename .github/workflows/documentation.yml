@@ -1,11 +1,10 @@
-on:
-  workflow_run:
-    workflows: ['Build']
-    types: [completed]
+on: 
+  push:
     branches: [ "main" ]
 
-name: Documentation
+  workflow_dispatch:
 
+name: Build documentation
 
 permissions:
   contents: read
@@ -19,16 +18,16 @@ jobs:
     steps:
       - name: Checkout the repository
         uses: actions/checkout@master
+      - name: Install requirements for building binary
+        run: .github/get-build-requirements
       - name: Install requirements for building docs
         run: .github/get-docs-requirements
-      - name: Download deb artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: qplot-deb
-      - name: Check
-        run: ls -l
+      - name: Build binary
+        run: make
+      - name: Build .deb
+        run: make deb
       - name: Install .deb
-        run: sudo apt-get install -y ./qplot*deb
+        run: sudo apt-get install ./build/qplot*deb
       - name: Build docs
         run: make -C docs
       - name: Upload docs
