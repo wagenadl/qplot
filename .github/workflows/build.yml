@@ -1,0 +1,28 @@
+on: 
+  push:
+    branches: [ "main" ]
+
+name: Build
+
+jobs:
+  build:
+    name: Build binary
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@master
+      - name: Install requirements for building binary
+        run: .github/get-build-requirements
+      - name: Install requirements for building docs
+        run: .github/get-docs-requirements
+      - name: Build binary
+        run: make
+      - name: Build .deb
+        run: make deb
+      - name: Upload deb artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: qplot-deb
+          path: build/qplot*deb
+          retention-days: 1
+          
