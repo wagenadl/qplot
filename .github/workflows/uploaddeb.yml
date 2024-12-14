@@ -1,7 +1,7 @@
 on:
   push:
     tags:
-      - "xv*"
+      - "v*"
       
 name: Upload .deb
 

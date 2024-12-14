@@ -155,7 +155,7 @@ int noninteractive(QString ifn, QString ofn, Renderer *renderer) {
 
 int showVersion() {
   std::cerr << "QPlot " QPLOT_VERSION "\n";
-  std::cerr << "Copyright (C) 2014-2021 Daniel A. Wagenaar\n";
+  std::cerr << "Copyright (C) 2014-2024 Daniel A. Wagenaar\n";
   std::cerr << "\n";
   std::cerr << "QPlot is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.\n\n";
   std::cerr << "QPlot is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.\n\n";

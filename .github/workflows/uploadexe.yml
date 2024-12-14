@@ -20,8 +20,6 @@ jobs:
         uses: actions/checkout@master
       - name: Install CMake
         uses: lukka/get-cmake@latest
-      - name: Check CMake
-        run: cmake --version
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
         with:

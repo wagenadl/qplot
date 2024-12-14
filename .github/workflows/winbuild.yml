@@ -14,8 +14,6 @@ jobs:
         uses: actions/checkout@master
       - name: Install CMake
         uses: lukka/get-cmake@latest
-      - name: Check CMake
-        run: cmake -G
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
         with:
@@ -27,5 +25,3 @@ jobs:
       - name: Create installer
         working-directory: ./build
         run: cpack
-        
-    
