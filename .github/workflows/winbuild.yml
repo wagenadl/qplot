@@ -1,6 +1,6 @@
 on: 
   push:
-    branches: [ "nomain" ]
+    branches: [ "main" ]
 
 name: Build backend on Windows
 
@@ -15,7 +15,7 @@ jobs:
       - name: Install CMake
         uses: lukka/get-cmake@latest
       - name: Check CMake
-        run: cmake --version
+        run: cmake -G
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
         with:
