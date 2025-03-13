@@ -241,7 +241,7 @@ def save(ofn=None, reso=300, qual=95):
     is 95.)
     SAVE without arguments saves to pdf.'''
     if qi.f is None:
-        error('No window')
+        qi.error('No window')
     
     if ofn is None:
         ofn='pdf'
