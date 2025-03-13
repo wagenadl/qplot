@@ -162,6 +162,8 @@ class Figure:
             else:
                 if not fn.endswith('.qpt'):
                     fn = fn + '.qpt'
+                    if "/" not in fn:
+                        self.is_tempfile = True
                 self.fn = fn
             self.fd = open(fn, 'wb')
     
@@ -465,7 +467,7 @@ def refigure(fn, w, h):
 
 def test_jupyter():
     if "IPython" not in sys.modules:
-        return false
+        return False
     ipy = sys.modules["IPython"].core.getipython.get_ipython()
     if ipy.__class__.__name__ != "ZMQInteractiveShell":
         return False

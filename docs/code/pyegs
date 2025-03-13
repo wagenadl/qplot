@@ -41,15 +41,6 @@ def imagefns(func):
     return None
 
 
-def hidedisplay():
-    with os.popen(f"{codepath}/ensurexvfb") as f:
-        txt = f.read().strip()
-        if txt:
-            os.environ["DISPLAY"] = txt
-        else:
-            raise RuntimeError("Cannot create X11 display")
-
-
 def build(func):
     fns = imagefns(func)
     if fns is None:
@@ -78,8 +69,7 @@ def build(func):
         
 
 def main():
-    hidedisplay()
-    
+    qp.qi.Figure.interactive(False)
     funcs = qpd.qplotfunctions()
     for func in funcs:
         build(func)
