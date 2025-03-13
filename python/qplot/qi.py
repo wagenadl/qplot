@@ -5,16 +5,23 @@ import re
 import subprocess
 import time
 from . import utils
+import sys
+
 
 here = "/".join(__file__.replace("\\", "/").split("/")[:-2])
 exe = f"{here}/bin/qplot.exe"
 if not os.path.exists(exe):
     exe = "qplot"
 
+
+    
 class Figure:
+    latest_fn = None
     global_interactive = True
+    
     def interactive(k):
         Figure.global_interactive = k
+        
 
     global_degrees = False
     def use_degrees():
@@ -159,6 +166,7 @@ class Figure:
             self.fd = open(fn, 'wb')
     
         self.write('figsize %g %g\n' % (w,h))
+        Figure.latest_fn = fn
 
     def raise_on_stopped(self):
         if self.pid is None:
@@ -194,6 +202,9 @@ class Figure:
             self.pid.wait()
             self.pid = None
         self.is_pipe = False
+        if self.is_tempfile:
+            os.unlink(self.fn)
+
 
     def tofront(self):
         pass
@@ -225,6 +236,8 @@ class Figure:
             self.write(cmd + '\n')
             self.check_save_success(stt, ofn)
         else:
+            if self.fd is not None:
+                self.fd.flush()
             cmd = ['qplot']
             if reso is not None:
                 cmd.append('-r')
@@ -448,3 +461,33 @@ def refigure(fn, w, h):
     f1.extent = (0, 0, w, h)
     f1.clf()
     return f1
+
+
+def test_jupyter():
+    if "IPython" not in sys.modules:
+        return false
+    ipy = sys.modules["IPython"].core.getipython.get_ipython()
+    if ipy.__class__.__name__ != "ZMQInteractiveShell":
+        return False
+
+        
+    Figure.interactive(False)
+    ipy.events.register("post_run_cell", post_jupyter)
+    print("QPlot running in notebook")
+
+    
+def post_jupyter(ipy):
+    if Figure.latest_fn in figs:
+        f = figs[Figure.latest_fn]
+        (fd1, fn1) = tempfile.mkstemp(suffix='.png')
+        f.save(fn1)
+        disp = sys.modules["IPython"].display
+        disp.display(disp.Image(fn1, retina=True))
+        os.unlink(fn1)
+        f.close()
+        del figs[Figure.latest_fn]
+        Figure.latest_fn is None
+
+
+test_jupyter()
+        
