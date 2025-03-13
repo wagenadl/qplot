@@ -5,14 +5,14 @@ PYREFS: PYEGS
 
 PYEGS: PREP
 	mkdir -p build/html/pyref
-	code/pyegs
+	QT_QPA_PLATFORM=offscreen code/pyegs
 
 OCTREFS: OCTEGS
 	code/octrefs
 
 OCTEGS: PREP
 	mkdir -p build/html/octref
-	code/octegs
+	QT_QPA_PLATFORM=offscreen code/octegs
 
 CSS: PREP
 	/bin/cp -r source/css build/html/

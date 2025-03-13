@@ -165,7 +165,7 @@ class Figure:
                     if "/" not in fn:
                         self.is_tempfile = True
                 self.fn = fn
-            self.fd = open(fn, 'wb')
+            self.fd = open(self.fn, 'wb')
     
         self.write('figsize %g %g\n' % (w,h))
         Figure.latest_fn = fn
