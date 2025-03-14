@@ -18,7 +18,7 @@ CSS: PREP
 	/bin/cp -r source/css build/html/
 
 HOMEEGS: PREP
-	code/homepageegs
+	QT_QPA_PLATFORM=offscreen code/homepageegs
 
 JS: PREP
 	/bin/cp -r source/js build/html/
@@ -40,14 +40,14 @@ PREP:
 	mkdir -p build/html/luts
 	mkdir -p build/html/tutorial
 
-build/html/tutorial1.ipynb: source/tutorial/tutorial1.ipynb
+build/html/tutorial1.ipynb: source/notebooks/tutorial1.ipynb
 	/bin/cp -r $< $@
 
 
 build/html/tutorial1.html: build/tutorial1.html
 	code/rehtml $< $@ "Getting started"
 
-build/tutorial1.html: source/tutorial/tutorial1.ipynb
+build/tutorial1.html: source/notebooks/tutorial1.ipynb
 	code/ipynb2html $< $@ build/html/tutorial
 
 

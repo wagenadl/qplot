@@ -45,13 +45,6 @@ def imagefns(name):
     return None
 
 
-def hidedisplay():
-    with os.popen(f"{codepath}/ensurexvfb") as f:
-        txt = f.read().strip()
-        if txt:
-            os.environ["DISPLAY"] = txt
-        else:
-            raise RuntimeError("Cannot create X11 display")
 
 
 def build(name):
@@ -84,7 +77,6 @@ def build(name):
 def main():
     if not os.path.exists(outpath):
         os.mkdir(outpath)
-    hidedisplay()
     
     names = ["bars", "circ", "ephys", "gline", "imsc"]
     for name in names:

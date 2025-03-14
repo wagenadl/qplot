@@ -6,6 +6,6 @@ debian/files
 *debhelper*
 __pycache__
 .idea
-docs/source/tutorial/*.pdf
+docs/source/notebooks/*.pdf
 .ipynb_checkpoints
 
