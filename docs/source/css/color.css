@@ -270,6 +270,14 @@ h2 {
     border-top: 1px solid #cccccc;
 }
 
+.itick {
+    font-weight: 700;
+}
+
+.reflink {
+
+}
+
 cite {
     font-family: "Noto Sans", sans-serif;
     font-weight: 450;

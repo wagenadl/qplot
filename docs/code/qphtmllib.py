@@ -4,7 +4,7 @@ import time
 
 
 sections = [("Installation", "installation.html"),
-            ("Gallery", "gallery/index.html"),
+            ("Getting started", "tutorial1.html"),
             ("Python functions", "pyref/index.html"),
             ("Octave functions", "octref/index.html"),
             ("Color maps", "luts/index.html"),

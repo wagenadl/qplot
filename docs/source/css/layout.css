@@ -440,3 +440,9 @@ img.lut-half {
 p {
     margin-top: 10px;
 }
+
+img.align-center {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
