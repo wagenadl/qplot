@@ -28,6 +28,8 @@ REST: PREP build/html/index.html \
 	build/html/installation.html \
 	build/html/tutorial1.html \
 	build/html/tutorial1.ipynb \
+	build/html/eg_ephys.html \
+	build/html/eg_ephys.ipynb \
 	build/html/octref/index.html
 
 LUTS: PREP build/html/luts/index.html
@@ -40,14 +42,17 @@ PREP:
 	mkdir -p build/html/luts
 	mkdir -p build/html/images
 
-build/html/tutorial1.ipynb: source/notebooks/tutorial1.ipynb
+build/html/%.ipynb: source/notebooks/%.ipynb
 	/bin/cp -r $< $@
 
 
 build/html/tutorial1.html: build/tutorial1.html
 	code/rehtml $< $@ "Getting started"
 
-build/tutorial1.html: source/notebooks/tutorial1.ipynb
+build/html/eg_%.html: build/eg_%.html
+	code/rehtml $< $@ "Example code"
+
+build/%.html: source/notebooks/%.ipynb
 	code/ipynb2html $< $@ build/html/images
 
 
