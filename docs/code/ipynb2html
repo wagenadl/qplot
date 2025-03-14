@@ -26,13 +26,10 @@ import base64
 sys.path.append("./code")
 
 
-
-
 def loadipynb(ifn):
     with open(ifn, "r") as fd:
         ipynb = json.load(fd)
     return ipynb
-
 
 
 qpre = re.compile(r"qp\.([a-z]+)")
@@ -110,48 +107,40 @@ def writepy(src, fd):
     fd.write("""</pre>\n\n""")
 
     
-def writeout(src, uid, fd, imgdir):
+def writeout(src, uid, fd, imgdir, leafbase, imgmap):
     xx = imgdir.split("/")
     reldir = "/".join(xx[2:])
     for s1 in src:
         if "data" in s1:
             if "image/png" in s1["data"]:
+                n = len(imgmap) + 1
+                imgfn = f"{leafbase}-{n}.png"
+                imgmap[uid] = n
                 data = base64.b64decode(s1["data"]["image/png"])
-                with open(f"{imgdir}/{uid}.png", "wb") as imgfd:
+                with open(f"{imgdir}/{imgfn}", "wb") as imgfd:
                     imgfd.write(data)
                 width = s1["metadata"]["image/png"]["width"]
                 height = s1["metadata"]["image/png"]["height"]
                 fd.write("\n")
-                fd.write(f"""<img src="{reldir}/{uid}.png" width="{width}px" class="align-center">""")
+                fd.write(f"""<img src="{reldir}/{imgfn}" width="{width}px" class="align-center">""")
 
                                            
 
 
 def saverst(cells, ofn, imgdir):
+    leafbase = ofn.split("/")[-1].split(".")[0]
+    imgmap = {}
     with open(ofn, "w") as fd:
         for cel in cells:
             if cel["cell_type"] == "markdown":
                 writemd(cel["source"], fd)
             elif cel["cell_type"] == "code":
                 writepy(cel["source"], fd)
-                writeout(cel["outputs"], cel["id"], fd, imgdir)
+                writeout(cel["outputs"], cel["id"], fd, imgdir, leafbase, imgmap)
 
 
-if len(sys.argv) >= 2:
-    ifn = sys.argv[1]
-else:
-    ifn = "source/tutorial/tutorial1.ipynb"
+ifn, ofn, imgdir = sys.argv[1:4]
+
 ipynb = loadipynb(ifn)
-
-
-if len(sys.argv) >= 3:
-    ofn = sys.argv[2]
-else:
-    ofn = "build/tutorial1.rst"
-
-if len(sys.argv) >= 4:
-    imgdir = sys.argv[3]
-else:
-    imgdir = "build/html/tutorial"
 saverst(ipynb["cells"], ofn, imgdir)
 

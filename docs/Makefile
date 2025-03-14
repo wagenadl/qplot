@@ -38,7 +38,7 @@ PREP:
 	mkdir -p build/html/home
 	mkdir -p build/html/octref
 	mkdir -p build/html/luts
-	mkdir -p build/html/tutorial
+	mkdir -p build/html/images
 
 build/html/tutorial1.ipynb: source/notebooks/tutorial1.ipynb
 	/bin/cp -r $< $@
@@ -48,7 +48,7 @@ build/html/tutorial1.html: build/tutorial1.html
 	code/rehtml $< $@ "Getting started"
 
 build/tutorial1.html: source/notebooks/tutorial1.ipynb
-	code/ipynb2html $< $@ build/html/tutorial
+	code/ipynb2html $< $@ build/html/images
 
 
 build/html/index.html: source/index.html
