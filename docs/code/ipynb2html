@@ -1,0 +1,157 @@
+#!/usr/bin/python3
+
+# QPlot - Publication quality 2D graphs with dual coordinate systems
+# Copyright (C) 2014-2023  Daniel Wagenaar
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import sys
+import os
+import re
+import subprocess
+import json
+import base64
+
+sys.path.append("./code")
+
+
+
+
+def loadipynb(ifn):
+    with open(ifn, "r") as fd:
+        ipynb = json.load(fd)
+    return ipynb
+
+
+
+qpre = re.compile(r"qp\.([a-z]+)")
+def link_(mtch):
+    cap = mtch.group()
+    return f"""<a class="reflink" href="pyref/{cap[3:]}.html">{cap}</a>"""
+tickre = re.compile(r"`(.*?)`")
+def itick_(mtch):
+    cap = mtch.group(1)
+    return f"""<span class="itick">{cap}</span>"""
+starre = re.compile(r"\*(.*?)\*")
+def star_(mtch):
+    cap = mtch.group(1)
+    return f"""<i>{cap}</i>"""
+def linksubst(txt):
+    txt = qpre.sub(link_, txt)
+    txt = tickre.sub(itick_, txt)
+    txt = starre.sub(star_, txt)
+    return txt
+
+
+incode = False
+inlist = False
+
+def writemd(src, fd):
+    global incode, inlist
+    def endstuff():
+        global incode, inlist
+        if incode:
+            fd.write("</pre>")
+            incode = False
+        if inlist:
+            fd.write("""</ul>""")
+            inlist = False
+            
+    for line in src:
+        if line.startswith("###"):
+            endstuff()
+            txt = line[3:].strip()
+            fd.write(f"<h3>{txt}</h3>\n")
+            continue
+        if line.startswith("##"):
+            endstuff()
+            txt = line[2:].strip()
+            fd.write(f"<h2>{txt}</h2>\n")
+            continue
+        if line.startswith("#"):
+            endstuff()
+            txt = line[1:].strip()
+            #fd.write(f"<h1>{txt}</h1>\n")
+            continue
+        if line.startswith("      "):
+            if not incode:
+                fd.write("""<pre class="code python literal-block">""")
+                incode = True
+            fd.write(linksubst(line))
+            continue
+        if line.startswith("* "):
+            if not inlist:
+                fd.write("""<ul>""")
+                inlist = True
+            fd.write(f"""<li>{linksubst(line[2:])}</li>""")
+            continue
+        endstuff()
+        fd.write("<p>" + linksubst(line))
+    fd.write("\n\n")
+
+    
+def writepy(src, fd):
+    if not src:
+        return
+    fd.write("""<pre class="code python literal-block">""")
+    for line in src:
+        fd.write("    " + linksubst(line))
+    fd.write("""</pre>\n\n""")
+
+    
+def writeout(src, uid, fd, imgdir):
+    xx = imgdir.split("/")
+    reldir = "/".join(xx[2:])
+    for s1 in src:
+        if "data" in s1:
+            if "image/png" in s1["data"]:
+                data = base64.b64decode(s1["data"]["image/png"])
+                with open(f"{imgdir}/{uid}.png", "wb") as imgfd:
+                    imgfd.write(data)
+                width = s1["metadata"]["image/png"]["width"]
+                height = s1["metadata"]["image/png"]["height"]
+                fd.write("\n")
+                fd.write(f"""<img src="{reldir}/{uid}.png" width="{width}px" class="align-center">""")
+
+                                           
+
+
+def saverst(cells, ofn, imgdir):
+    with open(ofn, "w") as fd:
+        for cel in cells:
+            if cel["cell_type"] == "markdown":
+                writemd(cel["source"], fd)
+            elif cel["cell_type"] == "code":
+                writepy(cel["source"], fd)
+                writeout(cel["outputs"], cel["id"], fd, imgdir)
+
+
+if len(sys.argv) >= 2:
+    ifn = sys.argv[1]
+else:
+    ifn = "source/tutorial/tutorial1.ipynb"
+ipynb = loadipynb(ifn)
+
+
+if len(sys.argv) >= 3:
+    ofn = sys.argv[2]
+else:
+    ofn = "build/tutorial1.rst"
+
+if len(sys.argv) >= 4:
+    imgdir = sys.argv[3]
+else:
+    imgdir = "build/html/tutorial"
+saverst(ipynb["cells"], ofn, imgdir)
+

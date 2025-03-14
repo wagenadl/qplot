@@ -8,7 +8,7 @@ def alldigits(x):
         return True
     else:
         return False
-alldigits.regex = re.compile('^\d+$')
+alldigits.regex = re.compile(r'^\d+$')
 
 def isempty(x):
     if x is None:

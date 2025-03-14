@@ -26,18 +26,22 @@ def imagefns(name):
     obase = f"{outpath}/eg_{name}"
     pngfn = f"{obase}.png"
     pdffn = f"{obase}.pdf"
+    opyfn = f"{obase}.py"
     if not os.path.exists(ifn):
         print("No example for", name)
         return None
-    if not os.path.exists(pngfn) or not os.path.exists(pdffn):
-        return ifn, pngfn, pdffn
+    if (not os.path.exists(pngfn) or not os.path.exists(pdffn) 
+            or not os.path.exists(opyfn)):
+        return ifn, pngfn, pdffn, opyfn
     stpy = os.stat(ifn)
     stpng = os.stat(pngfn)
     stpdf = os.stat(pdffn)
-    if stpng.st_size==0 or stpdf.st_size==0 \
-           or stpy.st_mtime > stpng.st_mtime \
-           or stpy.st_mtime > stpdf.st_mtime:
-       return ifn, pngfn, pdffn
+    stopy = os.stat(opyfn)
+    if (stpng.st_size==0 or stpdf.st_size==0 
+           or stpy.st_mtime > stpng.st_mtime 
+           or stpy.st_mtime > stpdf.st_mtime
+           or stpy.st_mtime > stopy.st_mtime):
+        return ifn, pngfn, pdffn, opyfn
     return None
 
 
@@ -55,7 +59,7 @@ def build(name):
     if fns is None:
         return
     print("building example", name)
-    ifn, pngfn, pdffn = fns
+    ifn, pngfn, pdffn, opyfn = fns
     with open(ifn) as f:
         txt = f.read()
         txt = "\n".join([line for line in txt.split("\n")
@@ -75,7 +79,7 @@ def build(name):
             if os.path.exists(pdffn):
                 os.unlink(pdffn)
             #os.system(f"touch {pngfn}")
-        
+        os.system(f"/bin/cp {ifn} {opyfn}")
 
 def main():
     if not os.path.exists(outpath):
