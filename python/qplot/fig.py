@@ -21,19 +21,51 @@
 # ylim
 
 import numpy as np
+import numbers
 from . import qi
 from . import style
 from . import utils
 import os
 
-def figure(fn=None, w=5, h=None):
+def figure(fn=None, w=None, h=None, unit="in"):
     '''FIGURE - Open a QPlot figure
     FIGURE(fn, w, h) opens a new QPLOT figure with given filename and size
     in inches. If H is omitted, H defaults to 3/4 W. If W is also omitted,
     W defaults to 5 inches.
 
     fn = FIGURE('', w, h) opens a new QPlot figure of given size (in inches)
-    with a temporary filename.'''
+    with a temporary filename.
+
+    Optional argument UNIT specifies alternative units. FIGURE
+    understands inch, mm, cm, and pt.
+
+    As a convenience, fn = FIGURE(w, h) also works
+
+    '''
+    
+    if h is None and isinstance(fn, numbers.Number):
+        h = w
+        w = fn
+        fn = None
+    if w is None:
+        w = 5
+    if h is None:
+        h = 0.75 * w
+
+    if unit=="in" or unit=="inch":
+        pass
+    elif unit=="cm":
+        w = w / 2.54
+        h = h / 2.54
+    elif unit=="mm":
+        w = w / 25.4
+        h = h / 25.4
+    elif unit=="pt":
+        w = w / 72
+        h = h / 72
+    else:
+        raise ValueError("Unknown unit")
+    
     if qi.figisopen(fn):
         qi.f = qi.refigure(fn, w, h)
     else:

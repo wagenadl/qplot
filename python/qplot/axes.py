@@ -690,7 +690,8 @@ def xcaxis(title='', ticks=None, labels=None, y=0, lim=None, flip=False,
         axshift = -axshift
         lbldist = -lbldist
         ttldist = -ttldist
-    
+
+    ticks = np.array(ticks)
     btwnx = (ticks[0:-1] + ticks[1:])/2
     if lim is None:
         avg = np.mean(np.diff(ticks))
