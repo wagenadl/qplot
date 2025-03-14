@@ -18,7 +18,7 @@
 
 import sys
 import os
-import regex
+import re
 import subprocess
 import json
 import base64
@@ -35,15 +35,15 @@ def loadipynb(ifn):
 
 
 
-qpre = regex.compile(r"qp\.([a-z]+)")
+qpre = re.compile(r"qp\.([a-z]+)")
 def link_(mtch):
     cap = mtch.group()
     return f"""<a class="reflink" href="pyref/{cap[3:]}.html">{cap}</a>"""
-tickre = regex.compile(r"`(.*?)`")
+tickre = re.compile(r"`(.*?)`")
 def itick_(mtch):
     cap = mtch.group(1)
     return f"""<span class="itick">{cap}</span>"""
-starre = regex.compile(r"\*(.*?)\*")
+starre = re.compile(r"\*(.*?)\*")
 def star_(mtch):
     cap = mtch.group(1)
     return f"""<i>{cap}</i>"""
