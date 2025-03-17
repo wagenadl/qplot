@@ -272,9 +272,13 @@ h2 {
     font-weight: 410;
     font-size: 100%;
     font-style: normal;
-    background-color: #ffffdd;
+    background-color: #ffffe2;
     border-bottom: 2px solid #cccccc;
     border-top: 1px solid #cccccc;
+}
+
+code {
+        font-family: "Noto Sans", sans-serif;
 }
 
 .itick {
@@ -297,4 +301,30 @@ u {
     text-decoration: none;
     margin-left: -1px;
     margin-right: -1px;
+}
+
+p.comment {
+    color: #007979;
+    font-style: italic;
+}
+
+.egimage {
+    border-bottom: 2px solid #cccccc;
+    border-top: 1px solid #cccccc;
+}
+
+
+.egouterblock {
+    background-color: #ffffe2;
+}
+
+div.outimg {
+    border-top: 1px solid #cccccc;
+    padding-top: 10px;
+    padding-bottom: 5px;
+}
+
+div.outimg img {
+       border-top: 1px solid #cccccc;
+    border-bottom: 2px solid #cccccc;
 }

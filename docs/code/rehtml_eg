@@ -59,7 +59,7 @@ def document(body, base):
     html += "<html>"
     html += qph.head(title, 1)
     html += """<body class="language-python">"""
-    html += f"""<script src="../css/prism.js"></script>"""
+#    html += f"""<script src="../css/prism.js"></script>"""
     html += '<div class="contents">'
     html += qph.sidebar(crumbs, sibs, dirlevel=1)
     html += '<div id="central">'

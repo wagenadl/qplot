@@ -217,16 +217,20 @@ body {
     padding-bottom: 5px;
 }
 
-.egtopline, .egbottomline {
+.egtopline {
     height: 1px;
+}
+.egbottomline {
+    height: 2px;
 }
 .pylinkline {
     height: 0px;
 }
 .egimagetopline, .egimagebottomline {
     display: inline-block;
-    height: 25px;
-    width: 6px;
+    /*height: 25px;
+      width: 6px;*/
+    height: 0px; width: 0px;
     padding: 0px;
 }
 .egimagetopline {
@@ -270,7 +274,7 @@ body {
 .egimage {
     display: block;
     padding: 0px;
-    margin: auto 0px 6px auto;
+    margin: auto 12px 12px auto;
     line-height: 0px;
 }
 
@@ -330,7 +334,7 @@ body {
 
     
 
-p.eg {
+p.eg, p.comment {
     padding-top: 0px;
     padding-bottom: 0px;
     margin-top: 2px;
@@ -381,6 +385,9 @@ p {
     margin-top: 0px;
     margin-bottom: 5px;
 }
+li {
+    margin-bottom: 8px;
+}
 
 h1 {
     padding: 0px;
@@ -395,7 +402,7 @@ h2 {
 }
 
 .literal-block {
-    margin-left: 10px;
+    margin-left: 0px;
     margin-right: 10px;
     padding: 5px 20px 5px 20px;
 }
@@ -441,8 +448,7 @@ p {
     margin-top: 10px;
 }
 
-img.align-center {
-    margin-left: auto;
-    margin-right: auto;
-    display: block;
+div.outimg {
+    margin-top: 15px;
+    text-align: center;
 }

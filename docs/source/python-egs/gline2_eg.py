@@ -9,4 +9,4 @@ qp.marker('o', fill='solid')
 qp.mark(xx, yy)
 
 N=len(xx)
-qp.gline2([qp.AbsData(xx, yy), qp.Retract(10)])
+qp.gline2(qp.AbsData(xx, yy), qp.Retract(10))

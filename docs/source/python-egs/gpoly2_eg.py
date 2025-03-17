@@ -12,7 +12,7 @@ qp.brush('r', .5)
 xxx = np.stack((xx, np.flip(xx, 0)))
 yyy = np.stack((0*xx+36, 0*xx+72))
 
-qp.gpoly2([qp.AbsData(xxx, np.sin(xxx)),
-           qp.RelPaper(0*xxx, yyy)])
+qp.gpoly2(qp.AbsData(xxx, np.sin(xxx)),
+           qp.RelPaper(0*xxx, yyy))
 
 

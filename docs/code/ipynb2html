@@ -32,11 +32,11 @@ def loadipynb(ifn):
     return ipynb
 
 
-qpre = re.compile(r"qp\.([a-z]+)")
+qpre = re.compile(r"qp\.([a-zA-z][A-Za-z0-9]+)")
 def link_(mtch):
     # Replace qp.xxxx with a link
     cap = mtch.group()
-    return f"""<a class="reflink" href="pyref/{cap[3:]}.html">{cap}</a>"""
+    return f"""<a class="reflink" href="../pyref/{cap[3:]}.html">{cap}</a>"""
 tickre = re.compile(r"`(.*?)`")
 def itick_(mtch):
     # Replace `xxxx` with a custom span
@@ -70,6 +70,8 @@ def writemd(src, fd):
             inlist = False
             
     for line in src:
+        if line.strip()=="":
+            continue
         if line.startswith("###"):
             endstuff()
             txt = line[3:].strip()
@@ -92,23 +94,32 @@ def writemd(src, fd):
             fd.write(linksubst(line[6:], incode))
             continue
         if line.startswith("* "):
+            if incode:
+                fd.write("</code></pre>")
+                incode = False                
             if not inlist:
                 fd.write("""<ul>""")
                 inlist = True
             fd.write(f"""<li>{linksubst(line[2:])}</li>""")
             continue
-        endstuff()
+        if line.strip() != "":
+            endstuff()
         fd.write("<p>" + linksubst(line))
     fd.write("\n\n")
 
     
-def writepy(src, fd):
-    if not src:
-        return
-    fd.write("""<pre class="code python literal-block"><code>""")
+def writepy(src, fd, leaveopen=False):
+    fd.write("""<div class="code python literal-block"><code>""")
     for line in src:
-        fd.write(linksubst(line, True))
-    fd.write("""</code></pre>\n\n""")
+        if line.strip()=="":
+            fd.write("""<p class="empty"></p>\n""")
+        elif line.strip().startswith("#"):
+            fd.write(f"""<p class="comment">{linksubst(line, True)}</p>\n""")
+        else:
+            fd.write(f"""<p class="eg">{linksubst(line, True)}</p>\n""")
+    fd.write("""</code>""")
+    if not leaveopen:
+        fd.write("""</div>\n\n""")
 
     
 def writeout(src, uid, fd, imgdir, leafbase, imgmap):
@@ -125,8 +136,9 @@ def writeout(src, uid, fd, imgdir, leafbase, imgmap):
                     imgfd.write(data)
                 width = s1["metadata"]["image/png"]["width"]
                 height = s1["metadata"]["image/png"]["height"]
-                fd.write("\n")
-                fd.write(f"""<img src="../{reldir}/{imgfn}" width="{width}px" class="align-center">""")
+                fd.write("""\n<div class="outimg">""")
+                fd.write(f"""<img src="../{reldir}/{imgfn}" width="{width}px">""")
+                fd.write("""</div>\n""")
 
                                            
 
@@ -139,8 +151,11 @@ def saverst(cells, ofn, imgdir):
             if cel["cell_type"] == "markdown":
                 writemd(cel["source"], fd)
             elif cel["cell_type"] == "code":
-                writepy(cel["source"], fd)
+                if "\n".join(cel["source"]).strip() == "":
+                    continue
+                writepy(cel["source"], fd, True)
                 writeout(cel["outputs"], cel["id"], fd, imgdir, leafbase, imgmap)
+                fd.write("""</div>\n""")
 
 
 ifn, ofn, imgdir = sys.argv[1:4]

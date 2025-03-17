@@ -162,6 +162,13 @@ def pmark(xx, yy):
     qi.f.writedbl(yy)
 
 def AbsData(x, y):
+    """ABSDATA - Specify absolute data coordinates for GLINE and friends
+    ABSDATA(x, y) specifies absolute data coordinates for a single
+    point in GLINE and GPOLY.
+    ABSDATA(xx, yy) specifies absolute data coordinates for a vector
+    of points for GLINE2 and GPOLY2.
+    
+    """
     qi.ensure()
     x = qi.f.xtransform(x)
     y = qi.f.ytransform(y)
@@ -169,32 +176,68 @@ def AbsData(x, y):
     return ('absdata', x, y)
 
 def RelData(x, y):
+    """RELDATA - Specify relative data coordinates for GLINE and friends
+    RELDATA(x, y) specifies relative data coordinates for a single
+    point in GLINE and GPOLY.
+    RELDATA(xx, yy) specifies relative data coordinates for a vector
+    of points for GLINE2 and GPOLY2.
+    """
     return ('reldata', x, y)
 
 def AbsPaper(x, y):
+    """ABSPAPER - Specify absolute paper coordinates for GLINE and friends
+    ABSPAPER(x, y) specifies absolute paper coordinates for a single
+    point in GLINE and GPOLY.
+    ABSPAPER(xx, yy) specifies absolute paper coordinates for a vector
+    of points for GLINE2 and GPOLY2.    """
     return ('abspaper', x, y)
 
 def RelPaper(x, y):
+    """RELPAPER - Specify relative paper coordinates for GLINE and friends
+    RELPAPER(x, y) specifies relative paper coordinates for a single
+    point in GLINE and GPOLY.
+    RELPAPER(xx, yy) specifies relative paper coordinates for a vector
+    of points for GLINE2 and GPOLY2.
+    """
     return ('relpaper', x, y)
 
 def RotData(xi, eta):
+    """ROTDATA - Specify rotation in data coordinates for GLINE and friends
+    ROTDATA(xi, eta) rotates counterclockwise by tan⁻¹(ETA/XI)."""
     return ('rotdata', xi, eta)
 
 def RotPaper(phi):
+    """ROTPAPER - Specify rotation in paper coordinates for GLINE and friends
+    ROTPAPER(phi) rotates clockwise by PHI degrees on the page"""
     return ('rotpaper', phi)
 
 def Retract(l1, l2=None):
+    """RETRACT - Specify retraction for GLINE and friends
+    RETRACT(L1) retracts by L1 postscript points from preceding and
+    following points.
+    RETRACT(L1, L2) specifies retraction amounts separately."""    
     if l2 is None:
         l2 = l1
     return ('retract', l1, l2)
 
 def At(id):
+    """AT - Specify position relative to other object for GLINE and friends
+    AT(id) uses the anchor set by a (lowercase) qp.at function for a point
+    location. Not supported for GLINE2 and GPOLY2."""
     return ('at', id)
 
 def AtX(id):
+    """ATX - Specify position relative to other object for GLINE and friends
+    ATX(id) uses the x-coordinate of the anchor set by a (lowercase) qp.at
+    function for a point location. This does not affect the y-coordinate.
+    Not supported for GLINE2 and GPOLY2."""
     return ('atx', id)
 
 def AtY(id):
+    """ATY - Specify position relative to other object for GLINE and friends
+    ATY(id) uses the y-coordinate of the anchor set by a (lowercase) qp.at
+    function for a point location. This does not affect the x-coordinate.
+    Not supported for GLINE2 and GPOLY2.    """
     return ('aty', id)
 
 def gline(ptspecs):
@@ -233,14 +276,14 @@ def gline(ptspecs):
     attractive for general usage. The same applies to GPOLY versus FILL 
     and POLY. 
     
-    See also SHIFTEDLINE and GLINE2.'''
+    See also SHIFTEDLINE, GPOLY, and GLINE2.'''
     _gline('gline', ptspecs)
 
 def gline2(*vglcs):
     '''GLINE2 - Generalized line drawing
-    QGLINE(cmd1, cmd2, ...) specifies a line in mixed data and paper 
+    GLINE2(cmd1, cmd2, ...) specifies a line in mixed data and paper 
     coordinates. Commands are as in GLINE, but in this case their arguments
-    are vectors. GLINE2 does not support the AT, ATX, and ATY commands.
+    are vectors. GLINE2 does not support the At, AtX, and AtY commands.
 
     For instance,
 
@@ -249,7 +292,9 @@ def gline2(*vglcs):
     Draws a line from 5 pt to the right of the point (0, 1) in the graph
     to 7 pt below the point (2, 3) in the graph. (Note that paper 
     y-coordinates increase toward the bottom of the graph while data
-    y-coordinates increase toward the top.)'''
+    y-coordinates increase toward the top.)
+
+    See also GPOLY2.'''
     
     if len(vglcs)==1 and type(vglcs[0])==list:
         vgcs = vglcs[0] # For compatibility with old syntax, unpack list

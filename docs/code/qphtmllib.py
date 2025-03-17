@@ -331,8 +331,8 @@ class PyDoc:
                 elif nopen < nclose:
                     inargs = False
 
-            if ishigh and lobit==self.func:
-                self.out += f'<span class="mefunc">{lobit}</span>'
+            if ishigh and lobit==self.func.lower():
+                self.out += f'<span class="mefunc">{self.func}</span>'
                 gotfunc = True
             elif ishigh and lobit in self.mykeywords:
                 self.out += f'<span class="pykw">{lobit}</span>'

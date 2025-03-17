@@ -98,6 +98,16 @@ gline2
 gpoly
 gpoly2
 gimage
+AbsData
+RelData
+RotData
+AbsPaper
+RelPaper
+RotPaper
+Retract
+At
+AtX
+AtY
 
 Grouping:
 endgroup

@@ -34,7 +34,7 @@ def docstring(funcname):
 def tagline(funcname):
     doc = docstring(funcname)
     if not doc.startswith(funcname.upper()):
-        raise ValueError(f"Unexpected tagline for {funcname}")
+        raise ValueError(f"Unexpected tagline for {funcname}: {doc}")
     title = doc.split("\n")[0]
     title = title[len(funcname):]
     if title.startswith(" - "):

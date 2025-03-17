@@ -122,9 +122,6 @@ def sectiondoc(sec, funcs, sibs, subsibs):
     html += '<div class="contents">'
     crumbs = [("Python functions", "index.html")]
     crumbs.append((sec, None))
-    print("crumbs", crumbs)
-    print("sibs", sibs)
-    print("subsibs", subsibs)
     html += qph.sidebar(crumbs, [sibs, subsibs])
     html += '<div id="central">'
     html += qph.header()
@@ -137,8 +134,6 @@ def sectiondoc(sec, funcs, sibs, subsibs):
     html += '<div id="rightspace"></div>'
     html += '</div>\n' # contents
     return html
-
-
 
 
 def indexdoc(org, sibs):
@@ -176,7 +171,6 @@ def indexdoc(org, sibs):
     html += '<div id="rightspace"></div>'
     html += '</div>\n' # contents
     return html
-
 
     
 def main():
