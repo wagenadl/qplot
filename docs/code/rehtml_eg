@@ -29,20 +29,39 @@ import qppydoclib as qpd
 import qphtmllib as qph
 
 
+examples = [("Electrophysiology", "eg_ephys"),
+            ("Image data", "eg_imsc"),
+            ("Bar graph", "eg_bars"),
+            ("Polar plot", "eg_circ"),
+            ("Data and guides", "eg_gline")
+            ]
+
+
+
 def readhtml(ifn):
     with open(ifn, "r") as fd:
         body = fd.read()
     return body
 
 
-def document(body, title):
+def document(body, base):
+    eg_dct = {fn: ttl for ttl, fn in examples}
+    eg_sibs = [(ttl, f"{fn}.html") for ttl, fn in examples]
+    crumbs = [("Getting started", "index.html")]
+    if base.startswith("eg_"):
+        title = "Example: " + eg_dct[base]
+        crumbs.append((eg_dct[base], None))
+        sibs = [eg_sibs]
+    else:
+        title = crumbs[0][0]
+        sibs = [eg_sibs]
     html = qph.doctype()
     html += "<html>"
-    html += qph.head(title, 0)
-    html += "<body>"
+    html += qph.head(title, 1)
+    html += """<body class="language-python">"""
+    html += f"""<script src="../css/prism.js"></script>"""
     html += '<div class="contents">'
-    crumbs = [(title, None)]
-    html += qph.sidebar(crumbs, dirlevel=0)
+    html += qph.sidebar(crumbs, sibs, dirlevel=1)
     html += '<div id="central">'
     html += qph.header()
     html += qph.idxtitleblock(title)
@@ -59,9 +78,9 @@ def document(body, title):
 def main():
     ifn = sys.argv[1]
     ofn = sys.argv[2]
-    title = " ".join(sys.argv[3:])
+    base = ifn.split("/")[-1].split(".")[0]
     body = readhtml(ifn)
-    html = document(body, title)
+    html = document(body, base)
     with open(ofn, "w") as fd:
         fd.write(html)
 

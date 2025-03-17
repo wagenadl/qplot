@@ -26,10 +26,18 @@ JS: PREP
 
 REST: PREP build/html/index.html \
 	build/html/installation.html \
-	build/html/tutorial1.html \
-	build/html/tutorial1.ipynb \
-	build/html/eg_ephys.html \
-	build/html/eg_ephys.ipynb \
+	build/html/examples/tutorial1.html \
+	build/html/examples/tutorial1.ipynb \
+	build/html/examples/eg_ephys.html \
+	build/html/examples/eg_ephys.ipynb \
+	build/html/examples/eg_circ.html \
+	build/html/examples/eg_circ.ipynb \
+	build/html/examples/eg_bars.html \
+	build/html/examples/eg_bars.ipynb \
+	build/html/examples/eg_gline.html \
+	build/html/examples/eg_gline.ipynb \
+	build/html/examples/eg_imsc.html \
+	build/html/examples/eg_imsc.ipynb \
 	build/html/octref/index.html
 
 LUTS: PREP build/html/luts/index.html
@@ -41,18 +49,19 @@ PREP:
 	mkdir -p build/html/octref
 	mkdir -p build/html/luts
 	mkdir -p build/html/images
+	mkdir -p build/html/examples
 
-build/html/%.ipynb: source/notebooks/%.ipynb
+build/html/examples/%.ipynb: source/notebooks/%.ipynb
 	/bin/cp -r $< $@
 
 
-build/html/tutorial1.html: build/tutorial1.html
-	code/rehtml $< $@ "Getting started"
+build/html/examples/tutorial1.html: build/tutorial1.html code/rehtml_eg
+	code/rehtml_eg $< $@
 
-build/html/eg_%.html: build/eg_%.html
-	code/rehtml $< $@ "Example code"
+build/html/examples/eg_%.html: build/eg_%.html code/rehtml_eg
+	code/rehtml_eg $< $@
 
-build/%.html: source/notebooks/%.ipynb
+build/%.html: source/notebooks/%.ipynb code/ipynb2html
 	code/ipynb2html $< $@ build/html/images
 
 

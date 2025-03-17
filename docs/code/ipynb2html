@@ -34,20 +34,24 @@ def loadipynb(ifn):
 
 qpre = re.compile(r"qp\.([a-z]+)")
 def link_(mtch):
+    # Replace qp.xxxx with a link
     cap = mtch.group()
     return f"""<a class="reflink" href="pyref/{cap[3:]}.html">{cap}</a>"""
 tickre = re.compile(r"`(.*?)`")
 def itick_(mtch):
+    # Replace `xxxx` with a custom span
     cap = mtch.group(1)
-    return f"""<span class="itick">{cap}</span>"""
+    return f"""<code class="itick">{cap}</code>"""
 starre = re.compile(r"\*(.*?)\*")
 def star_(mtch):
+    # replace *xxx* with italic
     cap = mtch.group(1)
     return f"""<i>{cap}</i>"""
-def linksubst(txt):
+def linksubst(txt, code=False):
     txt = qpre.sub(link_, txt)
-    txt = tickre.sub(itick_, txt)
-    txt = starre.sub(star_, txt)
+    if not code:
+        txt = tickre.sub(itick_, txt)
+        txt = starre.sub(star_, txt)
     return txt
 
 
@@ -59,7 +63,7 @@ def writemd(src, fd):
     def endstuff():
         global incode, inlist
         if incode:
-            fd.write("</pre>")
+            fd.write("</code></pre>")
             incode = False
         if inlist:
             fd.write("""</ul>""")
@@ -83,9 +87,9 @@ def writemd(src, fd):
             continue
         if line.startswith("      "):
             if not incode:
-                fd.write("""<pre class="code python literal-block">""")
+                fd.write("""<pre class="code python literal-block"><code>""")
                 incode = True
-            fd.write(linksubst(line))
+            fd.write(linksubst(line[6:], incode))
             continue
         if line.startswith("* "):
             if not inlist:
@@ -101,10 +105,10 @@ def writemd(src, fd):
 def writepy(src, fd):
     if not src:
         return
-    fd.write("""<pre class="code python literal-block">""")
+    fd.write("""<pre class="code python literal-block"><code>""")
     for line in src:
-        fd.write("    " + linksubst(line))
-    fd.write("""</pre>\n\n""")
+        fd.write(linksubst(line, True))
+    fd.write("""</code></pre>\n\n""")
 
     
 def writeout(src, uid, fd, imgdir, leafbase, imgmap):
@@ -122,7 +126,7 @@ def writeout(src, uid, fd, imgdir, leafbase, imgmap):
                 width = s1["metadata"]["image/png"]["width"]
                 height = s1["metadata"]["image/png"]["height"]
                 fd.write("\n")
-                fd.write(f"""<img src="{reldir}/{imgfn}" width="{width}px" class="align-center">""")
+                fd.write(f"""<img src="../{reldir}/{imgfn}" width="{width}px" class="align-center">""")
 
                                            
 

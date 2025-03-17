@@ -87,6 +87,13 @@ body {
     /* font-style: italic; */
 }
 
+.qp {
+    font-weight: normal;
+}
+
+.qp a:link {
+    font-weight: bold;
+}
 .mefunc {
     font-weight: bold;
     color: #bb0000;
@@ -266,7 +273,7 @@ h2 {
     font-size: 100%;
     font-style: normal;
     background-color: #ffffdd;
-    border-bottom: 1px solid #cccccc;
+    border-bottom: 2px solid #cccccc;
     border-top: 1px solid #cccccc;
 }
 
@@ -275,7 +282,7 @@ h2 {
 }
 
 .reflink {
-
+    font-weight: 700;
 }
 
 cite {

@@ -58,7 +58,7 @@ def document(func, org, secsibs, funcsibs):
     html = qph.doctype()
     html += "<html>"
     html += qph.head(func)
-    html += "<body>"
+    html += """<body>"""
     html += '<div class="contents">'
     crumbs = [("Python functions", "index.html")]
     section = findinorg(func, org)
@@ -122,6 +122,9 @@ def sectiondoc(sec, funcs, sibs, subsibs):
     html += '<div class="contents">'
     crumbs = [("Python functions", "index.html")]
     crumbs.append((sec, None))
+    print("crumbs", crumbs)
+    print("sibs", sibs)
+    print("subsibs", subsibs)
     html += qph.sidebar(crumbs, [sibs, subsibs])
     html += '<div id="central">'
     html += qph.header()

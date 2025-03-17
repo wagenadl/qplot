@@ -10,8 +10,6 @@ qp.marker('o', 3, 'solid')
 qp.mark(xx, yy)
 
 qp.pen('777')
-for n in range(len(xx)-1):
-    qp.gline([[qp.AbsData(xx[n],yy[n]), qp.Retract(5)],
-              [qp.AbsData(xx[n+1],yy[n+1]), qp.Retract(5)]])
+qp.gline2(qp.AbsData(xx, yy), qp.Retract(5))
 
 qp.shrink()

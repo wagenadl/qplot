@@ -4,11 +4,12 @@ import time
 
 
 sections = [("Installation", "installation.html"),
-            ("Getting started", "tutorial1.html"),
+            ("Getting started", "examples/tutorial1.html"),
             ("Python functions", "pyref/index.html"),
             ("Octave functions", "octref/index.html"),
             ("Color maps", "luts/index.html"),
             ]
+
 
 funcs = []
 def setfuncs(fu):
@@ -36,12 +37,14 @@ def head(ttl, depth=1):
     return f"""<head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <script src="{jspath}/docs.js"></script>
-    <link rel="stylesheet" href="{csspath}/layout.css" type="text/css">
-    <link rel="stylesheet" href="{csspath}/color.css" type="text/css">
+    <link rel="stylesheet" href="{csspath}/layout.css">
+    <link rel="stylesheet" href="{csspath}/color.css">
+    <link rel="stylesheet" href="{csspath}/prism.css">
     {headfonts()}
     <title>QPlot: {ttl}</title>
     </head>
     """
+#    <link rel="stylesheet" href="{csspath}/prism.css" type="text/css">
 
 
 def header():
@@ -501,9 +504,9 @@ def pyegline(line, func):
         bit = bits[k]
         if k % 2:
             if bit == "qp." + func:
-                out += f'qp.<span class="mefunc">{func}</span>'
+                out += f'<span class="qp">qp.<span class="mefunc">{func}</span></span>'
             else:
-                out += f'qp.<a href="{bit[3:]}.html">{bit[3:]}</a>'
+                out += f'<span class="qp">qp.<a href="{bit[3:]}.html">{bit[3:]}</a></span>'
         else:
             out += bit
     out = out.replace("-", "<u>-</u>")
