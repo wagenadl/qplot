@@ -236,20 +236,23 @@ def gline(ptspecs):
     See also SHIFTEDLINE and GLINE2.'''
     _gline('gline', ptspecs)
 
-def gline2(vglcs):
+def gline2(*vglcs):
     '''GLINE2 - Generalized line drawing
-    QGLINE([cmd1, cmd2, ...]) specifies a line in mixed data and paper 
+    QGLINE(cmd1, cmd2, ...) specifies a line in mixed data and paper 
     coordinates. Commands are as in GLINE, but in this case their arguments
     are vectors. GLINE2 does not support the AT, ATX, and ATY commands.
 
     For instance,
 
-       gline2([AbsData([0, 2], [1, 3]), RelPaper([5, 0], [0, 7])])
+       gline2(AbsData([0, 2], [1, 3]), RelPaper([5, 0], [0, 7]))
 
     Draws a line from 5 pt to the right of the point (0, 1) in the graph
     to 7 pt below the point (2, 3) in the graph. (Note that paper 
     y-coordinates increase toward the bottom of the graph while data
     y-coordinates increase toward the top.)'''
+    
+    if len(vglcs)==1 and type(vglcs[0])==list:
+        vgcs = vglcs[0] # For compatibility with old syntax, unpack list
     _gline2('gline', vglcs)
 
 def gpoly(ptspecs):
@@ -260,11 +263,13 @@ def gpoly(ptspecs):
 
     _gline('garea', ptspecs)
 
-def gpoly2(vglcs):
+def gpoly2(*vglcs):
     '''GPOLY2 - Generalized area drawing
     GPOLY2 is to FILL and POLY as GLINE2 is to PLOT and LINE.
     
     See GLINE2 for supported commands.'''
+    if len(vglcs)==1 and type(vglcs[0])==list:
+        vgcs = vglcs[0] # For compatibility with old syntax, unpack list
     _gline2('garea', vglcs)
     
 def mm(x=1):
