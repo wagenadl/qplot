@@ -251,7 +251,7 @@ body {
 
 .example {
     padding-left: 30px;
-    min-height: 312px;
+    min-height: 326px;
 }
 
 .egcontainer {
@@ -273,7 +273,6 @@ body {
 
 .egimage {
     display: block;
-    padding: 0px;
     margin: auto 12px 12px auto;
     line-height: 0px;
 }
@@ -452,3 +451,4 @@ div.outimg {
     margin-top: 15px;
     text-align: center;
 }
+
