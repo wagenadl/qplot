@@ -198,7 +198,9 @@ at.ytype = set('top bottom middle abs absolute -'.split(' '))
 def memo(id, x, y):
     '''MEMO - Store a location for later use
     MEMO(id, x, y) stores the location of the data point (x,y) for
-    later use by RECALL.'''
+    later use by RECALL.
+    X and Y may be data coordinates, but more usefully they may be
+    “left”, “center”, “right” for X, or “top”, “middle”, “bottom” for Y.'''
     qi.ensure()
     qi.f.write(f'at {x} {y} {id}\n')
 

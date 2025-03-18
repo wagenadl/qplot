@@ -222,21 +222,21 @@ def Retract(l1, l2=None):
 
 def At(id):
     """AT - Specify position relative to other object for GLINE and friends
-    AT(id) uses the anchor set by a (lowercase) qp.at function for a point
-    location. Not supported for GLINE2 and GPOLY2."""
+    AT(id) uses the anchor set using MEMO as an absolute location on the figure.
+    Not supported for GLINE2 and GPOLY2."""
     return ('at', id)
 
 def AtX(id):
     """ATX - Specify position relative to other object for GLINE and friends
-    ATX(id) uses the x-coordinate of the anchor set by a (lowercase) qp.at
-    function for a point location. This does not affect the y-coordinate.
+    ATX(id) uses the x-coordinate of the anchor set using MEMO
+    as an absolute location on the figure. This does not affect the y-coordinate.
     Not supported for GLINE2 and GPOLY2."""
     return ('atx', id)
 
 def AtY(id):
     """ATY - Specify position relative to other object for GLINE and friends
-    ATY(id) uses the y-coordinate of the anchor set by a (lowercase) qp.at
-    function for a point location. This does not affect the x-coordinate.
+    ATY(id) uses the y-coordinate of the anchor set using MEMO
+    as absolute location on the figure. This does not affect the x-coordinate.
     Not supported for GLINE2 and GPOLY2.    """
     return ('aty', id)
 
@@ -297,7 +297,7 @@ def gline2(*vglcs):
     See also GPOLY2.'''
     
     if len(vglcs)==1 and type(vglcs[0])==list:
-        vgcs = vglcs[0] # For compatibility with old syntax, unpack list
+        vglcs = vglcs[0] # For compatibility with old syntax, unpack list
     _gline2('gline', vglcs)
 
 def gpoly(ptspecs):
@@ -314,7 +314,7 @@ def gpoly2(*vglcs):
     
     See GLINE2 for supported commands.'''
     if len(vglcs)==1 and type(vglcs[0])==list:
-        vgcs = vglcs[0] # For compatibility with old syntax, unpack list
+        vglcs = vglcs[0] # For compatibility with old syntax, unpack list
     _gline2('garea', vglcs)
     
 def mm(x=1):
