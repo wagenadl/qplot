@@ -108,17 +108,7 @@ def createindex():
         f.write(document())
 
         
-def hidedisplay():
-    with os.popen(f"{codepath}/ensurexvfb") as f:
-        txt = f.read().strip()
-        if txt:
-            os.environ["DISPLAY"] = txt
-        else:
-            raise RuntimeError("Cannot create X11 display")
-
-        
 def main():
-    hidedisplay()
     createindex()
     createall()
 

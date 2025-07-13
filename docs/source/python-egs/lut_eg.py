@@ -1,6 +1,6 @@
 import qplot as qp
 import numpy as np
-import matplotlib.pyplot as plt
+import matplotlib as mpl
 
 qp.figure('lut', 3, 3)
 
@@ -27,7 +27,8 @@ qp.cbar()
 qp.shrink(5)
 
 qp.subplot(2,2,3)
-qp.lut(plt.cm.get_cmap('rainbow', 256))
+lut = mpl.colormaps['rainbow'].resampled(256)(range(256))
+qp.lut(lut)
 qp.imsc(zz)
 qp.cbar()
 qp.shrink(5)
