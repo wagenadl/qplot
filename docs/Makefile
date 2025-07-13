@@ -66,10 +66,10 @@ build/%.html: source/notebooks/%.ipynb code/ipynb2html
 
 
 build/html/index.html: source/index.html
-	code/rehtml $< $@ "QPlot 0.6.0 documentation"
+	code/rehtml $< $@ "QPlot 0.6.1 documentation"
 
 build/html/luts/index.html: code/lutdemo.py
-	code/lutdemo.py
+	QT_QPA_PLATFORM=offscreen code/lutdemo.py
 
 
 build/html/installation.html: source/installation.rst

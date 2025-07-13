@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.10.0)
 
 ######################################################################
 # Set the project name and version
-project(QPlot VERSION 0.6.0)
+project(QPlot VERSION 0.6.1)
 set(CMAKE_PROJECT_HOMEPAGE_URL "http://danielwagenaar.net/qplot")
 set(OCTPKG "qplot-${QPlot_VERSION_MAJOR}.${QPlot_VERSION_MINOR}")
 set(PYPKG "qplot")
@@ -24,7 +24,7 @@ endif()
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
-find_package(Qt5 COMPONENTS Widgets Svg PrintSupport REQUIRED)
+find_package(Qt6 COMPONENTS Widgets Svg PrintSupport REQUIRED)
 
 ######################################################################
 # Add the executables
@@ -34,9 +34,9 @@ include(backend/src/CMakeLists.txt)
 target_sources(qplot PRIVATE backend/src/qplot.qrc )
 
 # Libraries to link to - Qt must be mentioned
-target_link_libraries(qplot Qt5::Widgets)
-target_link_libraries(qplot Qt5::Svg)
-target_link_libraries(qplot Qt5::PrintSupport)
+target_link_libraries(qplot Qt6::Widgets)
+target_link_libraries(qplot Qt6::Svg)
+target_link_libraries(qplot Qt6::PrintSupport)
 
 if (WIN32)
   target_link_libraries(qplot secur32.lib)
@@ -48,7 +48,7 @@ configure_file(backend/src/config.h.in config.h)
 
 # Include paths - Qt must be mentioned
 target_include_directories(qplot PUBLIC "${PROJECT_BINARY_DIR}")
-target_include_directories(qplot PUBLIC "${Qt5Widgets_INCLUDE_DIRS}")
+target_include_directories(qplot PUBLIC "${Qt6Widgets_INCLUDE_DIRS}")
 
 ########################################################################
 # Userguide
@@ -72,7 +72,7 @@ if (WIN32)
 #elseif (APPLE)
 #  set(CPACK_GENERATOR "DMG") # NYI
 #
-#  get_target_property(_qmake_executable Qt5::qmake IMPORTED_LOCATION)
+#  get_target_property(_qmake_executable Qt6::qmake IMPORTED_LOCATION)
 #  get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
 #  find_program(MACDEPLOYQT_EXECUTABLE macdeployqt HINTS "${_qt_bin_dir}")
 #  add_custom_command(TARGET myapp POST_BUILD

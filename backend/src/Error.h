@@ -24,6 +24,7 @@
 #define ERROR_H
 
 #include <QTextStream>
+#include <QString>
 
 class Error: public QTextStream {
 public:
