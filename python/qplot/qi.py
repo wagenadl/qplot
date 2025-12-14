@@ -13,7 +13,6 @@ exe = f"{here}/bin/qplot.exe"
 if not os.path.exists(exe):
     exe = "qplot"
 
-
     
 class Figure:
     latest_fn = None
@@ -22,7 +21,6 @@ class Figure:
     def interactive(k):
         Figure.global_interactive = k
         
-
     global_degrees = False
     def use_degrees():
         Figure.global_degrees = True

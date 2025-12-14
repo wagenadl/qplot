@@ -27,19 +27,21 @@ from . import style
 from . import utils
 import os
 
-def figure(fn=None, w=None, h=None, unit="in"):
+def figure(fn=None, w=None, h=None, unit=None):
     '''FIGURE - Open a QPlot figure
-    FIGURE(fn, w, h) opens a new QPLOT figure with given filename and size
-    in inches. If H is omitted, H defaults to 3/4 W. If W is also omitted,
+    
+    FIGURE(fn, w, h) opens a new QPLOT figure with given filename and
+    size. By default, sizes are understood to be specified in
+    millimeters if W >= 25, or in inches if W < 25.
+
+    If H is omitted, H defaults to 3/4 W. If W is also omitted,
     W defaults to 5 inches.
 
-    fn = FIGURE('', w, h) opens a new QPlot figure of given size (in inches)
-    with a temporary filename.
+    fn = FIGURE(w, h) opens a new QPlot figure of given size
+    with a temporary filename, which is returned.
 
     Optional argument UNIT specifies alternative units. FIGURE
-    understands inch, mm, cm, and pt.
-
-    As a convenience, fn = FIGURE(w, h) also works
+    understands 'inch', 'mm', 'cm', and 'pt'.
 
     '''
     
@@ -51,6 +53,12 @@ def figure(fn=None, w=None, h=None, unit="in"):
         w = 5
     if h is None:
         h = 0.75 * w
+
+    if unit is None:
+        if w >= 25:
+            unit = "mm"
+        else:
+            unit = "in"
 
     if unit=="in" or unit=="inch":
         pass
@@ -74,6 +82,7 @@ def figure(fn=None, w=None, h=None, unit="in"):
     if utils.isempty(fn):
         return qi.f.fn
     # Default: return nothing
+    
 
 def select(fn):
     '''SELECT - Select a previously created QPlot figure for more work
@@ -87,6 +96,7 @@ def select(fn):
     else:
         qi.error('No such figure')
 
+        
 def clf():
     '''CLF - Clear current QPlot figure
   CLF clears the current QPlot figure. '''
@@ -95,6 +105,7 @@ def clf():
     else:
         qi.f.clf()
 
+        
 def close(fn=None):
     '''CLOSE - Close a QPlot window
     CLOSE closes the current window.
@@ -118,13 +129,15 @@ def close(fn=None):
     else:
         qi.error('No such figure')
 
+        
 def closeall():
     '''CLOSEALL - Close all QPlot windows'''
     fns = [ f for f in qi.figs ]
     for fn in fns:
         close(fn)
     qi.f = None
-            
+
+    
 def xlim(x0=None, x1=None):
     '''XLIM - Set x-axis limits
     XLIM(x0, x1) or XLIM([x0, x1]) sets x-axis limits in the current panel.
@@ -136,9 +149,9 @@ def xlim(x0=None, x1=None):
     if x1 is None:
         x1 = x0[1]
         x0 = x0[0]
-
     qi.f.write('xlim %g %g\n' % (x0, x1))
 
+    
 def ylim(y0=None, y1=None):
     '''YLIM - Set y-axis limits
     YLIM(y0, y1) or YLIM([y0, y1]) sets y-axis limits in the current panel.
@@ -153,11 +166,13 @@ def ylim(y0=None, y1=None):
     qi.ensure()
     qi.f.write('ylim %g %g\n' % (y0, y1))
 
+    
 def group():
     '''GROUP - Start a group for bounding box collection'''
     qi.ensure()
     qi.f.write('group\n')
 
+    
 def endgroup():
     '''ENDGROUP - End a group for bounding box collection'''
     qi.ensure()
@@ -177,7 +192,6 @@ def _autoid():
     qi.error('Too many panels')
     
     
-
 def panel(id=None, rect=None):
     '''PANEL - Define a new subpanel or reenter a previous one
     PANEL(id, (x, y, w, h)) defines a new panel. 
@@ -261,7 +275,8 @@ def subplot(rows, cols, r=None, c=None):
         id = "%c%c" % (65 + r, 65 + c)
     relpanel(id, (x,y,w,h))
     return id
-    
+
+
 def save(ofn=None, reso=300, qual=95):
     '''SAVE - Saves a qplot figure
     SAVE(ofn) saves the current qplot figure to the named file.
@@ -285,6 +300,7 @@ def save(ofn=None, reso=300, qual=95):
         ofn = pth + '.' + ext
     qi.f.save(ofn, reso, qual)
 
+    
 def shrink(margin=1, ratio=None):
     '''SHRINK - Add margin to QPlot panel
     SHRINK() adds 1 point of margin to the current QPlot panel.
@@ -301,6 +317,7 @@ def shrink(margin=1, ratio=None):
         out.append('%g' % ratio)
     qi.f.write(out)
 
+    
 def commonscale(axis, ids):
     '''COMMONSCALE - Share axis scale between QPlot panels
     COMMONSCALE('xy', ids) shares x and y-axis scales between the named panels.
@@ -384,6 +401,7 @@ def ion():
     See also IOFF.'''
     qi.Figure.interactive(True)
 
+    
 def ioff():
     '''IOFF - Disable interactive rendering
     Subsequently created figures will not show on screen, but
@@ -391,11 +409,13 @@ def ioff():
     See also ION.'''
     qi.Figure.interactive(False)
 
+    
 def degrees():
     '''DEGREES - Specify future angles to AT and HATCH in degrees
     See also RADIANS.'''
     qi.Figure.use_degrees()
 
+    
 def radians():
     '''RADIANS - Specify future angles to AT and HATCH in radians
     Radians are the default.
