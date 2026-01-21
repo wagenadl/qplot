@@ -23,10 +23,14 @@ from . import fig
 from . import style
 import numpy as np
 
+
 def align(*args):
     '''ALIGN - Set text alignment
+    
     ALIGN('left|right|center') specifies horizontal text alignement.
+    
     ALIGN('top|bottom|middle|base') specifies vertical text alignment.
+    
     Horizontal and vertical alignment may be combined in one command.'''
     out = ['align']
     for a in args:
@@ -37,6 +41,7 @@ def align(*args):
     qi.ensure()
     qi.f.write(out)
 align.words = set('left right center top bottom middle base'.split(' '))
+
 
 def _safetext(s):
     s = s.replace('"', '”')
@@ -49,28 +54,37 @@ def _safetext(s):
 
 def reftext(s):
     '''REFTEXT - Set reference text
+
     REFTEXT(text) sets the reference text used for vertical alignment
     of subsequent TEXT commands.'''
 
     qi.ensure()
     qi.f.reftext = s
     qi.f.write('reftext "%s"\n' % _safetext(s))
+
     
 def text(s, dx=0, dy=0):
-    '''TEXT - Render text 
+    '''TEXT - Render text
+    
     TEXT(text) renders text at the current anchor point.
+    
     TEXT(text, dx, dy) renders text displaced by the given number of
-    points. Normally, positive DX is to the right and positive DY down,
-    but the x- and y-axes rotate along with the angle set by the AT 
-    command.
+    millimeters or points. Normally, positive DX is to the right and
+    positive DY down, but the x- and y-axes rotate along with the
+    angle set by the AT command.
+    
     Text between underscore (_) and next space is set as subscript.
-    Text between hat (^) and next space is set as superscript. Matched
-    parentheses, brackets, and quotes protect spaces. Additionally,
-    tilde (~) can be used as a protected space inside sub- or superscripts.
+    Text between hat (^) and next space is set as superscript.
+
+    Matched parentheses, brackets, and quotes protect
+    spaces. Additionally, tilde (~) can be used as a protected space
+    inside sub- or superscripts.
+    
     Words can be /italicized/ or *boldfaced* with slashes and
     asterisks. “Words” in this context means a sequence of letters
     and/or numbers. Slashes and asterisks that do not form pairs
-    around a word are not interpreted specially. 
+    around a word are not interpreted specially.
+    
     As in TeX math, \\, inserts a thin space, and \\! inserts a thin
     negative space.
     
@@ -88,19 +102,24 @@ def text(s, dx=0, dy=0):
         protection.
       "frown^{:(} or smile^{:)}" - Braces obviate the need for backslashes.
 
-
     See also AT and ALIGN.
 
     '''
     qi.ensure()
     s = s.replace('"', '”')
-    qi.f.write('text %g %g "%s"\n' % (dx, dy, s))
+    qi.f.write('text %g %g "%s"\n' % (dx / qi.f.pt,
+                                      dy / (qi.f.pt*qi.Figure.ydown),
+                                      s))
     
-def arrow(l=8, w=None, dl=0, dimple=0, dw=0):
+def arrow(l=None, w=None, dl=0, dimple=0, dw=0):
     '''ARROW - Draw an arrowhead
+    
     ARROW draws an arrow head pointing to the current anchor set by AT.
+    
     ARROW(l, w) specifies length and (full) width of the arrow head
-    These are specified in points, and default to L=8, W=5.
+    These are specified in millimeters or points, and default to
+    L = 2.8 mm (8 pt), W = 1.8 mm (5 pt).
+    
     Optional arguments:
       DL - specifies that the arrow is to be displaced from the
            anchor by a distance DL along the arrow's axis.
@@ -109,24 +128,36 @@ def arrow(l=8, w=None, dl=0, dimple=0, dw=0):
       DW - specifies that the arrow is to be displaced from the anchor 
            by DW points in the orthogonal direction of the arrow's
            axis.
-    For most use cases, DARROW is easier.'''
+    
+    For many use cases, DARROW is easier.'''
+    if l is None:
+        qi.ensure()
+        l = 8 * qi.f.pt
     if w is None:
         w = .6 * l
+        
     paper.poly(np.array([0, -l, dimple-l, -l]) - dl,
                np.array([0, w, 0, -w])/2+dw)
 
-def darrow(x, y, phi=None, along=None, l=8, w=5, dist=0, dimple=0):
+    
+def darrow(x, y, phi=None, along=None, l=None, w=None, dist=0, dimple=0):
     '''DARROW - Draw an arrowhead
+    
     DARROW(x, y) draws an arrow head pointing to (X,Y).
+    
     Optional arguments are:
       PHI - Arrow points in the given direction specified in radians
            in paper space (0: pointing right, pi/2: pointing down, etc)
       ALONG - Arrow points in the given direction specified as a (DX,DY)
            vector in data space
-      L - Length of the arrow in points (default: 8 pt)
-      W - Full width of the arrow head in points (default: 5 pt)
-      DIST - Arrow is to be retracted a given distance from the point (X, Y).
-      DIMPLE - The back of the arrow head is indented by DIMPLE points.'''
+      L - Length of the arrow in millimeters or points
+           (default: 2.8 mm (8 pt))
+      W - Full width of the arrow head in millimeters or points
+           (default: 1.8 mm (5 pt))
+      DIST - Arrow is to be retracted a given distance (mm or pt)
+           from the point (X, Y).
+      DIMPLE - The back of the arrow head is indented by the given
+           distance (mm or pt).'''
 
     if phi is not None:
         at(x, y, phi=phi)
@@ -135,23 +166,29 @@ def darrow(x, y, phi=None, along=None, l=8, w=5, dist=0, dimple=0):
     else:
         at(x, y)
     arrow(l, w, dl=dist, dimple=dimple)
+
     
 def at(x=None, y=None, phi=None, deg=None, rad=None,
        along=None, notransform=False):
     '''AT - Specify location for future text
-    AT(x, y) specifies that future text will be placed at data location (x,y)
+    
+    AT(x, y) specifies that future text will be placed at data
+    location (x,y)
+    
     Optional arguments:
       DEG - text will be rotated counterclockwise by DEG degrees.
       RAD - text will be rotated counterclockwise by RAD radians.
-      PHI - specifies that the text will be rotated clockwise by phi radians
-            (deprecated).
+      PHI - deprecated.
       ALONG - must be a tuple (dx,dy), meaning that the text will be
             rotated s.t. the baseline points in the data direction (dx,dy).
 
     X may also be one of 'left,' 'right,' 'center,' 'abs,' 'absolute.'
     Y may also be one of 'top,' 'bottom,' 'middle,' 'abs,' 'absolute.'
+    
     If X and/or Y is omitted, placements reverts to absolute in those
-    dimensions.'''
+    dimensions.
+
+    '''
     qi.ensure()
     qi.f.atx = None
     qi.f.aty = None

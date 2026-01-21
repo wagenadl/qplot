@@ -18,8 +18,10 @@ from . import markup
 
 def xtransform(foo=None):
     '''XTRANSFORM - Specify a transformation to be applied to all x-data
+    
     XTRANSFORM(foo), where FOO is a callable that accepts numpy arrays,
     specifies a transformation to apply to all x-data. 
+
     XTRANSFORM(None) reverts to linear plotting.
 
     The transformation applies to coordinates passed into commands like
@@ -33,6 +35,7 @@ def xtransform(foo=None):
 
 def ytransform(foo=None):
     '''YTRANSFORM - Specify a transformation to be applied to all y-data
+    
     YTRANSFORM(foo), where FOO is a callable that accepts numpy arrays,
     specifies a transformation to apply to all y-data.
     YTRANSFORM(None) reverts to linear plotting.
@@ -43,13 +46,19 @@ def ytransform(foo=None):
     
 def clipy(xx, yy, ymin=None, ymax=None):
     '''CLIPY - Clip data at given y-values for plotting
-    xx, yy = CLIPY(xx, yy, ymin, ymax) finds runs in the data where
-    YMIN <= YY <= YMAX and returns those runs, placing np.nan in between 
-    runs. At the beginning and end of each run, a point (X, YMIN) or (X, YMAX)
-    is inserted that marks the linearly interpolated location where the run 
-    passes through the threshold.
-    This is useful for plotting, because qplot does not implement XLIM and 
-    YLIM with a proper clip rectangle.'''
+    
+    «xx», «yy» = CLIPY(xx, yy, ymin, ymax) finds runs in the data where
+    YMIN <= YY <= YMAX and returns those runs, placing np.nan in
+    between runs.
+
+    At the beginning and end of each run, a point («x», YMIN) or
+    («x», YMAX) is inserted that marks the linearly interpolated
+    location where the run passes through the threshold.
+
+    This is useful for plotting, because qplot does not implement XLIM
+    and YLIM with a proper clip rectangle.
+
+    '''
     if ymin is not None:
         xx, yy = clipy(xx, np.negative(yy), ymax=-ymin)
         yy = -yy
@@ -132,33 +141,49 @@ def rectangle(x, y, w, h):
     with the current brush. See also FILL and PRECTANGLE.'''
     fill([x, x+w, x+w, x], [y, y, y+h, y+h])
 
-def hatch(xx, yy, pattern="|", angle=0, spacing=10, offset=0):
+def hatch(xx, yy, pattern="|", angle=None, rad=None, deg=None,
+          spacing=None, offset=0):
     '''HATCH - Hatch a polygonal patch in data space
-    HATCH(xx, yy, pattern) hatches a polygon with vertices at (XX, YY) using
-    the given pattern.
+    
+    HATCH(xx, yy, pattern) hatches a polygon with vertices at (XX, YY)
+    using the given pattern.
+    
     PATTERN is a single character from the following:
       | / - \\ :: lines at the angle suggested by the shape of the character
       + x      :: combination of either orthogonal or diagonal lines
       : *      :: marks in an orthogonal or hexagonal pattern.
+    
     Lines are rendered with the current PEN.
-    Marks are rendereded as by MARK, i.e., with the current MARKER (and PEN
-    and BRUSH).
-    Instead of a pattern, a numeric ANGLE may be specified, clockwise from
-    vertical (in radians, but see DEGREES).
-    Optional argument SPACING specifies space between lines, in points.
-    By default, the line pattern is aligned with the center of the polygon,
-    but OFFSET shifts this center by the given number of points.
-    NaN values in XX or YY may be used to separate multiple polygons to be
-    drawn with common line pattern alignment.
+    
+    Marks are rendered as by MARK, i.e., with the current MARKER
+    (and PEN and BRUSH).
+
+    Instead of a pattern, a numeric angle may be specified in radians
+    using the RAD argument or in degrees using the DEG
+    argument. Either way, angles are counterclockwise from horizontal.
+
+    Optional argument SPACING specifies space between lines, in
+    millimeter or points. The default is 3.5 mm (10 points).
+
+    By default, the line pattern is aligned with the center of the
+    polygon, but OFFSET shifts this center by the given number of
+    points.
+
+    NaN values in XX or YY may be used to separate multiple polygons
+    to be drawn with common line pattern alignment.
+
     See also PHATCH.
 
     '''
-    qi.hatch(xx, yy, pattern, angle, spacing, offset)
+    qi.hatch(xx, yy, pattern, angle, spacing, offset, rad, deg)
     
     
 def _mark(xx, yy, rx=None, ry=None, vert=None):
     '''MARK - Draw on the current graph with the current marker
-    MARK(xx, yy) draws marks at the given location in data space. See also
+
+    MARK(xx, yy) draws marks at the given location in data space.
+
+    See also
     MARKER and PMARK.'''
     qi.ensure()
     if utils.isempty(xx):
@@ -184,17 +209,21 @@ def _mark(xx, yy, rx=None, ry=None, vert=None):
 
 def mark(xx, yy):
     '''MARK - Draw on the current graph with the current marker
-    MARK(xx, yy) draws marks at the given location in data space. 
+    
+    MARK(xx, yy) draws marks at the given location in data space.
+    
     See also MARKER and PMARK, and XMARK and YMARK.'''
     _mark(xx, yy)
 
 
 def xmark(xx, yy, rx, ry=None):
     '''XMARK - Marks with horizontal collision avoidance
+    
     XMARK(xx, yy, rx, ry) tries to draw marks at (XX, YY), but
     displaces marks horizontally in steps of RX points to avoid
     collision within a circle with radius RX. (If RY is given,
-    an ellipse with radii RX and RY is avoided.)    
+    an ellipse with radii RX and RY is avoided.)
+    
     See also MARK and YMARK.
     '''
     _mark(xx, yy, rx, ry, 0)
@@ -202,10 +231,12 @@ def xmark(xx, yy, rx, ry=None):
     
 def ymark(xx, yy, ry, rx=None):
     '''YMARK - Marks with vertical collision avoidance
+
     YMARK(xx, yy, ry, rx) tries to draw marks at (XX, YY), but
     displaces marks vertically in steps of RY points to avoid
     collision within a circle with radius RY. (If RX is given,
     an ellipse with radii RX and RY is avoided.)
+
     See also MARK and XMARK.
     '''
     _mark(xx, yy, rx, ry, 1)
@@ -213,16 +244,22 @@ def ymark(xx, yy, ry, rx=None):
     
 def bars(xx, yy, w=None, y0=0):
     '''BARS - Bar plot in data coordinates
+
     BARS(xx, yy, w) draws a bar graph of YY vs XX with bars
     of width W specified in data coordinates.
+
     BARS(xx, yy, w, y0) specifies a nonzero baseline of the plot.
+
     Y0 may also be a vector, which must then be the same length
     as YY. This is useful for creating stacked bar graphs. Note that
     YY is never relative to Y0.
+
     If W is not given, it defaults to mean(diff(XX)).
+
     If the length of the XX vector is one greater than the length
     of the YY vector, the XX vector is taken to represent the edges
     of the bins.
+
     See also HBARS and SKYLINE.
 
     '''
@@ -252,17 +289,25 @@ def bars(xx, yy, w=None, y0=0):
 
 def hbars(yy, xx, h=None, x0=0):
     '''HBARS - Horizontal bar plot in data coordinates
-    HBARS(yy, xx, h) draws a horizontal bar graph of data XX at YY with bars
-    of width H (in the vertical direction), specified in data coordinates.
-    HBARS(yy, xx, h, x0) specifies a nonzero baseline of the plot.
-    X0 may also be a vector, which must then be the same length
-    as XX. This is useful for creating stacked bar graphs. Note that
-    XX is never relative to X0.
+
+    HBARS(yy, xx, h) draws a horizontal bar graph of data XX at YY
+    with bars of width H (in the vertical direction), specified in
+    data coordinates.
+
+    HBARS(yy, xx, h, x0) specifies a nonzero baseline of the plot.  X0
+    may also be a vector, which must then be the same length as
+    XX. This is useful for creating stacked bar graphs. Note that XX
+    is never relative to X0.
+    
     If H is not given, it defaults to mean(diff(YY)).
+    
     If the length of the YY vector is one greater than the length
     of the XX vector, the YY vector is taken to represent the edges
     of the bins.
-    See also BARS.'''
+    
+    See also BARS.
+
+    '''
     xx = np.array(xx).flatten()
     yy = np.array(yy).flatten()
     if utils.isnscalar(x0):
@@ -290,12 +335,15 @@ def hbars(yy, xx, h=None, x0=0):
 
 def ecoplot(x0, dx, yy, N=100):
     '''ECOPLOT - Economically plot large datasets
+
     ECOPLOT(x0, dx, yy, N) plots the data (xx,yy) using SAMPLEMINMAX to
     reduce data length to the given number of points.
+
     The results are plotted as a FILL.
+
     X-coordinates are implied to be [X0, X0+DX, X0+2*DX, ...], along YY.
-    If N is omitted, it defaults to 100.
-    Note: This is the kind of plot that MEABench calls "TrueBlue".'''
+    
+    If N is omitted, it defaults to 100.'''
     
     K = len(yy)
     if N>K:
@@ -309,15 +357,20 @@ def ecoplot(x0, dx, yy, N=100):
 
 def errorbars(xx, yy, dy, w=None, dir='both'):
     '''ERRORBARS - Draw error bars
+    
     ERRORBARS(xx, yy, dy) plots error bars at (XX, YY ± DY).
+    
     Normally, XX, YY, and DY have the same shape. However, it is
     permissible for DY to be shaped Nx2, or for DY to be a 2-tuple, in
     which case lower and upper error bounds are different. (DY should
     always be positive).
+    
     ERRORBARS(xx, yy, dy, w) adorns the error bars with horizontal
     lines of given width (W in points).
+    
     ERRORBARS(..., dir='up') only plots upward;
     ERRORBARS(..., dir='down') only plots downward.
+    
     See also ERRORFILL and HERRORBARS.
 
     '''
@@ -358,15 +411,20 @@ def errorbars(xx, yy, dy, w=None, dir='both'):
                 
 def herrorbars(yy, xx, dx, w=None, dir='both'):
     '''HERRORBARS - Draw horizontal error bars
+    
     HERRORBARS(yy, xx, dx) plots horizontal error bars at (XX ± DX, YY).
+    
     Normally, YY, XX, and DX have the same shape. However, it is
     permissible for DX to be shaped Nx2, or for DX to be a 2-tuple, in
     which case lower and upper error bounds are different. (DX should
     always be positive).
+
     HERRORBARS(yy, xx, dx, w) adorns the error bars with vertical
     lines of given extent (W in points).
+
     HERRORBARS(..., dir='left') only plots to the left;
     HERRORBARS(..., dir='right') only plots to the right.
+
     See also ERRORBARS and ERRORFILL.
     '''
 
@@ -406,15 +464,20 @@ def herrorbars(yy, xx, dx, w=None, dir='both'):
                 
 def errorfill(xx, yy, dy=None, dir='both'):
     '''ERRORFILL - Fill between error bounds
+
     ERRORFILL(xx, yy, dy) fills the area defined by (XX, YY ± DY).
     Normally, XX, YY, and DY all are N-vectors. 
-    ERRORFILL(..., 'up') only plots upward; ERRORFILL(..., 'down') only 
-    plots downward.
-    To specify downward and upward errors separately,  DY may be shaped Nx2.
-    DY must be positive, even for the downward error.
+
+    ERRORFILL(..., 'up') only plots upward; ERRORFILL(..., 'down')
+    only plots downward.
+
+    To specify downward and upward errors separately, DY may be shaped
+    Nx2.  DY must be positive, even for the downward error.
     
-    ERRORFILL(xx, yy), where YY is shaped Nx2, directly specifies the bounds
-    as (XX, YY[:,0]) and (XX, YY[:,1]), much like matplotlib's fill_between.
+    ERRORFILL(xx, yy), where YY is shaped Nx2, directly specifies the
+    bounds as (XX, YY[:,0]) and (XX, YY[:,1]), much like matplotlib's
+    fill_between.
+
     '''
 
     N = len(xx)
@@ -440,9 +503,13 @@ def errorfill(xx, yy, dy=None, dir='both'):
 
 def skyline(xx, yy, y0=0):
     '''SKYLINE - Skyline plot (bar plot)
+    
     SKYLINE(xx, yy) draws a bar plot of YY vs XX with bars touching.
-    SKYLINE(xx, yy, y0) specifies the baseline of the plot; default is 0.
-    (Note that YY is not relative to Y0.)'''
+    
+    SKYLINE(xx, yy, y0) specifies the baseline of the plot; default is
+    0.  (Note that YY is not relative to Y0.)
+
+    '''
     N = len(xx)
     if N==1:
         xxx = np.array([-.5, .5]) + xx
@@ -463,11 +530,17 @@ def skyline(xx, yy, y0=0):
     
 def caligraph(xx, yy, ww):
     '''CALIGRAPH - Draw a variable-width line series in data space
-    CALIGRAPH(xx, yy, ww) plots the data YY vs XX. XX and YY are given in 
-    data coordinates. WW specifies the line width at each point, in postscript
-    points.
-    The line is rendered in the current pen's color; dash patterns and cap
-    and join styles are not used.'''
+    
+    CALIGRAPH(xx, yy, ww) plots the data YY vs XX. XX and YY are given
+    in data coordinates.
+
+    WW specifies the line width at each point, in millimeters or
+    postscript points.
+
+    The line is rendered in the current pen's color; dash patterns and
+    cap and join styles are not used.
+
+    '''
     N = len(xx)
     if len(yy) != N or len(ww) != N:
         qi.error('xx, yy, ww must be equally long')
@@ -475,6 +548,7 @@ def caligraph(xx, yy, ww):
     [iup, idn] = utils.nonanstretch(xx+yy+ww)
 
     qi.ensure()
+    ww = np.array(ww) / qi.f.pt
     for k in range(len(iup)):
         N = idn[k] - iup[k]
         qi.f.write('caligraph *%i *%i *%i\n' %  (N, N, N))

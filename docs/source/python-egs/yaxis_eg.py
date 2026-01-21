@@ -5,7 +5,8 @@ qp.figure('yaxis', 3, 3)
 
 qp.yaxis('Numbers', np.arange(6))
 
-qp.yaxis('', np.arange(6), ['zero', 'one', 'two', 'three', 'four', 'five'], x=1)
+qp.yaxis('', np.arange(6),
+         ['zero', 'one', 'two', 'three', 'four', 'five'], x=1)
 
 qp.yaxis('', np.arange(6), [], x=2)
 

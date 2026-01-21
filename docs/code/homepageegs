@@ -7,12 +7,13 @@ import numpy as np
 
 os.chdir("build")
 
-sys.path.append("../../python")
+sys.path.insert(0, "../../python")
 import qplot as qp
 
 codepath = "../code"
-sys.path.append(codepath)
+sys.path.insert(0, codepath)
 
+os.environ["PATH"] = "../../build:" + os.environ["PATH"]
 
 egpath = "../source/homepage-egs"
 outpath = "html/home"

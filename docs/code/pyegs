@@ -7,8 +7,14 @@ import numpy as np
 
 os.chdir("build")
 
-sys.path.append("../../python")
+sys.path.insert(0, "../../python")
 import qplot as qp
+print("qplot module is:", qp)
+
+os.environ["PATH"] = "../../build:" + os.environ["PATH"]
+print("qplot executable is:")
+os.system("/bin/which qplot")
+print()
 
 egpath = "../source/python-egs"
 outpath = "html/pyref"
@@ -57,7 +63,7 @@ def build(func):
                 qp.shrink(2)
             qp.save(pdffn)
             print("pdf", pdffn)
-            qp.save(pngfn, reso=300)
+            qp.save(pngfn, dpi=300)
             qp.close()
         else:
             print("No figure - unlinking files")

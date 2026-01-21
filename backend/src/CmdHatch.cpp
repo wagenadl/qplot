@@ -34,7 +34,8 @@ bool CmdHatch::parse(Statement const &s) {
       && s.data(idx_x).size()==s.data(idx_y).size()
       && (s.token(idx_a).typ==Token::NUMBER
           || (s.token(idx_a).typ==Token::STRING
-              && (s.token(idx_a).str=="*" || s.token(idx_a).str==":")))
+              && (s.token(idx_a).str=="*" || s.token(idx_a).str==":"
+                  || s.token(idx_a).str=="%")))
       && s.token(idx_s).typ==Token::NUMBER
       && (idx_o==s.length() || s.token(idx_o).typ==Token::NUMBER)
       && (idx_o==s.length() || idx_end==s.length())
@@ -55,7 +56,10 @@ void CmdHatch::render(Statement const &s, Figure &f, bool dryrun) {
   double angle = s.token(idx_a).num;
   bool ishex = s.token(idx_a).typ==Token::STRING && s.token(idx_a).str=="*";
   bool isrect = s.token(idx_a).typ==Token::STRING && s.token(idx_a).str==":";
+  bool isdiag = s.token(idx_a).typ==Token::STRING && s.token(idx_a).str=="%";
   double spacing = pt2iu(s.token(idx_s).num);
+  if (isdiag)
+    spacing /= sqrt(2);
   double offset = pt2iu(s.token(idx_o).num);
   // above is safe even if no offset given, because num==0 for NONE tokens
   
@@ -162,6 +166,17 @@ void CmdHatch::render(Statement const &s, Figure &f, bool dryrun) {
       for (double eta=eta0; eta<eta1; eta+=spacing)
         for (double xi=xi0; xi<xi1; xi+=spacing) 
           pp << ::rotate(QPointF(xi, eta), angle);
+      CmdMark::draw(pp, f);
+    } else if (isdiag) {
+      QPolygonF pp;
+      for (double eta=eta0; eta<eta1; eta+=spacing) {
+        for (double xi=xi0; xi<xi1; xi+=2*spacing) 
+          pp << ::rotate(QPointF(xi, eta), angle);
+        eta += spacing;
+        if (eta < eta1)
+          for (double xi=xi0+spacing; xi<xi1; xi+=2*spacing) 
+            pp << ::rotate(QPointF(xi, eta), angle);
+      }      
       CmdMark::draw(pp, f);
     } else {
       for (double xi=xi0; xi<xi1; xi+=spacing) 

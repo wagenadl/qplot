@@ -17,24 +17,47 @@ if not os.path.exists(exe):
 class Figure:
     latest_fn = None
     global_interactive = True
+    global_degrees = False
+    yup = -1
+    ydown = 1
     
     def interactive(k):
         Figure.global_interactive = k
-        
-    global_degrees = False
+    
     def use_degrees():
         Figure.global_degrees = True
+        
     def use_radians():
         Figure.global_degrees = False
-    
+
+    #def use_paperdown():
+    #    Figure.yup = -1
+    #    Figure.ydown = 1
+    #
+    #def use_paperup():
+    #    Figure.yup = -1
+    #    Figure.ydown = 1
+        
+    def use_inch(self):
+        self.pt = 1
+        self.inch = 72 * self.pt
+        self.mm = self.inch / 25.4
+                
+    def use_mm(self):
+        self.mm = 1
+        self.inch = 25.4
+        self.pt = self.inch / 72
+                        
     def reset(self):
-        self.ticklen = 3
+        # must already have set up metric or imperial
+        self.ticklen = 3 * self.pt
         self.axshift = 0
-        self.ytitlerot = np.pi/2
-        self.textdist = (3, 5)
+        self.ytitlerot = np.pi/2 # always in radians
+        self.textdist = (3 * self.pt, 5 * self.pt)
         self.lastax = None
         self.lut_nan = np.array([255, 255, 255], dtype='uint8')
-        self.lut = np.transpose(np.tile(np.arange(0,256,dtype='uint8'), (3,1)))
+        self.lut = np.transpose(np.tile(np.arange(256, dtype='uint8'),
+                                        (3,1)))
         self.clim = (0, 1)
         self.panels = {} # Map from id to extent
         self.panel = None
@@ -46,11 +69,11 @@ class Figure:
         self.legopt = None
         self.imrect = None
         self.cbar = None
-        self.overlinedist = 7
-        self.overlinemin = 3
-        self.linewidth = 0.5 # match with default in style.pen()
+        self.overlinedist = 7 * self.pt
+        self.overlinemin = 3 * self.pt
+        self.linewidth = 0.5 * self.pt # match with default in style.pen()
         self.fontfamily = 'Helvetica'
-        self.fontsize = 10
+        self.fontsize = 10 # always points
         self._xtransform = None # lambda x: x
         self._ytransform = None # lambda y: y
         self.reftext = ''
@@ -79,6 +102,7 @@ class Figure:
         if self.flushcounter==0:
             self.fd.flush()
 
+            
     flushwaitre = re.compile(r' \*(uc)?\d')
 
     def writedbl(self, v):
@@ -87,6 +111,7 @@ class Figure:
         self.flushcounter -= 1
         if self.flushcounter<=0:
             self.fd.flush()
+
     def writeuc(self, v):
         buf = np.array(v).astype('uint8').tobytes(order='C')
         self.fd.write(buf)
@@ -120,16 +145,23 @@ class Figure:
         list of strings using the current numfmt for the figure.'''
         return [ self.numfmt % x for x in xx ]
 
-    def __init__(self, fn, w, h):
+    def __init__(self, fn, w, h, metric=True):
+        '''w, h are in mm if metric is true, else in pt'''
         self.is_interactive = Figure.global_interactive
         self.is_pipe = False
         self.pid = None
         self.is_tempfile = False
-        MAXALLOWED = 36
+        if metric:
+            self.use_mm()
+        else:
+            self.use_inch()
+        #self.use_paperdown()
+        MAXALLOWED = 1000 * self.mm
+        MINALLOWED = 10 * self.mm
         if w>MAXALLOWED or h>MAXALLOWED:
-            error('Unreasonable size passed to qfigure. Units are inches!')
-        w *= 72
-        h *= 72
+            error('Unreasonably large size passed to qfigure')
+        if w<MINALLOWED and h<MINALLOWED:
+            error('Unreasonably small size passed to qfigure')
         self.extent = (0, 0, w, h)
         self.reset()
 
@@ -163,7 +195,7 @@ class Figure:
                 self.fn = fn
             self.fd = open(self.fn, 'wb')
     
-        self.write('figsize %g %g\n' % (w,h))
+        self.write('figsize %g %g\n' % (w / self.pt, h / self.pt))
         Figure.latest_fn = self.fn
 
     def raise_on_stopped(self):
@@ -174,15 +206,15 @@ class Figure:
             if ret < 0:
                 raise BrokenPipeError("QPlot subprocess died")
         except subprocess.TimeoutExpired:
-            pass
-            
+            pass            
 
     def clf(self):
         if not self.is_pipe:
             self.fd.close()
             self.fd = open(self.fn, 'wb')
         self.reset()
-        self.write('figsize %g %g\n' % (self.extent[2], self.extent[3]))
+        self.write('figsize %g %g\n' % (self.extent[2] / self.pt,
+                                        self.extent[3] / self.pt))
 
     def close(self):
         self.raise_on_stopped()
@@ -219,12 +251,11 @@ class Figure:
                     return # File updated, happy
         raise BrokenPipeError("QPlot failed to save")
 
-
-    def save(self, ofn, reso=None, qual=None):
+    def save(self, ofn, dpi=None, qual=None):
         if self.is_pipe:
             cmd = f'save "{ofn}"'
-            if reso is not None:
-                cmd += f' {reso}'
+            if dpi is not None:
+                cmd += f' {dpi}'
                 if qual is not None:
                     cmd += f' {qual}'
             if os.path.exists(ofn):
@@ -237,9 +268,9 @@ class Figure:
             if self.fd is not None:
                 self.fd.flush()
             cmd = ['qplot']
-            if reso is not None:
+            if dpi is not None:
                 cmd.append('-r')
-                cmd.append('%i' % reso)
+                cmd.append('%i' % dpi)
             if qual is not None:
                 cmd.append('-q')
                 cmd.append('%i' % qual)
@@ -263,6 +294,7 @@ def to_radians(angle):
 
 def error(msg):
     raise ValueError(msg)
+
 
 def ensure():
     global f, figs
@@ -296,19 +328,20 @@ def mapcolor(s):
     else:
         return None
 
-markermap = { 'o': 'circle',
-            's': 'square',
-            'd': 'diamond',
-            '<': 'left',
-            '>': 'right',
-            '^': 'up',
-            'v': 'down',
-            'p': 'penta',
-            'h': 'hexa',
-            '+': 'plus',
-            'x': 'cross',
-            '-': 'hbar',
-            '|': 'vbar'
+markermap = {
+    'o': 'circle',
+    's': 'square',
+    'd': 'diamond',
+    '<': 'left',
+    '>': 'right',
+    '^': 'up',
+    'v': 'down',
+    'p': 'penta',
+    'h': 'hexa',
+    '+': 'plus',
+    'x': 'cross',
+    '-': 'hbar',
+    '|': 'vbar'
 }
 
 def mapmarker(s):
@@ -318,6 +351,7 @@ def mapmarker(s):
     else:
         return None
 
+    
 def interpretcolor(color):
     '''Converts a color to #RRGGBB form. Input may be in 'RGB', 'RRGGBB',
     [r, g, b], or a single character. Color may also be '' or 'none' which
@@ -343,7 +377,8 @@ def interpretcolor(color):
         return '#%02x%02x%02x' % (int(255.999*color[0]),
     	                          int(255.999*color[1]),
     	                          int(255.999*color[2]))
- 
+
+    
 def plot(xx, yy, cmd='plot'):
     xx = np.array(xx)
     yy = np.array(yy)
@@ -365,13 +400,25 @@ def plot(xx, yy, cmd='plot'):
         xx = f.xtransform(xx)
         yy = f.ytransform(yy)
         f.updaterange(xx, yy)
+    else:
+        xx = xx / f.pt
+        yy = yy / (f.pt * Figure.ydown)
     f.writedbl(xx)
     f.writedbl(yy)
 
-def hatch(xx, yy, pattern, angle, spacing, offset, cmd='hatch'):
-    angle = to_radians(angle)
+    
+def hatch(xx, yy, pattern, angle, spacing, offset,
+          rad=None, deg=None, cmd='hatch'):
+    if rad is not None:
+        angle = np.pi/2 - rad
+    elif deg is not None:
+        angle = np.pi/2 - np.pi*deg/180
+    elif angle is not None:
+        angle = to_radians(angle)
+    else:
+        angle = 0
     if pattern=='|':
-        pass
+        pass # numeric angle overrides
     elif pattern=='/':
         angle = np.pi/4
     elif pattern=='-':
@@ -388,9 +435,11 @@ def hatch(xx, yy, pattern, angle, spacing, offset, cmd='hatch'):
         angle = '*'
     elif pattern==':':
         angle = ':'
+    elif pattern=='%':
+        angle = '%'
     else:
         print("hatch", pattern, angle)
-        raise ValueError("Hatch pattern must be one of | / - \\ + x * :")
+        raise ValueError("Hatch pattern must be one of | / - \\ + x * : %")
     xx = np.array(xx)
     yy = np.array(yy)
     if not utils.isnvector(xx):
@@ -405,15 +454,24 @@ def hatch(xx, yy, pattern, angle, spacing, offset, cmd='hatch'):
         return
     
     ensure()
+    if spacing is None:
+        spacing = 10 * f.pt
     N = len(xx)
     if type(angle)==str:
-        f.write('%s *%i *%i "%s" %g %g\n' % (cmd, N, N, angle, spacing, offset))
+        f.write('%s *%i *%i "%s" %g %g\n' % (cmd, N, N, angle,
+                                             spacing / f.pt,
+                                             offset / f.pt))
     else:
-        f.write('%s *%i *%i %g %g %g\n' % (cmd, N, N, angle, spacing, offset))
+        f.write('%s *%i *%i %g %g %g\n' % (cmd, N, N, angle,
+                                           spacing / f.pt,
+                                           offset / f.pt))
     if cmd=='hatch':
         xx = f.xtransform(xx)
         yy = f.ytransform(yy)
         f.updaterange(xx, yy)
+    else:
+        xx = xx / f.pt
+        yy = yy / (f.pt * Figure.ydown)
     f.writedbl(xx)
     f.writedbl(yy)
     
@@ -439,7 +497,8 @@ def figisopen(fn):
     del figs[fn]
     return False
 
-def refigure(fn, w, h):
+
+def refigure(fn, w, h, metric):
     f1 = None
     if fn in figs:
         f1 = figs[fn]
@@ -448,15 +507,17 @@ def refigure(fn, w, h):
         if fn in figs:
             f1 = figs[fn]
     if f1 is None:
-        f1 = Figure(fn, w, h)
+        f1 = Figure(fn, w, h, metric)
         figs[f1.fn] = f1
         return f1
 
     if h is None:
         h = .75 * w
-    w = w*72
-    h = h*72
     f1.extent = (0, 0, w, h)
+    if metric:
+        f1.use_mm()
+    else:
+        f1.use_inch()
     f1.clf()
     return f1
 

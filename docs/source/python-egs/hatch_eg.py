@@ -11,20 +11,22 @@ for x in range(6):
     qp.fill([x, x+.8, x+.8, x], [0, 0, 1, 1])
     qp.pen('b', 3)
     
-    qp.hatch([x, x+.8, x+.8, x], [0, 0, 1, 1], angle=x/6*np.pi)
+    qp.hatch([x, x+.8, x+.8, x], [0, 0, 1, 1],
+             deg=x*30)
     
 qp.shrink()
 
-typ = '-|\\/+x*:'
+typ = '-|\\/+x*:%'
 qp.subplot(2, 1, 1)
 for x in range(len(typ)):
     qp.brush('c')
     qp.pen('none')
-    qp.fill([x, x+.8, x+.8, x], [0, 0, 1, 1])
-    qp.pen('b', 0)
+    qp.fill([x, x+.9, x+.9, x], [0, 0, 1, 1])
+    qp.pen('b', 1, cap='flat')
     qp.marker('o', 2)
     
-    qp.hatch([x, x+.8, x+.8, x], [0, 0, 1, 1], typ[x], offset=0)
+    qp.hatch([x, x+.9, x+.9, x], [0, 0, 1, 1],
+             typ[x], offset=0)
 
 qp.shrink()
 

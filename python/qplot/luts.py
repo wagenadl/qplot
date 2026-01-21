@@ -21,6 +21,8 @@ except ModuleNotFoundError:
     pass
 
 
+_set = set
+
 _cmaps = OrderedDict()
 
 _cmaps['native'] = [ 'qpjet', 'qphsv', 'qphot', 'qpcold', 'qpcoldhot' ]
@@ -99,21 +101,29 @@ def _load_colorcet_cmaps():
                 _cmaps[k] = []
 
 def families():
-    '''LUTS.FAMILIES - Return a list of colormap families.
+    '''LUTS.FAMILIES - List of colormap families
+    
     x = LUTS.FAMILIES() returns a list of family names of
-    colormaps. The family names can be passed to LUTS.FAMILY to obtain the
-    names of colormaps in that family.
+    colormaps. The family names can be passed to LUTS.FAMILY to obtain
+    the names of colormaps in that family.
+    
     See also LUTS.DEMO.
+
     '''
     return [x for x in _cmaps.keys()]
 
 def family(name):
-    '''LUTS.FAMILY - Return a list of colormaps in a family.
+    '''LUTS.FAMILY - List of colormaps in a family
+    
     x = LUTS.FAMILY(f) returns a list of all the colormaps in the
     given family.
-    Several families depend on the availability of PLOTLY. If PLOTLY is
-    not installed, those families will comprise empty lists.
+
+    Several families depend on external packages like plotly,
+    colorcet, and matplotlib. If those packages are not installed,
+    such families will comprise empty lists.
+
     See also LUTS.FAMILIES, LUTS.DEMO.
+
     '''
     if _cmaps[name] is None:
         _load_plotly_cmaps()
@@ -122,10 +132,12 @@ def family(name):
     return _cmaps[name]
 
 def names():
-    '''LUTS.NAMES - Names of all available colormaps.
+    '''LUTS.NAMES - Names of all available colormaps
+
     x = LUTS.NAMES() returns a list of all the available colormaps.
+    
     See also LUTS.DEMO.'''
-    nn = sum([family(x) for x in families()], [])
+    nn = list(_set(sum([family(x) for x in families()], [])))
     nn.sort()
     return nn
 
@@ -194,6 +206,7 @@ def _hsv(n=256):
         cc[:,c] = np.interp(ii, xx, _hsvdata[:,c], X)
     return cc
 
+
 def _hot(n=300):
     xx = np.arange(0,1,1/n)
     yy = 0*xx
@@ -202,6 +215,7 @@ def _hot(n=300):
     blu = _rankle(_ankle(xx,8,.7),1,.2)
     res = np.stack((red,grn,blu), 1)
     return np.clip(res, 0, 1)
+
 
 def _cold(n=300):
     xx = np.arange(0,1,1/n)
@@ -213,6 +227,7 @@ def _cold(n=300):
     blu = _rankle(blu, .7, .1)
     res = np.stack((red,grn,blu), 1)
     return np.clip(res, 0, 1)
+
 
 def _jet(n=256):
     phi = np.linspace(0, 1, n)
@@ -228,6 +243,7 @@ def _jet(n=256):
     red = np.exp(-.5*(phi-R0)**P / SR**P)
     green = np.exp(-.5*(phi-G0)**P / SG**P)
     return np.column_stack((red, green, blue))
+
 
 def _native(name, N, reverse):
     from . import img
@@ -249,6 +265,7 @@ def _native(name, N, reverse):
         rgb = np.flipud(rgb)
     return rgb
 
+
 def _get_mpl_cmap(name, N, reverse):
     if type(name)==str:
         name = name.replace('-', '_')
@@ -266,6 +283,7 @@ def _get_mpl_cmap(name, N, reverse):
     else:
         return rgb
 
+    
 def _get_colorcet_cmap(name, N, reverse):
     if not havecolorcet:
         return None
@@ -319,16 +337,25 @@ def _get_plotly_cmap(name, N, reverse):
         return res[-1::-1,:]
     else:
         return res
-        
+
+    
 def get(name, N=None, reverse=False):
-    '''LUTS.GET - Retrieve a colormap.
+    '''LUTS.GET - Retrieve a colormap
+    
     cm = LUTS.GET(name) retrieves the named colormap.
+    
     Optional argument N specifies the number of colors to return. Default is
     dependent on the particular map.
+    
     Optional argument REVERSE specifies that the order of the colors should
     be reversed.
-    Use LUTS.FAMILIES, LUTS.FAMILY, LUTS.NAMES to explore available colormaps.
-    See also LUTS.SET.'''
+    
+    Use LUTS.FAMILIES, LUTS.FAMILY, LUTS.NAMES to explore available
+    colormaps.
+    
+    See also LUTS.SET.
+
+    '''
     if '.' in name:
         fam, name = name.split('.', 1)
     else:
@@ -354,24 +381,36 @@ def get(name, N=None, reverse=False):
     
     raise ValueError(f'Unknown color map {name}')
 
+
 def set(name, N=None, reverse=False):
-    '''LUTS.SET - Retrieve and apply a colormap.
+    '''LUTS.SET - Retrieve and apply a colormap
+    
     LUTS.SET(name, N, reverse) is a shortcut for the corresponding
     call to LUTS.GET, followed by a call to LUT.
-    Use LUTS.FAMILIES, LUTS.FAMILY, LUTS.NAMES to learn which colormaps exist.
+    
+    Use LUTS.FAMILIES, LUTS.FAMILY, LUTS.NAMES to learn which
+    colormaps exist.
+
     '''
     
     from . import img
     cm = get(name, N, reverse)
     img.lut(cm)
+
     
 def demo(fam=None, N=None):
-    '''LUTS.DEMO - Produce tableau of colormaps.
-    LUTS.DEMO(family) produces a tableau of all the colormaps in the given
-    family.
+    '''LUTS.DEMO - Produce tableau of colormaps
+    
+    LUTS.DEMO(family) produces a tableau of all the colormaps in the
+    given family.
+
     LUTS.DEMO() produces separate tableaus for all families.
-    Optional argument N specifies the number of colors to request for each
-    colormap. The default is to render each map with its own default.'''
+
+    Optional argument N specifies the number of colors to request for
+    each colormap. The default is to render each map with its own
+    default.
+
+    '''
     
     from . import fig
     from . import img

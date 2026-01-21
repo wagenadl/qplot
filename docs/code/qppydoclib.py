@@ -10,7 +10,7 @@ def qplotfunctions():
     for k, v in qp.luts.__dict__.items():
         if callable(v) and not k.startswith("_"):
             funcs.append("luts." + k)
-    return [k for k in funcs if k==k.lower()]
+    return [k for k in funcs] # if k==k.lower()]
 
 
 _funcs = qplotfunctions()

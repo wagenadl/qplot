@@ -196,7 +196,7 @@ def lut(cc=None, nanc=None):
     Colormap, e.g., from «matplotlib.pyplot.cm.get_cmap()».  See also
     https://matplotlib.org/stable/tutorials/colors/colormaps.html.
 
-    lut, nanc = LUT() returns current values.
+    CC, NANC = LUT() returns current values.
 
     See also LUTS.SET.
 

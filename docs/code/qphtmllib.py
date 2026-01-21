@@ -11,10 +11,10 @@ sections = [("Installation", "installation.html"),
             ]
 
 
-funcs = []
+funcs = {}
 def setfuncs(fu):
     global funcs
-    funcs = fu
+    funcs = { f.lower(): f for f in fu }
 
 
 def thisyear():
@@ -23,6 +23,7 @@ def thisyear():
 
 def doctype():
     return "<!DOCTYPE html>\n"
+
 
 def headfonts():
     return """
@@ -341,10 +342,10 @@ class PyDoc:
             elif ispluhigh and lobit[:-1] in self.myargs:
                 self.out += f'<span class="arg">{lobit}</span>'
             elif ishigh and lobit in funcs:
-                self.out += f'<a class="tmlink" href="{lobit}.html">{lobit}</a>'
+                self.out += f'<a class="tmlink" href="{funcs[lobit]}.html">{funcs[lobit]}</a>'
             elif ispluhigh and lobit[:-1] in funcs:
-                self.out += f'<a class="tmlink" href="{lobit[:-1]}.html">{lobit[:-1]}</a>s'
-            elif inargs and self.re_word.match(bit) and nxt != "." and prv != ".":
+                self.out += f'<a class="tmlink" href="{funcs[lobit[:-1]]}.html">{funcs[lobit[:-1]]}</a>s'
+            elif inargs and self.re_word.match(bit) and nxt != "." and prv != "." and bit == lobit:
                 self.out += f'<span class="arg">{lobit}</span>'
                 self.myargs.add(lobit)
             elif self.re_word.match(bit) and prv == "" and nxt == " = ":
