@@ -67,7 +67,7 @@ def figure(fn=None, w=None, h=None, units=None):
         metric = w>= 25 or h >= 25
     elif units == "mm":
         metric = True
-    if units == "inch":
+    elif units == "inch":
         metric = False
     else:
         raise ValueError("UNITS argument must be 'mm' or 'inch'")
