@@ -3,7 +3,8 @@ build-backend = "scikit_build_core.build"
 requires = [
     "scikit-build-core>=0.9",
     "pybind11>=2.13",
-    "PyQt6>=6.4",   # <-- must be present when CMake runs
+    "PyQt6>=6.4",
+    "aqtinstall"
 ]
 
 [project]
@@ -12,10 +13,9 @@ version = "0.3.0"
 description = "QPlot"
 requires-python = ">=3.9"
 dependencies = [
-    "PyQt6>=6.4",   # <-- required at runtime too (provides the Qt .so/.dylib/.dll)
+    "PyQt6>=6.4",
+    "numpy>=1.26"
 ]
-# Add any pure-Python runtime deps here:
-# dependencies = ["numpy>=1.24"]
 
 [project.urls]
 Homepage = "https://github.com/wagenadl/qplot"
@@ -33,7 +33,7 @@ cmake.minimum-version = "3.15"
 #build = "cp39-* cp310-* cp311-* cp312-* cp313-*"
 build = "cp312-*"
 skip = "*-win32 *-musllinux*"
-before-all = "pip install PyQt6 && python scripts/install_qt_dev.py"
+before-build = "python tools/install_qt_dev.py"
 # Run your test suite after each wheel build
 test-requires = ["PyQt6>=6.6"]
 test-command = "python -c \"import qplot;\""
@@ -41,10 +41,9 @@ test-command = "python -c \"import qplot;\""
 [tool.cibuildwheel.macos]
 # Build a universal2 wheel covering both Intel and Apple Silicon
 archs = ["universal2"]
-before-all = "pip install PyQt6 aqtinstall && python scripts/install_qt_dev.py"
 
 [tool.cibuildwheel.linux]
 ##manylinux-x86_64-image = "manylinux_2_34"
 ##manylinux-aarch64-image = "manylinux_2_34"
-before-all = "pip install PyQt6 && python tools/install_qt_dev.py"
+
 
