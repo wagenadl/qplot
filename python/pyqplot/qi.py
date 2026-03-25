@@ -6,12 +6,14 @@ import subprocess
 import time
 from . import utils
 import sys
+from pathlib import Path
 
-
-here = "/".join(__file__.replace("\\", "/").split("/")[:-2])
+here = Path(__file__).parent
 exe = f"{here}/bin/qplot.exe"
 if not os.path.exists(exe):
-    exe = "qplot"
+    exe = f"{here}/bin/qplot"
+if not os.path.exists(exe):    
+    exe = "qplot" # fall back to system
 
     
 class Figure:
