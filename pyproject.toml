@@ -10,7 +10,7 @@ requires = [
 name = "pyqplot"
 version = "0.3.0"
 description = "QPlot"
-requires-python = ">=3.14"
+requires-python = ">=3.13"
 dependencies = [
     "PyQt6>=6.10",
     "numpy>=1.26"
@@ -30,7 +30,7 @@ cmake.minimum-version = "3.15"
 [tool.cibuildwheel]
 # Build for CPython 3.9–3.13, skip PyPy and 32-bit Windows
 #build = "cp39-* cp310-* cp311-* cp312-* cp313-*"
-build = "cp314-*"
+build = "cp313-*"
 skip = "*-win32 *-musllinux*"
 ##before-build = "pip install PyQt6 aqtinstall && python tools/install_qt_dev.py"
 # Run your test suite after each wheel build
