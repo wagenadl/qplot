@@ -34,7 +34,7 @@ find_package(Python REQUIRED COMPONENTS Interpreter)
 #   1. QT_INSTALL_PREFIX env var (set by cibuildwheel before-all or developer)
 #   2. qt_install_prefix.txt written by install_qt_dev.py
 #   3. PyQt6's own directory (has CMake configs on some platforms — last resort)
-
+execute_process(COMMAND "python" "tools/install_qt_dev.py")
 if(DEFINED ENV{QT_INSTALL_PREFIX})
   list(PREPEND CMAKE_PREFIX_PATH "$ENV{QT_INSTALL_PREFIX}")
   message(STATUS "Qt6 prefix from QT_INSTALL_PREFIX: $ENV{QT_INSTALL_PREFIX}")
