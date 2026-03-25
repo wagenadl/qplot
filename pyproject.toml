@@ -3,7 +3,7 @@ build-backend = "scikit_build_core.build"
 requires = [
     "scikit-build-core>=0.9",
     "pybind11>=2.13",
-    "PyQt6==6.4",
+    "PyQt6>=6.10",
     "aqtinstall"
 ]
 
@@ -11,9 +11,9 @@ requires = [
 name = "pyqplot"
 version = "0.3.0"
 description = "QPlot"
-requires-python = ">=3.9"
+requires-python = ">=3.12"
 dependencies = [
-    "PyQt6==6.4",
+    "PyQt6>=6.10",
     "numpy>=1.26"
 ]
 
@@ -35,7 +35,7 @@ build = "cp312-*"
 skip = "*-win32 *-musllinux*"
 ##before-build = "pip install PyQt6 aqtinstall && python tools/install_qt_dev.py"
 # Run your test suite after each wheel build
-test-requires = ["PyQt6==6.4"]
+test-requires = ["PyQt6>=6.10"]
 test-command = "python -c \"import qplot;\""
 
 [tool.cibuildwheel.macos]
