@@ -6,11 +6,11 @@ install(FILES octave/scripts/qplotml DESTINATION bin)
 
 # Install octave
 set(OCTPATH "share/octave/packages/${OCTPKG}")
-include(octave/Install.CMakeLists.txt)
+##include(octave/Install.CMakeLists.txt)
 
 # Install python
 set(PYPATH "lib/python3/dist-packages/${PYPKG}")
-include(python/qplot/Install.CMakeLists.txt)
+##include(python/qplot/Install.CMakeLists.txt)
 
 # Install placeqpt
 install(PROGRAMS placeqpt/placeqpt-backend DESTINATION bin)

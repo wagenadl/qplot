@@ -1,0 +1,51 @@
+[build-system]
+build-backend = "scikit_build_core.build"
+requires = [
+    "scikit-build-core>=0.9",
+    "pybind11>=2.13",
+    "PyQt6>=6.4",   # <-- must be present when CMake runs
+]
+
+[project]
+name = "pyqplot"
+version = "0.3.0"
+description = "QPlot"
+requires-python = ">=3.9"
+dependencies = [
+    "PyQt6>=6.4",   # <-- required at runtime too (provides the Qt .so/.dylib/.dll)
+]
+# Add any pure-Python runtime deps here:
+# dependencies = ["numpy>=1.24"]
+
+[project.urls]
+Homepage = "https://github.com/wagenadl/qplot"
+
+[tool.scikit-build]
+# Tells scikit-build-core where your package lives
+wheel.packages = ["python/pyqplot"]
+cmake.build-type = "Release"
+# Include compiled artifacts (the binary + the .so extension)
+wheel.install-dir = "pyqplot"
+cmake.minimum-version = "3.15"
+
+[tool.cibuildwheel]
+# Build for CPython 3.9–3.13, skip PyPy and 32-bit Windows
+#build = "cp39-* cp310-* cp311-* cp312-* cp313-*"
+build = "cp312-*"
+skip = "*-win32 *-musllinux*"
+before-all = "pip install PyQt6 && python scripts/install_qt_dev.py"
+# Run your test suite after each wheel build
+test-requires = ["PyQt6>=6.6"]
+test-command = "python -c \"import qplot;\""
+
+[tool.cibuildwheel.macos]
+# Build a universal2 wheel covering both Intel and Apple Silicon
+archs = ["universal2"]
+before-all = "pip install PyQt6 aqtinstall && python scripts/install_qt_dev.py"
+
+[tool.cibuildwheel.linux]
+# manylinux2014 covers glibc >= 2.17 (very widely compatible)
+manylinux-x86_64-image = "manylinux2014"
+manylinux-aarch64-image = "manylinux2014"
+before-all = "pip install PyQt6 && python tools/install_qt_dev.py"
+

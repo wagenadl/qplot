@@ -9,11 +9,11 @@ cmake_minimum_required(VERSION 3.10.0)
 project(QPlot VERSION 0.6.1)
 set(CMAKE_PROJECT_HOMEPAGE_URL "http://danielwagenaar.net/qplot")
 set(OCTPKG "qplot-${QPlot_VERSION_MAJOR}.${QPlot_VERSION_MINOR}")
-set(PYPKG "qplot")
+set(PYPKG "pyqplot")
 
 ######################################################################
 # Specify the C++ standard [must be done _before_ adding executable!]
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON) # I thought this would do the trick...
 if (UNIX) 
@@ -24,7 +24,38 @@ endif()
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
-find_package(Qt6 COMPONENTS Widgets Svg PrintSupport REQUIRED)
+##find_package(pybind11 CONFIG REQUIRED)
+
+# ── Locate Qt6 via PyQt6's bundled installation ──────────────────────────────
+find_package(Python REQUIRED COMPONENTS Interpreter)
+
+# ── Locate Qt6 headers (build-time) ──────────────────────────────────────────
+# Priority:
+#   1. QT_INSTALL_PREFIX env var (set by cibuildwheel before-all or developer)
+#   2. qt_install_prefix.txt written by install_qt_dev.py
+#   3. PyQt6's own directory (has CMake configs on some platforms — last resort)
+
+if(DEFINED ENV{QT_INSTALL_PREFIX})
+  list(PREPEND CMAKE_PREFIX_PATH "$ENV{QT_INSTALL_PREFIX}")
+  message(STATUS "Qt6 prefix from QT_INSTALL_PREFIX: $ENV{QT_INSTALL_PREFIX}")
+
+elseif(EXISTS "${CMAKE_SOURCE_DIR}/qt_install_prefix.txt")
+  file(READ "${CMAKE_SOURCE_DIR}/qt_install_prefix.txt" _qt_prefix)
+  string(STRIP "${_qt_prefix}" _qt_prefix)
+  list(PREPEND CMAKE_PREFIX_PATH "${_qt_prefix}")
+  message(STATUS "Qt6 prefix from qt_install_prefix.txt: ${_qt_prefix}")
+
+else()
+  message(WARNING
+    "QT_INSTALL_PREFIX not set and qt_install_prefix.txt not found. "
+    "Falling back to system Qt — run scripts/install_qt_dev.py first "
+    "or set QT_INSTALL_PREFIX to your Qt installation."
+  )
+endif()
+
+find_package(Qt6 COMPONENTS Core Widgets Svg PrintSupport REQUIRED)
+
+qt_standard_project_setup() #?
 
 ######################################################################
 # Add the executables
@@ -34,9 +65,9 @@ include(backend/src/CMakeLists.txt)
 target_sources(qplot PRIVATE backend/src/qplot.qrc )
 
 # Libraries to link to - Qt must be mentioned
-target_link_libraries(qplot Qt6::Widgets)
-target_link_libraries(qplot Qt6::Svg)
-target_link_libraries(qplot Qt6::PrintSupport)
+target_link_libraries(qplot PRIVATE Qt6::Widgets)
+target_link_libraries(qplot PRIVATE Qt6::Svg)
+target_link_libraries(qplot PRIVATE Qt6::PrintSupport)
 
 if (WIN32)
   target_link_libraries(qplot secur32.lib)
@@ -49,6 +80,21 @@ configure_file(backend/src/config.h.in config.h)
 # Include paths - Qt must be mentioned
 target_include_directories(qplot PUBLIC "${PROJECT_BINARY_DIR}")
 target_include_directories(qplot PUBLIC "${Qt6Widgets_INCLUDE_DIRS}")
+
+######################################################################
+# Copy RPATH settings so the binary also finds Qt6 via PyQt6 at runtime
+if(APPLE)
+  set_target_properties(qplot PROPERTIES
+    INSTALL_RPATH "@loader_path/../PyQt6/Qt6/lib"
+    BUILD_WITH_INSTALL_RPATH TRUE
+  )
+elseif(UNIX)
+  set_target_properties(qplot PROPERTIES
+    INSTALL_RPATH "$ORIGIN/../PyQt6/Qt6/lib"
+    BUILD_WITH_INSTALL_RPATH TRUE
+  )
+endif()
+
 
 ########################################################################
 # Userguide
