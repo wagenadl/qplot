@@ -44,8 +44,7 @@ archs = ["universal2"]
 before-all = "pip install PyQt6 aqtinstall && python scripts/install_qt_dev.py"
 
 [tool.cibuildwheel.linux]
-# manylinux2014 covers glibc >= 2.17 (very widely compatible)
-manylinux-x86_64-image = "manylinux2014"
-manylinux-aarch64-image = "manylinux2014"
+manylinux-x86_64-image = "manylinux_2_34"
+manylinux-aarch64-image = "manylinux_2_34"
 before-all = "pip install PyQt6 && python tools/install_qt_dev.py"
 
