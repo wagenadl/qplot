@@ -13,6 +13,8 @@ import sys
 from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).parent
+print("Hello world", __file__)
+print("scriptdir", SCRIPT_DIR)
 INSTALL_DIR = SCRIPT_DIR.parent / ".qt_dev"
 
 
@@ -70,7 +72,7 @@ def main():
     print(f"Qt prefix written to {out_file}: {prefix}")
     os.system(f"ls -lR {prefix}")
     print("Hello world")
-    os.system(f"ls -lR /")
+    #os.system(f"ls -lR /")
     print("All good?")
 
 if __name__ == "__main__":
