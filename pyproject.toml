@@ -26,6 +26,7 @@ cmake.build-type = "Release"
 # Include compiled artifacts (the binary + the .so extension)
 wheel.install-dir = "pyqplot"
 cmake.minimum-version = "3.15"
+build.verbose = true
 
 [tool.cibuildwheel]
 # Build for CPython 3.9–3.13, skip PyPy and 32-bit Windows
