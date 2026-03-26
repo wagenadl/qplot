@@ -51,10 +51,10 @@ def main():
 
     print(f"Installing Qt {qt_version} ({host}/{target}/{arch}) → {INSTALL_DIR}")
 
-    subprocess.run(
-        [sys.executable, "-m", "pip", "install", "aqtinstall>=3.1"],
-        check=True
-    )
+    #subprocess.run(
+    #    [sys.executable, "-m", "pip", "install", "aqtinstall>=3.1"],
+    #    check=True
+    #)
 
     subprocess.run(
         [sys.executable, "-m", "aqt", "install-qt",
