@@ -18,6 +18,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON) # I thought this would do the trick...
 if (UNIX) 
   add_compile_options(-fPIC) # ... but in fact, this is required on Linux
+  add_compile_options(-march=x86-64)
 endif()
 
 # Qt stuff
