@@ -44,6 +44,7 @@ elseif(EXISTS "${CMAKE_SOURCE_DIR}/qt_install_prefix.txt")
   string(STRIP "${_qt_prefix}" _qt_prefix)
   list(PREPEND CMAKE_PREFIX_PATH "${_qt_prefix}")
   message(STATUS "Qt6 prefix from qt_install_prefix.txt: ${_qt_prefix}")
+  set(Qt6_DIR "${_qt_prefix}/lib/cmake/Qt6")
 
 else()
   message(WARNING
