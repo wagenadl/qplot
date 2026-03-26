@@ -2,9 +2,7 @@
 build-backend = "scikit_build_core.build"
 requires = [
     "scikit-build-core>=0.9",
-    "PyQt6-Qt6",
-    "PyQt6-sip",
-    "PyQt6",
+    "PyQt6>=6.10",
     "aqtinstall"
 ]
 
@@ -32,7 +30,7 @@ cmake.minimum-version = "3.15"
 [tool.cibuildwheel]
 # Build for CPython 3.9–3.13, skip PyPy and 32-bit Windows
 #build = "cp39-* cp310-* cp311-* cp312-* cp313-*"
-build = "cp312-*"
+build = "cp39-*"
 skip = "*-win32 *-musllinux*"
 ##before-build = "pip install PyQt6 aqtinstall && python tools/install_qt_dev.py"
 # Run your test suite after each wheel build
@@ -44,7 +42,7 @@ test-command = "python -c \"import qplot;\""
 archs = ["universal2"]
 
 [tool.cibuildwheel.linux]
-##manylinux-x86_64-image = "manylinux_2_34"
-##manylinux-aarch64-image = "manylinux_2_34"
+manylinux-x86_64-image = "manylinux_2_34"
+manylinux-aarch64-image = "manylinux_2_39"
 
 
