@@ -68,7 +68,10 @@ def main():
     out_file = SCRIPT_DIR.parent / "qt_install_prefix.txt"
     out_file.write_text(str(prefix))
     print(f"Qt prefix written to {out_file}: {prefix}")
-
+    os.system(f"ls -lR {prefix}")
+    print("Hello world")
+    os.system(f"ls -lR /")
+    print("All good?")
 
 if __name__ == "__main__":
     main()
