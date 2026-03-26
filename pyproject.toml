@@ -2,6 +2,8 @@
 build-backend = "scikit_build_core.build"
 requires = [
     "scikit-build-core>=0.9",
+    "pyqt6-qt6>=6.10",
+    "pyqt6-sip",
     "PyQt6>=6.10",
     "aqtinstall"
 ]
