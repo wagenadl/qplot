@@ -73,7 +73,7 @@ def main():
     out_file = SCRIPT_DIR.parent / "qt_install_prefix.txt"
     out_file.write_text(str(prefix))
     print(f"Qt prefix written to {out_file}: {prefix}")
-    os.system(f"ls -laR /project")
+    #    os.system(f"ls -laR /project")
     print("Hello world")
     os.system(f"who am i")
     #os.system(f"ls -lR /")

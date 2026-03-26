@@ -45,5 +45,5 @@ archs = ["universal2"]
 [tool.cibuildwheel.linux]
 manylinux-x86_64-image = "quay.io/pypa/manylinux_2_34"
 manylinux-aarch64-image = "quay.io/pypa/manylinux_2_39"
-
+before-all = "yum install -y libxkbcommon"
 
