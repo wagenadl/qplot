@@ -16,7 +16,9 @@ SCRIPT_DIR = Path(__file__).parent
 print("Hello world", __file__)
 print("scriptdir", SCRIPT_DIR)
 INSTALL_DIR = SCRIPT_DIR.parent / ".qt_dev"
-
+os.system(f"ls -lR {__file__}")
+os.system("df")
+print("cwd", os.getcwd())
 
 def get_pyqt6_qt_version() -> str:
     result = subprocess.run(
