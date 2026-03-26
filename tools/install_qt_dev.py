@@ -32,7 +32,7 @@ def aqt_arch() -> tuple[str, str, str]:
     machine = platform.machine().lower()
 
     if system == "Linux":
-        arch = "linux_gcc_arm64" if machine == "aarch64" else "linux_gcc_64"
+        arch = "gcc_arm64" if machine == "aarch64" else "gcc_64"
         return "linux", "desktop", arch
 
     if system == "Darwin":
