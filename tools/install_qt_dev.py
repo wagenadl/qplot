@@ -33,22 +33,23 @@ def aqt_arch() -> tuple[str, str, str]:
 
     if system == "Linux":
         arch = "gcc_arm64" if machine == "aarch64" else "gcc_64"
-        return "linux", "desktop", arch
+        return "linux", "desktop", arch, f"linux_{arch}"
 
     if system == "Darwin":
         # aqtinstall uses "clang_64" for x86_64 and "macos" for arm64
         arch = "macos" if machine == "arm64" else "clang_64"
-        return "mac", "desktop", arch
+        return "mac", "desktop", arch, arch
 
     if system == "Windows":
-        return "windows", "desktop", "win64_msvc2022_64"
+        arch = "win64_msvc2022_64"
+        return "windows", "desktop", arch, arch
 
     raise RuntimeError(f"Unsupported platform: {system}")
 
 
 def main():
     qt_version = get_pyqt6_qt_version()
-    host, target, arch = aqt_arch()
+    host, target, arch, longarch = aqt_arch()
 
     print(f"Installing Qt {qt_version} ({host}/{target}/{arch}) → {INSTALL_DIR}")
 
@@ -56,10 +57,13 @@ def main():
     #    [sys.executable, "-m", "pip", "install", "aqtinstall>=3.1"],
     #    check=True
     #)
+    print("available archs")
+    os.system(f"aqt list-qt {host} {target} --arch {qt_version}")
+    print("end available")
 
     subprocess.run(
         [sys.executable, "-m", "aqt", "install-qt",
-         host, target, qt_version, arch,
+         host, target, qt_version, longarch,
          "--outputdir", str(INSTALL_DIR)],
         check=True
     )
