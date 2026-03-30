@@ -1,4 +1,7 @@
 build
+dist
+.wraplock
+uv.lock
 *~
 debian/qqplot
 debian/*.substvars
