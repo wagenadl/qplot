@@ -12,7 +12,9 @@ import struct
 import io
 from typing import IO
 
-from .token_ import Tokenfrom .error import Error
+from token_ import Token
+from error import Error
+
 
 # ---------------------------------------------------------------------------
 # Reader — wraps either a binary file or stdin, mirrors C++ Reader class

@@ -12,9 +12,18 @@ from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import QRectF
 
-from .command import Commandfrom .token_ import Tokenfrom .whichaxis import WhichAxisfrom .range_ import Rangefrom .error import Error
+from command import Command
+from token_ import Token
+from whichaxis import WhichAxis
+from range import Range
+from error import Error
+
 if TYPE_CHECKING:
-    from .statement import Statement    from .figure import Figure    from .panel import Panel    from .axis import Axis
+    from statement import Statement
+    from figure import Figure
+    from panel import Panel
+    from axis import Axis
+
 
 _SCALE_TOLERANCE = 2e-3
 _SPACE_TOLERANCE = 1e-2  # pt

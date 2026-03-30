@@ -8,10 +8,16 @@ from __future__ import annotations
 
 from PyQt6.QtCore import QRectF
 
-from .statement import Statementfrom .command import Commandfrom .token_ import Tokenfrom .range_ import Rangefrom .error import Error
+from statement import Statement
+from command import Command
+from token_ import Token
+from range import Range
+from error import Error
+
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from .figure import Figure
+    from figure import Figure
+
 
 class Program:
     """Parses a list of Statements into Commands and renders them."""

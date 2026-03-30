@@ -11,9 +11,14 @@ from typing import TYPE_CHECKING
 from PyQt6.QtCore import QPointF, QRectF
 from PyQt6.QtGui import QTransform
 
-from .command import Commandfrom .token_ import Tokenfrom .image import build as image_build
+from command import Command
+from token_ import Token
+from image import build as image_build
+
 if TYPE_CHECKING:
-    from .statement import Statement    from .figure import Figure
+    from statement import Statement
+    from figure import Figure
+
 # Token index constants (mirrors the C++ Arg enum)
 _X     = 1
 _Z     = 2

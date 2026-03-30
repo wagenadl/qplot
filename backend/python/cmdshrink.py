@@ -11,9 +11,15 @@ from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import QPointF, QRectF
 
-from .command import Commandfrom .token_ import Tokenfrom .factor import pt2iufrom .error import Error
+from command import Command
+from token_ import Token
+from factor import pt2iu
+from error import Error
+
 if TYPE_CHECKING:
-    from .statement import Statement    from .figure import Figure
+    from statement import Statement
+    from figure import Figure
+
 _SHRINK_DEFAULT = 0.2  # pt
 
 

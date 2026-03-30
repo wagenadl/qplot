@@ -11,9 +11,13 @@ from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import QPointF, QRectF
 
-from .range_ import Range
+from range import Range
+
 if TYPE_CHECKING:
-    from .axis import Axis    from .panel import Panel    from .figure import Figure
+    from axis import Axis
+    from panel import Panel
+    from figure import Figure
+
 
 class AxisName(enum.Enum):
     X = "X"

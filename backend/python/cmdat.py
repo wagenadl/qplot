@@ -12,9 +12,15 @@ from PyQt6.QtCore import QPointF, QRectF
 from PyQt6.QtGui import QColor, QPen
 from PyQt6.QtCore import Qt
 
-from .command import Commandfrom .token_ import Tokenfrom .slightly import slightly_less, slightly_morefrom .error import Error
+from command import Command
+from token_ import Token
+from slightly import slightly_less, slightly_more
+from error import Error
+
 if TYPE_CHECKING:
-    from .statement import Statement    from .figure import Figure
+    from statement import Statement
+    from figure import Figure
+
 
 def _is_abs(s: str) -> bool:
     return s in ("abs", "absolute")

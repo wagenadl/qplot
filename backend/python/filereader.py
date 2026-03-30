@@ -14,7 +14,8 @@ from PyQt6.QtCore import (
 )
 from PyQt6.QtCore import QFileSystemWatcher
 
-from .statement import Statement
+from statement import Statement
+
 
 # ---------------------------------------------------------------------------
 # Contents — result of a read attempt

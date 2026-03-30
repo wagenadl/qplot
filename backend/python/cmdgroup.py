@@ -8,9 +8,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from .command import Command
+from command import Command
+
 if TYPE_CHECKING:
-    from .statement import Statement    from .figure import Figure
+    from statement import Statement
+    from figure import Figure
+
 
 @Command.register("group")
 class CmdGroup(Command):

@@ -10,7 +10,9 @@ import sys
 
 from PyQt6.QtCore import QMutex, QMutexLocker, QThread, pyqtSignal
 
-from .statement import Statementfrom .error import Error
+from statement import Statement
+from error import Error
+
 
 class PipeReader(QThread):
     """Reads QPlot statements from stdin on a background thread.

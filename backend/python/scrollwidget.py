@@ -12,7 +12,8 @@ from PyQt6.QtCore import Qt, QPointF, QRectF, QSizeF
 from PyQt6.QtGui import QCursor, QKeyEvent, QMouseEvent, QWheelEvent
 from PyQt6.QtWidgets import QWidget
 
-from .factor import iu2pt
+from factor import iu2pt
+
 
 class ScrollWidget(QWidget):
     """A zoomable, pannable widget base class.

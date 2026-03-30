@@ -16,7 +16,12 @@ from PyQt6.QtGui import QImage, QPainter, QPageSize
 from PyQt6.QtSvg import QSvgGenerator
 from PyQt6.QtPdf import QPdfWriter
 
-from .program import Programfrom .figure import Figurefrom .factor import pt2iu, iu2pt, set_factorfrom .error import Errorfrom .cmdsave import CmdSave
+from program import Program
+from figure import Figure
+from factor import pt2iu, iu2pt, set_factor
+from error import Error
+from cmdsave import CmdSave
+
 
 class Renderer:
     """Orchestrates pre-rendering (fudge loop) and output to SVG/PDF/image."""

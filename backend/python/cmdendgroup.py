@@ -11,9 +11,12 @@ from typing import TYPE_CHECKING
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QColor, QPen
 
-from .command import Command
+from command import Command
+
 if TYPE_CHECKING:
-    from .statement import Statement    from .figure import Figure
+    from statement import Statement
+    from figure import Figure
+
 
 @Command.register("endgroup")
 class CmdEndGroup(Command):
