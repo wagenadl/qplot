@@ -80,7 +80,7 @@ QRectF CmdZYImage::dataRange(Statement const &s) {
 
 void CmdZYImage::render(Statement const &s, Figure &f, bool dryrun) {
   int Z = s[ArgZ].num;
-  int Y = s[ArgZ].num;
+  int Y = s[ArgY].num;
   QVector<double> const &cdata = s.data(Argcdata);
   int C = cdata.size()/Z/Y;
   QRectF extent = dataRange(s);
