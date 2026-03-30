@@ -19,18 +19,18 @@ if TYPE_CHECKING:
 
 def _halignment(s: str) -> int:
     return {
-        "left":   Align.LEFT,
-        "right":  Align.RIGHT,
-        "center": Align.CENTER,
+        "left":   Align.HAlign.LEFT,
+        "right":  Align.HAlign.RIGHT,
+        "center": Align.HAlign.CENTER,
     }.get(s, -1)
 
 
 def _valignment(s: str) -> int:
     return {
-        "top":    Align.TOP,
-        "bottom": Align.BOTTOM,
-        "middle": Align.MIDDLE,
-        "base":   Align.BASE,
+        "top":    Align.VAlign.TOP,
+        "bottom": Align.VAlign.BOTTOM,
+        "middle": Align.VAlign.MIDDLE,
+        "base":   Align.VAlign.BASE,
     }.get(s, -1)
 
 

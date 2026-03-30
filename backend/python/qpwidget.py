@@ -109,7 +109,7 @@ class QPWidget(ScrollWidget):
 
     def set_margin(self, m: float) -> None:
         self._marg = m
-        self.setExtent(
+        self.set_extent(
             self._worldextent.adjusted(-m, -m, m, m))
 
     def set_contents(self, fig: Figure, prog: Program) -> None:
@@ -117,7 +117,7 @@ class QPWidget(ScrollWidget):
         self._prog = prog
         if fig:
             self._worldextent = fig.extent()
-            self.setExtent(
+            self.set_extent(
                 self._worldextent.adjusted(
                     -self._marg, -self._marg,
                      self._marg,  self._marg))
@@ -169,7 +169,7 @@ class QPWidget(ScrollWidget):
 
         if self._fig.extent() != self._worldextent:
             self._worldextent = self._fig.extent()
-            self.setExtent(self._worldextent.adjusted(
+            self.set_extent(self._worldextent.adjusted(
                 -self._marg, -self._marg,
                  self._marg,  self._marg))
             if self._brandnew:

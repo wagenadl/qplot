@@ -8,11 +8,14 @@
 
 import os
 import sys
+import time
+
+t0 = time.time()
 
 from PyQt6.QtCore import Qt, QCommandLineOption, QCommandLineParser, QProcessEnvironment
 from PyQt6.QtWidgets import QApplication
 
-print("hello1")
+print("hello1", time.time() - t0)
 
 from .program import Program
 from .figure import Figure
@@ -25,7 +28,7 @@ from .factor import pt2iu, set_factor
 from .renderer import Renderer
 from .statement import Statement
 
-print("hello2")
+print("hello2", time.time() - t0)
 
 # Import all Cmd* modules so their @Command.register decorators fire
 from . import cmdalign
@@ -59,7 +62,7 @@ from . import cmdxzimage
 from . import cmdylim
 from . import cmdzyimage
 
-print("hello3")
+print("hello3", time.time() - t0)
 
 try:
     from config import QPLOT_VERSION
@@ -186,6 +189,7 @@ def show_version() -> int:
 
 def main() -> int:
     global _autoraise
+    print("hello4", time.time() - t0)
 
     app = QApplication(sys.argv)
     app.setApplicationName("QPlot")
@@ -235,6 +239,7 @@ def main() -> int:
     cli.addOption(cli_version)
     cli.process(app)
 
+    print("hello5", time.time() - t0)
     if cli.isSet("help"):
         cli.showHelp()
     if cli.isSet("version"):
@@ -246,6 +251,7 @@ def main() -> int:
     if len(args) < 1 or len(args) > 2:
         cli.showHelp(1)
 
+    print("hello6", time.time() - t0)
     renderer = Renderer()
     if cli.isSet("w"):
         renderer.override_width(float(cli.value("w")))
@@ -259,6 +265,7 @@ def main() -> int:
     if cli.isSet("title"):
         ttl = cli.value("title")
 
+    print("hello7", time.time() - t0)
     if len(args) == 1:
         return interactive(args[0], ttl, renderer, app)
     else:
@@ -266,5 +273,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    print("hello 4")
     sys.exit(main())

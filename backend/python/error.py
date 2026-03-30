@@ -27,9 +27,8 @@ class Error:
             Error._dest << msg << "\n"
             Error._dest.flush()
         else:
-            ts = QTextStream()
-            ts.setDevice(sys.stderr)
-            ts << msg << "\n"
+            print(msg, file=sys.stderr)
+
 
     @staticmethod
     def set_destination(dest: QTextStream | None) -> None:

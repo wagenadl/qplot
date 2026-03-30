@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import sys
-sys.path.append(".")
+sys.path.append("/home/wagenaar/progs/qplot/qplot")
 
 from backend.python import main
 
