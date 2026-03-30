@@ -12,17 +12,9 @@ from typing import TYPE_CHECKING
 from PyQt6.QtCore import QPointF, QRectF
 from PyQt6.QtGui import QFontMetricsF, QPolygonF
 
-from command import Command
-from token_ import Token
-from factor import pt2iu
-from rotate import rotate_rect
-from range import Range
-from align import Align
-
+from .command import Commandfrom .token_ import Tokenfrom .factor import pt2iufrom .rotate import rotate_rectfrom .range_ import Rangefrom .align import Align
 if TYPE_CHECKING:
-    from statement import Statement
-    from figure import Figure
-
+    from .statement import Statement    from .figure import Figure
 
 def _euclidean_length(p: QPointF) -> float:
     return math.sqrt(p.x() * p.x() + p.y() * p.y())

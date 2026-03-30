@@ -10,14 +10,9 @@ from typing import TYPE_CHECKING
 
 from PyQt6.QtGui import QFont
 
-from command import Command
-from token_ import Token
-from factor import pt2iu
-
+from .command import Commandfrom .token_ import Tokenfrom .factor import pt2iu
 if TYPE_CHECKING:
-    from statement import Statement
-    from figure import Figure
-
+    from .statement import Statement    from .figure import Figure
 
 @Command.register("font")
 class CmdFont(Command):

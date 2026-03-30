@@ -5,8 +5,7 @@
 # (same GPL licence as original)
 
 import enum
-from factor import pt2iu
-
+from .factor import pt2iu
 
 class Marker:
     """Marker style: shape, fill, and radius."""

@@ -20,12 +20,7 @@ from PyQt6.QtWidgets import (
     QSizePolicy, QSpacerItem, QWidget,
 )
 
-from scrollwidget import ScrollWidget
-from figure import Figure
-from program import Program
-from axis import Axis
-from factor import pt2iu, iu2pt
-
+from .scrollwidget import ScrollWidgetfrom .figure import Figurefrom .program import Programfrom .axis import Axisfrom .factor import pt2iu, iu2pt
 try:
     from config import QPLOT_VERSION
 except ImportError:

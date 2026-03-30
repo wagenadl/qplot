@@ -7,8 +7,7 @@
 from PyQt6.QtCore import QRectF
 from PyQt6.QtGui import QBrush, QFont, QPen
 
-from align import Align
-
+from .align import Align
 
 class GroupData:
     """Style and layout state saved and restored across a group."""
