@@ -10,6 +10,8 @@ import abc
 from typing import TYPE_CHECKING, Type
 
 from PyQt6.QtCore import QRectF
+import re
+import importlib
 
 from .error import Error
 from .range_ import Range
@@ -18,6 +20,13 @@ if TYPE_CHECKING:
     from .statement import Statement
     from .figure import Figure
 
+_aliases = { "garea": "gline",
+             "phatch": "hatch",
+             "pmark": "mark",
+             "patch": "plot",
+             "line": "plot",
+             "area": "plot",
+             "ctext": "text" }
 
 class Command(abc.ABC):
     """Abstract base class for all plot commands.
@@ -50,7 +59,25 @@ class Command(abc.ABC):
         """Instantiate and return the Command registered under keyword,
         or None if no such command exists."""
         cls = Command._builders.get(keyword)
-        return cls() if cls is not None else None
+        if cls:
+            return cls()
+        if Command._tryload(keyword):
+            cls = Command._builders.get(keyword)
+            if cls:
+                return cls()
+        return None
+
+    @staticmethod
+    def _tryload(keyword: str) -> bool:
+        if not re.fullmatch(r'[a-z]+', keyword):
+            return False
+        if keyword in _aliases:
+            keyword = _aliases[keyword]
+        if importlib.import_module(f".cmd{keyword}",
+                                   package="qplot_backend"):
+            return True
+        return False
+        
 
     # --- Abstract interface -----------------------------------------------
 

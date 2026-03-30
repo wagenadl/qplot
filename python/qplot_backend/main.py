@@ -31,36 +31,36 @@ from .statement import Statement
 print("hello2", time.time() - t0)
 
 # Import all Cmd* modules so their @Command.register decorators fire
-from . import cmdalign
-from . import cmdalignaxes
-from . import cmdat
-from . import cmdbrush
-from . import cmdcaligraph
-from . import cmdcommonscale
-from . import cmdendgroup
-from . import cmdfigsize
-from . import cmdfont
-from . import cmdgline
-from . import cmdgroup
-from . import cmdhairline
-from . import cmdhatch
-from . import cmdimage
-from . import cmdimageg
-from . import cmdmark
-from . import cmdmarker
-from . import cmdpanel
-from . import cmdpen
-from . import cmdplot
-from . import cmdrebalance
-from . import cmdreftext
-from . import cmdsave
-from . import cmdshrink
-from . import cmdtext
-from . import cmdtextonpath
-from . import cmdxlim
-from . import cmdxzimage
-from . import cmdylim
-from . import cmdzyimage
+#from . import cmdalign
+#from . import cmdalignaxes
+#from . import cmdat
+#from . import cmdbrush
+#from . import cmdcaligraph
+#from . import cmdcommonscale
+#from . import cmdendgroup
+#from . import cmdfigsize
+#from . import cmdfont
+#from . import cmdgline
+#from . import cmdgroup
+#from . import cmdhairline
+#from . import cmdhatch
+#from . import cmdimage
+#from . import cmdimageg
+#from . import cmdmark
+#from . import cmdmarker
+#from . import cmdpanel
+#from . import cmdpen
+#from . import cmdplot
+#from . import cmdrebalance
+#from . import cmdreftext
+#from . import cmdsave
+#from . import cmdshrink
+#from . import cmdtext
+#from . import cmdtextonpath
+#from . import cmdxlim
+#from . import cmdxzimage
+#from . import cmdylim
+#from . import cmdzyimage
 
 print("hello3", time.time() - t0)
 
@@ -71,7 +71,7 @@ except ImportError:
 
 _autoraise = False
 
-
+print("hello4", time.time() - t0)
 # ---------------------------------------------------------------------------
 # Interactive mode — display window, read from file or stdin
 # ---------------------------------------------------------------------------
@@ -143,23 +143,34 @@ def interactive(ifn: str, ttl: str, renderer: Renderer,
     renderer.prerender()
     return app.exec()
 
-
+print("hello5", time.time() - t0)
 # ---------------------------------------------------------------------------
 # Non-interactive mode — read file, render to output
 # ---------------------------------------------------------------------------
 
 def noninteractive(ifn: str, ofn: str, renderer: Renderer) -> int:
+    print("ni1")
     reader   = FileReader(ifn)
+    print("ni2")
     contents = reader.contents()
+    print("ni3")
     if contents.valid:
+        print("ni4")
         renderer.program().set_label(ifn)
-        renderer.program().read(contents.contents)
+        print("ni5")
+        try:
+            renderer.program().read(contents.contents)
+        except Exception as e:
+            print(f"Exception reading program: {e}")
+            sys.exit(1)
+        print("ni6")
         return 0 if renderer.save(ofn) else 2
     else:
+        print("ni7")
         Error() << contents.error
         return 2
 
-
+print("hello6", time.time() - t0)
 # ---------------------------------------------------------------------------
 # Version display
 # ---------------------------------------------------------------------------
@@ -182,7 +193,7 @@ def show_version() -> int:
     )
     return 0
 
-
+print("hello7", time.time() - t0)
 # ---------------------------------------------------------------------------
 # Entry point
 # ---------------------------------------------------------------------------
@@ -271,6 +282,9 @@ def main() -> int:
     else:
         return noninteractive(args[0], args[1], renderer)
 
+print("hello8", time.time() - t0)
 
 if __name__ == "__main__":
     sys.exit(main())
+
+print("hello9", time.time() - t0)    

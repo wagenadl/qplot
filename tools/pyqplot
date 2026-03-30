@@ -1,8 +1,7 @@
 #!/usr/bin/python3
 
-import sys
-sys.path.append("/home/wagenaar/progs/qplot/qplot")
-
-from backend.python import main
-
+import time
+t0 = time.time()
+from qplot_backend import main
+print(time.time() - t0)
 main.main()
