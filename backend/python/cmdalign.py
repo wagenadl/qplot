@@ -8,13 +8,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from command import Command
-from align import Align
-from token_ import Token
+from .command import Command
+from .align import Align
+from .token_ import Token
 
 if TYPE_CHECKING:
-    from statement import Statement
-    from figure import Figure
+    from .statement import Statement
+    from .figure import Figure
 
 
 def _halignment(s: str) -> int:

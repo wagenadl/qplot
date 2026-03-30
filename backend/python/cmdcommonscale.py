@@ -11,14 +11,14 @@ from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import QPointF
 
-from command import Command
-from whichaxis import WhichAxis
-from error import Error
-from token_ import Token
+from .command import Command
+from .whichaxis import WhichAxis
+from .error import Error
+from .token_ import Token
 
 if TYPE_CHECKING:
-    from statement import Statement
-    from figure import Figure
+    from .statement import Statement
+    from .figure import Figure
 
 _SCALE_TOLERANCE = 1e-3
 

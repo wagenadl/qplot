@@ -11,14 +11,14 @@ import math
 from PyQt6.QtCore import Qt, QPointF, QRectF, QSizeF
 from PyQt6.QtGui import QBrush, QFont, QPainter, QPen, QTransform
 
-from axis import Axis
-from panel import Panel
-from marker import Marker
-from align import Align
-from groupdata import GroupData
-from textshiftaccum import TextShiftAccum
-from factor import pt2iu
-from error import Error
+from .axis import Axis
+from .panel import Panel
+from .marker import Marker
+from .align import Align
+from .groupdata import GroupData
+from .textshiftaccum import TextShiftAccum
+from .factor import pt2iu
+from .error import Error
 
 _DEFAULT_HAIR = 0.25
 

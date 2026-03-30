@@ -10,48 +10,48 @@ import sys
 from PyQt6.QtCore import Qt, QCommandLineOption, QCommandLineParser, QProcessEnvironment
 from PyQt6.QtWidgets import QApplication
 
-from program import Program
-from figure import Figure
-from command import Command
-from qpwidget import QPWidget
-from filereader import FileReader, Contents
-from pipereader import PipeReader
-from error import Error
-from factor import pt2iu, set_factor
-from renderer import Renderer
-from statement import Statement
+from .program import Program
+from .figure import Figure
+from .command import Command
+from .qpwidget import QPWidget
+from .filereader import FileReader, Contents
+from .pipereader import PipeReader
+from .error import Error
+from .factor import pt2iu, set_factor
+from .renderer import Renderer
+from .statement import Statement
 
 # Import all Cmd* modules so their @Command.register decorators fire
-import cmdalign
-import cmdalignaxes
-import cmdat
-import cmdbrush
-import cmdcaligraph
-import cmdcommonscale
-import cmdendgroup
-import cmdfigsize
-import cmdfont
-import cmdgline
-import cmdgroup
-import cmdhairline
-import cmdhatch
-import cmdimage
-import cmdimageg
-import cmdmark
-import cmdmarker
-import cmdpanel
-import cmdpen
-import cmdplot
-import cmdrebalance
-import cmdreftext
-import cmdsave
-import cmdshrink
-import cmdtext
-import cmdtextonpath
-import cmdxlim
-import cmdxzimage
-import cmdylim
-import cmdzyimage
+from . import cmdalign
+from . import cmdalignaxes
+from . import cmdat
+from . import cmdbrush
+from . import cmdcaligraph
+from . import cmdcommonscale
+from . import cmdendgroup
+from . import cmdfigsize
+from . import cmdfont
+from . import cmdgline
+from . import cmdgroup
+from . import cmdhairline
+from . import cmdhatch
+from . import cmdimage
+from . import cmdimageg
+from . import cmdmark
+from . import cmdmarker
+from . import cmdpanel
+from . import cmdpen
+from . import cmdplot
+from . import cmdrebalance
+from . import cmdreftext
+from . import cmdsave
+from . import cmdshrink
+from . import cmdtext
+from . import cmdtextonpath
+from . import cmdxlim
+from . import cmdxzimage
+from . import cmdylim
+from . import cmdzyimage
 
 try:
     from config import QPLOT_VERSION

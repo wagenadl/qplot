@@ -11,14 +11,14 @@ from typing import TYPE_CHECKING
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QColor, QPen
 
-from command import Command
-from token_ import Token
-from factor import pt2iu
-from error import Error
+from .command import Command
+from .token_ import Token
+from .factor import pt2iu
+from .error import Error
 
 if TYPE_CHECKING:
-    from statement import Statement
-    from figure import Figure
+    from .statement import Statement
+    from .figure import Figure
 
 
 _PEN_DEFAULT_LENGTH = 3  # pt
@@ -92,7 +92,7 @@ class CmdPen(Command):
         return True
 
     def render(self, s: Statement, f: Figure, dryrun: bool) -> None:
-        from figure import Figure as FigureClass  # avoid circular at module level
+        from .figure import Figure as FigureClass  # avoid circular at module level
         p = QPen(f.painter().pen())
         named_pen = False
 

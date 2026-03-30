@@ -12,16 +12,16 @@ from typing import TYPE_CHECKING
 from PyQt6.QtCore import QPointF, QRectF
 from PyQt6.QtGui import QPolygonF, QPainterPath
 
-from command import Command
-from cmdplot import CmdPlot
-from cmdmark import CmdMark
-from rotate import rotate_point
-from token_ import Token
-from factor import pt2iu
+from .command import Command
+from .cmdplot import CmdPlot
+from .cmdmark import CmdMark
+from .rotate import rotate_point
+from .token_ import Token
+from .factor import pt2iu
 
 if TYPE_CHECKING:
-    from statement import Statement
-    from figure import Figure
+    from .statement import Statement
+    from .figure import Figure
 
 
 @Command.register("hatch")

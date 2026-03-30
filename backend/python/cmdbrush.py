@@ -11,12 +11,12 @@ from typing import TYPE_CHECKING
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QBrush, QColor
 
-from command import Command
-from token_ import Token
+from .command import Command
+from .token_ import Token
 
 if TYPE_CHECKING:
-    from statement import Statement
-    from figure import Figure
+    from .statement import Statement
+    from .figure import Figure
 
 
 @Command.register("brush")

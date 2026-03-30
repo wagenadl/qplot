@@ -11,14 +11,14 @@ from typing import TYPE_CHECKING
 
 from PyQt6.QtCore import QPointF, QRectF, QSizeF
 
-from command import Command
-from token_ import Token
-from factor import pt2iu
-from image import build as image_build
+from .command import Command
+from .token_ import Token
+from .factor import pt2iu
+from .image import build as image_build
 
 if TYPE_CHECKING:
-    from statement import Statement
-    from figure import Figure
+    from .statement import Statement
+    from .figure import Figure
 
 
 def _has_complex_syntax(s: Statement) -> bool:

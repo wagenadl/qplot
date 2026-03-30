@@ -6,7 +6,7 @@
 
 from PyQt6.QtCore import QRectF
 
-from axis import Axis
+from .axis import Axis
 
 
 class Panel:

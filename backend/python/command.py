@@ -11,12 +11,12 @@ from typing import TYPE_CHECKING, Type
 
 from PyQt6.QtCore import QRectF
 
-from error import Error
-from range import Range
+from .error import Error
+from .range_ import Range
 
 if TYPE_CHECKING:
-    from statement import Statement
-    from figure import Figure
+    from .statement import Statement
+    from .figure import Figure
 
 
 class Command(abc.ABC):

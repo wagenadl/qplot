@@ -12,16 +12,16 @@ from typing import TYPE_CHECKING
 from PyQt6.QtCore import Qt, QPointF, QRectF, QSizeF
 from PyQt6.QtGui import QPainter, QPolygonF, QColor
 
-from command import Command
-from token_ import Token
-from factor import pt2iu
-from rotate import rotate_point
-from slightly import slightly_less, slightly_more
-from marker import Marker
+from .command import Command
+from .token_ import Token
+from .factor import pt2iu
+from .rotate import rotate_point
+from .slightly import slightly_less, slightly_more
+from .marker import Marker
 
 if TYPE_CHECKING:
-    from statement import Statement
-    from figure import Figure
+    from .statement import Statement
+    from .figure import Figure
 
 
 # ---------------------------------------------------------------------------

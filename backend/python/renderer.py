@@ -16,11 +16,11 @@ from PyQt6.QtGui import QImage, QPainter, QPageSize
 from PyQt6.QtSvg import QSvgGenerator
 from PyQt6.QtPdf import QPdfWriter
 
-from program import Program
-from figure import Figure
-from factor import pt2iu, iu2pt, set_factor
-from error import Error
-from cmdsave import CmdSave
+from .program import Program
+from .figure import Figure
+from .factor import pt2iu, iu2pt, set_factor
+from .error import Error
+from .cmdsave import CmdSave
 
 
 class Renderer:

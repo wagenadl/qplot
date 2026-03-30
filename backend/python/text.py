@@ -11,7 +11,7 @@ from dataclasses import dataclass, field
 from PyQt6.QtCore import QPointF, QRectF
 from PyQt6.QtGui import QFont, QFontMetricsF, QPainter
 
-from factor import pt2iu
+from .factor import pt2iu
 
 _SCRIPT_SIZE  = 0.75
 _SCRIPT_SHIFT = 0.75

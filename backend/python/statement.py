@@ -12,8 +12,8 @@ import struct
 import io
 from typing import IO
 
-from token_ import Token
-from error import Error
+from .token_ import Token
+from .error import Error
 
 
 # ---------------------------------------------------------------------------

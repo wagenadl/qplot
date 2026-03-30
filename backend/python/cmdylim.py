@@ -8,13 +8,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from command import Command
-from token_ import Token
-from range import Range
+from .command import Command
+from .token_ import Token
+from .range_ import Range
 
 if TYPE_CHECKING:
-    from statement import Statement
-    from figure import Figure
+    from .statement import Statement
+    from .figure import Figure
 
 
 @Command.register("ylim")
