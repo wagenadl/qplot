@@ -14,7 +14,7 @@ import tempfile
 from PyQt6.QtCore import QPointF, QRectF, QSizeF
 from PyQt6.QtGui import QImage, QPainter, QPageSize
 from PyQt6.QtSvg import QSvgGenerator
-from PyQt6.QtPdf import QPdfWriter
+from PyQt6.QtGui import QPdfWriter
 
 from .program import Program
 from .figure import Figure

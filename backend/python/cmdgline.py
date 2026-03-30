@@ -250,4 +250,38 @@ class CmdGLine(Command):
                 phi = math.atan2(dp.y(), dp.x())
                 pcurrent.append(
                     p - QPointF(math.cos(phi) * retract_l[n],
-                                math.sin(phi) * retract_
+                                math.sin(phi) * retract_l[n]))
+                ppp.append(QPolygonF(pcurrent))
+                pcurrent = []
+
+            if n < N - 1 and retract_r[n] != 0:
+                dp = p - pts[n+1]
+                phi = math.atan2(dp.y(), dp.x())
+                p = p - QPointF(math.cos(phi) * retract_r[n],
+                                math.sin(phi) * retract_r[n])
+
+            pcurrent.append(p)
+
+        if len(pcurrent) > 1:
+            ppp.append(QPolygonF(pcurrent))
+
+        # Compute bbox as union of all segment bounding rects
+        bbox = QRectF()
+        for poly in ppp:
+            r = poly.boundingRect()
+            bbox = r if bbox.isNull() else bbox.united(r)
+
+        w = f.painter().pen().widthF()
+        if w > 0:
+            bbox.adjust(-w/2, -w/2, w/2, w/2)
+
+        f.set_bbox(bbox)
+
+        if dryrun:
+            return
+
+        for poly in ppp:
+            if s[0].str == "garea":
+                f.painter().drawPolygon(poly)
+            else:
+                f.painter().drawPolyline(poly)

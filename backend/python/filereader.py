@@ -154,7 +154,7 @@ class FileReader(QThread):
                 c.contents.append(s)
                 line += s.line_count()
         except Exception as exc:
-            c.error = f"Read error at line {line} of "{self._filename}": {exc}"
+            c.error = f"Read error at line {line} of '{self._filename}': {exc}"
             return c
         finally:
             if self._filename not in ("-", ""):

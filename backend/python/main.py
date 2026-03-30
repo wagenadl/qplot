@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 # main.py - This file is part of QPlot
 
 # QPlot - Publication quality 2D graphs with dual coordinate systems
@@ -10,6 +12,8 @@ import sys
 from PyQt6.QtCore import Qt, QCommandLineOption, QCommandLineParser, QProcessEnvironment
 from PyQt6.QtWidgets import QApplication
 
+print("hello1")
+
 from .program import Program
 from .figure import Figure
 from .command import Command
@@ -20,6 +24,8 @@ from .error import Error
 from .factor import pt2iu, set_factor
 from .renderer import Renderer
 from .statement import Statement
+
+print("hello2")
 
 # Import all Cmd* modules so their @Command.register decorators fire
 from . import cmdalign
@@ -52,6 +58,8 @@ from . import cmdxlim
 from . import cmdxzimage
 from . import cmdylim
 from . import cmdzyimage
+
+print("hello3")
 
 try:
     from config import QPLOT_VERSION
@@ -258,4 +266,5 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    print("hello 4")
     sys.exit(main())
