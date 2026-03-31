@@ -1,5 +1,5 @@
 # .github/workflows/build.yml
-name: Build and Release
+name: Build and Release Wheels
 
 on:
   push:

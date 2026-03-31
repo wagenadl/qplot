@@ -2,4 +2,4 @@
 
 sudo apt-get update -qq || exit 1
 sudo apt-get install -y cmake g++ || exit 1
-sudo apt-get install -y libqt5svg5-dev qtbase5-dev || exit 1
+sudo apt-get install -y libqt6svg6-dev qt6-base-dev || exit 1
