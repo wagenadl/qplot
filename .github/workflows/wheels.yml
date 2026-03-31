@@ -30,7 +30,7 @@ jobs:
         with:
           name: wheel
           path: dist/*.whl
-          retention-days: 30
+          retention-days: 3
 
   release:
     name: Create release and publish to PyPI
