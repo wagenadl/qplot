@@ -1,7 +1,5 @@
 #!/usr/bin/python3
 
-import time
-t0 = time.time()
 from qplot_backend import main
-print(time.time() - t0)
+
 main.main()
