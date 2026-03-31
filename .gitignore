@@ -1,5 +1,6 @@
 build
 dist
+venv
 .wraplock
 uv.lock
 *~
@@ -12,4 +13,3 @@ __pycache__
 docs/source/notebooks/*.pdf
 .ipynb_checkpoints
 
-dist
