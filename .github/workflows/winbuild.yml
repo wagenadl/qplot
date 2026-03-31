@@ -17,19 +17,22 @@ jobs:
       - name: Install CMake
         uses: lukka/get-cmake@latest
       - name: Install NSIS
-        run: |
-          Invoke-WebRequest https://prdownloads.sourceforge.net/nsis/nsis-3.11-setup.exe -OutFile C:\WINDOWS\Temp\nsis-setup.exe
-          $process = Start-Process "C:\WINDOWS\Temp\nsis-setup.exe" -ArgumentList "/S" -Wait -PassThru
-          $exitCode = $process.ExitCode
-            if ($exitCode -eq 0) {
-                Write-Host "Installer ran successfully."
-            } else {
-                Write-Host "Installer failed with exit code $exitCode."
-                exit $exitCode
-            }
-          echo "C:\Program Files (x86)\NSIS\Bin" | Out-File -FilePath "$env:GITHUB_PATH" -Append
-          echo "C:\Program Files (x86)\NSIS" | Out-File -FilePath "$env:GITHUB_PATH" -Append
-        shell: pwsh
+        uses: negrutiu/nsis-install@v2
+        #  run: choco install nsis --no-progress -y
+      #name: Install NSIS
+      #run: |
+      #  Invoke-WebRequest https://prdownloads.sourceforge.net/nsis/nsis-3.10-setup.exe -OutFile C:\WINDOWS\Temp\nsis-setup.exe
+      #  $process = Start-Process "C:\WINDOWS\Temp\nsis-setup.exe" -ArgumentList "/S" -Wait -PassThru
+      #  $exitCode = $process.ExitCode
+      #    if ($exitCode -eq 0) {
+      #        Write-Host "Installer ran successfully."
+      #    } else {
+      #        Write-Host "Installer failed with exit code $exitCode."
+      #        exit $exitCode
+      #    }
+      #  echo "C:\Program Files (x86)\NSIS\Bin" | Out-File -FilePath "$env:GITHUB_PATH" -Append
+      #  echo "C:\Program Files (x86)\NSIS" | Out-File -FilePath "$env:GITHUB_PATH" -Append
+      #  shell: pwsh
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
         with:
@@ -42,11 +45,10 @@ jobs:
         working-directory: ./build
         run: cpack
       - name: Upload .exe
-        uses: softprops/action-gh-release@v2
+        uses: actions/upload-artifact@v4
         with:
           name: winexe
-          files: build/QPlot*exe
-          token: ${{github.TOKEN}}
+          path: build/QPlot*exe
           retention-days: 3
 
   release:
@@ -63,7 +65,7 @@ jobs:
         with:
           name: winexe
           path: build/
-      - name: Upload .exe
+      - name: Release .exe
         uses: softprops/action-gh-release@v2
         with:
           files: build/QPlot*exe
