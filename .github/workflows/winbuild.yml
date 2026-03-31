@@ -15,7 +15,7 @@ jobs:
       - name: Install CMake
         uses: lukka/get-cmake@latest
       - name: Install NSIS
-        uses: repolevedavaj/install-nsis@v1.0.1
+        uses: wagenadl/qplot/.github/workflows/install-nsis.yml@main
         with:
           nsis-version: '3.10'
       - name: Install Qt
