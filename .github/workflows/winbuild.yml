@@ -18,21 +18,6 @@ jobs:
         uses: lukka/get-cmake@latest
       - name: Install NSIS
         uses: negrutiu/nsis-install@v2
-        #  run: choco install nsis --no-progress -y
-      #name: Install NSIS
-      #run: |
-      #  Invoke-WebRequest https://prdownloads.sourceforge.net/nsis/nsis-3.10-setup.exe -OutFile C:\WINDOWS\Temp\nsis-setup.exe
-      #  $process = Start-Process "C:\WINDOWS\Temp\nsis-setup.exe" -ArgumentList "/S" -Wait -PassThru
-      #  $exitCode = $process.ExitCode
-      #    if ($exitCode -eq 0) {
-      #        Write-Host "Installer ran successfully."
-      #    } else {
-      #        Write-Host "Installer failed with exit code $exitCode."
-      #        exit $exitCode
-      #    }
-      #  echo "C:\Program Files (x86)\NSIS\Bin" | Out-File -FilePath "$env:GITHUB_PATH" -Append
-      #  echo "C:\Program Files (x86)\NSIS" | Out-File -FilePath "$env:GITHUB_PATH" -Append
-      #  shell: pwsh
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
         with:
@@ -70,7 +55,3 @@ jobs:
         with:
           files: build/QPlot*exe
           token: ${{github.TOKEN}}
-                  
-    
-# The NSIS installer was adapted from https://github.com/repolevedavaj/install-nsis
-# The MIT license applies: https://github.com/repolevedavaj/install-nsis/blob/main/LICENSE
