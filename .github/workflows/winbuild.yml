@@ -16,21 +16,20 @@ jobs:
         uses: actions/checkout@master
       - name: Install CMake
         uses: lukka/get-cmake@latest
-  steps:
-    - name: Install NSIS
-      run: |
-        Invoke-WebRequest https://prdownloads.sourceforge.net/nsis/nsis-${{ inputs.nsis-version }}-setup.exe -OutFile C:\WINDOWS\Temp\nsis-3.11-setup.exe
-        $process = Start-Process "C:\WINDOWS\Temp\nsis-3.11-setup.exe" -ArgumentList "/S" -Wait -PassThru
-        $exitCode = $process.ExitCode
-          if ($exitCode -eq 0) {
-              Write-Host "Installer ran successfully."
-          } else {
-              Write-Host "Installer failed with exit code $exitCode."
-              exit $exitCode
-          }
-        echo "C:\Program Files (x86)\NSIS\Bin" | Out-File -FilePath "$env:GITHUB_PATH" -Append
-        echo "C:\Program Files (x86)\NSIS" | Out-File -FilePath "$env:GITHUB_PATH" -Append
-      shell: pwsh
+      - name: Install NSIS
+        run: |
+          Invoke-WebRequest https://prdownloads.sourceforge.net/nsis/nsis-${{ inputs.nsis-version }}-setup.exe -OutFile C:\WINDOWS\Temp\nsis-3.11-setup.exe
+          $process = Start-Process "C:\WINDOWS\Temp\nsis-3.11-setup.exe" -ArgumentList "/S" -Wait -PassThru
+          $exitCode = $process.ExitCode
+            if ($exitCode -eq 0) {
+                Write-Host "Installer ran successfully."
+            } else {
+                Write-Host "Installer failed with exit code $exitCode."
+                exit $exitCode
+            }
+          echo "C:\Program Files (x86)\NSIS\Bin" | Out-File -FilePath "$env:GITHUB_PATH" -Append
+          echo "C:\Program Files (x86)\NSIS" | Out-File -FilePath "$env:GITHUB_PATH" -Append
+        shell: pwsh
       - name: Install Qt
         uses: jurplel/install-qt-action@v4
         with:
