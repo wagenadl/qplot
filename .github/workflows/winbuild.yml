@@ -18,8 +18,8 @@ jobs:
         uses: lukka/get-cmake@latest
       - name: Install NSIS
         run: |
-          Invoke-WebRequest https://prdownloads.sourceforge.net/nsis/nsis-${{ inputs.nsis-version }}-setup.exe -OutFile C:\WINDOWS\Temp\nsis-3.11-setup.exe
-          $process = Start-Process "C:\WINDOWS\Temp\nsis-3.11-setup.exe" -ArgumentList "/S" -Wait -PassThru
+          Invoke-WebRequest https://prdownloads.sourceforge.net/nsis/nsis-3.11-setup.exe -OutFile C:\WINDOWS\Temp\nsis-setup.exe
+          $process = Start-Process "C:\WINDOWS\Temp\nsis-setup.exe" -ArgumentList "/S" -Wait -PassThru
           $exitCode = $process.ExitCode
             if ($exitCode -eq 0) {
                 Write-Host "Installer ran successfully."
