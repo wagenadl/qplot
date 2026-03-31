@@ -21,10 +21,10 @@ import os
 import re
 import inspect
 
-sys.path.append("../python")
+sys.path.insert(0, "../python")
 import qplot as qp
 
-sys.path.append("./code")
+sys.path.insert(0, "./code")
 import qppydoclib as qpd
 import qphtmllib as qph
 

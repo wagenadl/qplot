@@ -24,13 +24,15 @@ from . import data
 import numpy as np
 
 def ytitlerot(phi=None):
-    '''YTITLEROT - Specifies the rotation of y-axis titles.
+    '''YTITLEROT - Specifies the rotation of y-axis titles
+    
     YTITLEROT(phi) specifies the rotation of y-axis titles:
     Positive PHI means rotated 90 degrees counterclockwise.
     Negative PHI means rotated 90 degrees clockwise.
     Zero means upright.
-    Rotation at angles other than 0 and ±90° is not supported.
-    phi = YTITLEROT() returns current value.'''
+    Rotation angles other than 0 and ±90° are not supported.
+    
+    PHI = YTITLEROT() returns current value.'''
     qi.ensure()
     if phi is None:
         phi = qi.f.ytitlerot
@@ -39,49 +41,62 @@ def ytitlerot(phi=None):
     return phi
 
 
-def axshift(pt=None):
+def axshift(shift=None):
     '''AXSHIFT - Specifies shift of drawn axis for XAXIS and YAXIS
-    AXSHIFT(pt) specifies shift (in points) for XAXIS and
+    
+    AXSHIFT(shift) specifies shift (in millimeters or points) for XAXIS and
     YAXIS. Positive means down or left, negative means up or right.
-    pt = AXSHIFT() returns current setting.'''
+    
+    shift = AXSHIFT() returns current setting.'''
     qi.ensure()
-    if pt is None:
-        pt = qi.f.axshift
+    if shift is None:
+        return qi.f.axshift
     else:
-        qi.f.axshift = pt
-    return pt
+        qi.f.axshift = shift
 
-def textdist(lbl=None, ttl=None):
+def textdist(lbldist=None, ttldist=None):
     '''TEXTDIST - Specify distance to text labels for XAXIS and YAXIS
+    
     TEXTDIST(lbldist, ttldist) specifies distance between ticks and
     tick labels and between tick labels and axis title, in points.
+    
     TEXTDIST(dist) uses DIST for both distances.
+    
     Positive numbers are to the left and down; negative numbers are to the
     right and up.
-    (lbl, ttl) = TEXTDIST() returns current settings.'''
-
-    qi.ensure()
-    if lbl is None:
-        lbl = qi.f.textdist[0]
-        if ttl is None:
-            ttl = qi.f.textdist[1]
-    elif ttl is None:
-        ttl = lbl
-    qi.f.textdist = (lbl, ttl)
-    return (lbl, ttl)
     
-def ticklen(pt=None):
-    '''TICKLEN - Specifies length of ticks for XAXIS and YAXIS
-    TICKLEN(len) specifies length of ticks (in points) for XAXIS and
-    YAXIS. Positive means down or left, negative means up or right.
-    pt = TICKLEN() returns current setting.'''
-    qi.ensure()
-    if pt is None:
-        pt = qi.f.ticklen
-    else:
-        qi.f.ticklen = pt
-    return pt
+    (LBLDIST, TTLDIST) = TEXTDIST() returns current settings.'''
 
+    qi.ensure()
+    if lbldist is None and ttldist is None:
+        lbldist = qi.f.textdist[0]
+        ttldist = qi.f.textdist[1]
+        return (lbldist, ttldist)
+    if lbldist is None:
+        lbldist = qi.f.textdist[0]
+    if ttldist is None:
+        ttldist = lbldist
+    qi.f.textdist = (lbldist, ttldist)
+
+
+def ticklen(tlen=None):
+    '''TICKLEN - Specifies length of ticks for XAXIS and YAXIS
+    
+    TICKLEN(tlen) specifies length of ticks (in millimeters or points)
+    for XAXIS and YAXIS. Positive means down or left, negative means
+    up or right.
+    
+    tlen = TICKLEN() returns current setting.
+
+    '''
+    qi.ensure()
+    if tlen is None:
+        tlen = qi.f.ticklen
+        return tlen
+    else:
+        qi.f.ticklen = tlen
+
+        
 def _align(hori, dx, dy=None):
     if dy is None:
         dy = dx
@@ -99,10 +114,11 @@ def _align(hori, dx, dy=None):
             xa = 'right';
     return (xa, ya)
 
+
 def _qaxis(orient='x', lim_d=None,
            tick_d=None, tick_p=None,
            tick_lbl=None, ttl='',
-           ticklen=3, lbldist=3, ttldist=3,
+           ticklen=None, lbldist=None, ttldist=None,
            coord_d=None, coord_p=0,
            ttlrot=0,
            cbar=None,
@@ -128,6 +144,12 @@ def _qaxis(orient='x', lim_d=None,
                        linewidth'''
 
     qi.ensure()
+    if ticklen is None:
+        ticklen = 3*qi.f.pt
+    if lbldist is None:
+        lbldist = 3*qi.f.pt
+    if ttldist is None:
+        ttldist = 3*qi.f.pt
     qi.f.lastax = { 'orient': orient,
                     'lim_d': lim_d,
                     'tick_d': tick_d,
@@ -240,10 +262,14 @@ def _qaxis(orient='x', lim_d=None,
         (lbllx, lblly)   = (lblly, lbllx)
     if ticklen!=0:
         for k in range(len(tickdx)):
-            paper.gline([[paper.AbsData(tickdx[k], tickdy[k]),
-    	                 paper.RelPaper(tickpx[k], tickpy[k])],
-                        [paper.AbsData(tickdx[k], tickdy[k]),
-    	                 paper.RelPaper(tickpx[k]+ticklx, tickpy[k]+tickly)]])
+            paper.gline([[paper.AbsData(tickdx[k],
+                                        tickdy[k]),
+    	                 paper.RelPaper(tickpx[k],
+                                        tickpy[k]*qi.Figure.ydown)],
+                        [paper.AbsData(tickdx[k],
+                                       tickdy[k]),
+    	                 paper.RelPaper(tickpx[k]+ticklx,
+                                        (tickpy[k]+tickly)*qi.Figure.ydown)]])
             
     # Draw labels if desired
     if callable(tick_lbl):
@@ -268,11 +294,12 @@ def _qaxis(orient='x', lim_d=None,
             markup.reftext(' '.join(reftxt))
                     
         for k in range(len(tick_lbl)):
-            markup.at(tickdx[k], tickdy[k])
+            markup.at(tickdx[k], tickdy[k]*qi.Figure.ydown)
             lbl = tick_lbl[k]
             if type(lbl)!=str:
                 lbl = qi.f.numfmt % lbl
-            markup.text(lbl, dx=tickpx[k] + lbllx, dy=tickpy[k] + lblly)
+            markup.text(lbl, dx=tickpx[k] + lbllx,
+                        dy=(tickpy[k] + lblly)*qi.Figure.ydown)
             
         markup.reftext('')
         fig.endgroup()
@@ -569,10 +596,12 @@ def caxis(title=None, ticks=None, labels=None, lim=None, flip=False,
         
 def numformat(fmt=None):
     '''NUMFORMAT - Specifies the format of numbers as tick labels
+    
     NUMFORMAT(fmt) specifies the format of numeric axis tick labels.
     FMT may be anything that python's "%" operator understands,
     for instance: "%.1f". The default is "%g".
-    fmt = NUMFORMAT() returns current setting.'''
+    
+    FMT = NUMFORMAT() returns current setting.'''
     qi.ensure()
     if fmt is not None:
         if utils.isempty(fmt):
@@ -580,40 +609,53 @@ def numformat(fmt=None):
         qi.f.numfmt = fmt
     return qi.f.numfmt
 
-def overlinedist(x=None):
+def overlinedist(dist=None):
     '''OVERLINEDIST - Distance between OVERLINEs and data
-    OVERLINEDIST(dist) specifies the distance between OVERLINEs and 
-    the data, in points.
-    dist = OVERLINEDIST() returns current settings.'''
-    qi.ensure()
-    if x is not None:
-        qi.f.overlinedist = np.abs(x)
-    return qi.f.overlinedist
     
-def overlinemin(x=None):
-    '''OVERLINEMIN - Specifies minimum vertical length for OVERLINEs
-    OVERLINEMIN(h) specifies the minimum vertical length of OVERLINEs,
-    in points.
-    h = OVERLINEMIN() returns current settings.'''
+    OVERLINEDIST(dist) specifies the distance between OVERLINEs and 
+    the data, (in millimeters or points).
+    
+    DIST = OVERLINEDIST() returns current setting.'''
     qi.ensure()
-    if x is not None:
-        qi.f.overlinemin = x
-    return qi.f.overlinemin
+    if dist is None:
+        return qi.f.overlinedist        
+    qi.f.overlinedist = np.abs(dist)
+   
+    
+def overlinemin(length=None):
+    '''OVERLINEMIN - Specifies minimum vertical length for OVERLINEs
+    
+    OVERLINEMIN(length) specifies the minimum vertical length of OVERLINEs,
+    (in millimeters or points).
+    
+    length = OVERLINEMIN() returns current setting.'''
+    qi.ensure()
+    if length is None:
+        return qi.f.overlinemin
+    qi.f.overlinemin = length
 
-def overline(xx, yy, txt=None, datadist=None, textdist=None, minlen=None):
+
+def overline(xx, yy, text=None, datadist=None, textdist=None, minlen=None):
     '''OVERLINE - Draw a line above data with a text above it
-    OVERLINE(xx, y, text), where XX is a 2-vector and Y a scalar, draws
-    a horizontal line just above (XX₀, Y) to (XX₁, Y) and places the
-    given TEXT over it.
-    OVERLINE(xx, yy, text), where both XX and YY are 2-vectors, draws the
-    line just above the larger YY value and extends a vertical line down 
-    to the smaller YY value.
+    
+    OVERLINE([x1, x2], y, text), draws a horizontal line just above
+    (X1, Y) to (X2, Y) and places the given TEXT over it.
+    
+    OVERLINE([x1, x2], [y1, y2], text), draws the line just above
+    the larger y-value and extends a vertical line down to the
+    smaller y-value.
+    
     The whole thing is displaced by a distance OVERLINEDIST from the data,
     and the text placement uses the absolute value of TEXTDIST.
+    
     If OVERLINEMIN is non-zero, a vertical line is drawn on both ends.
+    
     The TEXT argument may be omitted.
+    
     Optional arguments DATADIST, TEXTDIST, and MINLEN override global
-    settings.'''
+    settings.
+
+    '''
     qi.ensure()
     if datadist is None:
         datadist = qi.f.overlinedist
@@ -627,30 +669,30 @@ def overline(xx, yy, txt=None, datadist=None, textdist=None, minlen=None):
         paper.shiftedline(np.array([xx[0], xx[0], xx[1], xx[1]]),
                           np.array([yy[0], ymax, ymax, yy[1]]),
                           np.array([0,0,0,0]),
-                          -np.array([datadist,
-                                    datadist + minlen,
-                                    datadist + minlen,
-                                    datadist]))
+                          qi.Figure.yup*np.array([datadist,
+                                                  datadist + minlen,
+                                                  datadist + minlen,
+                                                  datadist]))
     elif minlen>0:
         paper.shiftedline(np.array([xx[0], xx[0], xx[1], xx[1]]),
                           np.array([ymax, ymax, ymax, ymax]),
                           np.array([0,0,0,0]),
-                          -np.array([datadist,
-                                    datadist + minlen,
-                                    datadist + minlen,
-                                    datadist]))
+                          qi.Figure.yup*np.array([datadist,
+                                                  datadist + minlen,
+                                                  datadist + minlen,
+                                                  datadist]))
     else:
         paper.shiftedline(np.array([xx[0], xx[1]]),
                           np.array([ymax, ymax]),
                           np.array([0,0]),
-                          -np.array([datadist + minlen,
-                                    datadist + minlen]))
+                          qi.Figure.yup*np.array([datadist + minlen,
+                                                  datadist + minlen]))
     
-    if txt is not None:
+    if text is not None:
         markup.at((xx[0]+xx[1])/2, ymax)
         td = np.abs(textdist)
         markup.align('center', 'bottom')
-        markup.text(txt, dy=-(datadist + minlen + td))
+        markup.text(text, dy=qi.Figure.yup*(datadist + minlen + td))
 
 def xcaxis(title='', ticks=None, labels=None, y=0, lim=None, flip=False,
            ticklen=None, axshift=None, lbldist=None, ttldist=None,
@@ -798,20 +840,21 @@ def zaxis(title, ticks, proj, labels=None, x=0, y=0, lim=None, below=False):
         # Draw the line
         data.plot(x + proj[0]*np.array(lim), y + proj[1]*np.array(lim))
     if below:
-        relp = paper.RelPaper([0, 0], [0, qi.f.ticklen])
+        relp = paper.RelPaper([0, 0], [0, qi.Figure.ydown*qi.f.ticklen])
     else:
-        relp = paper.RelPaper([0, -qi.f.ticklen], [0, 0])
+        relp = paper.RelPaper([0, qi.Figure.yup*qi.f.ticklen], [0, 0])
     if not utils.isempty(ticks):
         for z in ticks:
             paper.gline2([paper.AbsData([x + proj[0]*z, x + proj[0]*z],
-                                        [y + proj[1]*z, y + proj[1]*z]), relp])
+                                        [y + proj[1]*z, y + proj[1]*z]),
+                          relp])
                               
     if not utils.isempty(labels):
         (lbld, ttld) = textdist()
         if below:
             markup.align('center', 'top')
             dx = 0
-            dy = lbld + qi.f.ticklen
+            dy = qi.Figure.ydown*(lbld + qi.f.ticklen)
         else:
             markup.align('right', 'middle')
             dx = -(lbld + qi.f.ticklen)
@@ -829,13 +872,18 @@ def zaxis(title, ticks, proj, labels=None, x=0, y=0, lim=None, below=False):
         markup.at(x + proj[0]*z, y + proj[1]*z)
         markup.align('center', 'middle')
         markup.text(title)
+        
 
 def arange(start, end, step=1):
     '''ARANGE - Return evenly spaced values within interval
-    xx = RANGE(start, end, step) returns numbers in the closed interval
+    
+    xx = ARANGE(start, end, step) returns numbers in the closed interval
     [START, END] with a step size of STEP.
-    This is similar to numpy's arange, but care is taken that the endpoint
-    is included if STEP divides the interval evenly. 
-    Also, the number zero is protected from numerical error.'''
+    
+    This is similar to numpy's arange, but care is taken that the end
+    point is included if STEP divides the interval evenly.  Also, the
+    number zero is protected from numerical imprecision.
+
+    '''
     return utils.arange(start, end, step)
 

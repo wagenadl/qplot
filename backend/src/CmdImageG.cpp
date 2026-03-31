@@ -41,18 +41,18 @@ bool CmdImageG::parse_complex(Statement const &s) {
   int id3 = s.nextIndex(id2);
 
   if (!s.isNumeric(1) || !s.isNumeric(id1) || !s.isNumeric(id2))
-    usage();
+    return usage();
   if (!s.isNumeric(id3))
-    usage();
+    return usage();
 
   if (s.data(1).size() != 4) // check dataxywh
-    usage();
+    return usage();
   if (s.data(id1).size() != 4) // check paperxywh
-    usage();
+    return usage();
   if (s.data(id2).size() != 3) // check size spec
-    usage();
+    return usage();
   if (s.data(id3).size() != s.data(id2)[0]*s.data(id2)[1]*s.data(id2)[2])
-    usage(); // check data size
+    return usage(); // check data size
 
   return true;
 }

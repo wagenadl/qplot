@@ -10,6 +10,7 @@ from . import utils
 from . import qi
 import numpy as np
 
+
 def brush(color=None, alpha=None, id=None):
     '''BRUSH - Set brush parameters
     All arguments are optional.
@@ -29,32 +30,47 @@ def brush(color=None, alpha=None, id=None):
     qi.ensure()
     qi.f.write(out)
 
-def pen(color=None, width=None, join=None, cap=None, pattern=None, \
+    
+def pen(color=None, width=None, join=None, cap=None, pattern=None, 
         alpha=None, id=None):
     '''PEN - Set pen parameters
     All arguments are optional.
-      COLOR may be a single character matlab color, or a 3- or 6-digit RGB
-      specification or an [«r», «g», «b»] triplet, or 'none'.
-      WIDTH is linewidth in points, or 0 for hairline.
-      JOIN must be one of: 'miter', 'bevel', 'round'.
-      CAP must be one of: 'flat', 'square', 'round'.
-      PATTERN must be one of: 'solid', 'dash', 'dot', 'none'.
-      PATTERN may also be a tuple ('dash', «vec») where VEC is a vector of 
-        stroke and space lengths, or it may be a tuple ('dot', «vec») where
-        VEC is a vector of space lengths.
-      ALPHA specifies transparency between 0 (transparent) and 1 (opaque).
-      ID must be a single capital letter.
-    Note that the string 'none' is different from the Python constant None,
-    the latter meaning "do not change."
     
-    PEN() without any arguments restores the default pen, i.e., black, 
-    0.5 pt wide, miter join, square cap, solid pattern, fully opaque.
-'''
+      COLOR may be a single character matlab color, or a 3- or 6-digit
+        RGB specification or an [«r», «g», «b»] triplet, or 'none'.
+    
+      WIDTH is line width (in millimeters or points), or 0 for hairline.
+    
+      JOIN must be one of: 'miter', 'bevel', 'round'.
+    
+      CAP must be one of: 'flat', 'square', 'round'.
+    
+      PATTERN must be one of: 'solid', 'dash', 'dot', 'none'.
+    
+      PATTERN may also be a tuple ('dash', «vec») where VEC is a
+        vector of stroke and space lengths, or it may be a tuple
+        ('dot', «vec») where VEC is a vector of space lengths (in
+        millimeters or points).
+    
+      ALPHA specifies transparency between 0 (transparent) and 1
+        (opaque).
+
+      ID must be a single capital letter.
+
+    Note that the string 'none' is different from the Python constant
+    None, the latter meaning "do not change."
+    
+    PEN() without any arguments restores the default pen: black,
+    0.175 mm (0.5 pt) wide, miter join, square cap, solid pattern,
+    fully opaque.
+
+    '''
+    qi.ensure()
     if (color is None or (type(color)==str and color=='-')) \
        and width is None and join is None and cap is None \
        and pattern is None and alpha is None and id is None:
         color = 'k'
-        width = 0.5
+        width = 0.5 * qi.f.pt
         join = 'miter'
         cap = 'square'
         pattern = 'solid'
@@ -68,7 +84,7 @@ def pen(color=None, width=None, join=None, cap=None, pattern=None, \
     if alpha is not None:
         out.append('%g' % -alpha)
     if width is not None:
-        out.append('%g' % width)
+        out.append('%g' % (width / qi.f.pt))
         qi.f.linewidth = width
     if join is not None:
         if join in pen.joins:
@@ -82,12 +98,13 @@ def pen(color=None, width=None, join=None, cap=None, pattern=None, \
             qi.error('Cap type not understood')
     if pattern is not None:
         qi.f.pattern = pattern
-        if type(pattern)==tuple and (pattern[0]=='dash' or pattern[0]=='dot'):
+        if type(pattern)==tuple and (pattern[0]=='dash'
+                                     or pattern[0]=='dot'):
             out.append(pattern[0])
             out.append('[')
             pat = utils.aslist(pattern[1])
             for a in pat:
-                out.append('%g' % a)
+                out.append('%g' % (a / qi.f.pt))
             out.append(']')
         elif pattern in pen.patterns:
             out.append(pattern)
@@ -98,16 +115,26 @@ def pen(color=None, width=None, join=None, cap=None, pattern=None, \
 pen.joins = set('miter bevel round'.split(' '))
 pen.caps = set('flat square round'.split(' '))
 pen.patterns = set('solid none dash dot'.split(' '))
-    
+
+
 def font(family=None, size=None, bold=False, italic=False):
-    '''FONT - Select font 
+    '''FONT - Select font
+    
     FONT(...) selects a new font for QPlot.
+    
     The default font is Helvetica at 10 points.
+    
     All arguments are optional:
+    
       FAMILY - Font family name (default: Helvetica)
       SIZE - Font size in points (default: 10)
       BOLD - Select bold face if true
-      ITALIC - Select italic (or slanted) if true'''
+      ITALIC - Select italic (or slanted) if true
+
+    Font sizes are always specified in points, even when
+    other units are metric.
+
+    '''
     qi.ensure()
     if family is None:
         family = qi.f.fontfamily
@@ -122,30 +149,39 @@ def font(family=None, size=None, bold=False, italic=False):
         out.append('bold')
     if italic:
         out.append('italic')
-    out.append('%g' % size)
+    out.append('%g' % size) # always in points
     qi.f.write(out)
     
 def marker(shape=None, size=None, fill=None):
     '''MARKER - Select a new marker for MARK and PMARK
-    MARKER(shape, size, fill) selects a marker.
-    All arguments are optional.
+    
+    MARKER(shape, size, fill) selects a marker. All arguments are
+    optional.
+    
     SHAPE must be one of + x - | o s d < > ^ v p h; see below.
-    SIZE is specified in points.
+    
+    SIZE is specified in millimeters or points.
+    
     FILL is one of open|solid|brush|spine:
       OPEN - The mark is filled with white
       SOLID - The mark is filled with the current pen's color
       BRUSH - The mark is filled with the current brush's color
-      SPINE - Draws lines from the center to the vertices of the chosen shape
-        instead of drawing the shape.
-    The mark is always outlined with the current pen (which may be 'none',
-    of course).
+      SPINE - Draws lines from the center to the vertices of the chosen
+        shape instead of drawing the shape.
+    
+    The mark is always outlined with the current pen (which may be
+    'none', of course).
+    
     Marks are:
       o       :: circle/disk
       + x     :: upright or diagonal crosses
       - |     :: horizontal or vertical lines
       s d p h :: square, diamond, pentagon, or hexagon
       < > ^ v :: left / right / up / down pointing triangles
-    The fill style has no effect on + x - | marks.'''
+    
+    The fill style has no effect on + x - | marks.
+
+    '''
     out = [ 'marker' ]
     if shape is not None:
         if shape in qi.markermap:
@@ -153,7 +189,7 @@ def marker(shape=None, size=None, fill=None):
         else:
             qi.error('Marker shape not understood')
     if size is not None:
-        out.append('%g' % size)
+        out.append('%g' % (size / qi.f.pt))
     if fill is not None:
         if fill in marker.fills:
             out.append(fill)
@@ -163,15 +199,25 @@ def marker(shape=None, size=None, fill=None):
     qi.f.write(out)
 marker.fills = set('open solid brush spine'.split(' '))
 
+
 def hairline(width):
     '''HAIRLINE - Specify hairline width
+    
     HAIRLINE(width) specifies the width of hairlines (lines with 
     nominal width 0) as rendered to screen or pdf.
-    The default is 0.25 pt when rendering to pdf. When rendering to
-    screen, the default is 0, which implies "one pixel wide".
-    Unlike all other QPlot commands, this one is effective retroactively
-    as well as proactively: It affects every single object in the current
-    figure that is plotted with nominal width 0.'''
+    
+    The default is 0.25 pt (0.088 mm) when rendering to pdf. When
+    rendering to screen, the default is 0, which implies "one pixel
+    wide".
+    
+    Unlike other QPlot commands, this one is effective retroactively
+    as well as proactively: It affects every single object in the
+    current figure that is plotted with nominal width 0.
+
+    The use of hairlines is not generally recommended, as the result
+    is dependent on the output device.
+
+    '''
     qi.ensure()
-    qi.f.write('hairline %g\n' % width)
+    qi.f.write('hairline %g\n' % (width / qi.f.pt))
     

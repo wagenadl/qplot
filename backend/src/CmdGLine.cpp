@@ -67,7 +67,7 @@ static GLineKW glineKW(QString s) {
     return KW_at;
   else if (s=="atx")
     return KW_atx;
-  else if (s=="ayt")
+  else if (s=="aty")
     return KW_aty;
   else  
     return KW_ERROR;

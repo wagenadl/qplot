@@ -12,15 +12,18 @@ from . import axes
 from . import utils
 from . import style
 from . import data as qpdata
-import numpy as np
 
-havempl=False
-try:
-    import matplotlib.pyplot as plt
-    import matplotlib as mpl
-    havempl = True
-except ModuleNotFoundError:
-    pass
+import numpy as np
+_mpl_colors = None
+ 
+def _import_mpl_colors():
+    global _mpl_colors
+    try:
+        import matplotlib.colors
+        _mpl_colors = matplotlib.colors
+    except ModuleNotFoundError:
+        _mpl_colors = False
+
 
 def _getrect(S, rect, xx, yy):
     if rect is None:
@@ -196,7 +199,7 @@ def lut(cc=None, nanc=None):
     Colormap, e.g., from «matplotlib.pyplot.cm.get_cmap()».  See also
     https://matplotlib.org/stable/tutorials/colors/colormaps.html.
 
-    lut, nanc = LUT() returns current values.
+    CC, NANC = LUT() returns current values.
 
     See also LUTS.SET.
 
@@ -204,8 +207,10 @@ def lut(cc=None, nanc=None):
 
     qi.ensure()
     ret = True
-    if havempl:
-        if isinstance(cc, mpl.colors.Colormap):
+    if _mpl_colors is None:
+        _import_mpl_colors()
+    if _mpl_colors:
+        if isinstance(cc, _mpl_colors.Colormap):
             cc = cc(range(cc.N))
     if cc is not None:
         cc = cc[:,0:3]

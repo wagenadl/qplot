@@ -1,0 +1,345 @@
+#!/usr/bin/env python3
+
+# QPlot - Publication quality 2D graphs with dual coordinate systems
+# Copyright (C) 2014-2026  Daniel Wagenaar
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+import sys
+import os
+import re
+import subprocess
+import shutil
+import glob
+import fileinput
+
+DOC = """Commands are:
+
+  FONTPACKAGE latex-package
+  FONTSIZE    10pt | 11pt | 12pt
+  FONTSTYLE   latex-commands
+  PANEL       x y
+  LABEL       text [SHIFTED dx dy]
+  GRAPHICS    filename [SIZE w h] [SCALE factor] [SHIFTED dx dy]
+  INCLUDE     source.txt
+
+Dimensions may be specified in pt, mm, cm, or in.
+X may be "SAME" or "RIGHT"
+Y may be "SAME" or "BELOW"
+"""
+
+
+
+
+class Backend:
+    RE_DIM = re.compile(r"^([0-9.]+)(mm|cm|pt|in|)$")
+    RE_FIGSIZE = re.compile(r"figsize\s+([0-9.]+)\s+([0-9.]+)")
+    RE_GMSIZE = re.compile(r" (\d+)x(\d+)[+ ]")
+    
+    def __init__(self, root):
+        self.tex = []
+        self.root = root
+        self.font_packages = []
+        self.font_size = "10pt"
+        self.font_style = r"\rm"
+        self.started = False
+        self.x = 0.0
+        self.y = 0.0
+        self.w = 0.0
+        self.h = 0.0
+        self.last_line = ""
+        self.pdf_no = 1
+        self.text_col = "black"
+
+    def syntax(self):
+        raise ValueError(f"Syntax error: {self.last_line}")
+
+    def interpret_dim(self, arg):
+        '''Converts to pts with 1 decimal place'''
+        if arg is None:
+            self.syntax()
+        
+        # Match number and optional unit
+        mtch = Backend.RE_DIM.match(arg)
+        if not mtch:
+            self.syntax()
+        
+        val = float(mtch.group(1))
+        unit = mtch.group(2)
+
+        if unit == "in":
+            val *= 72
+        elif unit == "cm":
+            val *= 72 / 2.54
+        elif unit == "mm":
+            val *= 72 / 25.4
+        return round(val, 1)
+    
+    def ensure_started(self):
+        if self.started:
+            return
+        
+        self.tex.append(f"\\documentclass[{self.font_size}]{{standalone}}")
+        if self.font_packages:
+            for pkg in self.font_packages:
+                self.tex.append(f"\\usepackage{{{pkg}}}")
+        else:
+            self.tex.append("\\usepackage{helvet}")
+            self.tex.append("\\usepackage{times}")
+        
+        self.tex.append("\\usepackage{tikz}")
+        self.tex.append("\\begin{document}")
+        self.tex.append("\\begin{tikzpicture}")
+        self.tex.append(f"\\tikzstyle{{every node}}=[inner sep=1pt, below right, font={self.font_style}]")
+        self.started = True
+
+    def ensure_ended(self):
+        self.ensure_started()
+        self.tex.append("\\end{tikzpicture}")
+        self.tex.append("\\end{document}")
+
+    def get_size(self, fn):
+        if fn.endswith("qpt"):
+            with open(fn, 'r') as f:
+                for line in f:
+                    mtch = Backend.RE_FIGSIZE.search(line)
+                    if mtch:
+                        return [float(mtch.group(1)), float(mtch.group(2))]
+        elif fn.endswith("pdf"):
+            try:
+                result = subprocess.check_output(["gm", "identify", fn],
+                                                 stderr=subprocess.STDOUT,
+                                                 text=True)
+                mtch = Backend.RE_GMSIZE.search(result)
+                if mtch:
+                    return [float(mtch.group(1)), float(mtch.group(2))]
+        return [0., 0.]
+
+    def write_text(self, txt, x, y):
+        self.ensure_started()
+        self.tex.append(f"\\path ({x}pt,{-y}pt) node[text={self.text_col}] {{{txt}}};")
+
+    def write_include(self, fn, x, y, w, h, factor):
+        self.ensure_started()
+        pdf_path = f"{self.root}/{self.pdf_no}.pdf"
+        self.pdf_no += 1
+
+        opts = []
+        if fn.endswith("qpt"):
+            print(f"width = {w} height = {h}", file=sys.stderr)
+            cmd = ["qplot", f"-w{w}", f"-h{h}", fn, pdf_path]
+            subprocess.run(cmd, check=True)
+        else:
+            shutil.copy(fn, pdf_path)
+            if w > 0: opts.append(f"width={w}pt")
+            if h > 0: opts.append(f"height={h}pt")
+            if factor > 0: opts.append(f"scale={factor}")
+            
+        opt_str = f"[{','.join(opts)}]" if opts else ""
+        self.tex.append(f"\\path ({x}pt,{-y}pt) node {{\\includegraphics{opt_str}{{{pdf_path}}}}};")
+        
+    def command_panel(self, bits):
+        x_val = bits.pop(0) if bits else self.syntax()
+        if x_val.upper() == "SAME":
+            pass
+        elif x_val.upper() == "RIGHT":
+            self.x += self.w
+        else:
+            self.x = self.interpret_dim(x_val)
+        y_val = bits.pop(0) if bits else self.syntax()
+        if y_val.upper() == "SAME":
+            pass
+        elif y_val.upper() == "BELOW":
+            self.y += self.h
+        else:
+            self.y = self.interpret_dim(y_val)
+        while bits:
+            k1 = bits.pop(0).upper()
+            if k1 == "SHIFTED":
+                self.x += self.interpret_dim(bits.pop(0))
+                self.y += self.interpret_dim(bits.pop(0))
+            else:
+                self.syntax()
+
+    def command_graphics(self, bits):
+        if not bits:
+            self.syntax()
+        fn = bits.pop(0)
+        w, h, dx, dy, factor = 0.0, 0.0, 0.0, 0.0, 0.0
+        while bits:
+            k1 = bits.pop(0).upper()
+            if k1 == "SIZE":
+                w = self.interpret_dim(bits.pop(0))
+                h = self.interpret_dim(bits.pop(0))
+            elif k1 == "SCALE":
+                factor = float(bits.pop(0))
+            elif k1 == "SHIFTED":
+                dx += self.interpret_dim(bits.pop(0))
+                dy += self.interpret_dim(bits.pop(0))
+            else:
+                self.syntax()
+        self.write_include(fn, self.x + dx, self.y + dy, w, h, factor)
+        if w > 0 and h > 0:
+            self.w, self.h = w, h
+        elif w > 0:
+            self.w = w
+            wh = self.get_size(fn)
+            self.h = w * wh[1] / wh[0] if wh[0] > 0 else 0
+        elif h > 0:
+            self.h = h
+            wh = self.get_size(fn)
+            self.w = h * wh[0] / wh[1] if wh[1] > 0 else 0
+        else:
+            wh = self.get_size(fn)
+            self.w, self.h = wh[0], wh[1]
+        if factor > 0:
+            self.w *= factor
+            self.h *= factor
+        
+    def process(self, lines):
+        for line in lines:
+            line = line.strip()
+            if line:
+                self.process_line(line)
+        self.ensure_ended()
+
+    def process_line(line):
+        self.last_line = line
+        bits = line.split()
+        command = bits.pop(0).upper()
+        if command == "FONTPACKAGE":
+            if len(bits)==1:
+                self.font_packages.append(bits[0])
+            else:
+                self.syntax()
+        elif command == "FONTSIZE":
+            if len(bits)==1:
+                self.font_size = bits[0]
+            else:
+                self.syntax()
+        elif command == "FONTSTYLE":
+            if len(bits)==1:
+                self.font_style = bits[0]
+            else:
+                self.syntax()
+        elif command == "COLOR":
+            if len(bits)==1:
+                self.text_col = bits[0]
+            else:
+                self.syntax()
+        elif command == "PANEL":
+            self.command_panel(bits)
+        elif command == "LABEL":
+            if not bits:
+                self.syntax()
+            txt = bits.pop(0)
+            dx, dy = 0.0, 0.0
+            while bits:
+                k1 = bits.pop(0).upper()
+                if k1 == "SHIFTED":
+                    dx += self.interpret_dim(bits.pop(0))
+                    dy += self.interpret_dim(bits.pop(0))
+                else:
+                    self.syntax()
+            self.write_text(txt, self.x + dx, self.y + dy)
+        elif command == "GRAPHICS":
+            self.command_graphics(bits)
+        else:
+            self.syntax()
+
+
+def syntax(cleanexit=False):
+    print("Usage: placeqpt [-ooutput.pdf] [input.txt]", file=stderr)
+    print(DOC, file=stderr)
+    sys.exit(0 if cleanexit else 1)
+
+    
+def process_input(lines):
+    program = []
+    re_include = re.compile(r"^INCLUDE\s+(.*)$")
+    re_comment = re.compile(r"#.*")
+    for line in lines:
+        line = line.rstrip('\n')
+        mtch = re.re_include(line)
+        if mtch:
+            ifn = mtch.group(1)
+            try:
+                with open(ifn, 'r') as f:
+                    program += process_input(f.readlines())
+            except IOError:
+                sys.exit(f"Failed to open included file: {ifn}")
+        else:
+            line = re_comment.sub('', line).strip()
+            if line:
+                program.append(line)
+    return program
+
+
+def process_argv():
+    ofn = "placeqpt.pdf"
+    ifns = None # i.e., stdin
+    
+    args = sys.argv[1:]
+    
+    if args:
+        if args[0] == "-o":
+            args.pop(0)
+            if not args:
+                syntax()
+            ofn = args.pop(0)
+        elif args[0].startswith("-o"):
+            ofn = args.pop(0)[2:]
+            if not out:
+                syntax()
+        elif re.match(r"^--?h", args[0]):
+            syntax(True)
+        else:
+            out = re.sub(r"(\.txt)?$", ".pdf", args[0])
+            
+    if args:
+        ifns = [args.pop(0)]
+        
+    if args:
+        syntax()
+        
+    return ifns, ofn
+
+
+def produce_latex(program, root, texfn):
+    be = Backend(root)
+    be.process(program)
+    with open(f"{root}/{texfn}", "w") as tex:
+        for line in be.tex:
+            tex.write(line)
+    return texfn
+    
+                
+def main():
+    ifns, ofn = process_argv()
+    
+    tempdir = tempfile.TemporaryDirectory()
+    root = tempdir.name
+
+    program = process_input(lines)
+
+    produce_latex(program, root, "placeqpt.tex")
+
+    if subprocess.run(["pdflatex", "placeqpt.tex"], cwd=root)
+        raise RuntimeError("Error from pdflatex")
+
+    shutil.move(f"{root}/placeqpt.pdf", ofn)
+
+if __name__ == "__main__":
+    main()
+    
