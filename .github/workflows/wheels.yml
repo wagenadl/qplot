@@ -1,80 +1,58 @@
-name: Build & Publish Wheels
+# .github/workflows/build.yml
+name: Build and Release
 
 on:
   push:
-    tags: ["v*"]          # trigger on version tags like v0.1.0
-  pull_request:           # also build (but don't publish) on PRs
-  workflow_dispatch:      # allow manual runs
+    branches:
+      - main
+    tags:
+      - "v*"
 
 jobs:
-  build_wheels:
-    name: Build wheels — ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest] ##, windows-latest, macos-latest]
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive   # needed if pybind11 is a git submodule
-
-      # macOS: build both arm64 and x86_64 into a universal2 wheel
-      - name: Set up QEMU (Linux aarch64 cross-compilation)
-        if: runner.os == 'Linux'
-        uses: docker/setup-qemu-action@v3
-        with:
-          platforms: arm64
-
-      - name: Build wheels
-        uses: pypa/cibuildwheel@v2.21
-        # cibuildwheel reads config from pyproject.toml automatically
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: wheels-${{ matrix.os }}
-          path: ./wheelhouse/*.whl
-
-  build_sdist:
-    name: Build source distribution
+  build:
+    name: Build wheel
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
         with:
-          submodules: recursive
+          python-version: "3.x"
 
-      - name: Build sdist
-        run: pipx run build --sdist
+      - name: Install build frontend
+        run: pip install build
 
-      - uses: actions/upload-artifact@v4
+      - name: Build wheel
+        run: python -m build --wheel
+
+      - name: Upload wheel artifact
+        uses: actions/upload-artifact@v4
         with:
-          name: sdist
-          path: dist/*.tar.gz
+          name: wheel
+          path: dist/*.whl
+          retention-days: 30
 
-  publish:
-    name: Publish to PyPI
-    needs: [build_wheels, build_sdist]
+  release:
+    name: Create release and publish to PyPI
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
     runs-on: ubuntu-latest
-    # Only publish on tag pushes, not PRs
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
-    environment: pypi          # create this environment in your repo settings
+    environment: pypi
     permissions:
-      id-token: write          # required for trusted publishing (no API key needed)
-
+      contents: write
+      id-token: write
     steps:
-      - uses: actions/download-artifact@v4
+      - name: Download wheel artifact
+        uses: actions/download-artifact@v4
         with:
-          pattern: "wheels-*"
-          merge-multiple: true
+          name: wheel
           path: dist/
 
-      - uses: actions/download-artifact@v4
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
         with:
-          name: sdist
-          path: dist/
+          files: dist/*.whl
+          generate_release_notes: true
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
-        # Uses OIDC trusted publishing — no PYPI_API_TOKEN secret needed
-        # Configure this once on pypi.org under your project's Publishing settings

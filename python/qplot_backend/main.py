@@ -56,9 +56,9 @@ from .statement import Statement
 #from . import cmdzyimage
 
 try:
-    from config import QPLOT_VERSION
+    from .version import __version__
 except ImportError:
-    QPLOT_VERSION = "(unknown)"
+    __version__ = "(unknown)"
 
 _autoraise = False
 
@@ -157,8 +157,8 @@ def noninteractive(ifn: str, ofn: str, renderer: Renderer) -> int:
 # ---------------------------------------------------------------------------
 
 def show_version() -> int:
-    sys.stderr.write(f"QPlot {QPLOT_VERSION}\n")
-    sys.stderr.write("Copyright (C) 2014-2024 Daniel A. Wagenaar\n\n")
+    sys.stderr.write(f"QPlot {__version__}\n")
+    sys.stderr.write("Copyright (C) 2014-2026 Daniel A. Wagenaar\n\n")
     sys.stderr.write(
         "QPlot is free software: you can redistribute it and/or modify "
         "it under the terms of the GNU General Public License as published "
@@ -183,7 +183,7 @@ def main() -> int:
 
     app = QApplication(sys.argv)
     app.setApplicationName("QPlot")
-    app.setApplicationVersion(QPLOT_VERSION)
+    app.setApplicationVersion(__version__)
 
     env = QProcessEnvironment.systemEnvironment()
     default_maxtries = (env.value("QPLOT_MAXITER")

@@ -3,7 +3,6 @@ dist
 .wraplock
 uv.lock
 *~
-_version.py
 debian/qqplot
 debian/*.substvars
 debian/files

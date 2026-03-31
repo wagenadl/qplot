@@ -27,9 +27,9 @@ from .axis import Axis
 from .factor import pt2iu, iu2pt
 
 try:
-    from config import QPLOT_VERSION
+    from ._version import __version__
 except ImportError:
-    QPLOT_VERSION = "(unknown)"
+    __version__ = "(unknown)"
 
 _MARGPIX = 15
 
@@ -520,8 +520,8 @@ class QPWidget(ScrollWidget):
 
     def _about_action(self) -> None:
         msg = (
-            f"<b>QPlot</b> {QPLOT_VERSION}<br>"
-            "(C) 2013\u20132024\u2002Daniel A. Wagenaar<br><br>"
+            f"<b>QPlot</b> {__version__}<br>"
+            "(C) 2013–2026 Daniel A. Wagenaar<br><br>"
             "<b>QPlot</b> is an alternative 2D plotting library for "
             "Python, Matlab, and Octave that facilitates beautiful typography "
             "and precise axis scaling.<br><br>"
