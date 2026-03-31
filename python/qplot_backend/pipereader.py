@@ -54,7 +54,6 @@ class PipeReader(QThread):
                 except Exception:
                     peek = b""
                 if not peek:
-                    Error() << "EOF"
                     break
                 else:
                     Error() << f"Read error at line {line} of stdin"

@@ -252,7 +252,7 @@ class QPWidget(ScrollWidget):
                 self.update()
             self._trackpanel = tp
             self._pick_cursor()
-            self._report_track(xy, int(e.button()), "press")
+            self._report_track(xy, e.button(), "press")
 
     def mouseMoveEvent(self, e: QMouseEvent) -> None:
         super().mouseMoveEvent(e)
@@ -266,18 +266,18 @@ class QPWidget(ScrollWidget):
                     self._pick_cursor()
                     if self._ruler:
                         self.update()
-            self._report_track(xy, int(e.button()), "move")
+            self._report_track(xy, e.button(), "move")
 
     def mouseReleaseEvent(self, e: QMouseEvent) -> None:
         super().mouseReleaseEvent(e)
         self._pick_cursor()
         if self._fig:
-            self._report_track(QPointF(e.pos()), int(e.button()), "release")
+            self._report_track(QPointF(e.pos()), e.button(), "release")
 
     def mouseDoubleClickEvent(self, e: QMouseEvent) -> None:
         super().mouseDoubleClickEvent(e)
         if self._fig:
-            self._report_track(QPointF(e.pos()), int(e.button()), "double")
+            self._report_track(QPointF(e.pos()), e.button(), "double")
 
     def closeEvent(self, e: QCloseEvent) -> None:
         super().closeEvent(e)
@@ -485,7 +485,7 @@ class QPWidget(ScrollWidget):
             self.setCursor(Qt.CursorShape.OpenHandCursor)
             self.set_require_control(False)
 
-    def _report_track(self, xy: QPointF, button: int,
+    def _report_track(self, xy: QPointF, button: Qt.MouseButton,
                       what: str) -> None:
         if not self._fig or self._trackpanel == "" or not self._showcoords:
             self._coord.hide()

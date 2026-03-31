@@ -8,14 +8,9 @@
 
 import os
 import sys
-import time
-
-t0 = time.time()
 
 from PyQt6.QtCore import Qt, QCommandLineOption, QCommandLineParser, QProcessEnvironment
 from PyQt6.QtWidgets import QApplication
-
-print("hello1", time.time() - t0)
 
 from .program import Program
 from .figure import Figure
@@ -27,8 +22,6 @@ from .error import Error
 from .factor import pt2iu, set_factor
 from .renderer import Renderer
 from .statement import Statement
-
-print("hello2", time.time() - t0)
 
 # Import all Cmd* modules so their @Command.register decorators fire
 #from . import cmdalign
@@ -62,8 +55,6 @@ print("hello2", time.time() - t0)
 #from . import cmdylim
 #from . import cmdzyimage
 
-print("hello3", time.time() - t0)
-
 try:
     from config import QPLOT_VERSION
 except ImportError:
@@ -71,7 +62,6 @@ except ImportError:
 
 _autoraise = False
 
-print("hello4", time.time() - t0)
 # ---------------------------------------------------------------------------
 # Interactive mode — display window, read from file or stdin
 # ---------------------------------------------------------------------------
@@ -143,34 +133,25 @@ def interactive(ifn: str, ttl: str, renderer: Renderer,
     renderer.prerender()
     return app.exec()
 
-print("hello5", time.time() - t0)
 # ---------------------------------------------------------------------------
 # Non-interactive mode — read file, render to output
 # ---------------------------------------------------------------------------
 
 def noninteractive(ifn: str, ofn: str, renderer: Renderer) -> int:
-    print("ni1")
     reader   = FileReader(ifn)
-    print("ni2")
     contents = reader.contents()
-    print("ni3")
     if contents.valid:
-        print("ni4")
         renderer.program().set_label(ifn)
-        print("ni5")
         try:
             renderer.program().read(contents.contents)
         except Exception as e:
             print(f"Exception reading program: {e}")
             sys.exit(1)
-        print("ni6")
         return 0 if renderer.save(ofn) else 2
     else:
-        print("ni7")
         Error() << contents.error
         return 2
 
-print("hello6", time.time() - t0)
 # ---------------------------------------------------------------------------
 # Version display
 # ---------------------------------------------------------------------------
@@ -193,14 +174,12 @@ def show_version() -> int:
     )
     return 0
 
-print("hello7", time.time() - t0)
 # ---------------------------------------------------------------------------
 # Entry point
 # ---------------------------------------------------------------------------
 
 def main() -> int:
     global _autoraise
-    print("hello4", time.time() - t0)
 
     app = QApplication(sys.argv)
     app.setApplicationName("QPlot")
@@ -250,7 +229,6 @@ def main() -> int:
     cli.addOption(cli_version)
     cli.process(app)
 
-    print("hello5", time.time() - t0)
     if cli.isSet("help"):
         cli.showHelp()
     if cli.isSet("version"):
@@ -262,7 +240,6 @@ def main() -> int:
     if len(args) < 1 or len(args) > 2:
         cli.showHelp(1)
 
-    print("hello6", time.time() - t0)
     renderer = Renderer()
     if cli.isSet("w"):
         renderer.override_width(float(cli.value("w")))
@@ -276,15 +253,13 @@ def main() -> int:
     if cli.isSet("title"):
         ttl = cli.value("title")
 
-    print("hello7", time.time() - t0)
     if len(args) == 1:
         return interactive(args[0], ttl, renderer, app)
     else:
         return noninteractive(args[0], args[1], renderer)
 
-print("hello8", time.time() - t0)
 
 if __name__ == "__main__":
     sys.exit(main())
 
-print("hello9", time.time() - t0)    
+
