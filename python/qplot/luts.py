@@ -6,19 +6,25 @@ import numpy as np
 from collections import OrderedDict
 from . import data
 
-haveplotly = False
-try:
-    import plotly.colors
-    haveplotly = True
-except ModuleNotFoundError:
-    pass
+_plotly_colors = None
 
-havecolorcet = False
-try:
-    import colorcet
-    havecolorcet = True
-except ModuleNotFoundError:
-    pass
+def _import_plotly_colors():
+    global _plotly_colors
+    try:
+        import plotly.colors
+        _plotly_colors = plotly.colors
+    except ModuleNotFoundError:
+        _plotly_colors = False
+
+_colorcet = None
+
+def _import_colorcet():
+    global _colorcet
+    try:
+        import colorcet
+        _colorcet = colorcet
+    except ModuleNotFoundError:
+        _colorcet = False
 
 
 _set = set
@@ -73,11 +79,13 @@ _cmaps['cet.rainbow'] = None
 def _load_plotly_cmaps():
     for k in _cmaps:
         if _cmaps[k] is None:
-            if haveplotly:
+            if _plotly_colors is None:
+                _import_plotly_colors
+            if _plotly_colors:
                 m = k.replace('plotly.', '')
-                if m not in plotly.colors.__dict__:
+                if m not in _plotly_colors.__dict__:
                     return
-                mod = plotly.colors.__dict__[m]
+                mod = _plotly_colors.__dict__[m]
                 names = [x for x in mod.__dict__
                          if not '_' in x and x!='swatches']
                 _cmaps[k] = names
@@ -88,12 +96,14 @@ def _load_plotly_cmaps():
 def _load_colorcet_cmaps():
     for k in _cmaps:
         if k.startswith('cet.') and _cmaps[k] is None:
-            if havecolorcet:
+            if _colorcet is None:
+                _import_colorcet()
+            if _colorcet:
                 pfx = k.replace('cet.', '') + '_'
                 names = []
-                for name in colorcet.all_original_names():
+                for name in _colorcet.all_original_names():
                     if name.startswith(pfx):
-                        alii = colorcet.get_aliases(name).split(',')
+                        alii = _colorcet.get_aliases(name).split(',')
                         if len(alii)>1:
                             names.append(alii[0])
                 _cmaps[k] = names
@@ -285,13 +295,15 @@ def _get_mpl_cmap(name, N, reverse):
 
     
 def _get_colorcet_cmap(name, N, reverse):
-    if not havecolorcet:
+    if _colorcet is None:
+        _colorcet = _import_colorcet()
+    if not _colorcet:
         return None
     _load_colorcet_cmaps()
-    if name not in colorcet.__dict__:
+    if name not in _colorcet.__dict__:
         return None
     cmap = [[int(x[1:3], 16), int(x[3:5], 16), int(x[5:], 16)]
-            for x in colorcet.__dict__[name]]
+            for x in _colorcet.__dict__[name]]
     rgb = np.array(cmap).astype(float)/255.0
     if N is not None:
         kk = np.arange(K)
@@ -308,7 +320,9 @@ def _get_colorcet_cmap(name, N, reverse):
    
     
 def _get_plotly_cmap(name, N, reverse):
-    if not haveplotly:
+    if _plotly_colors is None:
+        _import_plotly_colors()
+    if not _plotly_colors:
         return None
     _load_plotly_cmaps()
     name = name.replace('-', '_')
@@ -316,10 +330,10 @@ def _get_plotly_cmap(name, N, reverse):
     for f, lst in _cmaps.items():
         if lst is not None and name in lst:
             fam = f.replace('plotly.', '')
-    if fam not in plotly.colors.__dict__:
+    if fam not in _plotly_colors.__dict__:
         return None
-    cmap = plotly.colors.__dict__[fam].__dict__[name]
-    cmap = plotly.colors.validate_colors(cmap)
+    cmap = _plotly_colors.__dict__[fam].__dict__[name]
+    cmap = _plotly_colors.validate_colors(cmap)
     K = len(cmap)
     rgb = np.zeros((K, 3))
     for k in range(K):
