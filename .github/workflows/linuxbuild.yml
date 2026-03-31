@@ -20,11 +20,10 @@ jobs:
       - name: Build .deb
         run: make deb
       - name: Upload .deb
-        uses: softprops/action-gh-release@v2
+        uses: actions/upload-artifact@v4
         with:
           name: lindeb
-          files: build/qplot*deb
-          token: ${{github.TOKEN}}
+          path: build/qplot*deb
           retention-days: 3
 
   release:
@@ -41,7 +40,7 @@ jobs:
         with:
           name: lindeb
           path: build/
-      - name: Upload .deb
+      - name: Release .deb
         uses: softprops/action-gh-release@v2
         with:
           files: build/qplot*deb
