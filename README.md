@@ -1,8 +1,6 @@
 [![Build Windows Backend](https://github.com/wagenadl/qplot/actions/workflows/winbuild.yml/badge.svg)](https://github.com/wagenadl/qplot/actions/workflows/winbuild.yml)
-[![Build Linux Backend](https://github.com/wagenadl/qplot/actions/workflows/build.yml/badge.svg)](https://github.com/wagenadl/qplot/actions/workflows/build.yml)
+[![Build Linux Backend](https://github.com/wagenadl/qplot/actions/workflows/linuxbuild.yml/badge.svg)](https://github.com/wagenadl/qplot/actions/workflows/build.yml)
 [![Build documentation](https://github.com/wagenadl/qplot/actions/workflows/documentation.yml/badge.svg)](https://github.com/wagenadl/qplot/actions/workflows/documentation.yml)
-[![Upload .exe](https://github.com/wagenadl/qplot/actions/workflows/uploadexe.yml/badge.svg)](https://github.com/wagenadl/qplot/actions/workflows/uploadexe.yml)
-[![Upload .deb](https://github.com/wagenadl/qplot/actions/workflows/uploaddeb.yml/badge.svg)](https://github.com/wagenadl/qplot/actions/workflows/uploaddeb.yml)
 
 # qplot
 
