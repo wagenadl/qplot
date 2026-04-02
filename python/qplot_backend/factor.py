@@ -1,8 +1,6 @@
 # factor.py - This file is part of QPlot
 
 # QPlot - Publication quality 2D graphs with dual coordinate systems
-# Copyright (C) 2014  Daniel Wagenaar
-# (same GPL licence as original)
 
 _FACTOR: float = 30.0
 """Conversion factor between PostScript points and internal units.

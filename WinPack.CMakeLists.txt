@@ -19,7 +19,7 @@ include(python/qplot/Install.CMakeLists.txt)
 set(OCTPATH "${OCTPKG}")
 include(octave/Install.CMakeLists.txt)
 
-set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/GPL-3.0.txt")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE.txt")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "QPlot")
 #set(CPACK_NSIS_MUI_ICON "${CMAKE_SOURCE_DIR}/src/App/eln.ico")
 #set(CPACK_NSIS_INSTALLED_ICON_NAME "${CMAKE_SOURCE_DIR}/src/App/eln.ico")

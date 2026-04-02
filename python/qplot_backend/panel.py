@@ -1,8 +1,6 @@
 # panel.py - This file is part of QPlot
 
 # QPlot - Publication quality 2D graphs withdul coordinate systems
-# Copyright (C) 2014  Daniel Wagenaar
-# (same GPL licence as original)
 
 from PyQt6.QtCore import QRectF
 

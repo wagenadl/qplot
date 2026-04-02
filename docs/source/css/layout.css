@@ -421,9 +421,14 @@ h2 {
     height: 270px;
 }
 
+
 .homeeg img.large { 
     width: auto;
     height: 270px;
+}
+.homeeg img.small { 
+    width: auto;
+    height: 120px;
 }
 
 img.lut-full, img.lut-half {

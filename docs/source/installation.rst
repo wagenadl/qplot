@@ -1,5 +1,23 @@
+Python installation
+===================
+
+Most users will be able to install QPlot with a simple ::
+
+    pip install pyqplot
+
+This installs the Python front end as well as the new pure Python back
+end. These should serve the needs of the vast majority of users. (The
+package is called “pyqplot” to avoid name collision with an unrelated
+package for visualization of gas networks.)
+
+There is no reason to read on, unless you have a specific reason to
+need the older C++ back end.
+
+
 Binary installations
 ====================
+
+[Binary installation is no longer the preferred process. See above.]
 
 Most users on Windows and Debian-derived Linux systems (including
 Ubuntu, Mint, etc.), should be able to install QPlot using the binary
@@ -45,10 +63,26 @@ choice in a location on your computer of your choice and type::
 Of course, if you prefer, there are various graphical frontends for
 git that you may use instead of the command line.
 
+Building the Python wheel from sources
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+After installing the ``build`` Python package ::
 
-Compiling the sources
-^^^^^^^^^^^^^^^^^^^^^
+    pip install build
+
+building the qplot wheel should be as easy as ::
+
+    cd qplot
+    python3 -m build --wheel
+
+You can then ``pip install`` the resulting `.whl` file from the `dist`
+folder.
+
+Compiling the C++ backend from sources
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+[Most users will be able to use the Python backend, which is easier to
+build.]
 
 After downloading, enter into the downloaded folder::
 

@@ -1,8 +1,6 @@
 # error.py - This file is part of QPlot
 
 # QPlot - Publication quality 2D graphs with dual coordinate systems
-# Copyright (C) 2014  Daniel Wagenaar
-# (same GPL licence as original)
 
 import sys
 from PyQt6.QtCore import QTextStream, QIODevice

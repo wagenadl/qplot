@@ -2,8 +2,6 @@
 # (named token_.py to avoid shadowing Python's standard library 'token' module)
 
 # QPlot - Publication quality 2D graphs with dual coordinate systems
-# Copyright (C) 2014  Daniel Wagenaar
-# (same GPL licence as original)
 
 import enum
 

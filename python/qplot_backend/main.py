@@ -3,8 +3,7 @@
 # main.py - This file is part of QPlot
 
 # QPlot - Publication quality 2D graphs with dual coordinate systems
-# Copyright (C) 2014  Daniel Wagenaar
-# (same GPL licence as original)
+# Copyright (C) 2014-2026  Daniel Wagenaar
 
 import os
 import sys
@@ -22,38 +21,6 @@ from .error import Error
 from .factor import pt2iu, set_factor
 from .renderer import Renderer
 from .statement import Statement
-
-# Import all Cmd* modules so their @Command.register decorators fire
-#from . import cmdalign
-#from . import cmdalignaxes
-#from . import cmdat
-#from . import cmdbrush
-#from . import cmdcaligraph
-#from . import cmdcommonscale
-#from . import cmdendgroup
-#from . import cmdfigsize
-#from . import cmdfont
-#from . import cmdgline
-#from . import cmdgroup
-#from . import cmdhairline
-#from . import cmdhatch
-#from . import cmdimage
-#from . import cmdimageg
-#from . import cmdmark
-#from . import cmdmarker
-#from . import cmdpanel
-#from . import cmdpen
-#from . import cmdplot
-#from . import cmdrebalance
-#from . import cmdreftext
-#from . import cmdsave
-#from . import cmdshrink
-#from . import cmdtext
-#from . import cmdtextonpath
-#from . import cmdxlim
-#from . import cmdxzimage
-#from . import cmdylim
-#from . import cmdzyimage
 
 try:
     from .version import __version__
@@ -158,20 +125,19 @@ def noninteractive(ifn: str, ofn: str, renderer: Renderer) -> int:
 
 def show_version() -> int:
     sys.stderr.write(f"QPlot {__version__}\n")
-    sys.stderr.write("Copyright (C) 2014-2026 Daniel A. Wagenaar\n\n")
-    sys.stderr.write(
-        "QPlot is free software: you can redistribute it and/or modify "
-        "it under the terms of the GNU General Public License as published "
-        "by the Free Software Foundation, either version 3 of the License, "
-        "or (at your option) any later version.\n\n"
-        "QPlot is distributed in the hope that it will be useful, but "
-        "WITHOUT ANY WARRANTY; without even the implied warranty of "
-        "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU "
-        "General Public License for more details.\n\n"
-        "You should have received a copy of the GNU General Public License "
-        "along with this program. If not, see "
-        "www.gnu.org/licenses/gpl.html.\n"
-    )
+    sys.stderr.write("Copyright (C) 2014-2026 Daniel A. Wagenaar\n")
+    sys.stderr.write("""
+QPlot is free software: you can redistribute it and/or modify
+it under the terms of the MIT License.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+""")
     return 0
 
 # ---------------------------------------------------------------------------

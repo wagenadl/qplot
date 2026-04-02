@@ -4,12 +4,32 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pyqplot"
+description = "QPlot: Beautifully typeset graphs for science"
+readme = "README.md"
+license = { file = "LICENSE.txt" }
 dynamic = ["version"]
 dependencies = [
     "numpy",
     "pyqt6",
 ]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Education",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Scientific/Engineering :: Visualization",]
 requires-python = ">=3.8"
+
+[project.urls]
+"Homepage" = "https://github.com/wagenadl/qplot"
+"Documentation" = "https://wagenadl.github.io/qplot"
+"Download" = "
 
 [project.scripts]
 qplot = "qplot_backend.main:main"

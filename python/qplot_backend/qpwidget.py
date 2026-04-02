@@ -1,8 +1,6 @@
 # qpwidget.py - This file is part of QPlot
 
 # QPlot - Publication quality 2D graphs with dual coordinate systems
-# Copyright (C) 2014  Daniel Wagenaar
-# (same GPL licence as original)
 
 from __future__ import annotations
 
@@ -520,24 +518,23 @@ class QPWidget(ScrollWidget):
 
     def _about_action(self) -> None:
         msg = (
-            f"<b>QPlot</b> {__version__}<br>"
-            "(C) 2013–2026 Daniel A. Wagenaar<br><br>"
-            "<b>QPlot</b> is an alternative 2D plotting library for "
-            "Python, Matlab, and Octave that facilitates beautiful typography "
-            "and precise axis scaling.<br><br>"
-            "<b>QPlot</b> is free software: you can redistribute it and/or "
-            "modify it under the terms of the GNU General Public License as "
-            "published by the Free Software Foundation, either version 3 of "
-            "the License, or (at your option) any later version.<br><br>"
-            "<b>QPlot</b> is distributed in the hope that it will be useful, "
-            "but WITHOUT ANY WARRANTY; without even the implied warranty of "
-            "MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU "
-            "General Public License for more details.<br><br>"
-            "You should have received a copy of the GNU General Public License "
-            "along with this program. If not, see "
-            "<a href=\"http://www.gnu.org/licenses/gpl-3.0.en.html\">"
-            "www.gnu.org/licenses/gpl-3.0.en.html</a>."
-        )
+            f"""<b>QPlot</b> {__version__}<br>
+            (C) 2013–2026 Daniel A. Wagenaar<br><br>"
+            <b>QPlot</b> is an alternative 2D plotting library for "
+            Python, Matlab, and Octave that facilitates beautiful typography "
+            and precise axis scaling.<br><br>"
+            <b>QPlot</b> is free software: you can redistribute it and/or "
+            modify it under the terms of the MIT License. <br>
+
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+            """)
         box = QMessageBox()
         box.setWindowTitle("About QPlot")
         box.setTextFormat(Qt.TextFormat.RichText)

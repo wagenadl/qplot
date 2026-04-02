@@ -1,12 +1,34 @@
 <h1>Introduction</h1>
 
-QPlot is an alternative 2D plotting library for Python, Octave, and
+<p>QPlot is an alternative 2D plotting library for Python, Octave, and
 Matlab. It facilitates beautiful typography and precise axis
 scaling. QPlot is described in an article titled “Publication Quality
 2D Graphs with Less Manual Effort due to Explicit Use of Dual
 Coordinate Systems”
 <a href="https://www.danielwagenaar.net/pubs.html#14-Wage1">(Wagenaar,
-2014)</a>.
+  2014)</a>.</p>
+
+<p>QPlot started life as a C++ program with a Matlab/Octave front end, but has since been ported to Python. Installing QPlot is now as easy as:</p>
+<div class="code literal-block"><code><p class="eg">
+      pip install pyqplot
+</p></code></div>
+<p>After that, you can immediately start plotting:</p>
+
+<div class="code python literal-block">
+  <code>
+    <p class="eg">import numpy as np</p>
+    <p class="eg">import qplot as qp</p>
+    <p class="eg">xx = np.linspace(0, 2*np.pi, 100)</p>
+    <p class="eg">qp.figure()</p>
+    <p class="eg">qp.plot(xx, np.sin(xx))</p>
+</p></code>
+</div>
+
+<p>If the examples below appeal to your esthetics, please take a look
+at the <a href="examples/tutorial1.html">Getting started</a> section
+to learn what QPlot can do for you. And if they don't, know that QPlot
+tries to avoid being opinionated. Chances are that you can readily
+convince it to make graphs your way.</p>
 
 <h1>Some examples</h1>
 

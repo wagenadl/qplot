@@ -56,10 +56,19 @@ def document(body, title):
     return html
 
 
+def substitute_version(s):
+    if "{VERSION}" in s:
+        with open("../VERSION") as fd:
+            vsn = fd.read().strip()
+        return s.replace("{VERSION}", vsn)
+    return s
+
+
 def main():
     ifn = sys.argv[1]
     ofn = sys.argv[2]
     title = " ".join(sys.argv[3:])
+    title = substitute_version(title)
     body = readhtml(ifn)
     html = document(body, title)
     with open(ofn, "w") as fd:

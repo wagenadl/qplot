@@ -66,7 +66,7 @@ build/%.html: source/notebooks/%.ipynb code/ipynb2html
 
 
 build/html/index.html: source/index.html
-	code/rehtml $< $@ "QPlot 0.6.1 documentation"
+	code/rehtml $< $@ "QPlot {VERSION} documentation"
 
 build/html/luts/index.html: code/lutdemo.py
 	QT_QPA_PLATFORM=offscreen code/lutdemo.py
