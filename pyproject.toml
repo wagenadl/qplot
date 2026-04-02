@@ -29,7 +29,6 @@ requires-python = ">=3.8"
 [project.urls]
 "Homepage" = "https://github.com/wagenadl/qplot"
 "Documentation" = "https://wagenadl.github.io/qplot"
-"Download" = "
 
 [project.scripts]
 qplot = "qplot_backend.main:main"
